@@ -1,0 +1,113 @@
+plugins {
+    id 'java'
+    id 'io.quarkus'
+    id 'org.openapi.generator' version '6.2.0'
+}
+
+import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
+
+def specFile = "$projectDir/src/main/openapi/api.yaml"
+
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+}
+
+dependencies {
+    implementation enforcedPlatform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}")
+
+    // Http
+    implementation 'io.quarkus:quarkus-arc'
+    implementation 'io.quarkus:quarkus-resteasy-reactive'
+    implementation("io.quarkus:quarkus-resteasy-reactive-jackson")
+    implementation("io.quarkus:quarkus-resteasy-reactive-qute")
+    implementation 'jakarta.annotation:jakarta.annotation-api:2.1.1'
+    implementation 'jakarta.ws.rs:jakarta.ws.rs-api:3.1.0'
+    implementation 'jakarta.validation:jakarta.validation-api:3.0.2'
+
+    // ORM
+    implementation("io.quarkus:quarkus-hibernate-orm")
+    implementation("io.quarkus:quarkus-jdbc-postgresql")
+    implementation("io.quarkus:quarkus-spring-data-jpa")
+    implementation 'com.vladmihalcea:hibernate-types-52:2.20.0'
+
+    // Security (password hashing)
+    implementation group: 'org.springframework.security', name: 'spring-security-core', version: '5.7.5'
+
+    // Testing
+    testImplementation 'io.quarkus:quarkus-junit5'
+    testImplementation 'io.rest-assured:rest-assured'
+
+    // OpenAPI
+    implementation group: 'io.swagger', name: 'swagger-annotations', version: '1.6.2'
+    implementation group: 'org.openapitools', name: 'jackson-databind-nullable', version: '0.2.1'
+
+    // JOSE
+    implementation 'com.nimbusds:nimbus-jose-jwt:9.25.6'
+    implementation group: 'org.bouncycastle', name: 'bcpkix-jdk15on', version: '1.70'
+}
+
+group 'com.cartobucket'
+version '1.0.0-SNAPSHOT'
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+compileJava {
+    options.encoding = 'UTF-8'
+    options.compilerArgs << '-parameters'
+}
+
+compileTestJava {
+    options.encoding = 'UTF-8'
+}
+
+task generateApiServer(type: GenerateTask) {
+    def serverOutputDir = "$buildDir/generated/api/server"
+
+    inputs.file specFile
+    outputs.dir serverOutputDir
+
+    generatorName = "jaxrs-spec"
+    inputSpec = specFile
+    outputDir = serverOutputDir
+
+    apiPackage = "com.cartobucket.auth.generated"
+    invokerPackage = "com.cartobucket.auth.invoker.generated"
+    modelPackage = "com.cartobucket.auth.model.generated"
+
+    generateApiDocumentation = false
+
+    configOptions = [
+            dateLibrary  : "java8",
+            generatePom  : "false",
+            interfaceOnly: "true",
+            /*
+            JAX-RS generator does not respect nullable properties defined in the OpenApi Spec.
+            It means that if a field is not nullable but not set it is still returning a null value for this field in the serialized json.
+            The below Jackson annotation is made to only keep non null values in serialized json.
+            We are not yet using nullable=true properties in our OpenApi so this is a valid workaround at the moment to circumvent the default JAX-RS behavior described above.
+            Feel free to read the conversation on https://github.com/airbytehq/airbyte/pull/13370 for more details.
+            */
+//            additionalModelTypeAnnotations: "\n@com.fasterxml.jackson.annotation.JsonInclude(com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL)",
+
+            // Generate separate classes for each endpoint "domain"
+            useTags: "true"
+    ]
+}
+
+compileJava.dependsOn tasks.generateApiServer
+
+sourceSets {
+    main {
+        java {
+            srcDirs "$buildDir/generated/api/server/src/gen/java", "$projectDir/src/main/java"
+        }
+        resources {
+            srcDir "$projectDir/src/main/openapi/"
+        }
+    }
+}
