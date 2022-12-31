@@ -27,19 +27,19 @@ public class ApplicationServiceImpl implements com.cartobucket.auth.services.App
 
     @Override
     public ApplicationSecret createApplicationSecret(UUID applicationId, String name, List<Scope> scopes, Long expiration) {
-        var clientSecret = Base64.getEncoder().encodeToString(SecureRandom.getSeed(128));
-        var clientSecretHash = bCryptPasswordEncoder.encode(clientSecret);
+        final var clientSecret = Base64.getEncoder().encodeToString(SecureRandom.getSeed(128));
+        final var clientSecretHash = bCryptPasswordEncoder.encode(clientSecret);
 
-        var applicationToken = new ApplicationSecret();
-        applicationToken.setName(name);
-        applicationToken.setApplicationId(applicationId);
-        applicationToken.setClientSecret(clientSecret);
-        applicationToken.setClientSecretHash(clientSecretHash);
-        applicationToken.setScopes(scopes);
+        var applicationSecret = new ApplicationSecret();
+        applicationSecret.setName(name);
+        applicationSecret.setApplicationId(applicationId);
+        applicationSecret.setClientSecret(clientSecret);
+        applicationSecret.setClientSecretHash(clientSecretHash);
+        applicationSecret.setScopes(scopes);
 
-        var savedToken = applicationSecretRepository.save(applicationToken);
+        applicationSecret = applicationSecretRepository.save(applicationSecret);
 
-        return savedToken;
+        return applicationSecret;
     }
 
     @Override
@@ -50,6 +50,10 @@ public class ApplicationServiceImpl implements com.cartobucket.auth.services.App
     @Override
     public Application getApplicationFromClientCredentials(String clientId, String clientSecret) {
         var application = applicationRepository.findByClientId(clientId);
+        if (application == null) {
+            return null;
+        }
+
         var applicationTokens = applicationSecretRepository.findByApplicationId(application.getId());
         for (var applicationToken : applicationTokens) {
             if (bCryptPasswordEncoder.matches(clientSecret, applicationToken.getClientSecretHash())) {

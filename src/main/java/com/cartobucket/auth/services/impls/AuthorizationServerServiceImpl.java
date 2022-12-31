@@ -50,7 +50,7 @@ public class AuthorizationServerServiceImpl implements AuthorizationServerServic
         }
     }
 
-    private SigningKey generateSigningKey(AuthorizationServer authorizationServer) {
+    public static SigningKey generateSigningKey(AuthorizationServer authorizationServer) {
         try {
             var singingKey = new SigningKey();
             KeyPairGenerator generator = KeyPairGenerator.getInstance("RSA");
@@ -74,7 +74,6 @@ public class AuthorizationServerServiceImpl implements AuthorizationServerServic
             singingKey.setMetadata(new HashMap<>());
             singingKey.setCreatedOn(OffsetDateTime.now());
             singingKey.setUpdatedOn(OffsetDateTime.now());
-            singingKeyRepository.save(singingKey);
 
             return singingKey;
         } catch (NoSuchAlgorithmException e) {

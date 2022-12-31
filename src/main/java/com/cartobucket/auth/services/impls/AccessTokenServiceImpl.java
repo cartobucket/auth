@@ -41,6 +41,9 @@ public class AccessTokenServiceImpl implements AccessTokenService {
     @Override
     public AccessTokenResponse fromClientCredentials(AuthorizationServer authorizationServer, AccessTokenRequest accessTokenRequest) {
         var application = applicationService.getApplicationFromClientCredentials(accessTokenRequest.getClientId(), accessTokenRequest.getClientSecret());
+        if (application == null) {
+            return null;
+        }
         var profile = profileRepository.findByResourceAndProfileType(application.getId(), ProfileType.Application);
         return buildAccessToken(authorizationServer, profile, null);
     }
@@ -48,13 +51,15 @@ public class AccessTokenServiceImpl implements AccessTokenService {
     @Override
     public AccessTokenResponse fromAuthorizationCode(AuthorizationServer authorizationServer, AccessTokenRequest accessTokenRequest) {
         var clientCode = clientCodeRepository.findByCode(accessTokenRequest.getCode());
+        if (clientCode == null || !String.valueOf(clientCode.getClientId()).equals(accessTokenRequest.getClientId())) {
+            return null;
+        }
         var profile = profileRepository.findByResourceAndProfileType(clientCode.getUserId(), ProfileType.User);
         return buildAccessToken(authorizationServer, profile, clientCode);
     }
 
-    @Override
     // TODO: maybe a second method just for client code?
-    public AccessTokenResponse buildAccessToken(AuthorizationServer authorizationServer, Profile profile, ClientCode clientCode) {
+    private AccessTokenResponse buildAccessToken(AuthorizationServer authorizationServer, Profile profile, ClientCode clientCode) {
         var jwk = authorizationServerService.getJwkForAuthorizationServer(authorizationServer);
         try {
             var jwt = Jwt
