@@ -1,7 +1,11 @@
 package com.cartobucket.auth.routes;
 
 import com.cartobucket.auth.generated.ApplicationsApi;
-import com.cartobucket.auth.model.generated.*;
+import com.cartobucket.auth.model.generated.Application;
+import com.cartobucket.auth.model.generated.ApplicationRequest;
+import com.cartobucket.auth.model.generated.ApplicationSecretRequest;
+import com.cartobucket.auth.model.generated.ApplicationSecretResponse;
+import com.cartobucket.auth.model.generated.ApplicationSecretsResponseInner;
 import com.cartobucket.auth.models.ApplicationSecret;
 import com.cartobucket.auth.repositories.ApplicationRepository;
 import com.cartobucket.auth.repositories.ApplicationSecretRepository;
@@ -9,7 +13,7 @@ import com.cartobucket.auth.repositories.ProfileRepository;
 import com.cartobucket.auth.services.ApplicationService;
 import com.cartobucket.auth.services.AuthorizationServerService;
 
-import javax.ws.rs.Path;
+import jakarta.ws.rs.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;

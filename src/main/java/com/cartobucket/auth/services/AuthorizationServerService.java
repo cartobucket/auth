@@ -1,13 +1,15 @@
 package com.cartobucket.auth.services;
 
+import com.cartobucket.auth.model.generated.JWKS;
+import com.cartobucket.auth.model.generated.JWKSKeysInner;
 import com.cartobucket.auth.models.AuthorizationServer;
-import com.nimbusds.jose.JWSHeader;
-import com.nimbusds.jose.jwk.JWK;
-import com.nimbusds.jose.jwk.JWKSet;
+
+import java.security.PrivateKey;
+
 
 public interface AuthorizationServerService {
     AuthorizationServer getDefaultAuthorizationServer();
-    JWK getJwkForAuthorizationServer(AuthorizationServer authorizationServer);
-    JWSHeader getJwsHeaderForAuthorizationServer(AuthorizationServer authorizationServer, JWK jwk);
-    JWKSet getJwksForAuthorizationServer(AuthorizationServer authorizationServer);
+    JWKSKeysInner getJwkForAuthorizationServer(AuthorizationServer authorizationServer);
+    JWKS getJwksForAuthorizationServer(AuthorizationServer authorizationServer);
+    PrivateKey getSingingKeyForAuthorizationServer(AuthorizationServer authorizationServer);
 }

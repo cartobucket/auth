@@ -1,13 +1,15 @@
 package com.cartobucket.auth.models;
 
 import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
+//import org.hibernate.annotations.JdbcTypeCode;
+//import org.hibernate.type.SqlTypes;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import java.time.OffsetDateTime;
 import java.util.HashMap;
 import java.util.UUID;
@@ -31,6 +33,7 @@ public class SigningKey {
 
     private OffsetDateTime updatedOn;
 
+//    @JdbcTypeCode(SqlTypes.JSON)
     @Type(type = "jsonb")
     @Column(columnDefinition = "jsonb")
     private HashMap<String, Object> metadata;
@@ -97,5 +100,9 @@ public class SigningKey {
 
     public void setUpdatedOn(OffsetDateTime updatedOn) {
         this.updatedOn = updatedOn;
+    }
+
+    public String getAlgorithm() {
+        return "RS256";
     }
 }

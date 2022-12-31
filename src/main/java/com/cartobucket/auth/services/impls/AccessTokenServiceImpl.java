@@ -12,16 +12,11 @@ import com.cartobucket.auth.repositories.ProfileRepository;
 import com.cartobucket.auth.services.AccessTokenService;
 import com.cartobucket.auth.services.ApplicationService;
 import com.cartobucket.auth.services.AuthorizationServerService;
-import com.nimbusds.jose.JOSEException;
-import com.nimbusds.jose.crypto.RSASSASigner;
-import com.nimbusds.jose.jwk.JWK;
-import com.nimbusds.jose.jwk.RSAKey;
-import com.nimbusds.jwt.JWTClaimsSet;
-import com.nimbusds.jwt.SignedJWT;
 
-import javax.enterprise.context.ApplicationScoped;
-import java.text.ParseException;
-import java.time.Instant;
+
+import io.smallrye.jwt.algorithm.SignatureAlgorithm;
+import io.smallrye.jwt.build.Jwt;
+import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
 public class AccessTokenServiceImpl implements AccessTokenService {
@@ -47,56 +42,47 @@ public class AccessTokenServiceImpl implements AccessTokenService {
     public AccessTokenResponse fromClientCredentials(AuthorizationServer authorizationServer, AccessTokenRequest accessTokenRequest) {
         var application = applicationService.getApplicationFromClientCredentials(accessTokenRequest.getClientId(), accessTokenRequest.getClientSecret());
         var profile = profileRepository.findByResourceAndProfileType(application.getId(), ProfileType.Application);
-        var accessToken = buildAccessToken(authorizationServer, profile, null);
-
-        var accessTokenResponse = new AccessTokenResponse();
-        accessTokenResponse.setAccessToken(accessToken.serialize());
-        accessTokenResponse.setIdToken(null);
-        accessTokenResponse.setRefreshToken(null);
-        accessTokenResponse.setTokenType(AccessTokenResponse.TokenTypeEnum.BEARER);
-        accessTokenResponse.setExpiresIn(Math.toIntExact(authorizationServer.getClientCredentialsTokenExpiration()));
-        return accessTokenResponse;
+        return buildAccessToken(authorizationServer, profile, null);
     }
 
     @Override
     public AccessTokenResponse fromAuthorizationCode(AuthorizationServer authorizationServer, AccessTokenRequest accessTokenRequest) {
         var clientCode = clientCodeRepository.findByCode(accessTokenRequest.getCode());
         var profile = profileRepository.findByResourceAndProfileType(clientCode.getUserId(), ProfileType.User);
-        var accessToken = buildAccessToken(authorizationServer, profile, clientCode);
-
-        var accessTokenResponse = new AccessTokenResponse();
-        accessTokenResponse.setAccessToken(accessToken.serialize());
-        accessTokenResponse.setIdToken(accessToken.serialize());
-        accessTokenResponse.setRefreshToken(null);
-        accessTokenResponse.setTokenType(AccessTokenResponse.TokenTypeEnum.BEARER);
-        accessTokenResponse.setExpiresIn(Math.toIntExact(authorizationServer.getClientCredentialsTokenExpiration()));
-        return accessTokenResponse;
+        return buildAccessToken(authorizationServer, profile, clientCode);
     }
 
     @Override
     // TODO: maybe a second method just for client code?
-    public SignedJWT buildAccessToken(AuthorizationServer authorizationServer, Profile profile, ClientCode clientCode) {
-        JWK jwk = authorizationServerService.getJwkForAuthorizationServer(authorizationServer);
+    public AccessTokenResponse buildAccessToken(AuthorizationServer authorizationServer, Profile profile, ClientCode clientCode) {
+        var jwk = authorizationServerService.getJwkForAuthorizationServer(authorizationServer);
         try {
-            // Prepare JWT with claims set
-            var _profile = profile.getProfile();
-            _profile.put("iss", authorizationServer.getServerUrl().toString());
-            _profile.put("aud", authorizationServer.getAudience());
-            _profile.put("exp", (Instant.now().toEpochMilli() / 1000) + authorizationServer.getClientCredentialsTokenExpiration());
-            if (clientCode != null) {
-                _profile.put("nonce", clientCode.getNonce());
+            var jwt = Jwt
+                    .issuer(authorizationServer.getServerUrl().toExternalForm())
+                    .audience(authorizationServer.getAudience())
+                    .expiresIn(authorizationServer.getClientCredentialsTokenExpiration());
+
+            jwt.jws()
+                    .algorithm(SignatureAlgorithm.valueOf(jwk.getAlg()))
+                    .keyId(jwk.getKid());
+
+            if (clientCode != null && clientCode.getNonce() != null) {
+                jwt.claim("nonce", clientCode.getNonce());
             }
-            JWTClaimsSet claimsSet = JWTClaimsSet.parse(_profile);
+            profile.getProfile().forEach(jwt::claim);
+            var token = jwt.sign(authorizationServerService.getSingingKeyForAuthorizationServer(authorizationServer));
 
-            SignedJWT signedJWT = new SignedJWT(
-                    authorizationServerService.getJwsHeaderForAuthorizationServer(authorizationServer, jwk),
-                    claimsSet
+            var accessToken = new AccessTokenResponse();
+            accessToken.setAccessToken(token);
+            accessToken.setTokenType(AccessTokenResponse.TokenTypeEnum.BEARER);
+            accessToken.setExpiresIn(
+                    Math.toIntExact(
+                            clientCode != null ? authorizationServer.getAuthorizationCodeTokenExpiration() :
+                                    authorizationServer.getClientCredentialsTokenExpiration()
+                    )
             );
-
-            // Compute the RSA signature
-            signedJWT.sign(new RSASSASigner((RSAKey) jwk));
-            return signedJWT;
-        } catch (JOSEException | ParseException e) {
+            return accessToken;
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }

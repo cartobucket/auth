@@ -7,7 +7,7 @@ import com.cartobucket.auth.repositories.ApplicationRepository;
 import com.cartobucket.auth.repositories.ApplicationSecretRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import javax.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.ApplicationScoped;
 import java.security.SecureRandom;
 import java.util.Base64;
 import java.util.List;

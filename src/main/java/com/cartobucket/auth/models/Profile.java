@@ -1,10 +1,12 @@
 package com.cartobucket.auth.models;
 
 import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
+import jakarta.persistence.*;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
+//import org.hibernate.annotations.JdbcTypeCode;
+//import org.hibernate.type.SqlTypes;
 
-import javax.persistence.*;
 import java.time.OffsetDateTime;
 import java.util.HashMap;
 import java.util.UUID;
@@ -23,6 +25,7 @@ public class Profile {
 
     private ProfileType profileType;
 
+//    @JdbcTypeCode(SqlTypes.JSON)
     @Type(type = "jsonb")
     @Column(columnDefinition = "jsonb")
     private HashMap<String, Object> profile;

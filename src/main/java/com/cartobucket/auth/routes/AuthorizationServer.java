@@ -4,33 +4,35 @@ import com.cartobucket.auth.generated.AuthorizationServerApi;
 import com.cartobucket.auth.model.generated.AccessTokenRequest;
 import com.cartobucket.auth.model.generated.AccessTokenResponse;
 import com.cartobucket.auth.model.generated.JWKS;
-import com.cartobucket.auth.model.generated.JWKSKeysInner;
 import com.cartobucket.auth.models.ProfileType;
 import com.cartobucket.auth.repositories.ProfileRepository;
 import com.cartobucket.auth.repositories.UserRepository;
 import com.cartobucket.auth.services.AccessTokenService;
 import com.cartobucket.auth.services.AuthorizationServerService;
 import com.cartobucket.auth.services.ClientService;
-import com.nimbusds.jose.JOSEException;
-import com.nimbusds.jose.JOSEObjectType;
-import com.nimbusds.jose.JWSAlgorithm;
-import com.nimbusds.jose.jwk.RSAKey;
-import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
-import com.nimbusds.jose.proc.*;
-import com.nimbusds.jwt.JWTClaimsSet;
-import com.nimbusds.jwt.proc.ConfigurableJWTProcessor;
-import com.nimbusds.jwt.proc.DefaultJWTClaimsVerifier;
-import com.nimbusds.jwt.proc.DefaultJWTProcessor;
 import io.quarkus.qute.CheckedTemplate;
 import io.quarkus.qute.TemplateInstance;
 import io.smallrye.common.constraint.NotNull;
+import io.smallrye.jwt.util.KeyUtils;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.FormParam;
+import jakarta.ws.rs.HeaderParam;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.Response;
+import org.jose4j.jwa.AlgorithmConstraints;
+import org.jose4j.jws.AlgorithmIdentifiers;
+import org.jose4j.jwt.JwtClaims;
+import org.jose4j.jwt.MalformedClaimException;
+import org.jose4j.jwt.consumer.InvalidJwtException;
+import org.jose4j.jwt.consumer.JwtConsumerBuilder;
 
-import javax.ws.rs.*;
-
-import javax.ws.rs.core.Response;
 import java.net.URI;
-import java.text.ParseException;
-import java.util.*;
+import java.security.GeneralSecurityException;
+import java.util.Map;
+import java.util.UUID;
 
 @Path("/authorizationServer/")
 public class AuthorizationServer implements AuthorizationServerApi {
@@ -44,7 +46,13 @@ public class AuthorizationServer implements AuthorizationServerApi {
 
     final ProfileRepository profileRepository;
 
-    public AuthorizationServer(AccessTokenService accessTokenService, AuthorizationServerService authorizationServerService, ClientService clientService, UserRepository userRepository, ProfileRepository profileRepository) {
+    public AuthorizationServer(
+            AccessTokenService accessTokenService,
+            AuthorizationServerService authorizationServerService,
+            ClientService clientService,
+            UserRepository userRepository,
+            ProfileRepository profileRepository
+    ) {
         this.accessTokenService = accessTokenService;
         this.authorizationServerService = authorizationServerService;
         this.clientService = clientService;
@@ -82,7 +90,7 @@ public class AuthorizationServer implements AuthorizationServerApi {
             @FormParam("email") @NotNull String email,
             @FormParam("password") @NotNull String password
     ) {
-        var code = clientService.getClientCodeForEmailAndPassword(
+        final var code = clientService.getClientCodeForEmailAndPassword(
                 authorizationServerService.getDefaultAuthorizationServer(),
                 clientId,
                 email,
@@ -101,28 +109,15 @@ public class AuthorizationServer implements AuthorizationServerApi {
 
     @Override
     public JWKS jwksGet() {
-        var keys = new ArrayList<JWKSKeysInner>();
-        for (var key : authorizationServerService.getJwksForAuthorizationServer(authorizationServerService.getDefaultAuthorizationServer()).getKeys()
-        ) {
-            var keysInner = new JWKSKeysInner();
-            keysInner.setAlg(String.valueOf(key.getAlgorithm()));
-            keysInner.setKid(key.getKeyID());
-            keysInner.setN(String.valueOf(((RSAKey)key).getModulus()));
-            keysInner.setE("AQAB");
-            var obj  =key.toJSONObject();
-            keysInner.setKty(String.valueOf(obj.get("kty")));
-            keys.add(keysInner);
-        }
-
-        var jwks = new JWKS();
-        jwks.setKeys(keys);
-        return jwks;
+        return authorizationServerService.getJwksForAuthorizationServer(
+                authorizationServerService.getDefaultAuthorizationServer()
+        );
     }
 
     @Override
     @Consumes({ "*/*" })
     public AccessTokenResponse tokenPost(AccessTokenRequest accessTokenRequest) {
-        var authorizationServer = authorizationServerService.getDefaultAuthorizationServer();
+        final var authorizationServer = authorizationServerService.getDefaultAuthorizationServer();
         if (accessTokenRequest.getGrantType().equals(AccessTokenRequest.GrantTypeEnum.CLIENT_CREDENTIALS)) {
             return accessTokenService.fromClientCredentials(authorizationServer, accessTokenRequest);
         }
@@ -134,34 +129,36 @@ public class AuthorizationServer implements AuthorizationServerApi {
 
     @Override
     public Map<String, Object> userinfoGet(@HeaderParam("Authorization") String idToken) {
+        final var authorizationServer = authorizationServerService.getDefaultAuthorizationServer();
+        final var jwks = authorizationServerService.getJwksForAuthorizationServer(authorizationServer);
+
         try {
-            var authorizationServer = authorizationServerService.getDefaultAuthorizationServer();
-            final var jwks = authorizationServerService.getJwksForAuthorizationServer(authorizationServer);
-            JWSAlgorithm expectedJWSAlg = JWSAlgorithm.RS256;
-            ConfigurableJWTProcessor<SecurityContext> jwtProcessor =
-                    new DefaultJWTProcessor<>();
-            jwtProcessor.setJWSTypeVerifier(
-                    new DefaultJOSEObjectTypeVerifier<>(new JOSEObjectType("at+jwt")));
-            JWSKeySelector<SecurityContext> keySelector =
-                    new JWSVerificationKeySelector<>(expectedJWSAlg, new ImmutableJWKSet(jwks));
-            jwtProcessor.setJWTClaimsSetVerifier(new DefaultJWTClaimsVerifier(
-                    new JWTClaimsSet.Builder().issuer(authorizationServer.getServerUrl().toString()).build(),
-                    new HashSet<>(Arrays.asList("sub", "iat", "exp", "scp", "cid", "jti"))));
-            SecurityContext ctx = null; // optional context parameter, not required here
+            JwtConsumerBuilder builder = new JwtConsumerBuilder()
+                    .setRequireExpirationTime()
+                    .setRequireSubject()
+                    .setSkipDefaultAudienceValidation()
+                    .setExpectedIssuer(String.valueOf(authorizationServer.getServerUrl()))
+                    .setExpectedAudience(authorizationServer.getAudience())
+                    .setJwsAlgorithmConstraints(
+                            new AlgorithmConstraints(AlgorithmConstraints.ConstraintType.PERMIT,
+                                    AlgorithmIdentifiers.RSA_USING_SHA256));
 
-            var _idToken = idToken.replaceFirst("Bearer ", "");
-            JWTClaimsSet claimsSet = jwtProcessor.process(_idToken, ctx);
+            JwtClaims jwtClaims = null;
+            for (final var jwk : jwks.getKeys()) {
+                builder.setVerificationKey(KeyUtils.decodePublicKey(jwk.getN()));
+                var jwtConsumer = builder.build();
+                jwtClaims = jwtConsumer.processToClaims(idToken.split(" ")[1]);
+                if (jwtClaims != null) {
+                    break;
+                }
+            }
+            final var user = userRepository.findById(UUID.fromString(jwtClaims.getSubject()));
+            final var profile = profileRepository.findByResourceAndProfileType(user.get().getId(), ProfileType.User);
 
-            var user = userRepository.findById(UUID.fromString(claimsSet.getSubject()));
-            var profile = profileRepository.findByResourceAndProfileType(user.get().getId(), ProfileType.User);
+            return profile.getProfile();
 
-            var map = new HashMap<String, Object>();
-            map.put("email", profile.getProfile().get("email"));
-            return map;
-
-        } catch (ParseException | JOSEException | BadJOSEException | NullPointerException e) {
-            //throw new RuntimeException(e);
+        } catch (GeneralSecurityException | InvalidJwtException | MalformedClaimException e) {
+            throw new RuntimeException(e);
         }
-        return null;
     }
 }

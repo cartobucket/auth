@@ -1,8 +1,8 @@
 package com.cartobucket.auth.models;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 

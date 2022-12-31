@@ -3,7 +3,7 @@ package com.cartobucket.auth.routes;
 import com.cartobucket.auth.generated.WellKnownApi;
 import com.cartobucket.auth.model.generated.AccessTokenRequest;
 
-import javax.ws.rs.Path;
+import jakarta.ws.rs.Path;
 import java.util.Arrays;
 
 @Path("/.well-known/openid-connect/")
@@ -12,11 +12,11 @@ public class WellKnown implements WellKnownApi {
     public com.cartobucket.auth.model.generated.WellKnown wellKnownOpenidConnectGet() {
         var wellKnown = new com.cartobucket.auth.model.generated.WellKnown();
         wellKnown.setIssuer("https://sso.cartobucket.com/");
-        wellKnown.setAuthorizationEndpoint("https://sso.cartobucket.com/authorizationServer/authorization_endpoint/");
-        wellKnown.setTokenEndpoint("https://sso.cartobucket.com/authorizationServer/token_endpoint/");
-        wellKnown.setJwksUri("https://sso.cartobucket.com/authorizationServer/jwks_uri/");
-        wellKnown.setRevocationEndpoint("https://sso.cartobucket.com/authorizationServer/revocation_endpoint/");
-        wellKnown.setUserinfoEndpoint("https://sso.cartobucket.com/authorizationServer/userinfo_endpoint/");
+        wellKnown.setAuthorizationEndpoint("https://sso.cartobucket.com/authorizationServer/authorization/");
+        wellKnown.setTokenEndpoint("https://sso.cartobucket.com/authorizationServer/token/");
+        wellKnown.setJwksUri("https://sso.cartobucket.com/authorizationServer/jwks/");
+        wellKnown.setRevocationEndpoint("https://sso.cartobucket.com/authorizationServer/revocation/");
+        wellKnown.setUserinfoEndpoint("https://sso.cartobucket.com/authorizationServer/userinfo/");
         wellKnown.setTokenEndpointAuthMethodsSupported(
                 Arrays.asList(
                         com.cartobucket.auth.model.generated.WellKnown.TokenEndpointAuthMethodsSupportedEnum.POST

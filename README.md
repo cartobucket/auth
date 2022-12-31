@@ -1,5 +1,11 @@
 # Cartobucket Auth
 
+** WARNING - NOT PRODUCTION READY **
+
+The motivation behind this project was to explore an opinionated OAuth 2.1 & OIDC implementation.
+The aim is to create an implementation that is useful for developers to both understand the concepts of OAuth 2.1 and 
+OIDC, as well as, provide a useful environment to explore the OAuth/OIDC concepts.ter
+
 ## Domain Model
 
 The Domain Model is an attempt to build a ubiquitous language for discussing the major concepts of the Application.

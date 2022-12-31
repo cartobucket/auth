@@ -1,24 +1,17 @@
 package com.cartobucket.auth.services.impls;
 
+import com.cartobucket.auth.model.generated.JWKS;
+import com.cartobucket.auth.model.generated.JWKSKeysInner;
 import com.cartobucket.auth.models.AuthorizationServer;
 import com.cartobucket.auth.models.SigningKey;
 import com.cartobucket.auth.repositories.AuthorizationServerRepository;
 import com.cartobucket.auth.repositories.SingingKeyRepository;
 import com.cartobucket.auth.services.AuthorizationServerService;
-import com.nimbusds.jose.JOSEException;
-import com.nimbusds.jose.JWSAlgorithm;
-import com.nimbusds.jose.JWSHeader;
-import com.nimbusds.jose.JWSSigner;
-import com.nimbusds.jose.crypto.RSASSASigner;
-import com.nimbusds.jose.jwk.JWK;
-import com.nimbusds.jose.jwk.JWKSet;
-import com.nimbusds.jose.jwk.RSAKey;
 
-import javax.enterprise.context.ApplicationScoped;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.NoSuchAlgorithmException;
-import java.text.ParseException;
+import io.smallrye.jwt.util.KeyUtils;
+import jakarta.enterprise.context.ApplicationScoped;
+
+import java.security.*;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -41,7 +34,7 @@ public class AuthorizationServerServiceImpl implements AuthorizationServerServic
     }
 
     @Override
-    public JWK getJwkForAuthorizationServer(AuthorizationServer authorizationServer) {
+    public JWKSKeysInner getJwkForAuthorizationServer(AuthorizationServer authorizationServer) {
         try {
             var keys = singingKeyRepository.findAllByAuthorizationServerId(
                     authorizationServer.getId()
@@ -49,14 +42,10 @@ public class AuthorizationServerServiceImpl implements AuthorizationServerServic
             var key =
                     keys.stream()
                             .findFirst()
-                            .get();
+                            .orElseThrow();
 
-            var jwk = JWK.parseFromPEMEncodedObjects(key.getPrivateKey());
-            var map = jwk.toJSONObject();
-            map.put("kid", key.getId().toString());
-
-            return JWK.parse(map);
-        } catch (JOSEException | ParseException e) {
+            return buildJwk(key);
+        } catch (GeneralSecurityException e) {
             throw new RuntimeException(e);
         }
     }
@@ -94,28 +83,41 @@ public class AuthorizationServerServiceImpl implements AuthorizationServerServic
     }
 
     @Override
-    public JWSHeader getJwsHeaderForAuthorizationServer(AuthorizationServer authorizationServer, JWK jwk) {
-        return new JWSHeader.Builder(JWSAlgorithm.RS256).keyID(jwk.getKeyID()).build();
+    public JWKS getJwksForAuthorizationServer(AuthorizationServer authorizationServer) {
+        var singingKeys = singingKeyRepository.findAllByAuthorizationServerId(authorizationServer.getId());
+        try {
+            List<JWKSKeysInner> keys = new ArrayList<>();
+            for (var key : singingKeys) {
+                keys.add(buildJwk(key));
+            }
+            var jwks = new JWKS();
+            jwks.setKeys(keys);
+            return jwks;
+        } catch (GeneralSecurityException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
-    public JWKSet getJwksForAuthorizationServer(AuthorizationServer authorizationServer) {
-        //generateSigningKey(authorizationServer);
-
-        var singingKeys = singingKeyRepository.findAllByAuthorizationServerId(authorizationServer.getId());
+    public PrivateKey getSingingKeyForAuthorizationServer(AuthorizationServer authorizationServer) {
+        var singingKeys = singingKeyRepository.findAllByAuthorizationServerId(
+                authorizationServer.getId()
+        );
+        var key = singingKeys.stream().findFirst().orElseThrow();
         try {
-            List<JWK> keys = new ArrayList<>();
-            for (var key : singingKeys) {
-                var map = JWK.parseFromPEMEncodedObjects(key.getPublicKey()).toJSONObject();
-                map.put("kid", key.getId().toString());
-                map.put("alg", "RS256");
-                map.put("e", "AQAB");
-                keys.add(JWK.parse(map));
-            }
-            var keySet = new JWKSet(keys);
-            return keySet;
-        } catch (JOSEException | ParseException e) {
+            return KeyUtils.decodePrivateKey(key.getPrivateKey());
+        } catch (GeneralSecurityException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private static JWKSKeysInner buildJwk(SigningKey key) throws GeneralSecurityException {
+        var publicKey = KeyUtils.decodePublicKey(key.getPublicKey());
+        var jwk = new JWKSKeysInner();
+        jwk.setKid(key.getId().toString());
+        jwk.setAlg(key.getAlgorithm());
+        jwk.setE("AQAB");
+        jwk.setN(Base64.getEncoder().encodeToString(publicKey.getEncoded()));
+        return jwk;
     }
 }
