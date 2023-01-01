@@ -5,13 +5,13 @@ import com.cartobucket.auth.repositories.MockApplicationRepository;
 import com.cartobucket.auth.repositories.MockClientCodeRepository;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
+import jakarta.ws.rs.BadRequestException;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 @QuarkusTest
 public class AccessTokenServiceTests {
@@ -51,8 +51,7 @@ public class AccessTokenServiceTests {
         accessTokenRequest.setCodeVerifier("TEST");
         accessTokenRequest.setRedirectUri("https://test");
         accessTokenRequest.setGrantType(AccessTokenRequest.GrantTypeEnum.AUTHORIZATION_CODE);
-        var accessToken = accessTokenService.fromAuthorizationCode(authorizationServer, accessTokenRequest);
-        assertNull(accessToken);
+        assertThrows(BadRequestException.class, () -> accessTokenService.fromAuthorizationCode(authorizationServer, accessTokenRequest));
     }
 
     @Test
@@ -66,8 +65,7 @@ public class AccessTokenServiceTests {
         accessTokenRequest.setCodeVerifier("TEST");
         accessTokenRequest.setRedirectUri("https://test");
         accessTokenRequest.setGrantType(AccessTokenRequest.GrantTypeEnum.AUTHORIZATION_CODE);
-        var accessToken = accessTokenService.fromAuthorizationCode(authorizationServer, accessTokenRequest);
-        assertNull(accessToken);
+        assertThrows(BadRequestException.class, () -> accessTokenService.fromAuthorizationCode(authorizationServer, accessTokenRequest));
     }
 
     @Test

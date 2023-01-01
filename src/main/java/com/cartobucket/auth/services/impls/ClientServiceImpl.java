@@ -6,6 +6,7 @@ import com.cartobucket.auth.repositories.ClientCodeRepository;
 import com.cartobucket.auth.repositories.ClientRepository;
 import com.cartobucket.auth.repositories.UserRepository;
 import com.cartobucket.auth.services.ClientService;
+import jakarta.ws.rs.BadRequestException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import jakarta.enterprise.context.ApplicationScoped;
@@ -30,17 +31,17 @@ public class ClientServiceImpl implements ClientService {
     public ClientCode getClientCodeForEmailAndPassword(AuthorizationServer authorizationServer, String clientId, String email, String password, String nonce) {
         var client = clientRepository.findByClientId(clientId);
         if (client == null) {
-            return null;
+            throw new BadRequestException("Unable to find the Client with the credentials provided");
         }
 
         var user = userRepository.findByEmail(email);
         if (user == null) {
-            return null;
+            throw new BadRequestException("Unable to find the User with the credentials provided");
         }
 
         var matches = new BCryptPasswordEncoder().matches(password, user.getPasswordHash());
         if (!matches) {
-            return null;
+            throw new BadRequestException("Unable to find the User with the credentials provided");
         }
         try {
             final MessageDigest digest = MessageDigest.getInstance("SHA3-256");

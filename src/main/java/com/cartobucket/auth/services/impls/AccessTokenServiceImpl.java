@@ -17,6 +17,7 @@ import com.cartobucket.auth.services.AuthorizationServerService;
 import io.smallrye.jwt.algorithm.SignatureAlgorithm;
 import io.smallrye.jwt.build.Jwt;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.ws.rs.BadRequestException;
 
 @ApplicationScoped
 public class AccessTokenServiceImpl implements AccessTokenService {
@@ -40,9 +41,12 @@ public class AccessTokenServiceImpl implements AccessTokenService {
 
     @Override
     public AccessTokenResponse fromClientCredentials(AuthorizationServer authorizationServer, AccessTokenRequest accessTokenRequest) {
-        var application = applicationService.getApplicationFromClientCredentials(accessTokenRequest.getClientId(), accessTokenRequest.getClientSecret());
+        var application = applicationService.getApplicationFromClientCredentials(
+                accessTokenRequest.getClientId(),
+                accessTokenRequest.getClientSecret()
+        );
         if (application == null) {
-            return null;
+            throw new BadRequestException("Unable to locate the Application with the credentials provided");
         }
         var profile = profileRepository.findByResourceAndProfileType(application.getId(), ProfileType.Application);
         return buildAccessToken(authorizationServer, profile, null);
@@ -52,7 +56,7 @@ public class AccessTokenServiceImpl implements AccessTokenService {
     public AccessTokenResponse fromAuthorizationCode(AuthorizationServer authorizationServer, AccessTokenRequest accessTokenRequest) {
         var clientCode = clientCodeRepository.findByCode(accessTokenRequest.getCode());
         if (clientCode == null || !String.valueOf(clientCode.getClientId()).equals(accessTokenRequest.getClientId())) {
-            return null;
+            throw new BadRequestException("Unable to locate the Client with the credentials provided");
         }
         var profile = profileRepository.findByResourceAndProfileType(clientCode.getUserId(), ProfileType.User);
         return buildAccessToken(authorizationServer, profile, clientCode);

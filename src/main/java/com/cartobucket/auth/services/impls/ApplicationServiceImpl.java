@@ -5,6 +5,7 @@ import com.cartobucket.auth.models.ApplicationSecret;
 import com.cartobucket.auth.models.Scope;
 import com.cartobucket.auth.repositories.ApplicationRepository;
 import com.cartobucket.auth.repositories.ApplicationSecretRepository;
+import jakarta.ws.rs.BadRequestException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import jakarta.enterprise.context.ApplicationScoped;
@@ -49,9 +50,9 @@ public class ApplicationServiceImpl implements com.cartobucket.auth.services.App
 
     @Override
     public Application getApplicationFromClientCredentials(String clientId, String clientSecret) {
-        var application = applicationRepository.findByClientId(clientId);
+        final var application = applicationRepository.findByClientId(clientId);
         if (application == null) {
-            return null;
+            throw new BadRequestException("Unable to find the Application with the credentials provided");
         }
 
         var applicationTokens = applicationSecretRepository.findByApplicationId(application.getId());
@@ -61,6 +62,6 @@ public class ApplicationServiceImpl implements com.cartobucket.auth.services.App
             }
         }
 
-        return null;
+        throw new BadRequestException("Unable to find the Application with the credentials provided");
     }
 }
