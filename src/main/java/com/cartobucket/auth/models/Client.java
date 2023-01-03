@@ -1,22 +1,32 @@
 package com.cartobucket.auth.models;
 
+import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import org.hibernate.annotations.Type;
+import org.hibernate.annotations.TypeDef;
+
+import java.net.URI;
 import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
+@TypeDef(name = "jsonb", typeClass = JsonBinaryType.class)
 public class Client {
     @Id
     @GeneratedValue
     private UUID id;
 
-    private String clientId;
-
     private String name;
 
     private UUID authorizationServerId;
+
+    @Type(type = "jsonb")
+    @Column(columnDefinition = "jsonb")
+    private List<URI> redirectUris;
 
     private OffsetDateTime createdOn;
 
@@ -28,14 +38,6 @@ public class Client {
 
     public UUID getId() {
         return id;
-    }
-
-    public String getClientId() {
-        return clientId;
-    }
-
-    public void setClientId(String clientId) {
-        this.clientId = clientId;
     }
 
     public String getName() {
@@ -52,6 +54,14 @@ public class Client {
 
     public void setAuthorizationServerId(UUID authorizationServerId) {
         this.authorizationServerId = authorizationServerId;
+    }
+
+    public List<URI> getRedirectUris() {
+        return redirectUris;
+    }
+
+    public void setRedirectUris(List<URI> redirectUris) {
+        this.redirectUris = redirectUris;
     }
 
     public OffsetDateTime getCreatedOn() {

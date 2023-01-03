@@ -18,7 +18,7 @@ public class ClientCode {
 
     private OffsetDateTime createdOn;
 
-    private  String redirectUri;
+    private String redirectUri;
 
     private  String scope;
 

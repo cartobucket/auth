@@ -8,6 +8,7 @@ import com.cartobucket.auth.models.ProfileType;
 import com.cartobucket.auth.models.Profile;
 import com.cartobucket.auth.repositories.AuthorizationServerRepository;
 import com.cartobucket.auth.repositories.ClientCodeRepository;
+import com.cartobucket.auth.repositories.ClientRepository;
 import com.cartobucket.auth.repositories.ProfileRepository;
 import com.cartobucket.auth.services.AccessTokenService;
 import com.cartobucket.auth.services.ApplicationService;
@@ -19,46 +20,57 @@ import io.smallrye.jwt.build.Jwt;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.ws.rs.BadRequestException;
 
+import java.net.URI;
+
 @ApplicationScoped
 public class AccessTokenServiceImpl implements AccessTokenService {
     final ApplicationService applicationService;
     final AuthorizationServerService authorizationServerService;
     final ProfileRepository profileRepository;
-
     final AuthorizationServerRepository authorizationServerRepository;
     final ClientCodeRepository clientCodeRepository;
+    final ClientRepository clientRepository;
 
     public AccessTokenServiceImpl(
             ApplicationService applicationService,
             AuthorizationServerService authorizationServerService, ProfileRepository profileRepository,
-            AuthorizationServerRepository authorizationServerRepository, ClientCodeRepository clientCodeRepository) {
+            AuthorizationServerRepository authorizationServerRepository, ClientCodeRepository clientCodeRepository, ClientRepository clientRepository) {
         this.applicationService = applicationService;
         this.authorizationServerService = authorizationServerService;
         this.profileRepository = profileRepository;
         this.authorizationServerRepository = authorizationServerRepository;
         this.clientCodeRepository = clientCodeRepository;
+        this.clientRepository = clientRepository;
     }
 
     @Override
     public AccessTokenResponse fromClientCredentials(AuthorizationServer authorizationServer, AccessTokenRequest accessTokenRequest) {
-        var application = applicationService.getApplicationFromClientCredentials(
+        final var application = applicationService.getApplicationFromClientCredentials(
                 accessTokenRequest.getClientId(),
                 accessTokenRequest.getClientSecret()
         );
         if (application == null) {
             throw new BadRequestException("Unable to locate the Application with the credentials provided");
         }
-        var profile = profileRepository.findByResourceAndProfileType(application.getId(), ProfileType.Application);
+        final var profile = profileRepository.findByResourceAndProfileType(application.getId(), ProfileType.Application);
         return buildAccessToken(authorizationServer, profile, null);
     }
 
     @Override
     public AccessTokenResponse fromAuthorizationCode(AuthorizationServer authorizationServer, AccessTokenRequest accessTokenRequest) {
-        var clientCode = clientCodeRepository.findByCode(accessTokenRequest.getCode());
+        final var clientCode = clientCodeRepository.findByCode(accessTokenRequest.getCode());
         if (clientCode == null || !String.valueOf(clientCode.getClientId()).equals(accessTokenRequest.getClientId())) {
             throw new BadRequestException("Unable to locate the Client with the credentials provided");
         }
-        var profile = profileRepository.findByResourceAndProfileType(clientCode.getUserId(), ProfileType.User);
+        if (!clientCode.getRedirectUri().equals(accessTokenRequest.getRedirectUri())) {
+            throw new BadRequestException("The redirect_uri in the Access Token request does not match the redirect_uri during code generation");
+        }
+        final var client = clientRepository.findById(clientCode.getClientId()).orElseThrow();
+        if (!client.getRedirectUris().contains(URI.create(clientCode.getRedirectUri()))) {
+            throw new BadRequestException("The redirect_uri in the Access Token request is not configured for the client");
+        }
+
+        final var profile = profileRepository.findByResourceAndProfileType(clientCode.getUserId(), ProfileType.User);
         return buildAccessToken(authorizationServer, profile, clientCode);
     }
 

@@ -30,6 +30,8 @@ dependencies {
     implementation 'io.quarkus:quarkus-hibernate-orm'
     implementation 'io.quarkus:quarkus-jdbc-postgresql'
     implementation 'io.quarkus:quarkus-spring-data-jpa'
+    implementation 'io.quarkus:quarkus-hibernate-validator'
+
     // TODO: Once Quarkus 3 is finalized this should not be needed (Hibernate 6 comes with these types).
     // This currently blocks the native image generation.
     implementation 'com.vladmihalcea:hibernate-types-55:2.21.1'

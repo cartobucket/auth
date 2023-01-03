@@ -14,6 +14,7 @@ import io.quarkus.qute.CheckedTemplate;
 import io.quarkus.qute.TemplateInstance;
 import io.smallrye.common.constraint.NotNull;
 import io.smallrye.jwt.util.KeyUtils;
+import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.FormParam;
 import jakarta.ws.rs.HeaderParam;
@@ -82,15 +83,15 @@ public class AuthorizationServer implements AuthorizationServerApi {
     @Produces({ "text/html" })
     public Response authorizationPost(
             @QueryParam("response_type") @NotNull String responseType,
-            @QueryParam("client_id") String clientId,
-            @QueryParam("redirect_uri") String redirectUri,
-            @QueryParam("scope") String scope,
+            @QueryParam("client_id") @NotNull String clientId,
+            @QueryParam("redirect_uri") @NotNull String redirectUri,
+            @QueryParam("scope") @NotNull String scope,
             @QueryParam("state") String state,
             @QueryParam("nonce") String nonce,
             @FormParam("email") @NotNull String email,
             @FormParam("password") @NotNull String password
     ) {
-        final var code = clientService.getClientCodeForEmailAndPassword(
+        final var code = clientService.buildClientCodeForEmailAndPassword(
                 authorizationServerService.getDefaultAuthorizationServer(),
                 clientId,
                 email,
@@ -102,7 +103,7 @@ public class AuthorizationServer implements AuthorizationServerApi {
         }
         return Response.status(302).location(
                 URI.create(
-                        redirectUri + "?code=" + code.getCode() + "&state=" + state + "&nonce=" + nonce
+                        redirectUri + "?code=" + code.getCode() + "&state=" + state + "&nonce=" + nonce + "?scope" + scope
                 )
         ).build();
     }
@@ -118,13 +119,15 @@ public class AuthorizationServer implements AuthorizationServerApi {
     @Consumes({ "*/*" })
     public AccessTokenResponse tokenPost(AccessTokenRequest accessTokenRequest) {
         final var authorizationServer = authorizationServerService.getDefaultAuthorizationServer();
-        if (accessTokenRequest.getGrantType().equals(AccessTokenRequest.GrantTypeEnum.CLIENT_CREDENTIALS)) {
-            return accessTokenService.fromClientCredentials(authorizationServer, accessTokenRequest);
+        switch (accessTokenRequest.getGrantType()) {
+            case CLIENT_CREDENTIALS -> {
+                return accessTokenService.fromClientCredentials(authorizationServer, accessTokenRequest);
+            }
+            case AUTHORIZATION_CODE -> {
+                return accessTokenService.fromAuthorizationCode(authorizationServer, accessTokenRequest);
+            }
         }
-        if (accessTokenRequest.getGrantType().equals(AccessTokenRequest.GrantTypeEnum.AUTHORIZATION_CODE)) {
-            return accessTokenService.fromAuthorizationCode(authorizationServer, accessTokenRequest);
-        }
-        return new AccessTokenResponse();
+        throw new BadRequestException();
     }
 
     @Override

@@ -28,9 +28,9 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-    public ClientCode getClientCodeForEmailAndPassword(AuthorizationServer authorizationServer, String clientId, String email, String password, String nonce) {
+    public ClientCode buildClientCodeForEmailAndPassword(AuthorizationServer authorizationServer, String clientId, String email, String password, String nonce) {
         var client = clientRepository.findByClientId(clientId);
-        if (client == null) {
+        if (client == null || !client.getAuthorizationServerId().equals(authorizationServer.getId())) {
             throw new BadRequestException("Unable to find the Client with the credentials provided");
         }
 
