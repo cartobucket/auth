@@ -155,6 +155,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/AccessTokenRequest'
+        x-validator: '@ValidAccessTokenRequest'
         required: true
       tags:
         - AuthorizationServer
