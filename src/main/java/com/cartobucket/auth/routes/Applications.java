@@ -10,7 +10,6 @@ import com.cartobucket.auth.repositories.ProfileRepository;
 import com.cartobucket.auth.services.ApplicationService;
 import com.cartobucket.auth.services.AuthorizationServerService;
 
-import jakarta.ws.rs.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;

@@ -3,11 +3,9 @@ package com.cartobucket.auth.routes;
 import com.cartobucket.auth.generated.WellKnownApi;
 import com.cartobucket.auth.model.generated.AccessTokenRequest;
 
-import jakarta.ws.rs.Path;
 import java.util.Arrays;
 import java.util.UUID;
 
-@Path("/.well-known/openid-connect/")
 public class WellKnown implements WellKnownApi {
     @Override
     public com.cartobucket.auth.model.generated.WellKnown authorizationServerIdWellKnownOpenidConnectGet(UUID authorizationServerId) {

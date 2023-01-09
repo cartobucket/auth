@@ -33,7 +33,6 @@ import java.net.URI;
 import java.security.GeneralSecurityException;
 import java.util.UUID;
 
-@Path("/authorizationServer/")
 public class AuthorizationServer implements AuthorizationServerApi {
     final AccessTokenService accessTokenService;
 
