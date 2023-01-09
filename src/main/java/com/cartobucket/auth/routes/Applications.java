@@ -1,12 +1,9 @@
 package com.cartobucket.auth.routes;
 
 import com.cartobucket.auth.generated.ApplicationsApi;
-import com.cartobucket.auth.model.generated.Application;
-import com.cartobucket.auth.model.generated.ApplicationRequest;
-import com.cartobucket.auth.model.generated.ApplicationSecretRequest;
-import com.cartobucket.auth.model.generated.ApplicationSecretResponse;
-import com.cartobucket.auth.model.generated.ApplicationSecretsResponseInner;
+import com.cartobucket.auth.model.generated.*;
 import com.cartobucket.auth.models.ApplicationSecret;
+import com.cartobucket.auth.models.mappers.ApplicationMapper;
 import com.cartobucket.auth.repositories.ApplicationRepository;
 import com.cartobucket.auth.repositories.ApplicationSecretRepository;
 import com.cartobucket.auth.repositories.ProfileRepository;
@@ -17,8 +14,8 @@ import jakarta.ws.rs.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.StreamSupport;
 
-@Path("/authorizationServer/applications/")
 public class Applications implements ApplicationsApi {
     final ApplicationService applicationService;
     final ApplicationRepository applicationRepository;
@@ -41,8 +38,8 @@ public class Applications implements ApplicationsApi {
     }
 
     @Override
-    public Application applicationsApplicationIdGet(UUID applicationId) {
-        return toApplicationDto(applicationRepository.findById(applicationId).get());
+    public ApplicationResponse applicationsApplicationIdGet(UUID applicationId) {
+        return ApplicationMapper.toResponse(applicationRepository.findById(applicationId).get());
     }
 
     @Override
@@ -67,27 +64,19 @@ public class Applications implements ApplicationsApi {
     }
 
     @Override
-    public List<Application> applicationsGet() {
-        List<Application> applications = new ArrayList<>();
-        for (var application : applicationRepository.findAll()) {
-            applications.add(toApplicationDto(application));
-        }
+    public ApplicationsResponse applicationsGet() {
+        var applications = StreamSupport
+                .stream(applicationRepository.findAll().spliterator(), false)
+                .map(ApplicationMapper::toResponse)
+                .toList();
+        var applicationsResponse = new ApplicationsResponse();
+        applicationsResponse.setApplications(applications);
 
-        return applications;
-    }
-
-    private Application toApplicationDto(com.cartobucket.auth.models.Application application) {
-        var app = new Application();
-        app.setId(application.getId().toString());
-        app.setName(application.getName());
-        app.setClientId(application.getClientId());
-        var profile = profileRepository.findByResource(application.getId());
-        app.setProfile(profile.getProfile());
-        return app;
+        return applicationsResponse;
     }
 
     @Override
-    public void applicationsPost(ApplicationRequest applicationRequest) {
+    public ApplicationResponse applicationsPost(ApplicationRequest applicationRequest) {
         var application = new com.cartobucket.auth.models.Application();
         var clientId = UUID.randomUUID();
         var authorizationServer = authorizationServerService.getDefaultAuthorizationServer();
@@ -101,7 +90,7 @@ public class Applications implements ApplicationsApi {
         if (applicationRequest.getClientSecret() != null) {
             // Gotta deal with this
         }
-        applicationRepository.save(application);
+        return ApplicationMapper.toResponse(applicationRepository.save(application));
     }
 
     public static ApplicationSecretsResponseInner toSecret(ApplicationSecret secret){

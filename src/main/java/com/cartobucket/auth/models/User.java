@@ -12,8 +12,7 @@ import java.time.OffsetDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "users")
-@Inheritance(strategy=InheritanceType.SINGLE_TABLE)
+@Table(name = "users") // Postgres has a user table, so set this to users
 public class User {
     @Id
     @GeneratedValue
@@ -30,9 +29,6 @@ public class User {
     private OffsetDateTime createdOn;
 
     private OffsetDateTime updatedOn;
-
-    @Transient
-    private Profile profile;
 
     public void setId(UUID id) {
         this.id = id;
@@ -90,11 +86,4 @@ public class User {
         this.email = email;
     }
 
-    public Profile getProfile() {
-        return profile;
-    }
-
-    public void setProfile(Profile profile) {
-        this.profile = profile;
-    }
 }

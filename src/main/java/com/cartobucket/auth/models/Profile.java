@@ -9,6 +9,7 @@ import org.hibernate.annotations.TypeDef;
 
 import java.time.OffsetDateTime;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 @Entity
@@ -28,7 +29,7 @@ public class Profile {
 //    @JdbcTypeCode(SqlTypes.JSON)
     @Type(type = "jsonb")
     @Column(columnDefinition = "jsonb")
-    private HashMap<String, Object> profile;
+    private Map<String, Object> profile;
 
     private OffsetDateTime createdOn;
 
@@ -50,11 +51,11 @@ public class Profile {
         this.profileType = profileType;
     }
 
-    public HashMap<String, Object> getProfile() {
+    public Map<String, Object> getProfile() {
         return profile;
     }
 
-    public void setProfile(HashMap<String, Object> profile) {
+    public void setProfile(Map<String, Object> profile) {
         this.profile = profile;
     }
 

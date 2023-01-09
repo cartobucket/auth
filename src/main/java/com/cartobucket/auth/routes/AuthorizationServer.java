@@ -17,7 +17,6 @@ import io.smallrye.jwt.util.KeyUtils;
 import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.FormParam;
-import jakarta.ws.rs.HeaderParam;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
@@ -32,7 +31,6 @@ import org.jose4j.jwt.consumer.JwtConsumerBuilder;
 
 import java.net.URI;
 import java.security.GeneralSecurityException;
-import java.util.Map;
 import java.util.UUID;
 
 @Path("/authorizationServer/")
@@ -66,50 +64,14 @@ public class AuthorizationServer implements AuthorizationServerApi {
         public static native TemplateInstance login();
     }
 
+
     @Override
-    public String authorizationGet(
-            String responseType,
-            String clientId,
-            String redirectUri,
-            String scope,
-            String state
-    ) {
+    public String authorizationServerIdAuthorizationGet(UUID authorizationServerId, String responseType, String clientId, String redirectUri, String scope, String state) {
         return Templates.login().render();
     }
 
-    @POST
-    @Path("/authorization/")
-//    @Consumes({"text/html"})
-    @Produces({ "text/html" })
-    public Response authorizationPost(
-            @QueryParam("response_type") @NotNull String responseType,
-            @QueryParam("client_id") @NotNull String clientId,
-            @QueryParam("redirect_uri") @NotNull String redirectUri,
-            @QueryParam("scope") @NotNull String scope,
-            @QueryParam("state") String state,
-            @QueryParam("nonce") String nonce,
-            @FormParam("email") @NotNull String email,
-            @FormParam("password") @NotNull String password
-    ) {
-        final var code = clientService.buildClientCodeForEmailAndPassword(
-                authorizationServerService.getDefaultAuthorizationServer(),
-                clientId,
-                email,
-                password,
-                nonce
-        );
-        if (code == null) {
-            return Response.status(200).entity(Templates.login().render()).build();
-        }
-        return Response.status(302).location(
-                URI.create(
-                        redirectUri + "?code=" + code.getCode() + "&state=" + state + "&nonce=" + nonce + "?scope" + scope
-                )
-        ).build();
-    }
-
     @Override
-    public JWKS jwksGet() {
+    public JWKS authorizationServerIdJwksGet(UUID authorizationServerId) {
         return authorizationServerService.getJwksForAuthorizationServer(
                 authorizationServerService.getDefaultAuthorizationServer()
         );
@@ -117,7 +79,7 @@ public class AuthorizationServer implements AuthorizationServerApi {
 
     @Override
     @Consumes({ "*/*" })
-    public AccessTokenResponse tokenPost(AccessTokenRequest accessTokenRequest) {
+    public AccessTokenResponse authorizationServerIdTokenPost(UUID authorizationServerId, AccessTokenRequest accessTokenRequest) {
         final var authorizationServer = authorizationServerService.getDefaultAuthorizationServer();
         switch (accessTokenRequest.getGrantType()) {
             case CLIENT_CREDENTIALS -> {
@@ -127,11 +89,10 @@ public class AuthorizationServer implements AuthorizationServerApi {
                 return accessTokenService.fromAuthorizationCode(authorizationServer, accessTokenRequest);
             }
         }
-        throw new BadRequestException();
-    }
+        throw new BadRequestException();    }
 
     @Override
-    public Map<String, Object> userinfoGet(@HeaderParam("Authorization") String idToken) {
+    public Object authorizationServerIdUserinfoGet(UUID authorizationServerId, String idToken) {
         final var authorizationServer = authorizationServerService.getDefaultAuthorizationServer();
         final var jwks = authorizationServerService.getJwksForAuthorizationServer(authorizationServer);
 
@@ -163,5 +124,35 @@ public class AuthorizationServer implements AuthorizationServerApi {
         } catch (GeneralSecurityException | InvalidJwtException | MalformedClaimException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @POST
+    @Path("/authorization/")
+    @Produces({ "text/html" })
+    public Response authorizationPost(
+            @QueryParam("response_type") @NotNull String responseType,
+            @QueryParam("client_id") @NotNull String clientId,
+            @QueryParam("redirect_uri") @NotNull String redirectUri,
+            @QueryParam("scope") @NotNull String scope,
+            @QueryParam("state") String state,
+            @QueryParam("nonce") String nonce,
+            @FormParam("email") @NotNull String email,
+            @FormParam("password") @NotNull String password
+    ) {
+        final var code = clientService.buildClientCodeForEmailAndPassword(
+                authorizationServerService.getDefaultAuthorizationServer(),
+                clientId,
+                email,
+                password,
+                nonce
+        );
+        if (code == null) {
+            return Response.status(200).entity(Templates.login().render()).build();
+        }
+        return Response.status(302).location(
+                URI.create(
+                        redirectUri + "?code=" + code.getCode() + "&state=" + state + "&nonce=" + nonce + "?scope" + scope
+                )
+        ).build();
     }
 }

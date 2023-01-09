@@ -5,11 +5,12 @@ import com.cartobucket.auth.model.generated.AccessTokenRequest;
 
 import jakarta.ws.rs.Path;
 import java.util.Arrays;
+import java.util.UUID;
 
 @Path("/.well-known/openid-connect/")
 public class WellKnown implements WellKnownApi {
     @Override
-    public com.cartobucket.auth.model.generated.WellKnown wellKnownOpenidConnectGet() {
+    public com.cartobucket.auth.model.generated.WellKnown authorizationServerIdWellKnownOpenidConnectGet(UUID authorizationServerId) {
         var wellKnown = new com.cartobucket.auth.model.generated.WellKnown();
         wellKnown.setIssuer("https://sso.cartobucket.com/");
         wellKnown.setAuthorizationEndpoint("https://sso.cartobucket.com/authorizationServer/authorization/");

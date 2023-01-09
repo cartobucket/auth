@@ -1,22 +1,21 @@
 package com.cartobucket.auth.services.impls;
 
-import com.cartobucket.auth.model.generated.JWKS;
-import com.cartobucket.auth.model.generated.JWKSKeysInner;
+import com.cartobucket.auth.model.generated.*;
 import com.cartobucket.auth.models.AuthorizationServer;
 import com.cartobucket.auth.models.SigningKey;
+import com.cartobucket.auth.models.mappers.AuthorizationServerMapper;
 import com.cartobucket.auth.repositories.AuthorizationServerRepository;
 import com.cartobucket.auth.repositories.SingingKeyRepository;
 import com.cartobucket.auth.services.AuthorizationServerService;
 
 import io.smallrye.jwt.util.KeyUtils;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.ws.rs.NotFoundException;
 
 import java.security.*;
 import java.time.OffsetDateTime;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
+import java.util.stream.StreamSupport;
 
 @ApplicationScoped
 public class AuthorizationServerServiceImpl implements AuthorizationServerService {
@@ -34,7 +33,7 @@ public class AuthorizationServerServiceImpl implements AuthorizationServerServic
     }
 
     @Override
-    public JWKSKeysInner getJwkForAuthorizationServer(AuthorizationServer authorizationServer) {
+    public JWK getJwkForAuthorizationServer(AuthorizationServer authorizationServer) {
         try {
             var keys = singingKeyRepository.findAllByAuthorizationServerId(
                     authorizationServer.getId()
@@ -85,7 +84,7 @@ public class AuthorizationServerServiceImpl implements AuthorizationServerServic
     public JWKS getJwksForAuthorizationServer(AuthorizationServer authorizationServer) {
         var singingKeys = singingKeyRepository.findAllByAuthorizationServerId(authorizationServer.getId());
         try {
-            List<JWKSKeysInner> keys = new ArrayList<>();
+            List<JWK> keys = new ArrayList<>();
             for (var key : singingKeys) {
                 keys.add(buildJwk(key));
             }
@@ -110,9 +109,53 @@ public class AuthorizationServerServiceImpl implements AuthorizationServerServic
         }
     }
 
-    private static JWKSKeysInner buildJwk(SigningKey key) throws GeneralSecurityException {
+    @Override
+    public AuthorizationServerResponse createAuthorizationServer(AuthorizationServerRequest authorizationServerRequest) {
+        var authorizationServer = AuthorizationServerMapper.from(authorizationServerRequest);
+        authorizationServer = authorizationServerRepository.save(authorizationServer);
+        generateSigningKey(authorizationServer);
+
+        return AuthorizationServerMapper.toResponse(authorizationServer);
+    }
+
+    @Override
+    public AuthorizationServerResponse getAuthorizationServer(UUID authorizationServerId) {
+        final var authorizationServer = authorizationServerRepository.findById(authorizationServerId);
+        if (authorizationServer.isEmpty()) {
+            throw new NotFoundException("An Authorization Server with that id could not be found");
+        }
+        return AuthorizationServerMapper.toResponse(authorizationServer.get());
+    }
+
+    @Override
+    public AuthorizationServerResponse updateAuthorizationServer(UUID authorizationServerId, AuthorizationServerRequest authorizationServerRequest) {
+        return null;
+    }
+
+    @Override
+    public AuthorizationServersResponse getAuthorizationServers() {
+        var response = new AuthorizationServersResponse();
+        response.setAuthorizationServers(
+                StreamSupport
+                        .stream(authorizationServerRepository.findAll().spliterator(), false)
+                        .map(AuthorizationServerMapper::toResponse)
+                        .toList()
+        );
+        return response;
+    }
+
+    @Override
+    public void deleteAuthorizationServer(UUID authorizationServerId) {
+        var authorizationServer = authorizationServerRepository.findById(authorizationServerId);
+        if (authorizationServer.isEmpty()) {
+            throw new NotFoundException("An Authorization Server with that id could not be found");
+        }
+        authorizationServerRepository.delete(authorizationServer.get());
+    }
+
+    private static JWK buildJwk(SigningKey key) throws GeneralSecurityException {
         var publicKey = KeyUtils.decodePublicKey(key.getPublicKey());
-        var jwk = new JWKSKeysInner();
+        var jwk = new JWK();
         jwk.setKid(key.getId().toString());
         jwk.setAlg(key.getAlgorithm());
         jwk.setE("AQAB");
