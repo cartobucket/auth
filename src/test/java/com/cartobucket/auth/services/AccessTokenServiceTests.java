@@ -1,6 +1,7 @@
 package com.cartobucket.auth.services;
 
 import com.cartobucket.auth.model.generated.AccessTokenRequest;
+import com.cartobucket.auth.model.generated.ApplicationSecretRequest;
 import com.cartobucket.auth.repositories.MockApplicationRepository;
 import com.cartobucket.auth.repositories.MockClientCodeRepository;
 import io.quarkus.test.junit.QuarkusTest;
@@ -71,11 +72,14 @@ public class AccessTokenServiceTests {
     @Test
     void testValidClientCredentialRequest() {
         final var authorizationServer = authorizationServerService.getDefaultAuthorizationServer();
+        var applicationSecretRequest = new ApplicationSecretRequest();
+        applicationSecretRequest.setExpiresIn(300);
+        applicationSecretRequest.setName("test");
+        applicationSecretRequest.setScopes(Collections.EMPTY_LIST);
+
         final var applicationSecret = applicationService.createApplicationSecret(
-                MockApplicationRepository.VALID_APPLICATION_ID,
-                "test",
-                Collections.EMPTY_LIST,
-                300L
+                UUID.fromString(MockApplicationRepository.VALID_CLIENT_ID),
+                applicationSecretRequest
         );
 
         var accessTokenRequest = new AccessTokenRequest();
@@ -85,6 +89,4 @@ public class AccessTokenServiceTests {
         var accessToken = accessTokenService.fromClientCredentials(authorizationServer, accessTokenRequest);
         assertNotNull(accessToken);
     }
-
-
 }

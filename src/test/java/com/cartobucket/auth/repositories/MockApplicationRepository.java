@@ -44,7 +44,14 @@ public class MockApplicationRepository implements ApplicationRepository {
 
     @Override
     public Optional<Application> findById(UUID uuid) {
-        throw new NotImplementedException();
+        var application = new Application();
+        application.setName("Test Application");
+        application.setClientId(VALID_CLIENT_ID);
+        application.setId(VALID_APPLICATION_ID);
+        application.setAuthorizationServerId(MockAuthorizationServerRepository.VALID_AUTHORIZATION_SERVER_ID);
+        application.setCreatedOn(OffsetDateTime.now());
+        application.setUpdatedOn(OffsetDateTime.now());
+        return Optional.of(application);
     }
 
     @Override

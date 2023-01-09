@@ -25,9 +25,9 @@ public class ApplicationSecret {
     private String name;
 
     @Transient
-    private String clientSecret;
+    private String applicationSecret;
 
-    private String clientSecretHash;
+    private String applicationSecretHash;
 
     private OffsetDateTime createdOn;
 
@@ -45,20 +45,20 @@ public class ApplicationSecret {
     public void setApplicationId(UUID applicationId) {
         this.applicationId = applicationId;
     }
-    public String getClientSecretHash() {
-        return clientSecretHash;
+    public String getApplicationSecretHash() {
+        return applicationSecretHash;
     }
 
-    public void setClientSecretHash(String clientSecretHash) {
-        this.clientSecretHash = clientSecretHash;
+    public void setApplicationSecretHash(String clientSecretHash) {
+        this.applicationSecretHash = clientSecretHash;
     }
 
-    public String getClientSecret() {
-        return clientSecret;
+    public String getApplicationSecret() {
+        return applicationSecret;
     }
 
-    public void setClientSecret(String clientSecret) {
-        this.clientSecret = clientSecret;
+    public void setApplicationSecret(String clientSecret) {
+        this.applicationSecret = clientSecret;
     }
 
     public void setId(UUID id) {

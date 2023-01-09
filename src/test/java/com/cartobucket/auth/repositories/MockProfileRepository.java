@@ -42,7 +42,7 @@ public class MockProfileRepository implements ProfileRepository {
     }
 
     @Override
-    public Profile findByResource(UUID resource) {
+    public void deleteByResourceIdAndProfileType(UUID userId, ProfileType user) {
         throw new NotImplementedException();
     }
 

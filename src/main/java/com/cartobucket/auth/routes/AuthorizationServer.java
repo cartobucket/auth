@@ -10,6 +10,7 @@ import com.cartobucket.auth.repositories.UserRepository;
 import com.cartobucket.auth.services.AccessTokenService;
 import com.cartobucket.auth.services.AuthorizationServerService;
 import com.cartobucket.auth.services.ClientService;
+import com.cartobucket.auth.services.UserService;
 import io.quarkus.qute.CheckedTemplate;
 import io.quarkus.qute.TemplateInstance;
 import io.smallrye.common.constraint.NotNull;
@@ -35,27 +36,19 @@ import java.util.UUID;
 
 public class AuthorizationServer implements AuthorizationServerApi {
     final AccessTokenService accessTokenService;
-
     final AuthorizationServerService authorizationServerService;
-
     final ClientService clientService;
-
-    final UserRepository userRepository;
-
-    final ProfileRepository profileRepository;
+    final UserService userService;
 
     public AuthorizationServer(
             AccessTokenService accessTokenService,
             AuthorizationServerService authorizationServerService,
             ClientService clientService,
-            UserRepository userRepository,
-            ProfileRepository profileRepository
-    ) {
+            UserService userService) {
         this.accessTokenService = accessTokenService;
         this.authorizationServerService = authorizationServerService;
         this.clientService = clientService;
-        this.userRepository = userRepository;
-        this.profileRepository = profileRepository;
+        this.userService = userService;
     }
 
     @CheckedTemplate
@@ -115,10 +108,9 @@ public class AuthorizationServer implements AuthorizationServerApi {
                     break;
                 }
             }
-            final var user = userRepository.findById(UUID.fromString(jwtClaims.getSubject()));
-            final var profile = profileRepository.findByResourceAndProfileType(user.get().getId(), ProfileType.User);
 
-            return profile.getProfile();
+            final var userResponse = userService.getUser(UUID.fromString(jwtClaims.getSubject()));
+            return userResponse.getProfile();
 
         } catch (GeneralSecurityException | InvalidJwtException | MalformedClaimException e) {
             throw new RuntimeException(e);

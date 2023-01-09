@@ -727,32 +727,6 @@ components:
         client_id: ""
         client_secret: ""
         grant_type: client_credentials
-    ApplicationSecretResponse:
-      title: Root Type for ApplicationSecretResponse
-      description: ""
-      type: object
-      properties:
-        client_secret:
-          type: string
-      example:
-        client_secret: ""
-    ApplicationSecretsResponse:
-      title: Root Type for ApplicationSecretsResponse
-      description: ""
-      type: array
-      items:
-        type: object
-        properties:
-          id:
-            type: string
-          name:
-            type: string
-          expiration:
-            type: string
-      example:
-        - id: ""
-          name: ""
-          expiration: ""
     ApplicationSecretRequest:
       title: Root Type for ApplicationSecretRequest
       description: ""
@@ -763,7 +737,8 @@ components:
           type: integer
         scopes:
           type: array
-          items: {}
+          items:
+            type: string
         name:
           description: ""
           type: string
@@ -1063,3 +1038,38 @@ components:
           lastName: Person
         createdOn: 2023-01-09T00:14:02+00:00
         updatedOn: 2023-01-09T00:14:02+00:00
+    ApplicationSecretsResponse:
+      description: ""
+      required:
+        - applicationSecrets
+      type: object
+      properties:
+        applicationSecrets:
+          description: ""
+          type: array
+          items:
+            $ref: '#/components/schemas/ApplicationSecretResponse'
+    ApplicationSecretResponse:
+      title: Root Type for ApplicationSecretResponse
+      description: ""
+      required:
+        - name
+        - id
+      type: object
+      properties:
+        client_secret:
+          type: string
+        name:
+          description: ""
+          type: string
+        id:
+          format: UUID
+          description: ""
+          type: string
+        expires_in:
+          description: ""
+          type: integer
+      example:
+        id: 76f31822-7956-4020-8731-e7a5c557f576
+        name: Super Secret
+        client_secret: 8743b52063cd84097a65d1633f5c74f5
