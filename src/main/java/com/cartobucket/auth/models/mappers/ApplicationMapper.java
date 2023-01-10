@@ -36,7 +36,8 @@ public class ApplicationMapper {
         secret.setApplicationId(application.getId());
         secret.setName(applicationSecretRequest.getName());
         secret.setAuthorizationServerId(application.getAuthorizationServerId());
-        secret.setScopes(applicationSecretRequest.getScopes().stream().map(ApplicationMapper::fromName).toList());
+        if (applicationSecretRequest.getScopes() != null)
+            secret.setScopes(applicationSecretRequest.getScopes().stream().map(ApplicationMapper::fromName).toList());
         return secret;
     }
 

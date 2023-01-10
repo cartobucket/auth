@@ -11,9 +11,11 @@ import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.NotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.time.OffsetDateTime;
-import java.util.Base64;
 import java.util.UUID;
 import java.util.stream.StreamSupport;
 
@@ -35,15 +37,22 @@ public class ApplicationServiceImpl implements ApplicationService {
         if (application == null) {
             throw new BadRequestException("Unable to find the Application with the credentials provided");
         }
+        try {
+            var messageDigest = MessageDigest.getInstance("SHA-256");
+            var secretHash = new BigInteger(
+                    1, messageDigest
+                    .digest(clientSecret.getBytes()))
+                    .toString(16);
 
-        var applicationTokens = applicationSecretRepository.findByApplicationId(application.getId());
-        for (var applicationToken : applicationTokens) {
-            if (bCryptPasswordEncoder.matches(clientSecret, applicationToken.getApplicationSecretHash())) {
-                return application;
+
+            var applicationSecret = applicationSecretRepository.findByApplicationSecretHash(secretHash);
+            if (applicationSecret.isEmpty()) {
+                throw new NotFoundException();
             }
+            return application;
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
         }
-
-        throw new BadRequestException("Unable to find the Application with the credentials provided");
     }
 
     @Override
@@ -99,12 +108,22 @@ public class ApplicationServiceImpl implements ApplicationService {
         var applicationSecret = ApplicationMapper.secretFrom(
                 application.get(),
                 applicationSecretRequest);
-        final var secret = Base64.getEncoder().encodeToString(SecureRandom.getSeed(128));
-        final var secretHash = bCryptPasswordEncoder.encode(secret);
-        applicationSecret.setApplicationSecret(secret);
-        applicationSecret.setApplicationSecretHash(secretHash);
-        applicationSecret.setUpdatedOn(OffsetDateTime.now());
-        applicationSecret = applicationSecretRepository.save(applicationSecret);
+        final MessageDigest messageDigest;
+        try {
+            messageDigest = MessageDigest.getInstance("SHA-256");
+            var secret = new BigInteger(1, new SecureRandom().generateSeed(120)).toString(16);
+            var secretHash = new BigInteger(
+                    1, messageDigest
+                    .digest(secret.getBytes()))
+                    .toString(16);
+            applicationSecret.setApplicationSecret(secret);
+            applicationSecret.setApplicationSecretHash(secretHash);
+            applicationSecret.setUpdatedOn(OffsetDateTime.now());
+            applicationSecret = applicationSecretRepository.save(applicationSecret);
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
+
         return ApplicationMapper.toSecretResponse(applicationSecret);
     }
 

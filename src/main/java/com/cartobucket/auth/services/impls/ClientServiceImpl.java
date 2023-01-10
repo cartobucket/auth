@@ -15,6 +15,8 @@ import jakarta.ws.rs.NotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import jakarta.enterprise.context.ApplicationScoped;
+
+import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -51,9 +53,12 @@ public class ClientServiceImpl implements ClientService {
             throw new BadRequestException("Unable to find the User with the credentials provided");
         }
         try {
-            final MessageDigest digest = MessageDigest.getInstance("SHA3-256");
+            final MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
+            String code = new BigInteger(1, messageDigest
+                    .digest(new SecureRandom()
+                            .generateSeed(120)))
+                    .toString(16);
 
-            var code = new BCryptPasswordEncoder().encode(new String(new SecureRandom().generateSeed(120)));
             var clientCode = new ClientCode();
             clientCode.setClientId(client.get().getId());
             clientCode.setCode(code);

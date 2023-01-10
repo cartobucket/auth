@@ -25,6 +25,11 @@ public class MockApplicationSecretRepository implements ApplicationSecretReposit
     }
 
     @Override
+    public Optional<ApplicationSecret> findByApplicationSecretHash(String secretHash) {
+        throw new NotImplementedException();
+    }
+
+    @Override
     public <S extends ApplicationSecret> S save(S entity) {
         List secrets = null;
         if (applicationSecrets.containsKey(entity.getApplicationId())) {

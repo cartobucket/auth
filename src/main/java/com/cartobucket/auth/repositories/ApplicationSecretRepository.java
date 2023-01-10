@@ -11,4 +11,6 @@ public interface ApplicationSecretRepository extends CrudRepository<ApplicationS
     List<ApplicationSecret> findByApplicationId(UUID applicationId);
 
     Optional<ApplicationSecret> findByApplicationIdAndId(UUID applicationId, UUID id);
+
+    Optional<ApplicationSecret> findByApplicationSecretHash(String secretHash);
 }
