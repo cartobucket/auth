@@ -2,26 +2,18 @@ package com.cartobucket.auth.routes;
 
 import com.cartobucket.auth.generated.AuthorizationServerApi;
 import com.cartobucket.auth.model.generated.AccessTokenRequest;
-import com.cartobucket.auth.model.generated.AccessTokenResponse;
-import com.cartobucket.auth.model.generated.JWKS;
-import com.cartobucket.auth.models.ProfileType;
-import com.cartobucket.auth.repositories.ProfileRepository;
-import com.cartobucket.auth.repositories.UserRepository;
+import com.cartobucket.auth.model.generated.AuthorizationRequest;
+import com.cartobucket.auth.model.generated.UserAuthorizationRequest;
+import com.cartobucket.auth.routes.mappers.AuthorizationRequestMapper;
 import com.cartobucket.auth.services.AccessTokenService;
 import com.cartobucket.auth.services.AuthorizationServerService;
 import com.cartobucket.auth.services.ClientService;
 import com.cartobucket.auth.services.UserService;
 import io.quarkus.qute.CheckedTemplate;
 import io.quarkus.qute.TemplateInstance;
-import io.smallrye.common.constraint.NotNull;
 import io.smallrye.jwt.util.KeyUtils;
 import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.FormParam;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.Response;
 import org.jose4j.jwa.AlgorithmConstraints;
 import org.jose4j.jws.AlgorithmIdentifiers;
@@ -51,41 +43,89 @@ public class AuthorizationServer implements AuthorizationServerApi {
         this.userService = userService;
     }
 
-    @CheckedTemplate
-    public static class Templates {
-        public static native TemplateInstance login();
-    }
-
 
     @Override
-    public String authorizationServerIdAuthorizationGet(UUID authorizationServerId, String responseType, String clientId, String redirectUri, String scope, String state) {
-        return Templates.login().render();
+    public Response authorizationServerIdAuthorizationGet(
+            UUID authorizationServerId,
+            String clientId,
+            String responseType,
+            String codeChallenge,
+            String codeChallengeMethod,
+            String redirectUri,
+            String scope,
+            String state,
+            String nonce) {
+        return Response.ok().entity(authorizationServerService.renderLogin().render()).build();
     }
 
     @Override
-    public JWKS authorizationServerIdJwksGet(UUID authorizationServerId) {
-        return authorizationServerService.getJwksForAuthorizationServer(
-                authorizationServerService.getDefaultAuthorizationServer()
+    public Response authorizationServerIdAuthorizationPost(
+            UUID authorizationServerId,
+            String clientId,
+            String responseType,
+            UserAuthorizationRequest userAuthorizationRequest,
+            String codeChallenge,
+            String codeChallengeMethod,
+            String redirectUri,
+            String scope,
+            String state,
+            String nonce) {
+        var authorizationRequest = AuthorizationRequestMapper.from(
+                clientId,
+                responseType,
+                codeChallenge,
+                codeChallengeMethod,
+                redirectUri,
+                scope,
+                state,
+                nonce
         );
+        final var authorizationServer = authorizationServerService.getAuthorizationServer(authorizationServerId);
+        final var code = clientService.buildClientCodeForEmailAndPassword(
+                authorizationServer,
+                authorizationRequest,
+                userAuthorizationRequest
+        );
+        if (code == null) {
+            return Response.ok().entity(authorizationServerService.renderLogin().render()).build();
+        }
+        return Response.status(302).location(
+                URI.create(
+                    authorizationRequest.getRedirectUri() + "?code=" + code.getCode() + "&state=" + authorizationRequest.getState() + "&nonce=" + authorizationRequest.getNonce() + "?scope" + authorizationRequest.getScope()
+                )
+        ).build();
+    }
+
+    @Override
+    public Response authorizationServerIdJwksGet(UUID authorizationServerId) {
+        return Response.ok().entity(authorizationServerService.getJwksForAuthorizationServer(
+                authorizationServerService.getAuthorizationServer(authorizationServerId))).build();
     }
 
     @Override
     @Consumes({ "*/*" })
-    public AccessTokenResponse authorizationServerIdTokenPost(UUID authorizationServerId, AccessTokenRequest accessTokenRequest) {
-        final var authorizationServer = authorizationServerService.getDefaultAuthorizationServer();
+    public Response authorizationServerIdTokenPost(UUID authorizationServerId, AccessTokenRequest accessTokenRequest) {
+        final var authorizationServer = authorizationServerService.getAuthorizationServer(authorizationServerId);
         switch (accessTokenRequest.getGrantType()) {
             case CLIENT_CREDENTIALS -> {
-                return accessTokenService.fromClientCredentials(authorizationServer, accessTokenRequest);
+                return Response
+                        .ok()
+                        .entity(accessTokenService.fromClientCredentials(authorizationServer, accessTokenRequest))
+                        .build();
             }
             case AUTHORIZATION_CODE -> {
-                return accessTokenService.fromAuthorizationCode(authorizationServer, accessTokenRequest);
+                return Response
+                        .ok()
+                        .entity(accessTokenService.fromAuthorizationCode(authorizationServer, accessTokenRequest))
+                        .build();
             }
         }
-        throw new BadRequestException();    }
+        throw new BadRequestException();
+    }
 
     @Override
-    public Object authorizationServerIdUserinfoGet(UUID authorizationServerId, String idToken) {
-        final var authorizationServer = authorizationServerService.getDefaultAuthorizationServer();
+    public Response authorizationServerIdUserinfoGet(UUID authorizationServerId, String idToken) {
+        final var authorizationServer = authorizationServerService.getAuthorizationServer(authorizationServerId);
         final var jwks = authorizationServerService.getJwksForAuthorizationServer(authorizationServer);
 
         try {
@@ -110,40 +150,11 @@ public class AuthorizationServer implements AuthorizationServerApi {
             }
 
             final var userResponse = userService.getUser(UUID.fromString(jwtClaims.getSubject()));
-            return userResponse.getProfile();
+            return Response.ok().entity(userResponse.getProfile()).build();
 
         } catch (GeneralSecurityException | InvalidJwtException | MalformedClaimException e) {
             throw new RuntimeException(e);
         }
     }
 
-    @POST
-    @Path("/authorization/")
-    @Produces({ "text/html" })
-    public Response authorizationPost(
-            @QueryParam("response_type") @NotNull String responseType,
-            @QueryParam("client_id") @NotNull String clientId,
-            @QueryParam("redirect_uri") @NotNull String redirectUri,
-            @QueryParam("scope") @NotNull String scope,
-            @QueryParam("state") String state,
-            @QueryParam("nonce") String nonce,
-            @FormParam("email") @NotNull String email,
-            @FormParam("password") @NotNull String password
-    ) {
-        final var code = clientService.buildClientCodeForEmailAndPassword(
-                authorizationServerService.getDefaultAuthorizationServer(),
-                clientId,
-                email,
-                password,
-                nonce
-        );
-        if (code == null) {
-            return Response.status(200).entity(Templates.login().render()).build();
-        }
-        return Response.status(302).location(
-                URI.create(
-                        redirectUri + "?code=" + code.getCode() + "&state=" + state + "&nonce=" + nonce + "?scope" + scope
-                )
-        ).build();
-    }
 }

@@ -2,9 +2,8 @@ package com.cartobucket.auth.routes;
 
 import com.cartobucket.auth.generated.ClientsApi;
 import com.cartobucket.auth.model.generated.ClientRequest;
-import com.cartobucket.auth.model.generated.ClientResponse;
-import com.cartobucket.auth.model.generated.ClientsResponse;
 import com.cartobucket.auth.services.ClientService;
+import jakarta.ws.rs.core.Response;
 
 import java.util.UUID;
 
@@ -16,27 +15,28 @@ public class Clients implements ClientsApi {
     }
 
     @Override
-    public void clientsClientIdDelete(UUID clientId) {
+    public Response clientsClientIdDelete(UUID clientId) {
         clientService.deleteClient(clientId);
+        return Response.ok().build();
     }
 
     @Override
-    public ClientResponse clientsClientIdGet(UUID clientId) {
-        return clientService.getClient(clientId);
+    public Response clientsClientIdGet(UUID clientId) {
+        return Response.ok().entity(clientService.getClient(clientId)).build();
     }
 
     @Override
-    public ClientResponse clientsClientIdPut(UUID clientId, ClientRequest clientRequest) {
-        return clientService.updateClient(clientId, clientRequest);
+    public Response clientsClientIdPut(UUID clientId, ClientRequest clientRequest) {
+        return Response.ok().entity(clientService.updateClient(clientId, clientRequest)).build();
     }
 
     @Override
-    public ClientsResponse clientsGet() {
-        return clientService.getClients();
+    public Response clientsGet() {
+        return Response.ok().entity(clientService.getClients()).build();
     }
 
     @Override
-    public ClientResponse clientsPost(ClientRequest clientRequest) {
-        return clientService.createClient(clientRequest);
+    public Response clientsPost(ClientRequest clientRequest) {
+        return Response.ok().entity(clientService.createClient(clientRequest)).build();
     }
 }

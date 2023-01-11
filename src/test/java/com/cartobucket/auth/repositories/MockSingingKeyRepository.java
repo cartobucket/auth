@@ -30,7 +30,7 @@ public class MockSingingKeyRepository implements SingingKeyRepository {
 
     @Override
     public List<SigningKey> findAllByAuthorizationServerId(UUID authorizationServerId) {
-        final var authorizationServer = authorizationServerService.getDefaultAuthorizationServer();
+        final var authorizationServer = authorizationServerService.getAuthorizationServer(authorizationServerId);
         final var singingKey = AuthorizationServerServiceImpl.generateSigningKey(authorizationServer);
         singingKey.setId(UUID.randomUUID());
         return List.of(singingKey);

@@ -319,56 +319,6 @@ paths:
           type: string
         in: path
         required: true
-  /{authorizationServerId}/authorization/:
-    get:
-      tags:
-        - AuthorizationServer
-      parameters:
-        - name: response_type
-          description: Value MUST be set to code.
-          schema:
-            type: string
-          in: query
-          required: true
-        - name: client_id
-          description: The client identifier as described in Section 2.2.
-          schema:
-            type: string
-          in: query
-          required: true
-        - name: redirect_uri
-          description: As described in Section 3.1.2.
-          schema:
-            type: string
-          in: query
-        - name: scope
-          description: The scope of the access request as described by Section 3.3.
-          schema:
-            type: string
-          in: query
-        - name: state
-          description: An opaque value used by the client to maintain state between
-            the request and callback. The authorization server includes this value when
-            redirecting the user-agent back to the client. The parameter SHOULD be used
-            for preventing cross-site request forgery as described in Section 10.12.
-          schema:
-            type: string
-          in: query
-      responses:
-        "200":
-          content:
-            text/html:
-              schema:
-                type: string
-          description: Login screen
-      summary: Authorization Endpoint
-    parameters:
-      - name: authorizationServerId
-        schema:
-          format: UUID
-          type: string
-        in: path
-        required: true
   /{authorizationServerId}/end_session/:
     parameters:
       - name: authorizationServerId
@@ -512,6 +462,130 @@ paths:
       responses:
         "200":
           description: Delete a User.
+  /{authorizationServerId}/authorization/:
+    get:
+      tags:
+        - AuthorizationServer
+      parameters:
+        - name: code_challenge
+          description: ""
+          schema:
+            type: string
+          in: query
+        - name: code_challenge_method
+          description: ""
+          schema:
+            type: string
+          in: query
+        - name: redirect_uri
+          description: ""
+          schema:
+            type: string
+          in: query
+        - name: response_type
+          description: ""
+          schema:
+            enum:
+              - code
+              - client_credentials
+            type: string
+          in: query
+          required: true
+        - name: scope
+          description: ""
+          schema:
+            type: string
+          in: query
+        - name: state
+          description: ""
+          schema:
+            type: string
+          in: query
+        - name: nonce
+          description: ""
+          schema:
+            type: string
+          in: query
+      responses:
+        "200":
+          content:
+            text/html:
+              schema:
+                type: string
+          description: Login screen
+      summary: Authorization Endpoint
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserAuthorizationRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserAuthorizationRequest'
+        required: true
+      tags:
+        - AuthorizationServer
+      parameters:
+        - name: code_challenge
+          description: ""
+          schema:
+            type: string
+          in: query
+        - name: code_challenge_method
+          description: ""
+          schema:
+            type: string
+          in: query
+        - name: redirect_uri
+          description: ""
+          schema:
+            type: string
+          in: query
+        - name: response_type
+          description: ""
+          schema:
+            enum:
+              - code
+              - client_credentials
+            type: string
+          in: query
+          required: true
+        - name: scope
+          description: ""
+          schema:
+            type: string
+          in: query
+        - name: state
+          description: ""
+          schema:
+            type: string
+          in: query
+        - name: nonce
+          description: ""
+          schema:
+            type: string
+          in: query
+      responses:
+        "200":
+          content:
+            text/html: {}
+          description: Rerender the form when the user does not provide valid credentials.
+        "302":
+          description: Redirect the user back to the redirect uri on success.
+    parameters:
+      - name: authorizationServerId
+        schema:
+          format: UUID
+          type: string
+        in: path
+        required: true
+      - name: client_id
+        description: ""
+        schema:
+          type: string
+        in: query
+        required: true
 components:
   schemas:
     WellKnown:
@@ -1073,3 +1147,56 @@ components:
         id: 76f31822-7956-4020-8731-e7a5c557f576
         name: Super Secret
         client_secret: 8743b52063cd84097a65d1633f5c74f5
+    AuthorizationRequest:
+      title: Root Type for AuthorizationRequest
+      description: ""
+      required:
+        - client_id
+        - response_type
+      type: object
+      properties:
+        response_type:
+          enum:
+            - code
+            - client_credentials
+          type: string
+        client_id:
+          type: string
+        redirect_uri:
+          type: string
+        state:
+          type: string
+        code_challenge:
+          type: string
+        code_challenge_method:
+          enum:
+            - S256
+          type: string
+        scope:
+          description: ""
+          type: string
+        nonce:
+          description: ""
+          type: string
+      example:
+        response_type: code
+        client_id: 5ae13a6c-6858-4656-ac18-7b0c7401aa52
+        redirect_uri: https://api.cartobucket.com/callback
+        state: eyJrZXkiOiAiZXhhbXBsZSJ9
+        code_challenge: YXNkZjk0cGl1b2gzMjYzCjIxNTYzNTE2MjRyZTM=
+        code_challenge_method: S256
+    UserAuthorizationRequest:
+      title: Root Type for UserAuthorization
+      description: ""
+      required:
+        - password
+        - username
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+      example:
+        username: test@acme.co
+        password: test

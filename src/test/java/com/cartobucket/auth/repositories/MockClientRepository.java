@@ -6,7 +6,6 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Alternative;
 
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -28,11 +27,7 @@ public class MockClientRepository implements ClientRepository {
     @Override
     public Optional<Client> findById(UUID uuid) {
         var client = new Client();
-        try {
-            client.setRedirectUris(List.of(new URI("https://test")));
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
-        }
+        client.setRedirectUris(List.of(URI.create("https://test")));
         return Optional.of(client);
     }
 

@@ -2,13 +2,14 @@ package com.cartobucket.auth.routes;
 
 import com.cartobucket.auth.generated.WellKnownApi;
 import com.cartobucket.auth.model.generated.AccessTokenRequest;
+import jakarta.ws.rs.core.Response;
 
 import java.util.Arrays;
 import java.util.UUID;
 
 public class WellKnown implements WellKnownApi {
     @Override
-    public com.cartobucket.auth.model.generated.WellKnown authorizationServerIdWellKnownOpenidConnectGet(UUID authorizationServerId) {
+    public Response authorizationServerIdWellKnownOpenidConnectGet(UUID authorizationServerId) {
         var wellKnown = new com.cartobucket.auth.model.generated.WellKnown();
         wellKnown.setIssuer("https://sso.cartobucket.com/");
         wellKnown.setAuthorizationEndpoint("https://sso.cartobucket.com/authorizationServer/authorization/");
@@ -40,6 +41,6 @@ public class WellKnown implements WellKnownApi {
                         AccessTokenRequest.GrantTypeEnum.AUTHORIZATION_CODE.value()
                 )
         );
-        return wellKnown;
+        return Response.ok().entity(wellKnown).build();
     }
 }

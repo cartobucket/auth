@@ -3,6 +3,7 @@ package com.cartobucket.auth.services;
 import com.cartobucket.auth.model.generated.AccessTokenRequest;
 import com.cartobucket.auth.model.generated.ApplicationSecretRequest;
 import com.cartobucket.auth.repositories.MockApplicationRepository;
+import com.cartobucket.auth.repositories.MockAuthorizationServerRepository;
 import com.cartobucket.auth.repositories.MockClientCodeRepository;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
@@ -28,7 +29,7 @@ public class AccessTokenServiceTests {
 
     @Test
     void testValidAuthorizationCodeRequest() {
-        final var authorizationServer = authorizationServerService.getDefaultAuthorizationServer();
+        final var authorizationServer = authorizationServerService.getAuthorizationServer(MockAuthorizationServerRepository.VALID_AUTHORIZATION_SERVER_ID);
 
         var accessTokenRequest = new AccessTokenRequest();
         accessTokenRequest.setClientId(String.valueOf(MockClientCodeRepository.VALID_CLIENT_ID));
@@ -43,7 +44,7 @@ public class AccessTokenServiceTests {
 
     @Test
     void testInvalidAuthorizationCodeRequestWrongClientId() {
-        final var authorizationServer = authorizationServerService.getDefaultAuthorizationServer();
+        final var authorizationServer = authorizationServerService.getAuthorizationServer(MockAuthorizationServerRepository.VALID_AUTHORIZATION_SERVER_ID);
 
         var accessTokenRequest = new AccessTokenRequest();
         accessTokenRequest.setClientId(String.valueOf(UUID.randomUUID()));
@@ -57,7 +58,7 @@ public class AccessTokenServiceTests {
 
     @Test
     void testInvalidAuthorizationCodeRequestWrongClientCode() {
-        final var authorizationServer = authorizationServerService.getDefaultAuthorizationServer();
+        final var authorizationServer = authorizationServerService.getAuthorizationServer(MockAuthorizationServerRepository.VALID_AUTHORIZATION_SERVER_ID);
 
         var accessTokenRequest = new AccessTokenRequest();
         accessTokenRequest.setClientId(String.valueOf(MockClientCodeRepository.VALID_CLIENT_ID));
@@ -71,7 +72,7 @@ public class AccessTokenServiceTests {
 
     @Test
     void testValidClientCredentialRequest() {
-        final var authorizationServer = authorizationServerService.getDefaultAuthorizationServer();
+        final var authorizationServer = authorizationServerService.getAuthorizationServer(MockAuthorizationServerRepository.VALID_AUTHORIZATION_SERVER_ID);
         var applicationSecretRequest = new ApplicationSecretRequest();
         applicationSecretRequest.setExpiresIn(300);
         applicationSecretRequest.setName("test");

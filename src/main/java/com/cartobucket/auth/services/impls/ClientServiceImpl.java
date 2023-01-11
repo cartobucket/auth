@@ -1,8 +1,6 @@
 package com.cartobucket.auth.services.impls;
 
-import com.cartobucket.auth.model.generated.ClientRequest;
-import com.cartobucket.auth.model.generated.ClientResponse;
-import com.cartobucket.auth.model.generated.ClientsResponse;
+import com.cartobucket.auth.model.generated.*;
 import com.cartobucket.auth.models.AuthorizationServer;
 import com.cartobucket.auth.models.ClientCode;
 import com.cartobucket.auth.models.mappers.ClientMapper;
@@ -37,19 +35,21 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-    public ClientCode buildClientCodeForEmailAndPassword(AuthorizationServer authorizationServer, String clientId, String email, String password, String nonce) {
-        var client = clientRepository.findById(UUID.fromString(clientId));
+    public ClientCode buildClientCodeForEmailAndPassword(
+            AuthorizationServer authorizationServer,
+            AuthorizationRequest authorizationRequest,
+            UserAuthorizationRequest userAuthorizationRequest) {
+        var client = clientRepository.findById(UUID.fromString(authorizationRequest.getClientId()));
         if (client.isEmpty() || !client.get().getAuthorizationServerId().equals(authorizationServer.getId())) {
             throw new BadRequestException("Unable to find the Client with the credentials provided");
         }
 
-        var user = userRepository.findByEmail(email);
+        var user = userRepository.findByUsername(userAuthorizationRequest.getUsername());
         if (user == null) {
             throw new BadRequestException("Unable to find the User with the credentials provided");
         }
 
-        var matches = new BCryptPasswordEncoder().matches(password, user.getPasswordHash());
-        if (!matches) {
+        if (!new BCryptPasswordEncoder().matches(userAuthorizationRequest.getPassword(), user.getPasswordHash())) {
             throw new BadRequestException("Unable to find the User with the credentials provided");
         }
         try {
@@ -65,7 +65,10 @@ public class ClientServiceImpl implements ClientService {
             clientCode.setCreatedOn(OffsetDateTime.now());
             clientCode.setAuthorizationServerId(authorizationServer.getId());
             clientCode.setUserId(user.getId());
-            clientCode.setNonce(nonce);
+            clientCode.setNonce(authorizationRequest.getNonce());
+            clientCode.setState(authorizationRequest.getState());
+            clientCode.setCodeChallenge(authorizationRequest.getCodeChallenge());
+            clientCode.setCodeChallengeMethod(String.valueOf(authorizationRequest.getCodeChallengeMethod()));
             clientCodeRepository.save(clientCode);
             return clientCode;
         } catch (NoSuchAlgorithmException e) {
@@ -75,7 +78,7 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     public void deleteClient(UUID clientId) {
-
+        clientRepository.deleteById(clientId);
     }
 
     @Override

@@ -91,6 +91,7 @@ task generateApiServer(type: GenerateTask) {
             dateLibrary   : "java8",
             generatePom   : "false",
             interfaceOnly : "true",
+            returnResponse : "true",
 
             /*
             JAX-RS generator does not respect nullable properties defined in the OpenApi Spec.

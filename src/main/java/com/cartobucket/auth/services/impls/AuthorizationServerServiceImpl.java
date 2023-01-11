@@ -8,6 +8,8 @@ import com.cartobucket.auth.repositories.AuthorizationServerRepository;
 import com.cartobucket.auth.repositories.SingingKeyRepository;
 import com.cartobucket.auth.services.AuthorizationServerService;
 
+import io.quarkus.qute.CheckedTemplate;
+import io.quarkus.qute.TemplateInstance;
 import io.smallrye.jwt.util.KeyUtils;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.ws.rs.NotFoundException;
@@ -22,14 +24,14 @@ public class AuthorizationServerServiceImpl implements AuthorizationServerServic
     final AuthorizationServerRepository authorizationServerRepository;
     final SingingKeyRepository singingKeyRepository;
 
+    @CheckedTemplate
+    public static class Templates {
+        public static native TemplateInstance login();
+    }
+
     public AuthorizationServerServiceImpl(AuthorizationServerRepository authorizationServerRepository, SingingKeyRepository singingKeyRepository) {
         this.authorizationServerRepository = authorizationServerRepository;
         this.singingKeyRepository = singingKeyRepository;
-    }
-
-    @Override
-    public AuthorizationServer getDefaultAuthorizationServer() {
-        return authorizationServerRepository.findAll().iterator().next();
     }
 
     @Override
@@ -119,12 +121,12 @@ public class AuthorizationServerServiceImpl implements AuthorizationServerServic
     }
 
     @Override
-    public AuthorizationServerResponse getAuthorizationServer(UUID authorizationServerId) {
+    public AuthorizationServer getAuthorizationServer(UUID authorizationServerId) {
         final var authorizationServer = authorizationServerRepository.findById(authorizationServerId);
         if (authorizationServer.isEmpty()) {
             throw new NotFoundException("An Authorization Server with that id could not be found");
         }
-        return AuthorizationServerMapper.toResponse(authorizationServer.get());
+        return authorizationServer.get();
     }
 
     @Override
@@ -151,6 +153,11 @@ public class AuthorizationServerServiceImpl implements AuthorizationServerServic
             throw new NotFoundException("An Authorization Server with that id could not be found");
         }
         authorizationServerRepository.delete(authorizationServer.get());
+    }
+
+    @Override
+    public TemplateInstance renderLogin() {
+        return Templates.login();
     }
 
     private static JWK buildJwk(SigningKey key) throws GeneralSecurityException {

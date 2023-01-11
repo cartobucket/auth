@@ -4,8 +4,8 @@ import com.cartobucket.auth.model.generated.AccessTokenRequest;
 import com.cartobucket.auth.model.generated.AccessTokenResponse;
 import com.cartobucket.auth.models.AuthorizationServer;
 import com.cartobucket.auth.models.ClientCode;
-import com.cartobucket.auth.models.ProfileType;
 import com.cartobucket.auth.models.Profile;
+import com.cartobucket.auth.models.ProfileType;
 import com.cartobucket.auth.repositories.AuthorizationServerRepository;
 import com.cartobucket.auth.repositories.ClientCodeRepository;
 import com.cartobucket.auth.repositories.ClientRepository;
@@ -13,14 +13,15 @@ import com.cartobucket.auth.repositories.ProfileRepository;
 import com.cartobucket.auth.services.AccessTokenService;
 import com.cartobucket.auth.services.ApplicationService;
 import com.cartobucket.auth.services.AuthorizationServerService;
-
-
 import io.smallrye.jwt.algorithm.SignatureAlgorithm;
 import io.smallrye.jwt.build.Jwt;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.ws.rs.BadRequestException;
 
 import java.net.URI;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Base64;
 
 @ApplicationScoped
 public class AccessTokenServiceImpl implements AccessTokenService {
@@ -69,9 +70,24 @@ public class AccessTokenServiceImpl implements AccessTokenService {
         if (!client.getRedirectUris().contains(URI.create(clientCode.getRedirectUri()))) {
             throw new BadRequestException("The redirect_uri in the Access Token request is not configured for the client");
         }
+        if (accessTokenRequest.getCodeVerifier() != null && !isCodeVerified(clientCode, accessTokenRequest.getCodeVerifier())) {
+            throw new BadRequestException("Could not verify the PKCE code challenge.");
+        }
 
         final var profile = profileRepository.findByResourceAndProfileType(clientCode.getUserId(), ProfileType.User);
         return buildAccessToken(authorizationServer, profile, clientCode);
+    }
+
+    private boolean isCodeVerified(ClientCode clientCode, String codeVerifier) {
+        try {
+            final MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
+            return clientCode
+                    .getCodeChallenge()
+                    // Base64(SHA-256(codeVerifier))
+                    .equals(Base64.getEncoder().encodeToString(messageDigest.digest(codeVerifier.getBytes())));
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     // TODO: maybe a second method just for client code?
