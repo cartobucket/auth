@@ -14,8 +14,6 @@ public class ClientMapper {
         client.setName(clientRequest.getName());
         client.setAuthorizationServerId(UUID.fromString(clientRequest.getAuthorizationServerId()));
         client.setRedirectUris(clientRequest.getRedirectUris().stream().map(URI::create).toList());
-        client.setCreatedOn(OffsetDateTime.now());
-        client.setUpdatedOn(OffsetDateTime.now());
         return client;
     }
 

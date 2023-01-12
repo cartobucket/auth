@@ -119,6 +119,7 @@ public class ApplicationServiceImpl implements ApplicationService {
             applicationSecret.setApplicationSecret(secret);
             applicationSecret.setApplicationSecretHash(secretHash);
             applicationSecret.setUpdatedOn(OffsetDateTime.now());
+            applicationSecret.setCreatedOn(OffsetDateTime.now());
             applicationSecret = applicationSecretRepository.save(applicationSecret);
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);

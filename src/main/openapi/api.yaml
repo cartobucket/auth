@@ -856,6 +856,8 @@ components:
       description: ""
       required:
         - name
+        - createdOn
+        - updatedOn
       type: object
       properties:
         id:
@@ -873,6 +875,12 @@ components:
         name:
           description: ""
           type: string
+        createdOn:
+          description: ""
+          type: string
+        updatedOn:
+          description: ""
+          type: string
       example:
         id: becb7180-4b1e-4f2b-812e-f1b86455725c
         name: Test Authorization Server
@@ -880,6 +888,8 @@ components:
         audience: api://
         clientCredentialsTokenExpiration: 300
         authorizationCodeTokenExpiration: 100
+        createdOn: 2023-01-12T02:53:55+00:00
+        updatedOn: 2023-01-12T02:53:55+00:00
     AuthorizationServersResponse:
       title: Root Type for AuthorizationServersResponse
       description: ""

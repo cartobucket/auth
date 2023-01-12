@@ -97,6 +97,7 @@ public class ClientServiceImpl implements ClientService {
             throw new NotFoundException();
         }
         var _client = ClientMapper.to(clientRequest);
+        _client.setUpdatedOn(OffsetDateTime.now());
         _client.setId(client.get().getId());
         _client = clientRepository.save(_client);
         return ClientMapper.toResponse(_client);
@@ -115,7 +116,10 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     public ClientResponse createClient(ClientRequest clientRequest) {
-        return ClientMapper.toResponse(clientRepository.save(ClientMapper.to(clientRequest)));
+        var client = ClientMapper.to(clientRequest);
+        client.setCreatedOn(OffsetDateTime.now());
+        client.setUpdatedOn(OffsetDateTime.now());
+        return ClientMapper.toResponse(clientRepository.save(client));
     }
 
 }

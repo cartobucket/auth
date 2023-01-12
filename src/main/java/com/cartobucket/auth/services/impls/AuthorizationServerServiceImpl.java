@@ -114,6 +114,9 @@ public class AuthorizationServerServiceImpl implements AuthorizationServerServic
     @Override
     public AuthorizationServerResponse createAuthorizationServer(AuthorizationServerRequest authorizationServerRequest) {
         var authorizationServer = AuthorizationServerMapper.from(authorizationServerRequest);
+        authorizationServer.setCreatedOn(OffsetDateTime.now());
+        authorizationServer.setUpdatedOn(OffsetDateTime.now());
+
         authorizationServer = authorizationServerRepository.save(authorizationServer);
         generateSigningKey(authorizationServer);
 
@@ -131,7 +134,16 @@ public class AuthorizationServerServiceImpl implements AuthorizationServerServic
 
     @Override
     public AuthorizationServerResponse updateAuthorizationServer(UUID authorizationServerId, AuthorizationServerRequest authorizationServerRequest) {
-        return null;
+        var authServer = authorizationServerRepository.findById(authorizationServerId);
+        if (authServer.isEmpty()) {
+            throw new NotFoundException();
+        }
+        var authorizationServer = AuthorizationServerMapper.from(authorizationServerRequest);
+        authorizationServer.setId(authorizationServerId);
+        authorizationServer.setCreatedOn(authServer.get().getCreatedOn());
+        authorizationServer.setUpdatedOn(OffsetDateTime.now());
+        authorizationServerRepository.save(authorizationServer);
+        return AuthorizationServerMapper.toResponse(authorizationServer);
     }
 
     @Override

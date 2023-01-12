@@ -4,6 +4,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import java.net.URL;
+import java.time.OffsetDateTime;
 import java.util.UUID;
 
 
@@ -22,6 +23,10 @@ public class AuthorizationServer {
     private Long clientCredentialsTokenExpiration;
 
     private Long authorizationCodeTokenExpiration;
+
+    private OffsetDateTime createdOn;
+
+    private OffsetDateTime updatedOn;
 
     public void setId(UUID id) {
         this.id = id;
@@ -71,4 +76,19 @@ public class AuthorizationServer {
         this.authorizationCodeTokenExpiration = authorizationCodeTokenExpiration;
     }
 
+    public OffsetDateTime getCreatedOn() {
+        return createdOn;
+    }
+
+    public void setCreatedOn(OffsetDateTime createdOn) {
+        this.createdOn = createdOn;
+    }
+
+    public OffsetDateTime getUpdatedOn() {
+        return updatedOn;
+    }
+
+    public void setUpdatedOn(OffsetDateTime updatedOn) {
+        this.updatedOn = updatedOn;
+    }
 }
