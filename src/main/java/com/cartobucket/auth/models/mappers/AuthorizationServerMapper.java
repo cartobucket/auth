@@ -15,6 +15,7 @@ public class AuthorizationServerMapper {
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }
+        authorizationServer.setName(request.getName());
         authorizationServer.setAudience(request.getAudience());
         authorizationServer.setAuthorizationCodeTokenExpiration(Long.valueOf(request.getAuthorizationCodeTokenExpiration()));
         authorizationServer.setClientCredentialsTokenExpiration(Long.valueOf(request.getClientCredentialsTokenExpiration()));
@@ -24,6 +25,7 @@ public class AuthorizationServerMapper {
     public static AuthorizationServerResponse toResponse(AuthorizationServer authorizationServer) {
         var response = new AuthorizationServerResponse();
         response.setId(String.valueOf(authorizationServer.getId()));
+        response.setName(authorizationServer.getName());
         response.setServerUrl(String.valueOf(authorizationServer.getServerUrl()));
         response.setAudience(authorizationServer.getAudience());
         response.setAuthorizationCodeTokenExpiration(authorizationServer.getAuthorizationCodeTokenExpiration().intValue());

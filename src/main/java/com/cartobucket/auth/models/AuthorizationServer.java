@@ -13,6 +13,8 @@ public class AuthorizationServer {
     @GeneratedValue
     private UUID id;
 
+    private String name;
+
     private URL serverUrl;
 
     private String audience;
@@ -27,6 +29,14 @@ public class AuthorizationServer {
 
     public UUID getId() {
         return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public URL getServerUrl() {
@@ -60,4 +70,5 @@ public class AuthorizationServer {
     public void setAuthorizationCodeTokenExpiration(Long authorizationCodeTokenExpiration) {
         this.authorizationCodeTokenExpiration = authorizationCodeTokenExpiration;
     }
+
 }

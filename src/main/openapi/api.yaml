@@ -824,6 +824,12 @@ components:
     AuthorizationServerRequest:
       title: Root Type for AuthorizationServerRequest
       description: ""
+      required:
+        - name
+        - audience
+        - authorizationCodeTokenExpiration
+        - clientCredentialsTokenExpiration
+        - serverUrl
       type: object
       properties:
         serverUrl:
@@ -836,7 +842,11 @@ components:
         authorizationCodeTokenExpiration:
           format: int32
           type: integer
+        name:
+          description: ""
+          type: string
       example:
+        name: Test Authorization Server
         serverUrl: https://accounts.cartobucket.com
         audience: api://
         clientCredentialsTokenExpiration: 300
@@ -844,6 +854,8 @@ components:
     AuthorizationServerResponse:
       title: Root Type for AuthorizationServerResponse
       description: ""
+      required:
+        - name
       type: object
       properties:
         id:
@@ -858,8 +870,12 @@ components:
         authorizationCodeTokenExpiration:
           format: int32
           type: integer
+        name:
+          description: ""
+          type: string
       example:
         id: becb7180-4b1e-4f2b-812e-f1b86455725c
+        name: Test Authorization Server
         serverUrl: https://accounts.cartobucket.com
         audience: api://
         clientCredentialsTokenExpiration: 300
