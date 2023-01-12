@@ -19,7 +19,7 @@ public interface ClientService {
 
     ClientResponse updateClient(UUID clientId, ClientRequest clientRequest);
 
-    ClientsResponse getClients();
+    ClientsResponse getClients(ClientRequestFilter filter);
 
     ClientResponse createClient(ClientRequest clientRequest);
 }

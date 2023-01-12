@@ -145,13 +145,14 @@ public class ApplicationServiceImpl implements ApplicationService {
     }
 
     @Override
-    public ApplicationsResponse getApplications() {
-        var applications = StreamSupport
-                .stream(applicationRepository.findAll().spliterator(), false)
-                .map(ApplicationMapper::toResponse)
-                .toList();
+    public ApplicationsResponse getApplications(ApplicationRequestFilter filter) {
+        var applications = StreamSupport.stream(applicationRepository.findAll().spliterator(), false);
+        if (!filter.getAuthorizationServerIds().isEmpty()) {
+            applications = applications.filter(
+                    application -> filter.getAuthorizationServerIds().contains(application.getAuthorizationServerId()));
+        }
         var applicationsResponse = new ApplicationsResponse();
-        applicationsResponse.setApplications(applications);
+        applicationsResponse.setApplications(applications.map(ApplicationMapper::toResponse).toList());
 
         return applicationsResponse;
     }

@@ -2,9 +2,11 @@ package com.cartobucket.auth.routes;
 
 import com.cartobucket.auth.generated.ClientsApi;
 import com.cartobucket.auth.model.generated.ClientRequest;
+import com.cartobucket.auth.routes.mappers.ClientRequestFilterMapper;
 import com.cartobucket.auth.services.ClientService;
 import jakarta.ws.rs.core.Response;
 
+import java.util.List;
 import java.util.UUID;
 
 public class Clients implements ClientsApi {
@@ -31,8 +33,11 @@ public class Clients implements ClientsApi {
     }
 
     @Override
-    public Response clientsGet() {
-        return Response.ok().entity(clientService.getClients()).build();
+    public Response clientsGet(List<UUID> authorizationServerIds) {
+        return Response
+                .ok()
+                .entity(clientService.getClients(ClientRequestFilterMapper.to(authorizationServerIds)))
+                .build();
     }
 
     @Override

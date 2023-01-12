@@ -2,9 +2,11 @@ package com.cartobucket.auth.routes;
 
 import com.cartobucket.auth.generated.UsersApi;
 import com.cartobucket.auth.model.generated.UserRequest;
+import com.cartobucket.auth.routes.mappers.UserRequestFilterMapper;
 import com.cartobucket.auth.services.UserService;
 import jakarta.ws.rs.core.Response;
 
+import java.util.List;
 import java.util.UUID;
 
 public class Users implements UsersApi {
@@ -15,9 +17,11 @@ public class Users implements UsersApi {
     }
 
     @Override
-    public Response usersGet() {
-        return Response.ok().entity(userService.getUsers()).build();
-
+    public Response usersGet(List<UUID> authorizationServerIds) {
+        return Response
+                .ok()
+                .entity(userService.getUsers(UserRequestFilterMapper.to(authorizationServerIds)))
+                .build();
     }
 
     @Override

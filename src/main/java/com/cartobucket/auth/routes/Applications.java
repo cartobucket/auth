@@ -5,10 +5,12 @@ import com.cartobucket.auth.model.generated.*;
 import com.cartobucket.auth.repositories.ApplicationRepository;
 import com.cartobucket.auth.repositories.ApplicationSecretRepository;
 import com.cartobucket.auth.repositories.ProfileRepository;
+import com.cartobucket.auth.routes.mappers.ApplicationRequestFilterMapper;
 import com.cartobucket.auth.services.ApplicationService;
 import com.cartobucket.auth.services.AuthorizationServerService;
 import jakarta.ws.rs.core.Response;
 
+import java.util.List;
 import java.util.UUID;
 
 public class Applications implements ApplicationsApi {
@@ -49,8 +51,11 @@ public class Applications implements ApplicationsApi {
     }
 
     @Override
-    public Response applicationsGet() {
-        return Response.ok().entity(applicationService.getApplications()).build();
+    public Response applicationsGet(List<UUID> authorizationServerIds) {
+        return Response
+                .ok()
+                .entity(applicationService.getApplications(ApplicationRequestFilterMapper.to(authorizationServerIds)))
+                .build();
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.cartobucket.auth.services.impls;
 
 import com.cartobucket.auth.model.generated.UserRequest;
+import com.cartobucket.auth.model.generated.UserRequestFilter;
 import com.cartobucket.auth.model.generated.UserResponse;
 import com.cartobucket.auth.model.generated.UsersResponse;
 import com.cartobucket.auth.models.ProfileType;
@@ -35,13 +36,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UsersResponse getUsers() {
-        var users = StreamSupport
-                .stream(userRepository.findAll().spliterator(), false)
-                .map(UserMapper::toResponse)
-                .toList();
+    public UsersResponse getUsers(UserRequestFilter filter) {
+        var users = StreamSupport.stream(userRepository.findAll().spliterator(), false);
+        // TODO: This should happen in the DB.
+        if (!filter.getAuthorizationServerIds().isEmpty()) {
+            users = users.filter(user -> filter.getAuthorizationServerIds().contains(user.getAuthorizationServerId()));
+        }
         var usersResponse = new UsersResponse();
-        usersResponse.setUsers(users);
+        usersResponse.setUsers(users.map(UserMapper::toResponse).toList());
         return usersResponse;
     }
 

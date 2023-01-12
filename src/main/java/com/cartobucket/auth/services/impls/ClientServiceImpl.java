@@ -104,13 +104,16 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-    public ClientsResponse getClients() {
-        var clients = StreamSupport
-                .stream(clientRepository.findAll().spliterator(), false)
-                .map(ClientMapper::toResponse)
-                .toList();
+    public ClientsResponse getClients(ClientRequestFilter filter) {
+        var clients = StreamSupport.stream(clientRepository.findAll().spliterator(), false);
+
+        // TODO: This should happen in the DB.
+        if (!filter.getAuthorizationServerIds().isEmpty()) {
+            clients = clients.filter(client -> filter.getAuthorizationServerIds().contains(client.getAuthorizationServerId()));
+        }
+
         var clientsResponse = new ClientsResponse();
-        clientsResponse.setClients(clients);
+        clientsResponse.setClients(clients.map(ClientMapper::toResponse).toList());
         return clientsResponse;
     }
 
