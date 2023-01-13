@@ -98,47 +98,6 @@ paths:
           type: string
         in: path
         required: true
-  /clients/{clientId}:
-    get:
-      tags:
-        - Clients
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ClientResponse'
-          description: Get the client.
-    put:
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ClientRequest'
-        required: true
-      tags:
-        - Clients
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ClientResponse'
-          description: Update the whole client.
-    delete:
-      tags:
-        - Clients
-      responses:
-        "200":
-          description: Delete the client.
-    parameters:
-      - name: clientId
-        description: The clientId of the resource.
-        schema:
-          format: UUID
-          type: string
-        in: path
-        required: true
   /authorizationServers/:
     get:
       tags:
@@ -541,42 +500,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApplicationResponse'
           description: Create Application
-  /clients:
-    get:
-      tags:
-        - Clients
-      parameters:
-        - name: authorizationServerId
-          description: ""
-          schema:
-            type: array
-            items:
-              format: UUID
-              type: string
-          in: query
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ClientsResponse'
-          description: Gets a list of clients.
-    post:
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ClientRequest'
-        required: true
-      tags:
-        - Clients
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ClientResponse'
-          description: Creates a new client.
   /users/:
     get:
       tags:
@@ -613,6 +536,159 @@ paths:
               schema:
                 $ref: '#/components/schemas/UserResponse'
           description: Create a User.
+  /templates/:
+    get:
+      tags:
+        - Templates
+      parameters:
+        - name: authorizationServerId
+          description: ""
+          schema:
+            type: array
+            items:
+              format: UUID
+              type: string
+          in: query
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TemplateResponse'
+          description: Gets a list of clients.
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TemplateRequest'
+        required: true
+      tags:
+        - Templates
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TemplateResponse'
+          description: Creates a new client.
+  /clients/:
+    get:
+      tags:
+        - Clients
+      parameters:
+        - name: authorizationServerId
+          description: ""
+          schema:
+            type: array
+            items:
+              format: UUID
+              type: string
+          in: query
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientsResponse'
+          description: Gets a list of clients.
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClientRequest'
+        required: true
+      tags:
+        - Clients
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientResponse'
+          description: Creates a new client.
+  /clients/{clientId}:
+    get:
+      tags:
+        - Clients
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientResponse'
+          description: Get the client.
+    put:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClientRequest'
+        required: true
+      tags:
+        - Clients
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientResponse'
+          description: Update the whole client.
+    delete:
+      tags:
+        - Clients
+      responses:
+        "200":
+          description: Delete the client.
+    parameters:
+      - name: clientId
+        description: The clientId of the resource.
+        schema:
+          format: UUID
+          type: string
+        in: path
+        required: true
+  /templates/{templateId}/:
+    get:
+      tags:
+        - Templates
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TemplateResponse'
+          description: Get the template.
+    put:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TemplateRequest'
+        required: true
+      tags:
+        - Templates
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TemplateResponse'
+          description: Update the whole template.
+    delete:
+      tags:
+        - Templates
+      responses:
+        "200":
+          description: Delete the template.
+    parameters:
+      - name: templateId
+        schema:
+          format: UUID
+          type: string
+        in: path
+        required: true
 components:
   schemas:
     WellKnown:
@@ -1292,3 +1368,73 @@ components:
       example:
         authorizationServerIds:
           - f06618ae-0569-4c6c-a0ad-147e07506229
+    TemplateTypeEnum:
+      description: ""
+      enum:
+        - login
+      type: string
+    TemplateRequest:
+      title: Root Type for TemplateRequest
+      description: ""
+      required:
+        - templateType
+        - template
+        - authorizationServerId
+      type: object
+      properties:
+        templateType:
+          $ref: '#/components/schemas/TemplateTypeEnum'
+        template:
+          format: bytes
+          type: string
+        authorizationServerId:
+          format: UUID
+          description: ""
+          type: string
+      example:
+        authorizationServerId: 5b4daf7f-48d5-4afb-bd43-7b667b3dc3c8
+        templateType: login
+        template: PCFET0NUWVBFIGh0bWw+CjxodG1sPgo8Ym9keT4KCjxoMT5NeSBGaXJzdCBIZWFkaW5nPC9oMT4KCjxwPk15IGZpcnN0IHBhcmFncmFwaC48L3A+Cgo8L2JvZHk+CjwvaHRtbD4KCg==
+    TemplateResponse:
+      title: Root Type for TemplateResponse
+      description: ""
+      type: object
+      properties:
+        id:
+          type: string
+        authorizationServerId:
+          format: UUID
+          description: ""
+          type: string
+        templateType:
+          type: string
+        template:
+          type: string
+        createdOn:
+          format: date-time
+          type: string
+        updatedOn:
+          format: date-time
+          type: string
+      example:
+        id: 03557b53-3a05-46f2-a10e-8ea5e95539b2
+        templateType: login
+        template: PCFET0NUWVBFIGh0bWw+CjxodG1sPgo8Ym9keT4KCjxoMT5NeSBGaXJzdCBIZWFkaW5nPC9oMT4KCjxwPk15IGZpcnN0IHBhcmFncmFwaC48L3A+Cgo8L2JvZHk+CjwvaHRtbD4KCg==
+        createdOn: 2023-01-13T02:58:12+00:00
+        updatedOn: 2023-01-13T02:58:12+00:00
+    TemplatesResponse:
+      title: Root Type for TemplatesResponse
+      description: ""
+      type: object
+      properties:
+        templates:
+          type: array
+          items:
+            $ref: '#/components/schemas/TemplateResponse'
+      example:
+        templates:
+          - id: 03557b53-3a05-46f2-a10e-8ea5e95539b2
+            templateType: login
+            template: PCFET0NUWVBFIGh0bWw+CjxodG1sPgo8Ym9keT4KCjxoMT5NeSBGaXJzdCBIZWFkaW5nPC9oMT4KCjxwPk15IGZpcnN0IHBhcmFncmFwaC48L3A+Cgo8L2JvZHk+CjwvaHRtbD4KCg==
+            createdOn: 2023-01-13T02:58:12+00:00
+            updatedOn: 2023-01-13T02:58:12+00:00
