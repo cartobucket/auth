@@ -1395,33 +1395,6 @@ components:
         authorizationServerId: 5b4daf7f-48d5-4afb-bd43-7b667b3dc3c8
         templateType: login
         template: PCFET0NUWVBFIGh0bWw+CjxodG1sPgo8Ym9keT4KCjxoMT5NeSBGaXJzdCBIZWFkaW5nPC9oMT4KCjxwPk15IGZpcnN0IHBhcmFncmFwaC48L3A+Cgo8L2JvZHk+CjwvaHRtbD4KCg==
-    TemplateResponse:
-      title: Root Type for TemplateResponse
-      description: ""
-      type: object
-      properties:
-        id:
-          type: string
-        authorizationServerId:
-          format: UUID
-          description: ""
-          type: string
-        templateType:
-          type: string
-        template:
-          type: string
-        createdOn:
-          format: date-time
-          type: string
-        updatedOn:
-          format: date-time
-          type: string
-      example:
-        id: 03557b53-3a05-46f2-a10e-8ea5e95539b2
-        templateType: login
-        template: PCFET0NUWVBFIGh0bWw+CjxodG1sPgo8Ym9keT4KCjxoMT5NeSBGaXJzdCBIZWFkaW5nPC9oMT4KCjxwPk15IGZpcnN0IHBhcmFncmFwaC48L3A+Cgo8L2JvZHk+CjwvaHRtbD4KCg==
-        createdOn: 2023-01-13T02:58:12+00:00
-        updatedOn: 2023-01-13T02:58:12+00:00
     TemplatesResponse:
       title: Root Type for TemplatesResponse
       description: ""
@@ -1438,3 +1411,44 @@ components:
             template: PCFET0NUWVBFIGh0bWw+CjxodG1sPgo8Ym9keT4KCjxoMT5NeSBGaXJzdCBIZWFkaW5nPC9oMT4KCjxwPk15IGZpcnN0IHBhcmFncmFwaC48L3A+Cgo8L2JvZHk+CjwvaHRtbD4KCg==
             createdOn: 2023-01-13T02:58:12+00:00
             updatedOn: 2023-01-13T02:58:12+00:00
+    TemplateRequestFilter:
+      title: Root Type for ApplicationRequestFilter
+      description: ""
+      type: object
+      properties:
+        authorizationServerIds:
+          type: array
+          items:
+            format: UUID
+            type: string
+      example:
+        authorizationServerIds:
+          - f06618ae-0569-4c6c-a0ad-147e07506229
+    TemplateResponse:
+      title: Root Type for TemplateResponse
+      description: ""
+      type: object
+      properties:
+        id:
+          type: string
+        authorizationServerId:
+          format: UUID
+          description: ""
+          type: string
+        templateType:
+          type: string
+        template:
+          format: bytes
+          type: string
+        createdOn:
+          format: date-time
+          type: string
+        updatedOn:
+          format: date-time
+          type: string
+      example:
+        id: 03557b53-3a05-46f2-a10e-8ea5e95539b2
+        templateType: login
+        template: PCFET0NUWVBFIGh0bWw+CjxodG1sPgo8Ym9keT4KCjxoMT5NeSBGaXJzdCBIZWFkaW5nPC9oMT4KCjxwPk15IGZpcnN0IHBhcmFncmFwaC48L3A+Cgo8L2JvZHk+CjwvaHRtbD4KCg==
+        createdOn: 2023-01-13T02:58:12+00:00
+        updatedOn: 2023-01-13T02:58:12+00:00

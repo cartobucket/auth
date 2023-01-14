@@ -1,14 +1,13 @@
 package com.cartobucket.auth.models;
 
 import com.cartobucket.auth.model.generated.TemplateTypeEnum;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
 @Entity
+@Table(uniqueConstraints = { @UniqueConstraint(columnNames = { "authorizationServerId", "templateType" }) })
 public class Template {
     @Id
     @GeneratedValue
