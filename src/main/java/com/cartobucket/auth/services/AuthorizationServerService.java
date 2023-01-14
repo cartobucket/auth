@@ -18,5 +18,5 @@ public interface AuthorizationServerService {
     AuthorizationServerResponse updateAuthorizationServer(UUID authorizationServerId, AuthorizationServerRequest authorizationServerRequest);
     AuthorizationServersResponse getAuthorizationServers();
     void deleteAuthorizationServer(UUID authorizationServerId);
-    TemplateInstance renderLogin();
+    String renderLogin(UUID authorizationServerId);
 }

@@ -2,15 +2,12 @@ package com.cartobucket.auth.routes;
 
 import com.cartobucket.auth.generated.AuthorizationServerApi;
 import com.cartobucket.auth.model.generated.AccessTokenRequest;
-import com.cartobucket.auth.model.generated.AuthorizationRequest;
 import com.cartobucket.auth.model.generated.UserAuthorizationRequest;
 import com.cartobucket.auth.routes.mappers.AuthorizationRequestMapper;
 import com.cartobucket.auth.services.AccessTokenService;
 import com.cartobucket.auth.services.AuthorizationServerService;
 import com.cartobucket.auth.services.ClientService;
 import com.cartobucket.auth.services.UserService;
-import io.quarkus.qute.CheckedTemplate;
-import io.quarkus.qute.TemplateInstance;
 import io.smallrye.jwt.util.KeyUtils;
 import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.Consumes;
@@ -55,7 +52,7 @@ public class AuthorizationServer implements AuthorizationServerApi {
             String scope,
             String state,
             String nonce) {
-        return Response.ok().entity(authorizationServerService.renderLogin().render()).build();
+        return Response.ok().entity(authorizationServerService.renderLogin(authorizationServerId)).build();
     }
 
     @Override
@@ -87,7 +84,7 @@ public class AuthorizationServer implements AuthorizationServerApi {
                 userAuthorizationRequest
         );
         if (code == null) {
-            return Response.ok().entity(authorizationServerService.renderLogin().render()).build();
+            return Response.ok().entity(authorizationServerService.renderLogin(authorizationServerId)).build();
         }
         return Response.status(302).location(
                 URI.create(

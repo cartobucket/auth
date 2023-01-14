@@ -7,9 +7,8 @@ import com.cartobucket.auth.models.mappers.AuthorizationServerMapper;
 import com.cartobucket.auth.repositories.AuthorizationServerRepository;
 import com.cartobucket.auth.repositories.SingingKeyRepository;
 import com.cartobucket.auth.services.AuthorizationServerService;
-
-import io.quarkus.qute.CheckedTemplate;
-import io.quarkus.qute.TemplateInstance;
+import com.cartobucket.auth.services.TemplateService;
+import io.quarkus.qute.Qute;
 import io.smallrye.jwt.util.KeyUtils;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.ws.rs.NotFoundException;
@@ -23,15 +22,12 @@ import java.util.stream.StreamSupport;
 public class AuthorizationServerServiceImpl implements AuthorizationServerService {
     final AuthorizationServerRepository authorizationServerRepository;
     final SingingKeyRepository singingKeyRepository;
+    final TemplateService templateService;
 
-    @CheckedTemplate
-    public static class Templates {
-        public static native TemplateInstance login();
-    }
-
-    public AuthorizationServerServiceImpl(AuthorizationServerRepository authorizationServerRepository, SingingKeyRepository singingKeyRepository) {
+    public AuthorizationServerServiceImpl(AuthorizationServerRepository authorizationServerRepository, SingingKeyRepository singingKeyRepository, TemplateService templateService) {
         this.authorizationServerRepository = authorizationServerRepository;
         this.singingKeyRepository = singingKeyRepository;
+        this.templateService = templateService;
     }
 
     @Override
@@ -168,8 +164,9 @@ public class AuthorizationServerServiceImpl implements AuthorizationServerServic
     }
 
     @Override
-    public TemplateInstance renderLogin() {
-        return Templates.login();
+    public String renderLogin(UUID authorizationServerId) {
+        var template = templateService.getTemplateForAuthorizationServer(authorizationServerId);
+        return Qute.fmt(new String(Base64.getDecoder().decode(template.getTemplate()))).render();
     }
 
     private static JWK buildJwk(SigningKey key) throws GeneralSecurityException {

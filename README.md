@@ -56,6 +56,12 @@ the JWKS. Multiple keys can exist for each AuthorizationServer.
 A standard OAuth Scope. They can be associated with a Client or an ApplicationSecret and will be included in the JWT if
 requested in the OAuth Code flow.
 
+#### Template
+
+A Template is a stored document that can be rendered for particular actions against the Authorization Server. For 
+instance the login screen must have a template defined for the Authorization Server. A password reset email could also 
+have a Template associate (does not as of this commit.)
+
 ## Technical
 
 This project uses Quarkus, the Supersonic Subatomic Java Framework.
