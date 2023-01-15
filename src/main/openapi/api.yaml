@@ -396,9 +396,6 @@ paths:
     post:
       requestBody:
         content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UserAuthorizationRequest'
           multipart/form-data:
             schema:
               $ref: '#/components/schemas/UserAuthorizationRequest'

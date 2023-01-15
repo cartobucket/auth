@@ -42,6 +42,7 @@ public class AuthorizationServer implements AuthorizationServerApi {
 
 
     @Override
+    @Consumes({"*/*"})
     public Response authorizationServerIdAuthorizationGet(
             UUID authorizationServerId,
             String clientId,
@@ -56,17 +57,7 @@ public class AuthorizationServer implements AuthorizationServerApi {
     }
 
     @Override
-    public Response authorizationServerIdAuthorizationPost(
-            UUID authorizationServerId,
-            String clientId,
-            String responseType,
-            UserAuthorizationRequest userAuthorizationRequest,
-            String codeChallenge,
-            String codeChallengeMethod,
-            String redirectUri,
-            String scope,
-            String state,
-            String nonce) {
+    public Response authorizationServerIdAuthorizationPost(UUID authorizationServerId, String clientId, String responseType, String username, String password, String codeChallenge, String codeChallengeMethod, String redirectUri, String scope, String state, String nonce) {
         var authorizationRequest = AuthorizationRequestMapper.from(
                 clientId,
                 responseType,
@@ -77,6 +68,9 @@ public class AuthorizationServer implements AuthorizationServerApi {
                 state,
                 nonce
         );
+        var userAuthorizationRequest = new UserAuthorizationRequest();
+        userAuthorizationRequest.setUsername(username);
+        userAuthorizationRequest.setPassword(password);
         final var authorizationServer = authorizationServerService.getAuthorizationServer(authorizationServerId);
         final var code = clientService.buildClientCodeForEmailAndPassword(
                 authorizationServer,
@@ -88,7 +82,7 @@ public class AuthorizationServer implements AuthorizationServerApi {
         }
         return Response.status(302).location(
                 URI.create(
-                    authorizationRequest.getRedirectUri() + "?code=" + code.getCode() + "&state=" + authorizationRequest.getState() + "&nonce=" + authorizationRequest.getNonce() + "?scope" + authorizationRequest.getScope()
+                        authorizationRequest.getRedirectUri() + "?code=" + code.getCode() + "&state=" + authorizationRequest.getState() + "&nonce=" + authorizationRequest.getNonce() + "&scope" + authorizationRequest.getScope()
                 )
         ).build();
     }

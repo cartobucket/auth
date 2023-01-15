@@ -14,7 +14,16 @@ public class AuthorizationRequestMapper extends AuthorizationRequest {
             String state,
             String nonce) {
         var authorizationRequest = new AuthorizationRequest();
-
+        authorizationRequest.setClientId(clientId);
+        authorizationRequest.setResponseType(ResponseTypeEnum.fromString(responseType));
+        authorizationRequest.setCodeChallenge(codeChallenge);
+        if (codeChallengeMethod != null && !codeChallengeMethod.isEmpty()) {
+            authorizationRequest.setCodeChallengeMethod(CodeChallengeMethodEnum.fromString(codeChallengeMethod));
+        }
+        authorizationRequest.setRedirectUri(redirectUri);
+        authorizationRequest.setScope(scope);
+        authorizationRequest.setState(state);
+        authorizationRequest.setNonce(nonce);
         return authorizationRequest;
     }
 }
