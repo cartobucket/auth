@@ -13,6 +13,7 @@ import java.util.*;
 @ApplicationScoped
 public class MockApplicationSecretRepository implements ApplicationSecretRepository {
     final HashMap<UUID, List<ApplicationSecret>> applicationSecrets = new HashMap<>();
+    final HashMap<String, ApplicationSecret> secretsHashes = new HashMap<>();
 
     @Override
     public List<ApplicationSecret> findByApplicationId(UUID applicationId) {
@@ -26,12 +27,12 @@ public class MockApplicationSecretRepository implements ApplicationSecretReposit
 
     @Override
     public Optional<ApplicationSecret> findByApplicationSecretHash(String secretHash) {
-        throw new NotImplementedException();
+        return Optional.ofNullable(secretsHashes.get(secretHash));
     }
 
     @Override
     public <S extends ApplicationSecret> S save(S entity) {
-        List secrets = null;
+        List<ApplicationSecret> secrets = null;
         if (applicationSecrets.containsKey(entity.getApplicationId())) {
             secrets = applicationSecrets.get(entity.getApplicationId());
         } else {
@@ -40,6 +41,7 @@ public class MockApplicationSecretRepository implements ApplicationSecretReposit
         }
         entity.setId(UUID.randomUUID());
         secrets.add(entity);
+        secretsHashes.put(entity.getApplicationSecretHash(), entity);
         return entity;
     }
 

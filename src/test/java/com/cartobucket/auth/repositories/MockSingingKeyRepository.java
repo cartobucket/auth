@@ -37,7 +37,7 @@ public class MockSingingKeyRepository implements SingingKeyRepository {
     }
 
     @Override
-    public SigningKey findByIdAndAuthorizationServerId(String kid, UUID id) {
+    public SigningKey findByIdAndAuthorizationServerId(UUID kid, UUID id) {
         throw new NotImplementedException();
     }
 

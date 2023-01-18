@@ -23,7 +23,7 @@ public class MockClientCodeRepository implements ClientCodeRepository {
             var clientCode = new ClientCode();
             clientCode.setClientId(VALID_CLIENT_ID);
             clientCode.setCode(VALID_CLIENT_CODE);
-            clientCode.setCodeChallenge("TEST");
+            clientCode.setCodeChallenge("lO4FkzXlh+UBzEv5BhPggU8Ap7CLx8ZI/YZaKvaiLMI=");
             clientCode.setCodeChallengeMethod("S256");
             clientCode.setNonce("NONCE");
             clientCode.setState("STATE");

@@ -72,11 +72,21 @@ public class AccessTokenServiceImpl implements AccessTokenService {
             throw new BadRequestException("The redirect_uri in the Access Token request is not configured for the client");
         }
         if (accessTokenRequest.getCodeVerifier() != null && !isCodeVerified(clientCode, accessTokenRequest.getCodeVerifier())) {
+            var codeChallenge = buildCodeChalleng("TEST");
+
             throw new BadRequestException("Could not verify the PKCE code challenge.");
         }
 
         final var profile = profileRepository.findByResourceAndProfileType(clientCode.getUserId(), ProfileType.User);
         return buildAccessToken(authorizationServer, profile, clientCode);
+    }
+    private String buildCodeChalleng(String input) {
+        try {
+            final MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
+            return Base64.getEncoder().encodeToString(messageDigest.digest(input.getBytes()));
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private boolean isCodeVerified(ClientCode clientCode, String codeVerifier) {
