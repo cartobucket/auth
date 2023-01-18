@@ -2,10 +2,12 @@ package com.cartobucket.auth.services.impls;
 
 import com.cartobucket.auth.model.generated.*;
 import com.cartobucket.auth.models.Application;
+import com.cartobucket.auth.models.Scope;
 import com.cartobucket.auth.models.mappers.ApplicationMapper;
 import com.cartobucket.auth.repositories.ApplicationRepository;
 import com.cartobucket.auth.repositories.ApplicationSecretRepository;
 import com.cartobucket.auth.services.ApplicationService;
+import com.cartobucket.auth.services.ScopeService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.NotFoundException;
@@ -25,10 +27,12 @@ public class ApplicationServiceImpl implements ApplicationService {
 
     final ApplicationRepository applicationRepository;
     final ApplicationSecretRepository applicationSecretRepository;
+    final ScopeService scopeService;
 
-    public ApplicationServiceImpl(ApplicationRepository applicationRepository, ApplicationSecretRepository applicationSecretRepository) {
+    public ApplicationServiceImpl(ApplicationRepository applicationRepository, ApplicationSecretRepository applicationSecretRepository, ScopeService scopeService) {
         this.applicationRepository = applicationRepository;
         this.applicationSecretRepository = applicationSecretRepository;
+        this.scopeService = scopeService;
     }
 
     @Override
@@ -108,6 +112,11 @@ public class ApplicationServiceImpl implements ApplicationService {
         var applicationSecret = ApplicationMapper.secretFrom(
                 application.get(),
                 applicationSecretRequest);
+
+        var scopes = scopeService.filterScopesForAuthorizationServerId(
+                application.get().getAuthorizationServerId(),
+                applicationSecretRequest.getScopes());
+
         final MessageDigest messageDigest;
         try {
             messageDigest = MessageDigest.getInstance("SHA-256");
@@ -118,6 +127,7 @@ public class ApplicationServiceImpl implements ApplicationService {
                     .toString(16);
             applicationSecret.setApplicationSecret(secret);
             applicationSecret.setApplicationSecretHash(secretHash);
+            applicationSecret.setScopes(scopes);
             applicationSecret.setUpdatedOn(OffsetDateTime.now());
             applicationSecret.setCreatedOn(OffsetDateTime.now());
             applicationSecret = applicationSecretRepository.save(applicationSecret);

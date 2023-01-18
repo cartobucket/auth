@@ -122,6 +122,7 @@ public class AuthorizationServer implements AuthorizationServerApi {
         final var authorizationServer = authorizationServerService.getAuthorizationServer(
                 authorizationServerId
         );
+        // TODO: Maybe this makes more sense in the userService?
         final var jwtClaims = authorizationServerService.validateJwtForAuthorizationServer(
                 authorizationServer,
                 idToken

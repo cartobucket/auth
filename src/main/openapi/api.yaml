@@ -686,6 +686,66 @@ paths:
           type: string
         in: path
         required: true
+  /scopes/:
+    get:
+      tags:
+        - Scopes
+      parameters:
+        - name: authorizationServerId
+          description: ""
+          schema:
+            type: array
+            items:
+              format: UUID
+              type: string
+          in: query
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScopesResponse'
+          description: Gets a list of clients.
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScopeRequest'
+        required: true
+      tags:
+        - Scopes
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScopeResponse'
+          description: Creates a new client.
+  /scopes/{scopeId}/:
+    get:
+      tags:
+        - Scopes
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScopeResponse'
+          description: Get the template.
+    delete:
+      tags:
+        - Scopes
+      responses:
+        "200":
+          description: Delete the template.
+    parameters:
+      - name: scopeId
+        schema:
+          format: UUID
+          type: string
+        in: path
+        required: true
 components:
   schemas:
     WellKnown:
@@ -910,16 +970,13 @@ components:
           format: int32
           type: integer
         scopes:
-          type: array
-          items:
-            type: string
+          type: string
         name:
           description: ""
           type: string
       example:
         expires_in: 12000
-        scopes:
-          - test.read
+        scopes: test.read test.write
         name: Test Secret
     AuthorizationServerRequest:
       title: Root Type for AuthorizationServerRequest
@@ -1051,11 +1108,15 @@ components:
           type: array
           items:
             type: string
+        scopes:
+          description: ""
+          type: string
       example:
         name: Test Client
         authorizationServerId: 66a2270e-0385-4aa4-a2ce-79bb12fa16ff
         redirectUris:
           - https://accounts.cartobucket.com
+        scopes: test.read test.write
     ClientResponse:
       title: Root Type for ClientResponse
       description: ""
@@ -1077,12 +1138,16 @@ components:
         updatedOn:
           format: date-time
           type: string
+        scopes:
+          description: ""
+          type: string
       example:
         id: e1d1dc54-4799-4d09-a250-8bff9061419a
         name: Test Client
         authorizationServerId: 66a2270e-0385-4aa4-a2ce-79bb12fa16ff
         redirectUris:
           - https://accounts.cartobucket.com
+        scopes: test.read test.write
         createdOn: 2023-01-08T02:05:30+00:00
         updatedOn: 2023-01-08T02:05:30+00:00
     ClientsResponse:
@@ -1449,3 +1514,72 @@ components:
         template: PCFET0NUWVBFIGh0bWw+CjxodG1sPgo8Ym9keT4KCjxoMT5NeSBGaXJzdCBIZWFkaW5nPC9oMT4KCjxwPk15IGZpcnN0IHBhcmFncmFwaC48L3A+Cgo8L2JvZHk+CjwvaHRtbD4KCg==
         createdOn: 2023-01-13T02:58:12+00:00
         updatedOn: 2023-01-13T02:58:12+00:00
+    ScopeRequest:
+      title: Root Type for ClientRequest
+      description: ""
+      required:
+        - name
+        - authorizationServerId
+      type: object
+      properties:
+        name:
+          type: string
+        authorizationServerId:
+          type: string
+      example:
+        name: test_scope
+        authorizationServerId: 66a2270e-0385-4aa4-a2ce-79bb12fa16ff
+    ScopeResponse:
+      title: Root Type for TemplateResponse
+      description: ""
+      type: object
+      properties:
+        id:
+          type: string
+        authorizationServerId:
+          format: UUID
+          description: ""
+          type: string
+        createdOn:
+          format: date-time
+          type: string
+        updatedOn:
+          format: date-time
+          type: string
+        name:
+          type: string
+      example:
+        id: 03557b53-3a05-46f2-a10e-8ea5e95539b2
+        name: test_scope
+        createdOn: 2023-01-13T02:58:12+00:00
+        updatedOn: 2023-01-13T02:58:12+00:00
+    ScopesResponse:
+      title: Root Type for TemplatesResponse
+      description: ""
+      required:
+        - scopes
+      type: object
+      properties:
+        scopes:
+          type: array
+          items:
+            $ref: '#/components/schemas/ScopeResponse'
+      example:
+        scopes:
+          - id: 03557b53-3a05-46f2-a10e-8ea5e95539b2
+            name: test_scope
+            createdOn: 2023-01-13T02:58:12+00:00
+            updatedOn: 2023-01-13T02:58:12+00:00
+    ScopeRequestFilter:
+      title: Root Type for ApplicationRequestFilter
+      description: ""
+      type: object
+      properties:
+        authorizationServerIds:
+          type: array
+          items:
+            format: UUID
+            type: string
+      example:
+        authorizationServerIds:
+          - f06618ae-0569-4c6c-a0ad-147e07506229

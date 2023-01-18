@@ -76,7 +76,7 @@ public class AccessTokenServiceTests {
         var applicationSecretRequest = new ApplicationSecretRequest();
         applicationSecretRequest.setExpiresIn(300);
         applicationSecretRequest.setName("test");
-        applicationSecretRequest.setScopes(Collections.EMPTY_LIST);
+        applicationSecretRequest.setScopes("");
 
         final var applicationSecret = applicationService.createApplicationSecret(
                 UUID.fromString(MockApplicationRepository.VALID_CLIENT_ID),

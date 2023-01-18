@@ -1,12 +1,13 @@
 package com.cartobucket.auth.models;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+
 import java.time.OffsetDateTime;
+import java.util.Objects;
 import java.util.UUID;
 
 @Entity
+@Table(uniqueConstraints = { @UniqueConstraint(columnNames = { "authorizationServerId", "name" }) })
 public class Scope {
 
     @Id
@@ -59,5 +60,13 @@ public class Scope {
 
     public void setUpdatedOn(OffsetDateTime updatedOn) {
         this.updatedOn = updatedOn;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Scope scope = (Scope) o;
+        return Objects.equals(name, scope.name);
     }
 }

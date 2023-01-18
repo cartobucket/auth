@@ -7,6 +7,7 @@ import com.cartobucket.auth.model.generated.ApplicationSecretResponse;
 import com.cartobucket.auth.models.Application;
 import com.cartobucket.auth.models.ApplicationSecret;
 import com.cartobucket.auth.models.Scope;
+import com.cartobucket.auth.services.ScopeService;
 
 import java.util.UUID;
 
@@ -37,7 +38,7 @@ public class ApplicationMapper {
         secret.setName(applicationSecretRequest.getName());
         secret.setAuthorizationServerId(application.getAuthorizationServerId());
         if (applicationSecretRequest.getScopes() != null)
-            secret.setScopes(applicationSecretRequest.getScopes().stream().map(ApplicationMapper::fromName).toList());
+            secret.setScopes(ScopeService.scopeStringToScopeList(applicationSecretRequest.getScopes()));
         return secret;
     }
 

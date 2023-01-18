@@ -5,7 +5,6 @@ import com.cartobucket.auth.models.AuthorizationServer;
 import com.cartobucket.auth.models.SigningKey;
 import org.jose4j.jwt.JwtClaims;
 
-import java.security.PrivateKey;
 import java.util.UUID;
 
 

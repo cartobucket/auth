@@ -36,7 +36,7 @@ public class ApplicationSecret {
 //    @JdbcTypeCode(SqlTypes.JSON)
     @Type(type = "jsonb")
     @Column(columnDefinition = "jsonb")
-    private List<Scope> scopes;
+    private List<String> scopes;
 
     public UUID getApplicationId() {
         return applicationId;
@@ -69,11 +69,11 @@ public class ApplicationSecret {
         return id;
     }
 
-    public List<Scope> getScopes() {
+    public List<String> getScopes() {
         return scopes;
     }
 
-    public void setScopes(List<Scope> scopes) {
+    public void setScopes(List<String> scopes) {
         this.scopes = scopes;
     }
 

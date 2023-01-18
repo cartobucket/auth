@@ -5,6 +5,7 @@ import com.cartobucket.auth.models.AuthorizationServer;
 import com.cartobucket.auth.models.SigningKey;
 import com.cartobucket.auth.models.mappers.AuthorizationServerMapper;
 import com.cartobucket.auth.repositories.AuthorizationServerRepository;
+import com.cartobucket.auth.repositories.ScopeRepository;
 import com.cartobucket.auth.repositories.SingingKeyRepository;
 import com.cartobucket.auth.services.AuthorizationServerService;
 import com.cartobucket.auth.services.TemplateService;
@@ -18,7 +19,10 @@ import org.jose4j.jwt.JwtClaims;
 import org.jose4j.jwt.consumer.InvalidJwtException;
 import org.jose4j.jwt.consumer.JwtConsumerBuilder;
 
-import java.security.*;
+import java.security.GeneralSecurityException;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.NoSuchAlgorithmException;
 import java.security.interfaces.RSAPublicKey;
 import java.time.OffsetDateTime;
 import java.util.*;
@@ -29,11 +33,13 @@ public class AuthorizationServerServiceImpl implements AuthorizationServerServic
     final AuthorizationServerRepository authorizationServerRepository;
     final SingingKeyRepository singingKeyRepository;
     final TemplateService templateService;
+    final ScopeRepository scopeRepository;
 
-    public AuthorizationServerServiceImpl(AuthorizationServerRepository authorizationServerRepository, SingingKeyRepository singingKeyRepository, TemplateService templateService) {
+    public AuthorizationServerServiceImpl(AuthorizationServerRepository authorizationServerRepository, SingingKeyRepository singingKeyRepository, TemplateService templateService, ScopeRepository scopeRepository) {
         this.authorizationServerRepository = authorizationServerRepository;
         this.singingKeyRepository = singingKeyRepository;
         this.templateService = templateService;
+        this.scopeRepository = scopeRepository;
     }
 
     @Override

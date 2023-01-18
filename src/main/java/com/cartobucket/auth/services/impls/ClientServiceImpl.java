@@ -3,11 +3,13 @@ package com.cartobucket.auth.services.impls;
 import com.cartobucket.auth.model.generated.*;
 import com.cartobucket.auth.models.AuthorizationServer;
 import com.cartobucket.auth.models.ClientCode;
+import com.cartobucket.auth.models.Scope;
 import com.cartobucket.auth.models.mappers.ClientMapper;
 import com.cartobucket.auth.repositories.ClientCodeRepository;
 import com.cartobucket.auth.repositories.ClientRepository;
 import com.cartobucket.auth.repositories.UserRepository;
 import com.cartobucket.auth.services.ClientService;
+import com.cartobucket.auth.services.ScopeService;
 import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.NotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -19,19 +21,25 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.time.OffsetDateTime;
+import java.util.Arrays;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
+
+import static java.util.Arrays.stream;
 
 @ApplicationScoped
 public class ClientServiceImpl implements ClientService {
     final UserRepository userRepository;
     final ClientRepository clientRepository;
-    private ClientCodeRepository clientCodeRepository;
+    final ClientCodeRepository clientCodeRepository;
+    final ScopeService scopeService;
 
-    public ClientServiceImpl(UserRepository userRepository, ClientRepository clientRepository, ClientCodeRepository clientCodeRepository) {
+    public ClientServiceImpl(UserRepository userRepository, ClientRepository clientRepository, ClientCodeRepository clientCodeRepository, ScopeService scopeService) {
         this.userRepository = userRepository;
         this.clientRepository = clientRepository;
         this.clientCodeRepository = clientCodeRepository;
+        this.scopeService = scopeService;
     }
 
     @Override
@@ -48,6 +56,11 @@ public class ClientServiceImpl implements ClientService {
         if (user == null) {
             throw new BadRequestException("Unable to find the User with the credentials provided");
         }
+
+        // Filter down to the scopes that are associated with the authorization server.
+        var scopes =  scopeService.filterScopesForAuthorizationServerId(
+                authorizationServer.getId(),
+                authorizationRequest.getScope());
 
         if (!new BCryptPasswordEncoder().matches(userAuthorizationRequest.getPassword(), user.getPasswordHash())) {
             throw new BadRequestException("Unable to find the User with the credentials provided");
@@ -70,7 +83,7 @@ public class ClientServiceImpl implements ClientService {
             clientCode.setState(authorizationRequest.getState());
             clientCode.setCodeChallenge(authorizationRequest.getCodeChallenge());
             clientCode.setCodeChallengeMethod(String.valueOf(authorizationRequest.getCodeChallengeMethod()));
-            clientCode.setScope(authorizationRequest.getScope());
+            clientCode.setScope(ScopeService.scopeListToScopeString(scopes));
             clientCodeRepository.save(clientCode);
             return clientCode;
         } catch (NoSuchAlgorithmException e) {

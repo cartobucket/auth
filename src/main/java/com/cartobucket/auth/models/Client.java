@@ -28,6 +28,10 @@ public class Client {
     @Column(columnDefinition = "jsonb")
     private List<URI> redirectUris;
 
+    @Type(type = "jsonb")
+    @Column(columnDefinition = "jsonb")
+    private List<String> scopes;
+
     private OffsetDateTime createdOn;
 
     private OffsetDateTime updatedOn;
@@ -62,6 +66,14 @@ public class Client {
 
     public void setRedirectUris(List<URI> redirectUris) {
         this.redirectUris = redirectUris;
+    }
+
+    public List<String> getScopes() {
+        return scopes;
+    }
+
+    public void setScopes(List<String> scopes) {
+        this.scopes = scopes;
     }
 
     public OffsetDateTime getCreatedOn() {
