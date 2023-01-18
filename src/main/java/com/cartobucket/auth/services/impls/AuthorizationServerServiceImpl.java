@@ -12,8 +12,14 @@ import io.quarkus.qute.Qute;
 import io.smallrye.jwt.util.KeyUtils;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.ws.rs.NotFoundException;
+import org.jose4j.jwa.AlgorithmConstraints;
+import org.jose4j.jws.AlgorithmIdentifiers;
+import org.jose4j.jwt.JwtClaims;
+import org.jose4j.jwt.consumer.InvalidJwtException;
+import org.jose4j.jwt.consumer.JwtConsumerBuilder;
 
 import java.security.*;
+import java.security.interfaces.RSAPublicKey;
 import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.stream.StreamSupport;
@@ -33,15 +39,7 @@ public class AuthorizationServerServiceImpl implements AuthorizationServerServic
     @Override
     public JWK getJwkForAuthorizationServer(AuthorizationServer authorizationServer) {
         try {
-            var keys = singingKeyRepository.findAllByAuthorizationServerId(
-                    authorizationServer.getId()
-            );
-            var key =
-                    keys.stream()
-                            .findFirst()
-                            .orElseThrow();
-
-            return buildJwk(key);
+            return buildJwk(getSigningKeysForAuthorizationServer(authorizationServer));
         } catch (GeneralSecurityException e) {
             throw new RuntimeException(e);
         }
@@ -89,19 +87,6 @@ public class AuthorizationServerServiceImpl implements AuthorizationServerServic
             var jwks = new JWKS();
             jwks.setKeys(keys);
             return jwks;
-        } catch (GeneralSecurityException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Override
-    public PrivateKey getSingingKeyForAuthorizationServer(AuthorizationServer authorizationServer) {
-        var singingKeys = singingKeyRepository.findAllByAuthorizationServerId(
-                authorizationServer.getId()
-        );
-        var key = singingKeys.stream().findFirst().orElseThrow();
-        try {
-            return KeyUtils.decodePrivateKey(key.getPrivateKey());
         } catch (GeneralSecurityException e) {
             throw new RuntimeException(e);
         }
@@ -169,13 +154,62 @@ public class AuthorizationServerServiceImpl implements AuthorizationServerServic
         return Qute.fmt(new String(Base64.getDecoder().decode(template.getTemplate()))).render();
     }
 
+    @Override
+    public SigningKey getSigningKeysForAuthorizationServer(AuthorizationServer authorizationServer) {
+        var keys = singingKeyRepository.findAllByAuthorizationServerId(
+                authorizationServer.getId()
+        );
+        var key =
+                keys.stream()
+                        .findFirst()
+                        .orElseThrow();
+        return key;
+    }
+
+    @Override
+    public JwtClaims validateJwtForAuthorizationServer(AuthorizationServer authorizationServer, String Jwt) {
+        final var jwks = getJwksForAuthorizationServer(authorizationServer);
+
+        try {
+            JwtConsumerBuilder builder = new JwtConsumerBuilder()
+                    .setRequireExpirationTime()
+                    .setRequireSubject()
+                    .setSkipDefaultAudienceValidation()
+                    .setExpectedIssuer(String.valueOf(authorizationServer.getServerUrl()))
+                    .setExpectedAudience(authorizationServer.getAudience())
+                    .setJwsAlgorithmConstraints(
+                            new org.jose4j.jwa.AlgorithmConstraints(AlgorithmConstraints.ConstraintType.PERMIT,
+                                    AlgorithmIdentifiers.RSA_USING_SHA256));
+
+            JwtClaims jwtClaims = null;
+            for (final var jwk : jwks.getKeys()) {
+                var singingKey = singingKeyRepository.findByIdAndAuthorizationServerId(
+                        UUID.fromString(jwk.getKid()),
+                        authorizationServer.getId()
+                );
+                builder.setVerificationKey(KeyUtils.decodePublicKey(singingKey.getPublicKey()));
+                var jwtConsumer = builder.build();
+                jwtClaims = jwtConsumer.processToClaims(Jwt.split(" ")[1]);
+                if (jwtClaims != null) {
+                    return jwtClaims;
+                }
+            }
+        } catch (InvalidJwtException | GeneralSecurityException e) {
+            throw new RuntimeException(e);
+        }
+        return null;
+    }
+
     private static JWK buildJwk(SigningKey key) throws GeneralSecurityException {
         var publicKey = KeyUtils.decodePublicKey(key.getPublicKey());
         var jwk = new JWK();
         jwk.setKid(key.getId().toString());
+        jwk.setKty("RSA");
+        jwk.setUse("sig");
         jwk.setAlg(key.getAlgorithm());
         jwk.setE("AQAB");
-        jwk.setN(Base64.getEncoder().encodeToString(publicKey.getEncoded()));
+        jwk.setN(Base64.getUrlEncoder().encodeToString(((RSAPublicKey)publicKey).getModulus().toByteArray()));
+        jwk.setE(Base64.getUrlEncoder().encodeToString(((RSAPublicKey)publicKey).getPublicExponent().toByteArray()));
         return jwk;
     }
 }

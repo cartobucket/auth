@@ -3,6 +3,7 @@ package com.cartobucket.auth.routes;
 import com.cartobucket.auth.generated.AuthorizationServerApi;
 import com.cartobucket.auth.model.generated.AccessTokenRequest;
 import com.cartobucket.auth.model.generated.UserAuthorizationRequest;
+import com.cartobucket.auth.model.generated.UserResponse;
 import com.cartobucket.auth.routes.mappers.AuthorizationRequestMapper;
 import com.cartobucket.auth.services.AccessTokenService;
 import com.cartobucket.auth.services.AuthorizationServerService;
@@ -20,6 +21,8 @@ import org.jose4j.jwt.consumer.InvalidJwtException;
 import org.jose4j.jwt.consumer.JwtConsumerBuilder;
 
 import java.net.URI;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.util.UUID;
 
@@ -82,7 +85,7 @@ public class AuthorizationServer implements AuthorizationServerApi {
         }
         return Response.status(302).location(
                 URI.create(
-                        authorizationRequest.getRedirectUri() + "?code=" + code.getCode() + "&state=" + authorizationRequest.getState() + "&nonce=" + authorizationRequest.getNonce() + "&scope" + authorizationRequest.getScope()
+                        authorizationRequest.getRedirectUri() + "?code=" + URLEncoder.encode(code.getCode(), StandardCharsets.UTF_8) + "&state=" + URLEncoder.encode(authorizationRequest.getState(), StandardCharsets.UTF_8) + "&nonce=" + URLEncoder.encode(authorizationRequest.getNonce(), StandardCharsets.UTF_8) + "&scope" + URLEncoder.encode(authorizationRequest.getScope(), StandardCharsets.UTF_8)
                 )
         ).build();
     }
@@ -116,36 +119,20 @@ public class AuthorizationServer implements AuthorizationServerApi {
 
     @Override
     public Response authorizationServerIdUserinfoGet(UUID authorizationServerId, String idToken) {
-        final var authorizationServer = authorizationServerService.getAuthorizationServer(authorizationServerId);
-        final var jwks = authorizationServerService.getJwksForAuthorizationServer(authorizationServer);
-
+        final var authorizationServer = authorizationServerService.getAuthorizationServer(
+                authorizationServerId
+        );
+        final var jwtClaims = authorizationServerService.validateJwtForAuthorizationServer(
+                authorizationServer,
+                idToken
+        );
         try {
-            JwtConsumerBuilder builder = new JwtConsumerBuilder()
-                    .setRequireExpirationTime()
-                    .setRequireSubject()
-                    .setSkipDefaultAudienceValidation()
-                    .setExpectedIssuer(String.valueOf(authorizationServer.getServerUrl()))
-                    .setExpectedAudience(authorizationServer.getAudience())
-                    .setJwsAlgorithmConstraints(
-                            new AlgorithmConstraints(AlgorithmConstraints.ConstraintType.PERMIT,
-                                    AlgorithmIdentifiers.RSA_USING_SHA256));
-
-            JwtClaims jwtClaims = null;
-            for (final var jwk : jwks.getKeys()) {
-                builder.setVerificationKey(KeyUtils.decodePublicKey(jwk.getN()));
-                var jwtConsumer = builder.build();
-                jwtClaims = jwtConsumer.processToClaims(idToken.split(" ")[1]);
-                if (jwtClaims != null) {
-                    break;
-                }
-            }
-
-            final var userResponse = userService.getUser(UUID.fromString(jwtClaims.getSubject()));
-            return Response.ok().entity(userResponse.getProfile()).build();
-
-        } catch (GeneralSecurityException | InvalidJwtException | MalformedClaimException e) {
-            throw new RuntimeException(e);
+            return Response
+                    .ok()
+                    .entity(userService.getUser(UUID.fromString(jwtClaims.getSubject())).getProfile())
+                    .build();
+        } catch (MalformedClaimException ex) {
+            throw new RuntimeException(ex);
         }
     }
-
 }

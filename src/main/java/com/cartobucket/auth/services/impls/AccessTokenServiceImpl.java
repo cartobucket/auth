@@ -15,6 +15,7 @@ import com.cartobucket.auth.services.ApplicationService;
 import com.cartobucket.auth.services.AuthorizationServerService;
 import io.smallrye.jwt.algorithm.SignatureAlgorithm;
 import io.smallrye.jwt.build.Jwt;
+import io.smallrye.jwt.util.KeyUtils;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.ws.rs.BadRequestException;
 
@@ -107,10 +108,14 @@ public class AccessTokenServiceImpl implements AccessTokenService {
                 jwt.claim("nonce", clientCode.getNonce());
             }
             profile.getProfile().forEach(jwt::claim);
-            var token = jwt.sign(authorizationServerService.getSingingKeyForAuthorizationServer(authorizationServer));
+            var token = jwt.sign(KeyUtils
+                    .decodePrivateKey(authorizationServerService
+                            .getSigningKeysForAuthorizationServer(authorizationServer)
+                            .getPrivateKey()));
 
             var accessToken = new AccessTokenResponse();
             accessToken.setAccessToken(token);
+            accessToken.setIdToken(token); // TODO: This is obviously wrong.
             accessToken.setTokenType(AccessTokenResponse.TokenTypeEnum.BEARER);
             accessToken.setExpiresIn(
                     Math.toIntExact(

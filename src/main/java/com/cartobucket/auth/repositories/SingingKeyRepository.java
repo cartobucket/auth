@@ -10,4 +10,6 @@ import java.util.UUID;
 public interface SingingKeyRepository extends CrudRepository<SigningKey, UUID> {
     SigningKey findByAuthorizationServerId(UUID authorizationServerId);
     List<SigningKey> findAllByAuthorizationServerId(UUID authorizationServerId);
+
+    SigningKey findByIdAndAuthorizationServerId(UUID kid, UUID id);
 }

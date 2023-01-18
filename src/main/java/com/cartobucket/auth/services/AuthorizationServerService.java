@@ -2,7 +2,8 @@ package com.cartobucket.auth.services;
 
 import com.cartobucket.auth.model.generated.*;
 import com.cartobucket.auth.models.AuthorizationServer;
-import io.quarkus.qute.TemplateInstance;
+import com.cartobucket.auth.models.SigningKey;
+import org.jose4j.jwt.JwtClaims;
 
 import java.security.PrivateKey;
 import java.util.UUID;
@@ -13,10 +14,11 @@ public interface AuthorizationServerService {
     AuthorizationServer getAuthorizationServer(UUID authorizationServerId);
     JWK getJwkForAuthorizationServer(AuthorizationServer authorizationServer);
     JWKS getJwksForAuthorizationServer(AuthorizationServer authorizationServer);
-    PrivateKey getSingingKeyForAuthorizationServer(AuthorizationServer authorizationServer);
     AuthorizationServerResponse createAuthorizationServer(AuthorizationServerRequest authorizationServerRequest);
     AuthorizationServerResponse updateAuthorizationServer(UUID authorizationServerId, AuthorizationServerRequest authorizationServerRequest);
     AuthorizationServersResponse getAuthorizationServers();
     void deleteAuthorizationServer(UUID authorizationServerId);
     String renderLogin(UUID authorizationServerId);
+    SigningKey getSigningKeysForAuthorizationServer(AuthorizationServer authorizationServer);
+    JwtClaims validateJwtForAuthorizationServer(AuthorizationServer authorizationServer, String Jwt);
 }

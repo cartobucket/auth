@@ -62,6 +62,7 @@ public class ClientServiceImpl implements ClientService {
             var clientCode = new ClientCode();
             clientCode.setClientId(client.get().getId());
             clientCode.setCode(code);
+            clientCode.setRedirectUri(authorizationRequest.getRedirectUri());
             clientCode.setCreatedOn(OffsetDateTime.now());
             clientCode.setAuthorizationServerId(authorizationServer.getId());
             clientCode.setUserId(user.getId());
@@ -69,6 +70,7 @@ public class ClientServiceImpl implements ClientService {
             clientCode.setState(authorizationRequest.getState());
             clientCode.setCodeChallenge(authorizationRequest.getCodeChallenge());
             clientCode.setCodeChallengeMethod(String.valueOf(authorizationRequest.getCodeChallengeMethod()));
+            clientCode.setScope(authorizationRequest.getScope());
             clientCodeRepository.save(clientCode);
             return clientCode;
         } catch (NoSuchAlgorithmException e) {
