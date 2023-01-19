@@ -12,6 +12,7 @@ import com.cartobucket.auth.services.TemplateService;
 import io.quarkus.qute.Qute;
 import io.smallrye.jwt.util.KeyUtils;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.ws.rs.NotAuthorizedException;
 import jakarta.ws.rs.NotFoundException;
 import org.jose4j.jwa.AlgorithmConstraints;
 import org.jose4j.jws.AlgorithmIdentifiers;
@@ -200,7 +201,9 @@ public class AuthorizationServerServiceImpl implements AuthorizationServerServic
                     return jwtClaims;
                 }
             }
-        } catch (InvalidJwtException | GeneralSecurityException e) {
+        } catch (InvalidJwtException e) {
+            throw new NotAuthorizedException(e.getMessage());
+        } catch (GeneralSecurityException e) {
             throw new RuntimeException(e);
         }
         return null;

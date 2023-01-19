@@ -68,13 +68,6 @@ public class ScopeServiceImpl implements ScopeService {
         final var authorizationServerScopes = scopeRepository
                 .findAllByAuthorizationServerId(authorizationServerId);
 
-        return ScopeService.scopeStringToScopeList(scopes)
-                .stream()
-                .filter(scope -> authorizationServerScopes
-                                .stream()
-                                .map(Scope::getName)
-                                .toList()
-                                .contains(scope)
-                ).toList();
+        return ScopeService.filterScopesByList(scopes, authorizationServerScopes.stream().map(Scope::getName).toList());
     }
 }

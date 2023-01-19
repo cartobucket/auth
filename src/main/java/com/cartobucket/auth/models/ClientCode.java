@@ -1,12 +1,19 @@
 package com.cartobucket.auth.models;
 
+import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import org.hibernate.annotations.Type;
+import org.hibernate.annotations.TypeDef;
+
 import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
+@TypeDef(name = "jsonb", typeClass = JsonBinaryType.class)
 public class ClientCode {
     @Id
     @GeneratedValue
@@ -20,7 +27,9 @@ public class ClientCode {
 
     private String redirectUri;
 
-    private  String scope;
+    @Type(type = "jsonb")
+    @Column(columnDefinition = "jsonb")
+    private List<String> scopes;
 
     private String state;
 
@@ -74,12 +83,12 @@ public class ClientCode {
         this.redirectUri = redirectUri;
     }
 
-    public String getScope() {
-        return scope;
+    public List<String> getScopes() {
+        return scopes;
     }
 
-    public void setScope(String scope) {
-        this.scope = scope;
+    public void setScopes(List<String> scope) {
+        this.scopes = scope;
     }
 
     public String getState() {

@@ -2,11 +2,12 @@ package com.cartobucket.auth.services;
 
 import com.cartobucket.auth.model.generated.*;
 import com.cartobucket.auth.models.Application;
+import com.cartobucket.auth.models.ApplicationSecret;
 
 import java.util.UUID;
 
 public interface ApplicationService {
-    Application getApplicationFromClientCredentials(String clientId, String clientSecret);
+    ApplicationSecret getApplicationSecretFromClientCredentials(String clientId, String clientSecret);
 
     void deleteApplication(UUID applicationId);
 
@@ -21,4 +22,5 @@ public interface ApplicationService {
     void deleteApplicationSecret(UUID applicationId, UUID secretId);
 
     ApplicationsResponse getApplications(ApplicationRequestFilter filter);
+
 }

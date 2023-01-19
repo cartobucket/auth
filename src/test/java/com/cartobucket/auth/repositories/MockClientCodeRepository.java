@@ -7,6 +7,7 @@ import jakarta.enterprise.inject.Alternative;
 import org.apache.commons.lang3.NotImplementedException;
 
 import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -31,7 +32,7 @@ public class MockClientCodeRepository implements ClientCodeRepository {
             clientCode.setId(UUID.randomUUID());
             clientCode.setAuthorizationServerId(UUID.randomUUID()); // TODO: This needs to be something that matches
             clientCode.setRedirectUri("https://test");
-            clientCode.setScope("test");
+            clientCode.setScopes(List.of("test"));
             clientCode.setCreatedOn(OffsetDateTime.now());
             return clientCode;
         }

@@ -1,12 +1,12 @@
 package com.cartobucket.auth.services;
 
 
-
 import com.cartobucket.auth.model.generated.ScopeRequest;
 import com.cartobucket.auth.model.generated.ScopeRequestFilter;
 import com.cartobucket.auth.model.generated.ScopeResponse;
 import com.cartobucket.auth.model.generated.ScopesResponse;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -25,11 +25,23 @@ public interface ScopeService {
     List<String> filterScopesForAuthorizationServerId(UUID authorizationServerId, String scopes);
 
     static List<String> scopeStringToScopeList(String scopes) {
+        if (scopes == null) {
+            return Collections.emptyList();
+        }
         return stream(scopes.split("\\p{Zs}+"))
                 .toList();
     }
 
     static String scopeListToScopeString(List<String> scopes) {
         return String.join(" ", scopes);
+    }
+    static List<String> filterScopesByList(String scopes, List<String> authorizationServerScopes) {
+        if (scopes == null || authorizationServerScopes == null) {
+            return Collections.emptyList();
+        }
+        return ScopeService.scopeStringToScopeList(scopes)
+                .stream()
+                .filter(authorizationServerScopes::contains)
+                .toList();
     }
 }

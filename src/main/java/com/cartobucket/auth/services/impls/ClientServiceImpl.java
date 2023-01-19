@@ -3,7 +3,6 @@ package com.cartobucket.auth.services.impls;
 import com.cartobucket.auth.model.generated.*;
 import com.cartobucket.auth.models.AuthorizationServer;
 import com.cartobucket.auth.models.ClientCode;
-import com.cartobucket.auth.models.Scope;
 import com.cartobucket.auth.models.mappers.ClientMapper;
 import com.cartobucket.auth.repositories.ClientCodeRepository;
 import com.cartobucket.auth.repositories.ClientRepository;
@@ -21,9 +20,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.time.OffsetDateTime;
-import java.util.Arrays;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import static java.util.Arrays.stream;
@@ -83,7 +80,7 @@ public class ClientServiceImpl implements ClientService {
             clientCode.setState(authorizationRequest.getState());
             clientCode.setCodeChallenge(authorizationRequest.getCodeChallenge());
             clientCode.setCodeChallengeMethod(String.valueOf(authorizationRequest.getCodeChallengeMethod()));
-            clientCode.setScope(ScopeService.scopeListToScopeString(scopes));
+            clientCode.setScopes(scopes);
             clientCodeRepository.save(clientCode);
             return clientCode;
         } catch (NoSuchAlgorithmException e) {

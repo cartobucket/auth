@@ -2,7 +2,7 @@ package com.cartobucket.auth.services.impls;
 
 import com.cartobucket.auth.model.generated.*;
 import com.cartobucket.auth.models.Application;
-import com.cartobucket.auth.models.Scope;
+import com.cartobucket.auth.models.ApplicationSecret;
 import com.cartobucket.auth.models.mappers.ApplicationMapper;
 import com.cartobucket.auth.repositories.ApplicationRepository;
 import com.cartobucket.auth.repositories.ApplicationSecretRepository;
@@ -11,7 +11,6 @@ import com.cartobucket.auth.services.ScopeService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.NotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.math.BigInteger;
 import java.security.MessageDigest;
@@ -23,8 +22,6 @@ import java.util.stream.StreamSupport;
 
 @ApplicationScoped
 public class ApplicationServiceImpl implements ApplicationService {
-    final BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
-
     final ApplicationRepository applicationRepository;
     final ApplicationSecretRepository applicationSecretRepository;
     final ScopeService scopeService;
@@ -36,7 +33,7 @@ public class ApplicationServiceImpl implements ApplicationService {
     }
 
     @Override
-    public Application getApplicationFromClientCredentials(String clientId, String clientSecret) {
+    public ApplicationSecret getApplicationSecretFromClientCredentials(String clientId, String clientSecret) {
         final var application = applicationRepository.findByClientId(clientId);
         if (application == null) {
             throw new BadRequestException("Unable to find the Application with the credentials provided");
@@ -53,7 +50,7 @@ public class ApplicationServiceImpl implements ApplicationService {
             if (applicationSecret.isEmpty()) {
                 throw new NotFoundException();
             }
-            return application;
+            return applicationSecret.get();
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         }
@@ -166,4 +163,5 @@ public class ApplicationServiceImpl implements ApplicationService {
 
         return applicationsResponse;
     }
+
 }

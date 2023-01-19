@@ -2,10 +2,7 @@ package com.cartobucket.auth.services.impls;
 
 import com.cartobucket.auth.model.generated.AccessTokenRequest;
 import com.cartobucket.auth.model.generated.AccessTokenResponse;
-import com.cartobucket.auth.models.AuthorizationServer;
-import com.cartobucket.auth.models.ClientCode;
-import com.cartobucket.auth.models.Profile;
-import com.cartobucket.auth.models.ProfileType;
+import com.cartobucket.auth.models.*;
 import com.cartobucket.auth.repositories.AuthorizationServerRepository;
 import com.cartobucket.auth.repositories.ClientCodeRepository;
 import com.cartobucket.auth.repositories.ClientRepository;
@@ -13,6 +10,7 @@ import com.cartobucket.auth.repositories.ProfileRepository;
 import com.cartobucket.auth.services.AccessTokenService;
 import com.cartobucket.auth.services.ApplicationService;
 import com.cartobucket.auth.services.AuthorizationServerService;
+import com.cartobucket.auth.services.ScopeService;
 import io.smallrye.jwt.algorithm.SignatureAlgorithm;
 import io.smallrye.jwt.build.Jwt;
 import io.smallrye.jwt.util.KeyUtils;
@@ -22,7 +20,11 @@ import jakarta.ws.rs.BadRequestException;
 import java.net.URI;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.time.OffsetDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Base64;
+import java.util.HashMap;
+import java.util.Map;
 
 @ApplicationScoped
 public class AccessTokenServiceImpl implements AccessTokenService {
@@ -46,16 +48,34 @@ public class AccessTokenServiceImpl implements AccessTokenService {
     }
 
     @Override
-    public AccessTokenResponse fromClientCredentials(AuthorizationServer authorizationServer, AccessTokenRequest accessTokenRequest) {
-        final var application = applicationService.getApplicationFromClientCredentials(
+    public AccessTokenResponse fromClientCredentials(
+            AuthorizationServer authorizationServer,
+            AccessTokenRequest accessTokenRequest) {
+        final var applicationSecret = applicationService.getApplicationSecretFromClientCredentials(
                 accessTokenRequest.getClientId(),
                 accessTokenRequest.getClientSecret()
         );
-        if (application == null) {
+        if (applicationSecret == null) {
             throw new BadRequestException("Unable to locate the Application with the credentials provided");
         }
-        final var profile = profileRepository.findByResourceAndProfileType(application.getId(), ProfileType.Application);
-        return buildAccessToken(authorizationServer, profile, null);
+        final var profile = profileRepository.findByResourceAndProfileType(
+                applicationSecret.getApplicationId(),
+                ProfileType.Application
+        );
+
+        var additionalClaims = new HashMap<String, Object>();
+        additionalClaims.put("exp", authorizationServer.getClientCredentialsTokenExpiration() * 60);
+        // Filter scopes that are associated with the application secret.
+        additionalClaims.put(
+                "scope",
+                ScopeService.scopeListToScopeString(
+                        ScopeService.filterScopesByList(
+                                accessTokenRequest.getScope(),
+                                applicationSecret.getScopes()
+                        )
+                )
+        );
+        return buildAccessTokenResponse(authorizationServer, profile, additionalClaims);
     }
 
     @Override
@@ -72,21 +92,20 @@ public class AccessTokenServiceImpl implements AccessTokenService {
             throw new BadRequestException("The redirect_uri in the Access Token request is not configured for the client");
         }
         if (accessTokenRequest.getCodeVerifier() != null && !isCodeVerified(clientCode, accessTokenRequest.getCodeVerifier())) {
-            var codeChallenge = buildCodeChalleng("TEST");
-
             throw new BadRequestException("Could not verify the PKCE code challenge.");
         }
 
-        final var profile = profileRepository.findByResourceAndProfileType(clientCode.getUserId(), ProfileType.User);
-        return buildAccessToken(authorizationServer, profile, clientCode);
-    }
-    private String buildCodeChalleng(String input) {
-        try {
-            final MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
-            return Base64.getEncoder().encodeToString(messageDigest.digest(input.getBytes()));
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
+        final var profile = profileRepository.findByResourceAndProfileType(
+                clientCode.getUserId(),
+                ProfileType.User
+        );
+        var additionalClaims = new HashMap<String, Object>();
+        if (clientCode.getNonce() != null) {
+            additionalClaims.put("nonce", clientCode.getNonce());
         }
+        additionalClaims.put("scope", ScopeService.scopeListToScopeString(clientCode.getScopes()));
+        additionalClaims.put("exp", OffsetDateTime.now().plus(authorizationServer.getAuthorizationCodeTokenExpiration(), ChronoUnit.SECONDS).toEpochSecond());
+        return buildAccessTokenResponse(authorizationServer, profile, additionalClaims);
     }
 
     private boolean isCodeVerified(ClientCode clientCode, String codeVerifier) {
@@ -101,8 +120,10 @@ public class AccessTokenServiceImpl implements AccessTokenService {
         }
     }
 
-    // TODO: maybe a second method just for client code?
-    private AccessTokenResponse buildAccessToken(AuthorizationServer authorizationServer, Profile profile, ClientCode clientCode) {
+    private AccessTokenResponse buildAccessTokenResponse(
+            AuthorizationServer authorizationServer,
+            Profile profile,
+            Map<String, Object> additionalClaims) {
         var jwk = authorizationServerService.getJwkForAuthorizationServer(authorizationServer);
         try {
             var jwt = Jwt
@@ -114,9 +135,10 @@ public class AccessTokenServiceImpl implements AccessTokenService {
                     .algorithm(SignatureAlgorithm.valueOf(jwk.getAlg()))
                     .keyId(jwk.getKid());
 
-            if (clientCode != null && clientCode.getNonce() != null) {
-                jwt.claim("nonce", clientCode.getNonce());
+            for (var entry : additionalClaims.entrySet()) {
+                jwt.claim(entry.getKey(), entry.getValue());
             }
+
             profile.getProfile().forEach(jwt::claim);
             var token = jwt.sign(KeyUtils
                     .decodePrivateKey(authorizationServerService
@@ -127,12 +149,8 @@ public class AccessTokenServiceImpl implements AccessTokenService {
             accessToken.setAccessToken(token);
             accessToken.setIdToken(token); // TODO: This is obviously wrong.
             accessToken.setTokenType(AccessTokenResponse.TokenTypeEnum.BEARER);
-            accessToken.setExpiresIn(
-                    Math.toIntExact(
-                            clientCode != null ? authorizationServer.getAuthorizationCodeTokenExpiration() :
-                                    authorizationServer.getClientCredentialsTokenExpiration()
-                    )
-            );
+            accessToken.setExpiresIn(Math.toIntExact(authorizationServer.getAuthorizationCodeTokenExpiration()));
+            accessToken.setScope((String) additionalClaims.get("scope"));
             return accessToken;
         } catch (Exception e) {
             throw new RuntimeException(e);
