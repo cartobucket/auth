@@ -25,8 +25,10 @@ public class SigningKey {
 
     private String keyType;
 
+    @Column(columnDefinition="TEXT")
     private String privateKey;
 
+    @Column(columnDefinition="TEXT")
     private String publicKey;
 
     private OffsetDateTime createdOn;

@@ -12,6 +12,7 @@ import com.cartobucket.auth.services.TemplateService;
 import io.quarkus.qute.Qute;
 import io.smallrye.jwt.util.KeyUtils;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.transaction.Transactional;
 import jakarta.ws.rs.NotAuthorizedException;
 import jakarta.ws.rs.NotFoundException;
 import org.jose4j.jwa.AlgorithmConstraints;
@@ -100,13 +101,16 @@ public class AuthorizationServerServiceImpl implements AuthorizationServerServic
     }
 
     @Override
+    @Transactional
     public AuthorizationServerResponse createAuthorizationServer(AuthorizationServerRequest authorizationServerRequest) {
         var authorizationServer = AuthorizationServerMapper.from(authorizationServerRequest);
         authorizationServer.setCreatedOn(OffsetDateTime.now());
         authorizationServer.setUpdatedOn(OffsetDateTime.now());
 
         authorizationServer = authorizationServerRepository.save(authorizationServer);
-        generateSigningKey(authorizationServer);
+
+        var signingKey = generateSigningKey(authorizationServer);
+        singingKeyRepository.save(signingKey);
 
         return AuthorizationServerMapper.toResponse(authorizationServer);
     }
