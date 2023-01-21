@@ -1,6 +1,8 @@
 services:
   web:
-    image: quay.io/cartobucket/auth:0.0.1
+    build:
+      context: .
+      dockerfile: src/main/docker/Dockerfile.jvm
     ports:
       - "8080:8080"
     environment:

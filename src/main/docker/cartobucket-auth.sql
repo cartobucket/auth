@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 14.5 (Debian 14.5-1.pgdg110+1)
--- Dumped by pg_dump version 14.5 (Debian 14.5-1.pgdg110+1)
+-- Dumped from database version 15.1 (Debian 15.1-1.pgdg110+1)
+-- Dumped by pg_dump version 15.1 (Debian 15.1-1.pgdg110+1)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -153,8 +153,8 @@ CREATE TABLE public.signingkey (
                                    createdon timestamp without time zone,
                                    keytype character varying(255),
                                    metadata jsonb,
-                                   privatekey character varying(255),
-                                   publickey character varying(255),
+                                   privatekey text,
+                                   publickey text,
                                    updatedon timestamp without time zone
 );
 
@@ -199,6 +199,7 @@ ALTER TABLE public.users OWNER TO "cartobucket-auth";
 --
 
 COPY public.application (id, authorizationserverid, clientid, createdon, name, updatedon) FROM stdin;
+7c0cc6db-2878-4008-a8a3-2daefa3a59f8	52a10a2d-080c-4aaa-a184-ec3ba982a9bd	7c0cc6db-2878-4008-a8a3-2daefa3a59f8	2023-01-20 18:02:37.410953	Admin Application	2023-01-20 18:02:37.410999
 \.
 
 
@@ -207,6 +208,7 @@ COPY public.application (id, authorizationserverid, clientid, createdon, name, u
 --
 
 COPY public.applicationsecret (id, applicationid, applicationsecrethash, authorizationserverid, createdon, name, scopes, updatedon) FROM stdin;
+52c9c510-c836-4914-a6c6-f4d1b67a0334	7c0cc6db-2878-4008-a8a3-2daefa3a59f8	d0e00eecd7ab0cbd3d7f0a0f1c77f2e5d453b706f0d9551198e32fbfe80ff6cc	52a10a2d-080c-4aaa-a184-ec3ba982a9bd	2023-01-20 19:55:02.68647	Admin Secret	[]	2023-01-20 19:55:02.686436
 \.
 
 
@@ -215,7 +217,7 @@ COPY public.applicationsecret (id, applicationid, applicationsecrethash, authori
 --
 
 COPY public.authorizationserver (id, audience, authorizationcodetokenexpiration, clientcredentialstokenexpiration, createdon, name, serverurl, updatedon) FROM stdin;
-4787ae72-0f33-4230-9c89-d15e5c54e31a	api://	300	100	2023-01-20 04:50:33.557467	Admin Console	http://localhost:8080	2023-01-20 04:50:33.557518
+1d96275b-39e9-471c-9cc7-ef664d83ed63	api://	300	100	2023-01-20 05:44:46.233917	Admin Console	http://localhost:8080	2023-01-20 05:44:46.233957
 \.
 
 
@@ -240,6 +242,7 @@ COPY public.clientcode (id, authorizationserverid, clientid, code, codechallenge
 --
 
 COPY public.profile (id, authorizationserverid, createdon, profile, profiletype, resource, updatedon) FROM stdin;
+a38db391-b9f6-4f36-bdab-492842bd4af1	1d96275b-39e9-471c-9cc7-ef664d83ed63	2023-01-20 18:02:37.410953	{"sub": "7c0cc6db-2878-4008-a8a3-2daefa3a59f8"}	1	7c0cc6db-2878-4008-a8a3-2daefa3a59f8	2023-01-20 18:02:37.410999
 \.
 
 
@@ -256,6 +259,7 @@ COPY public.scope (id, authorizationserverid, createdon, name, updatedon) FROM s
 --
 
 COPY public.signingkey (id, authorizationserverid, createdon, keytype, metadata, privatekey, publickey, updatedon) FROM stdin;
+3b44627c-99b7-47ef-88e1-cc53309c598e	1d96275b-39e9-471c-9cc7-ef664d83ed63	2023-01-20 05:44:46.436907	RSA	{}	-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDD0hBRSRfFXr029d3H2CxBag6z\r\nRIb2ss+gC1dZYOxJVLbODtDgd0bm1zx7fMy6CmIObZW2h5AEOViMphmJZSg71Im8OVP+9FSwN3P7\r\nHwuho98YlHqBaE7HGli+jjmmYXqYrB4nJSVtSTb2SqiqbgOLs9OTCbrf4qXV9ArVUVMumLEqKWK5\r\nrl72i88nTaEolTTJRMqHuI8puzmj9y8wvAkDDGAkrsWhhw5H3MHOMOtii2t9c+l6MKlTB21qMiGl\r\nHyYiepqd+gofJs2EKeWye1vl0AQPh86t10f/WUZDwKq/HJ8OLhCvdiVQn+K1hvR8YpcgkC0RmDm7\r\n2iXsW/dGjz0dAgMBAAECggEAFz5hinctzP3sYXrjavEpe6WeU2rQcbW9jcaa2on13NR4kyf7ZObe\r\nRyYIULN6d6DQ4oaLzVaft9NOGU/ZWyTjQYrTw0BeIeFtsLG8YMlexOk3NkCK9BO7ZMh8p+Mo9lYU\r\nH82FEhTHhwaNnBmLlhiomhYWiJm7PA+4AJf5teLJMrq0QqCx7IWU9mDJ2y9Ou0BP9Db7erEzviOu\r\nN2qVZUJwA3WReUluIgT2KfRUCkqcGOTn20CVzy8r1DkFc3bgzU7v1MFdj7Neao2Cl2khT+l+ZoC3\r\nfekc+/J5U1Ikj48vcN8ptiFeuJ9Y9VF5fHgSVb04HFG5JbKMcKd9bH/5ii2wbwKBgQDSlFH4tJcX\r\nk4Q+FgYYjND8CqMYn/h5GqBLIvcOFw6/FaZwCl9CrzcYVhW1ckxt7fywE9wUyJOJMSDZxOqhwlgk\r\nL7SJpt424Wp6fztFNPD9tpaQiNbQeOgIKURZUng5hmj5LXWy/GJ184bC8t3PFSDz6pcn6igrhpIL\r\n8ECSG5thCwKBgQDuDsw8C5F2eubetG2uxlk5ZBYTGwEz/SrK8tv1Sxxfg16+f4Sg2djp/CkPh9pt\r\n4k6XQHym5fuPrdDS9NXkFfgyE3ebkV0Zws8HKZnsn2NAYANEi5G/+wAtYDt3F0G0/pZqxSgd7Ftx\r\n0zEykF0iVo8gFgTGZ+NL1Vset+yTgNYDdwKBgQC+EeZTSB3AyAPrTlG+Qww3ExrXlTzfgqsAZtT8\r\nQM+spkwOgS4usJxYOQtrNXnLF66m96YElG6mvFNcfKMT0qlgMDcSsC2O97P2UXUcKIcFWpNYbksG\r\n7Lry8tygixG9SpbhoqjEH453zJHs0O5ohjeyMiKxgmczskmMwRRnTMfYtQKBgGVEqD720Nds6t9c\r\nM7iAqh4O5JEWEMnz7YtOCqHrZNOAyAITrvDaGztWSIVRzmqmNbaD+ULqXLw/PbEv8/lGG0H6JAxq\r\npwc5ZuZuHQuathcBgQJcuRDJDsc+w60imJINJyGeYzVvgWsHY0tWPDhKSDJnC3r3YKq2xT9pEFuj\r\nF+d7AoGBAIp8fgafGBWfHk0BBXXQczM65/Gt3k1fxNMD8vff2QanWrvdj78X9/la9QwV5Sh7oXAb\r\ngE84KEx7FOVljHmxDzZaOelkiRZLaqKQlyc/PoUpjI1ZdD9jvqpsMc0AvQ//pyXrDl+46EDJCd+q\r\nuKcoNQ50nc7jyto3y9ePj4LUnTCu\n-----END PRIVATE KEY-----\n	-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAw9IQUUkXxV69NvXdx9gsQWoOs0SG9rLP\r\noAtXWWDsSVS2zg7Q4HdG5tc8e3zMugpiDm2VtoeQBDlYjKYZiWUoO9SJvDlT/vRUsDdz+x8LoaPf\r\nGJR6gWhOxxpYvo45pmF6mKweJyUlbUk29kqoqm4Di7PTkwm63+Kl1fQK1VFTLpixKiliua5e9ovP\r\nJ02hKJU0yUTKh7iPKbs5o/cvMLwJAwxgJK7FoYcOR9zBzjDrYotrfXPpejCpUwdtajIhpR8mInqa\r\nnfoKHybNhCnlsntb5dAED4fOrddH/1lGQ8CqvxyfDi4Qr3YlUJ/itYb0fGKXIJAtEZg5u9ol7Fv3\r\nRo89HQIDAQAB\n-----END PUBLIC KEY-----\n	2023-01-20 05:44:46.436941
 \.
 
 
@@ -337,26 +341,6 @@ ALTER TABLE ONLY public.scope
 
 ALTER TABLE ONLY public.signingkey
     ADD CONSTRAINT signingkey_pkey PRIMARY KEY (id);
-
-
-/*
- * Copyright 2023 Bryce Groff (Cartobucket LLC)
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
- * documentation files (the "Software"), to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and
- * to permit persons to whom the Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all copies or substantial portions
- * of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING
- * BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
- * CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
 
 
 --
