@@ -1,14 +1,18 @@
 package com.cartobucket.auth.services.impls;
 
 import com.cartobucket.auth.model.generated.*;
-import com.cartobucket.auth.models.Application;
 import com.cartobucket.auth.models.ApplicationSecret;
+import com.cartobucket.auth.models.Profile;
+import com.cartobucket.auth.models.ProfileType;
 import com.cartobucket.auth.models.mappers.ApplicationMapper;
+import com.cartobucket.auth.models.mappers.ProfileMapper;
 import com.cartobucket.auth.repositories.ApplicationRepository;
 import com.cartobucket.auth.repositories.ApplicationSecretRepository;
+import com.cartobucket.auth.repositories.ProfileRepository;
 import com.cartobucket.auth.services.ApplicationService;
 import com.cartobucket.auth.services.ScopeService;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.transaction.Transactional;
 import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.NotFoundException;
 
@@ -17,6 +21,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.time.OffsetDateTime;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.StreamSupport;
 
@@ -24,11 +29,13 @@ import java.util.stream.StreamSupport;
 public class ApplicationServiceImpl implements ApplicationService {
     final ApplicationRepository applicationRepository;
     final ApplicationSecretRepository applicationSecretRepository;
+    final ProfileRepository profileRepository;
     final ScopeService scopeService;
 
-    public ApplicationServiceImpl(ApplicationRepository applicationRepository, ApplicationSecretRepository applicationSecretRepository, ScopeService scopeService) {
+    public ApplicationServiceImpl(ApplicationRepository applicationRepository, ApplicationSecretRepository applicationSecretRepository, ProfileRepository profileRepository, ScopeService scopeService) {
         this.applicationRepository = applicationRepository;
         this.applicationSecretRepository = applicationSecretRepository;
+        this.profileRepository = profileRepository;
         this.scopeService = scopeService;
     }
 
@@ -75,11 +82,17 @@ public class ApplicationServiceImpl implements ApplicationService {
     }
 
     @Override
+    @Transactional
     public ApplicationResponse createApplication(ApplicationRequest applicationRequest) {
         var application = ApplicationMapper.from(applicationRequest);
         application.setCreatedOn(OffsetDateTime.now());
         application.setUpdatedOn(OffsetDateTime.now());
         application = applicationRepository.save(application);
+
+        profileRepository.save(
+                ProfileMapper.toProfile(application, (Map<String, Object>) applicationRequest.getProfile())
+        );
+
         return ApplicationMapper.toResponse(application);
     }
 
