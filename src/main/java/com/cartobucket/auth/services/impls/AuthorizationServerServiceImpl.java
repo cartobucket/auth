@@ -21,6 +21,10 @@ import org.jose4j.jwt.JwtClaims;
 import org.jose4j.jwt.consumer.InvalidJwtException;
 import org.jose4j.jwt.consumer.JwtConsumerBuilder;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.security.GeneralSecurityException;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
@@ -28,6 +32,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.interfaces.RSAPublicKey;
 import java.time.OffsetDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 @ApplicationScoped
@@ -109,8 +114,12 @@ public class AuthorizationServerServiceImpl implements AuthorizationServerServic
 
         authorizationServer = authorizationServerRepository.save(authorizationServer);
 
+        // Create the signing keys
         var signingKey = generateSigningKey(authorizationServer);
         singingKeyRepository.save(signingKey);
+
+        // Create the templates
+        createDefaultTemplatesForAuthorizationServer(authorizationServer);
 
         return AuthorizationServerMapper.toResponse(authorizationServer);
     }
@@ -224,5 +233,22 @@ public class AuthorizationServerServiceImpl implements AuthorizationServerServic
         jwk.setN(Base64.getUrlEncoder().encodeToString(((RSAPublicKey)publicKey).getModulus().toByteArray()));
         jwk.setE(Base64.getUrlEncoder().encodeToString(((RSAPublicKey)publicKey).getPublicExponent().toByteArray()));
         return jwk;
+    }
+
+    private void createDefaultTemplatesForAuthorizationServer(AuthorizationServer authorizationServer) {
+        try (InputStream inputStream = getClass().getResourceAsStream("/templates/login.html")) {
+            assert inputStream != null;
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
+                String contents = reader.lines().collect(Collectors.joining(System.lineSeparator()));
+                var templateRequest = new TemplateRequest();
+                templateRequest.setTemplate(Base64.getEncoder().encodeToString(contents.getBytes()));
+                templateRequest.setTemplateType(TemplateTypeEnum.LOGIN);
+                templateRequest.setAuthorizationServerId(authorizationServer.getId());
+                templateService.createTemplate(templateRequest);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 }
