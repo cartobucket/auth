@@ -7,7 +7,6 @@ import java.net.URL;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
-
 @Entity
 public class AuthorizationServer {
     @Id

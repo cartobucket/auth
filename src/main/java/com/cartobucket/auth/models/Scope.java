@@ -1,6 +1,10 @@
 package com.cartobucket.auth.models;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 
 import java.time.OffsetDateTime;
 import java.util.Objects;

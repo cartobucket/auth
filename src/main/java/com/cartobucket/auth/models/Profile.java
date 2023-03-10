@@ -1,20 +1,19 @@
 package com.cartobucket.auth.models;
 
-import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
-import jakarta.persistence.*;
-import org.hibernate.annotations.Type;
-import org.hibernate.annotations.TypeDef;
-//import org.hibernate.annotations.JdbcTypeCode;
-//import org.hibernate.type.SqlTypes;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.time.OffsetDateTime;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
 @Entity
 @Table(uniqueConstraints = { @UniqueConstraint(columnNames = { "id", "profileType" }) })
-@TypeDef(name = "jsonb", typeClass = JsonBinaryType.class)
 public class Profile {
     @Id
     @GeneratedValue
@@ -26,9 +25,7 @@ public class Profile {
 
     private ProfileType profileType;
 
-//    @JdbcTypeCode(SqlTypes.JSON)
-    @Type(type = "jsonb")
-    @Column(columnDefinition = "jsonb")
+    @JdbcTypeCode(SqlTypes.JSON)
     private Map<String, Object> profile;
 
     private OffsetDateTime createdOn;

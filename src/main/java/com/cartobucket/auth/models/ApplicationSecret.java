@@ -1,18 +1,17 @@
 package com.cartobucket.auth.models;
 
-import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
-import jakarta.persistence.*;
-import org.hibernate.annotations.Type;
-import org.hibernate.annotations.TypeDef;
-//import org.hibernate.annotations.JdbcTypeCode;
-//import org.hibernate.type.SqlTypes;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.Transient;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
 
 @Entity
-@TypeDef(name = "jsonb", typeClass = JsonBinaryType.class)
 public class ApplicationSecret {
     @Id
     @GeneratedValue
@@ -33,9 +32,7 @@ public class ApplicationSecret {
 
     private OffsetDateTime updatedOn;
 
-//    @JdbcTypeCode(SqlTypes.JSON)
-    @Type(type = "jsonb")
-    @Column(columnDefinition = "jsonb")
+    @JdbcTypeCode(SqlTypes.JSON)
     private List<String> scopes;
 
     public UUID getApplicationId() {

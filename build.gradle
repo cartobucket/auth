@@ -32,20 +32,16 @@ dependencies {
     implementation 'io.quarkus:quarkus-spring-data-jpa'
     implementation 'io.quarkus:quarkus-hibernate-validator'
 
-    // TODO: Once Quarkus 3 is finalized this should not be needed (Hibernate 6 comes with these types).
-    // This currently blocks the native image generation.
-    implementation 'com.vladmihalcea:hibernate-types-55:2.21.1'
-
     // Security (password hashing)
-    implementation group: 'org.springframework.security', name: 'spring-security-core', version: '5.7.5'
+    implementation group: 'org.springframework.security', name: 'spring-security-core', version: '6.0.1'
 
     // Testing
     testImplementation 'io.quarkus:quarkus-junit5'
     testImplementation 'io.rest-assured:rest-assured'
 
     // OpenAPI
-    implementation group: 'io.swagger', name: 'swagger-annotations', version: '1.6.2'
-    implementation group: 'org.openapitools', name: 'jackson-databind-nullable', version: '0.2.1'
+    implementation group: 'io.swagger', name: 'swagger-annotations', version: '1.6.9'
+    implementation group: 'org.openapitools', name: 'jackson-databind-nullable', version: '0.2.4'
 
     // JOSE
     implementation 'io.quarkus:quarkus-smallrye-jwt-build'
