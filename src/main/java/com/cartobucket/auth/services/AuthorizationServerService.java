@@ -12,7 +12,7 @@ public interface AuthorizationServerService {
     // This method returns the actual AuthorizationServer object as it is a dependency of the rest of the system.
     AuthorizationServer getAuthorizationServer(UUID authorizationServerId);
     JWK getJwkForAuthorizationServer(AuthorizationServer authorizationServer);
-    JWKS getJwksForAuthorizationServer(AuthorizationServer authorizationServer);
+    JWKS getJwksForAuthorizationServer(UUID authorizationServerId);
     AuthorizationServerResponse createAuthorizationServer(AuthorizationServerRequest authorizationServerRequest);
     AuthorizationServerResponse updateAuthorizationServer(UUID authorizationServerId, AuthorizationServerRequest authorizationServerRequest);
     AuthorizationServersResponse getAuthorizationServers();

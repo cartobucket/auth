@@ -14,7 +14,7 @@ public interface TemplateService {
 
     TemplateResponse getTemplate(UUID templateId);
 
-    Template getTemplateForAuthorizationServer(UUID authorizationServer);
+    Template getTemplateForAuthorizationServer(UUID authorizationServer, TemplateTypeEnum templateType);
 
     TemplateResponse updateTemplate(UUID templateId, TemplateRequest userRequest);
 }

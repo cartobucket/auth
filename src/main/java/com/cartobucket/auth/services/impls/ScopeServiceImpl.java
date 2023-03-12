@@ -9,6 +9,7 @@ import com.cartobucket.auth.models.mappers.ScopeMapper;
 import com.cartobucket.auth.repositories.ScopeRepository;
 import com.cartobucket.auth.services.ScopeService;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.transaction.Transactional;
 import jakarta.ws.rs.NotFoundException;
 
 import java.time.OffsetDateTime;
@@ -37,6 +38,7 @@ public class ScopeServiceImpl implements ScopeService {
     }
 
     @Override
+    @Transactional
     public ScopeResponse createScope(ScopeRequest scopeRequest) {
         var scope = ScopeMapper.to(scopeRequest);
         scope.setCreatedOn(OffsetDateTime.now());
@@ -46,6 +48,7 @@ public class ScopeServiceImpl implements ScopeService {
     }
 
     @Override
+    @Transactional
     public void deleteScope(UUID scopeId) {
         var scope = scopeRepository.findById(scopeId);
         if (scope.isEmpty()) {

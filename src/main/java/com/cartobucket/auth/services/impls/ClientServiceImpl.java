@@ -9,6 +9,7 @@ import com.cartobucket.auth.repositories.ClientRepository;
 import com.cartobucket.auth.repositories.UserRepository;
 import com.cartobucket.auth.services.ClientService;
 import com.cartobucket.auth.services.ScopeService;
+import jakarta.transaction.Transactional;
 import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.NotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -40,6 +41,7 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
+    @Transactional
     public ClientCode buildClientCodeForEmailAndPassword(
             AuthorizationServer authorizationServer,
             AuthorizationRequest authorizationRequest,
@@ -89,6 +91,7 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
+    @Transactional
     public void deleteClient(UUID clientId) {
         clientRepository.deleteById(clientId);
     }
@@ -103,6 +106,7 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
+    @Transactional
     public ClientResponse updateClient(UUID clientId, ClientRequest clientRequest) {
         final var client = clientRepository.findById(clientId);
         if (client.isEmpty()) {
@@ -130,6 +134,7 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
+    @Transactional
     public ClientResponse createClient(ClientRequest clientRequest) {
         var client = ClientMapper.to(clientRequest);
         client.setCreatedOn(OffsetDateTime.now());

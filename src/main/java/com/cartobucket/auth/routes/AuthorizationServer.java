@@ -3,27 +3,19 @@ package com.cartobucket.auth.routes;
 import com.cartobucket.auth.generated.AuthorizationServerApi;
 import com.cartobucket.auth.model.generated.AccessTokenRequest;
 import com.cartobucket.auth.model.generated.UserAuthorizationRequest;
-import com.cartobucket.auth.model.generated.UserResponse;
 import com.cartobucket.auth.routes.mappers.AuthorizationRequestMapper;
 import com.cartobucket.auth.services.AccessTokenService;
 import com.cartobucket.auth.services.AuthorizationServerService;
 import com.cartobucket.auth.services.ClientService;
 import com.cartobucket.auth.services.UserService;
-import io.smallrye.jwt.util.KeyUtils;
 import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.core.Response;
-import org.jose4j.jwa.AlgorithmConstraints;
-import org.jose4j.jws.AlgorithmIdentifiers;
-import org.jose4j.jwt.JwtClaims;
 import org.jose4j.jwt.MalformedClaimException;
-import org.jose4j.jwt.consumer.InvalidJwtException;
-import org.jose4j.jwt.consumer.JwtConsumerBuilder;
 
 import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.security.GeneralSecurityException;
 import java.util.UUID;
 
 public class AuthorizationServer implements AuthorizationServerApi {
@@ -92,8 +84,9 @@ public class AuthorizationServer implements AuthorizationServerApi {
 
     @Override
     public Response authorizationServerIdJwksGet(UUID authorizationServerId) {
-        return Response.ok().entity(authorizationServerService.getJwksForAuthorizationServer(
-                authorizationServerService.getAuthorizationServer(authorizationServerId))).build();
+        return Response.ok().entity(
+                authorizationServerService.getJwksForAuthorizationServer(authorizationServerId)
+        ).build();
     }
 
     @Override

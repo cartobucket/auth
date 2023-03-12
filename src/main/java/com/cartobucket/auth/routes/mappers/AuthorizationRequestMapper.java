@@ -1,7 +1,6 @@
 package com.cartobucket.auth.routes.mappers;
 
 import com.cartobucket.auth.model.generated.AuthorizationRequest;
-import com.cartobucket.auth.model.generated.UserAuthorizationRequest;
 
 public class AuthorizationRequestMapper extends AuthorizationRequest {
     public static AuthorizationRequest from(

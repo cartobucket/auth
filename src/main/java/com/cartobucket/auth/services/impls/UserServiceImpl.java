@@ -1,5 +1,7 @@
 package com.cartobucket.auth.services.impls;
 
+import com.cartobucket.auth.exceptions.notfound.ProfileNotFound;
+import com.cartobucket.auth.exceptions.notfound.UserNotFound;
 import com.cartobucket.auth.model.generated.UserRequest;
 import com.cartobucket.auth.model.generated.UserRequestFilter;
 import com.cartobucket.auth.model.generated.UserResponse;
@@ -13,12 +15,10 @@ import com.cartobucket.auth.services.AuthorizationServerService;
 import com.cartobucket.auth.services.UserService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
-import jakarta.ws.rs.NotFoundException;
 
 import java.time.OffsetDateTime;
 import java.util.Map;
 import java.util.UUID;
-import java.util.stream.StreamSupport;
 
 @ApplicationScoped
 public class UserServiceImpl implements UserService {
@@ -37,13 +37,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UsersResponse getUsers(UserRequestFilter filter) {
-        var users = StreamSupport.stream(userRepository.findAll().spliterator(), false);
-        // TODO: This should happen in the DB.
-        if (!filter.getAuthorizationServerIds().isEmpty()) {
-            users = users.filter(user -> filter.getAuthorizationServerIds().contains(user.getAuthorizationServerId()));
-        }
         var usersResponse = new UsersResponse();
-        usersResponse.setUsers(users.map(UserMapper::toResponse).toList());
+        usersResponse.setUsers(
+                userRepository
+                        .findAllByAuthorizationServerIdIn(filter.getAuthorizationServerIds())
+                        .stream()
+                        .map(UserMapper::toResponse)
+                        .toList());
         return usersResponse;
     }
 
@@ -71,31 +71,32 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponse getUser(UUID userId) {
-        final var user = userRepository.findById(userId);
-        if (user.isEmpty()) {
-            throw new NotFoundException();
-        }
-
         return UserMapper.toResponseWithProfile(
-                user.get(),
-                profileRepository.findByResourceAndProfileType(user.get().getId(), ProfileType.User)
+                userRepository
+                        .findById(userId)
+                        .orElseThrow(UserNotFound::new),
+                profileRepository
+                        .findByResourceAndProfileType(userId, ProfileType.User)
+                        .orElseThrow(ProfileNotFound::new)
         );
     }
 
     @Override
+    @Transactional
     public UserResponse updateUser(UUID userId, UserRequest userRequest) {
-        final var user = userRepository.findById(userId);
-        if (user.isEmpty()) {
-            throw new NotFoundException();
-        }
+        final var user = userRepository
+                .findById(userId)
+                .orElseThrow(UserNotFound::new);
 
         var _user = UserMapper.from(userRequest);
-        _user.setId(user.get().getId());
-        _user.setAuthorizationServerId(user.get().getAuthorizationServerId());
+        _user.setId(user.getId());
+        _user.setAuthorizationServerId(user.getAuthorizationServerId());
         _user.setUpdatedOn(OffsetDateTime.now());
         _user = userRepository.save(_user);
 
-        var profile = profileRepository.findByResourceAndProfileType(user.get().getId(), ProfileType.User);
+        var profile = profileRepository
+                .findByResourceAndProfileType(user.getId(), ProfileType.User)
+                .orElseThrow(ProfileNotFound::new);
         profile.setUpdatedOn(OffsetDateTime.now());
         profile = profileRepository.save(profile);
 

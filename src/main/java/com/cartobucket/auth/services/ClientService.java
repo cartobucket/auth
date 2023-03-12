@@ -1,6 +1,11 @@
 package com.cartobucket.auth.services;
 
-import com.cartobucket.auth.model.generated.*;
+import com.cartobucket.auth.model.generated.AuthorizationRequest;
+import com.cartobucket.auth.model.generated.ClientRequest;
+import com.cartobucket.auth.model.generated.ClientRequestFilter;
+import com.cartobucket.auth.model.generated.ClientResponse;
+import com.cartobucket.auth.model.generated.ClientsResponse;
+import com.cartobucket.auth.model.generated.UserAuthorizationRequest;
 import com.cartobucket.auth.models.AuthorizationServer;
 import com.cartobucket.auth.models.ClientCode;
 

@@ -18,7 +18,7 @@ public class MockApplicationRepository implements ApplicationRepository {
     public static final UUID VALID_APPLICATION_ID = UUID.randomUUID();
 
     @Override
-    public Application findByClientId(String clientId) {
+    public Optional<Application> findByClientId(String clientId) {
         if (VALID_CLIENT_ID.equals(clientId)) {
             var application = new Application();
             application.setName("Test Application");
@@ -27,7 +27,7 @@ public class MockApplicationRepository implements ApplicationRepository {
             application.setAuthorizationServerId(MockAuthorizationServerRepository.VALID_AUTHORIZATION_SERVER_ID);
             application.setCreatedOn(OffsetDateTime.now());
             application.setUpdatedOn(OffsetDateTime.now());
-            return application;
+            return Optional.of(application);
         }
         return null;
     }

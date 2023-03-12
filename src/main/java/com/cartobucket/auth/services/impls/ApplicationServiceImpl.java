@@ -1,9 +1,16 @@
 package com.cartobucket.auth.services.impls;
 
-import com.cartobucket.auth.model.generated.*;
+import com.cartobucket.auth.exceptions.badrequests.ApplicationCreateProfileBadData;
+import com.cartobucket.auth.exceptions.badrequests.ApplicationSecretNoApplicationBadData;
+import com.cartobucket.auth.exceptions.notfound.ApplicationNotFound;
+import com.cartobucket.auth.model.generated.ApplicationRequest;
+import com.cartobucket.auth.model.generated.ApplicationRequestFilter;
+import com.cartobucket.auth.model.generated.ApplicationResponse;
+import com.cartobucket.auth.model.generated.ApplicationSecretRequest;
+import com.cartobucket.auth.model.generated.ApplicationSecretResponse;
+import com.cartobucket.auth.model.generated.ApplicationSecretsResponse;
+import com.cartobucket.auth.model.generated.ApplicationsResponse;
 import com.cartobucket.auth.models.ApplicationSecret;
-import com.cartobucket.auth.models.Profile;
-import com.cartobucket.auth.models.ProfileType;
 import com.cartobucket.auth.models.mappers.ApplicationMapper;
 import com.cartobucket.auth.models.mappers.ProfileMapper;
 import com.cartobucket.auth.repositories.ApplicationRepository;
@@ -41,49 +48,56 @@ public class ApplicationServiceImpl implements ApplicationService {
 
     @Override
     public ApplicationSecret getApplicationSecretFromClientCredentials(String clientId, String clientSecret) {
-        final var application = applicationRepository.findByClientId(clientId);
-        if (application == null) {
-            throw new BadRequestException("Unable to find the Application with the credentials provided");
-        }
+        final var application = applicationRepository
+                .findByClientId(clientId)
+                .orElseThrow(ApplicationSecretNoApplicationBadData::new);
+
         try {
-            var messageDigest = MessageDigest.getInstance("SHA-256");
-            var secretHash = new BigInteger(
-                    1, messageDigest
-                    .digest(clientSecret.getBytes()))
-                    .toString(16);
+            final var messageDigest = MessageDigest.getInstance("SHA-256");
+            final var secretHash = new BigInteger(
+                    1,
+                    messageDigest.digest(clientSecret.getBytes())
+            ).toString(16);
 
 
-            var applicationSecret = applicationSecretRepository.findByApplicationSecretHash(secretHash);
-            if (applicationSecret.isEmpty()) {
-                throw new NotFoundException();
+            final var applicationSecret = applicationSecretRepository
+                    .findByApplicationSecretHash(secretHash)
+                    .orElseThrow(ApplicationNotFound::new);
+            if (!application.getId().equals(applicationSecret.getApplicationId())) {
+                throw new ApplicationSecretNoApplicationBadData();
             }
-            return applicationSecret.get();
+            return applicationSecret;
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         }
     }
 
     @Override
+    @Transactional
     public void deleteApplication(UUID applicationId) {
-        final var application = applicationRepository.findById(applicationId);
-        if (application.isEmpty()) {
-            throw new NotFoundException();
-        }
-        applicationRepository.delete(application.get());
+        applicationRepository.delete(
+                applicationRepository
+                        .findById(applicationId)
+                        .orElseThrow(ApplicationNotFound::new)
+        );
     }
 
     @Override
     public ApplicationResponse getApplication(UUID applicationId) {
-        final var application = applicationRepository.findById(applicationId);
-        if (application.isEmpty()) {
-            throw new NotFoundException();
-        }
-        return ApplicationMapper.toResponse(application.get());
+        return ApplicationMapper.toResponse(
+                applicationRepository
+                        .findById(applicationId)
+                        .orElseThrow(ApplicationNotFound::new)
+        );
     }
 
     @Override
     @Transactional
     public ApplicationResponse createApplication(ApplicationRequest applicationRequest) {
+        if (!(applicationRequest.getProfile() instanceof Map)) {
+            throw new ApplicationCreateProfileBadData();
+        }
+
         var application = ApplicationMapper.from(applicationRequest);
         application.setCreatedOn(OffsetDateTime.now());
         application.setUpdatedOn(OffsetDateTime.now());
@@ -112,6 +126,7 @@ public class ApplicationServiceImpl implements ApplicationService {
     }
 
     @Override
+    @Transactional
     public ApplicationSecretResponse createApplicationSecret(
             UUID applicationId,
             ApplicationSecretRequest applicationSecretRequest) {
@@ -149,6 +164,7 @@ public class ApplicationServiceImpl implements ApplicationService {
     }
 
     @Override
+    @Transactional
     public void deleteApplicationSecret(UUID applicationId, UUID secretId) {
         final var application = applicationRepository.findById(applicationId);
         if (application.isEmpty()) {

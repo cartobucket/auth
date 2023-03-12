@@ -4,6 +4,7 @@ import com.cartobucket.auth.model.generated.*;
 import com.cartobucket.auth.models.Application;
 import com.cartobucket.auth.models.ApplicationSecret;
 
+import java.util.Optional;
 import java.util.UUID;
 
 public interface ApplicationService {

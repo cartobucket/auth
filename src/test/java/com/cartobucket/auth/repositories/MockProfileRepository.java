@@ -17,7 +17,7 @@ import java.util.UUID;
 @ApplicationScoped
 public class MockProfileRepository implements ProfileRepository {
     @Override
-    public Profile findByResourceAndProfileType(UUID resource, ProfileType profileType) {
+    public Optional<Profile> findByResourceAndProfileType(UUID resource, ProfileType profileType) {
         var profile = new Profile();
         var _profile = new HashMap<String, Object>();
         profile.setResource(resource);
@@ -38,7 +38,7 @@ public class MockProfileRepository implements ProfileRepository {
                 _profile.put("sub", resource);
             }
         }
-        return profile;
+        return Optional.of(profile);
     }
 
     @Override

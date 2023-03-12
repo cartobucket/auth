@@ -19,7 +19,7 @@ public class MockClientCodeRepository implements ClientCodeRepository {
     public static final UUID VALID_CLIENT_ID = UUID.randomUUID();
 
     @Override
-    public ClientCode findByCode(String code) {
+    public Optional<ClientCode> findByCode(String code) {
         if (VALID_CLIENT_CODE.equals(code)) {
             var clientCode = new ClientCode();
             clientCode.setClientId(VALID_CLIENT_ID);
@@ -34,7 +34,7 @@ public class MockClientCodeRepository implements ClientCodeRepository {
             clientCode.setRedirectUri("https://test");
             clientCode.setScopes(List.of("test"));
             clientCode.setCreatedOn(OffsetDateTime.now());
-            return clientCode;
+            return Optional.of(clientCode);
         }
         return null;
     }

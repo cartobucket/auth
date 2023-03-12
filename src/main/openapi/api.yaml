@@ -179,114 +179,6 @@ paths:
       responses:
         "204":
           description: Delete an Authorization Server.
-  /{authorizationServerId}/.well-known/openid-connect/:
-    get:
-      tags:
-        - WellKnown
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/WellKnown'
-          description: Returns a well-known configuration object.
-      summary: Well Known Endpoint
-    parameters:
-      - name: authorizationServerId
-        schema:
-          format: UUID
-          type: string
-        in: path
-        required: true
-  /{authorizationServerId}/end_session/:
-    parameters:
-      - name: authorizationServerId
-        schema:
-          format: UUID
-          type: string
-        in: path
-        required: true
-  /{authorizationServerId}/issuer/:
-    parameters:
-      - name: authorizationServerId
-        schema:
-          format: UUID
-          type: string
-        in: path
-        required: true
-  /{authorizationServerId}/jwks/:
-    summary: JWKS
-    description: JWKS
-    get:
-      tags:
-        - AuthorizationServer
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/JWKS'
-          description: JWKS
-      summary: JWKS
-    parameters:
-      - name: authorizationServerId
-        schema:
-          format: UUID
-          type: string
-        in: path
-        required: true
-  /{authorizationServerId}/token/:
-    post:
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/AccessTokenRequest'
-        required: true
-        x-validator: '@ValidAccessTokenRequest'
-      tags:
-        - AuthorizationServer
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AccessTokenResponse'
-          description: Get an Access Token
-      summary: Token Endpoint
-    parameters:
-      - name: authorizationServerId
-        schema:
-          format: UUID
-          type: string
-        in: path
-        required: true
-  /{authorizationServerId}/userinfo/:
-    summary: Get userinfo
-    get:
-      tags:
-        - AuthorizationServer
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                type: object
-          description: Get userinfo
-      summary: User Info
-    parameters:
-      - name: authorizationServerId
-        schema:
-          format: UUID
-          type: string
-        in: path
-        required: true
-      - name: Authorization
-        description: ""
-        schema:
-          type: string
-        in: header
-        required: true
   /users/{userId}:
     get:
       tags:
@@ -341,127 +233,6 @@ paths:
       responses:
         "200":
           description: Delete a User.
-  /{authorizationServerId}/authorization/:
-    get:
-      tags:
-        - AuthorizationServer
-      parameters:
-        - name: code_challenge
-          description: ""
-          schema:
-            type: string
-          in: query
-        - name: code_challenge_method
-          description: ""
-          schema:
-            type: string
-          in: query
-        - name: redirect_uri
-          description: ""
-          schema:
-            type: string
-          in: query
-        - name: response_type
-          description: ""
-          schema:
-            enum:
-              - code
-              - client_credentials
-            type: string
-          in: query
-          required: true
-        - name: scope
-          description: ""
-          schema:
-            type: string
-          in: query
-        - name: state
-          description: ""
-          schema:
-            type: string
-          in: query
-        - name: nonce
-          description: ""
-          schema:
-            type: string
-          in: query
-      responses:
-        "200":
-          content:
-            text/html:
-              schema:
-                type: string
-          description: Login screen
-      summary: Authorization Endpoint
-    post:
-      requestBody:
-        content:
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/UserAuthorizationRequest'
-        required: true
-      tags:
-        - AuthorizationServer
-      parameters:
-        - name: code_challenge
-          description: ""
-          schema:
-            type: string
-          in: query
-        - name: code_challenge_method
-          description: ""
-          schema:
-            type: string
-          in: query
-        - name: redirect_uri
-          description: ""
-          schema:
-            type: string
-          in: query
-        - name: response_type
-          description: ""
-          schema:
-            enum:
-              - code
-              - client_credentials
-            type: string
-          in: query
-          required: true
-        - name: scope
-          description: ""
-          schema:
-            type: string
-          in: query
-        - name: state
-          description: ""
-          schema:
-            type: string
-          in: query
-        - name: nonce
-          description: ""
-          schema:
-            type: string
-          in: query
-      responses:
-        "200":
-          content:
-            text/html: {}
-          description: Rerender the form when the user does not provide valid credentials.
-        "302":
-          description: Redirect the user back to the redirect uri on success.
-    parameters:
-      - name: authorizationServerId
-        schema:
-          format: UUID
-          type: string
-        in: path
-        required: true
-      - name: client_id
-        description: ""
-        schema:
-          type: string
-        in: query
-        required: true
   /applications/:
     get:
       tags:
@@ -741,6 +512,241 @@ paths:
           description: Delete the template.
     parameters:
       - name: scopeId
+        schema:
+          format: UUID
+          type: string
+        in: path
+        required: true
+  /{authorizationServerId}/issuer/:
+    parameters:
+      - name: authorizationServerId
+        schema:
+          format: UUID
+          type: string
+        in: path
+        required: true
+        x-validator: '@ValidAuthroizationServerRequest'
+  /{authorizationServerId}/end_session/:
+    parameters:
+      - name: authorizationServerId
+        schema:
+          format: UUID
+          type: string
+        in: path
+        required: true
+        x-validator: '@ValidAuthorizationServerRequest'
+  /{authorizationServerId}/jwks/:
+    summary: JWKS
+    description: JWKS
+    get:
+      tags:
+        - AuthorizationServer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JWKS'
+          description: JWKS
+      summary: JWKS
+    parameters:
+      - name: authorizationServerId
+        schema:
+          format: UUID
+          type: string
+        in: path
+        required: true
+        x-validator: '@ValidAuthorizationServerRequest'
+  /{authorizationServerId}/userinfo/:
+    summary: Get userinfo
+    get:
+      tags:
+        - AuthorizationServer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: object
+          description: Get userinfo
+      summary: User Info
+    parameters:
+      - name: authorizationServerId
+        schema:
+          format: UUID
+          type: string
+        in: path
+        required: true
+        x-validator: '@ValidAuthorizationServerRequest'
+      - name: Authorization
+        description: ""
+        schema:
+          type: string
+        in: header
+        required: true
+  /{authorizationServerId}/.well-known/openid-connect/:
+    get:
+      tags:
+        - WellKnown
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WellKnown'
+          description: Returns a well-known configuration object.
+      summary: Well Known Endpoint
+    parameters:
+      - name: authorizationServerId
+        schema:
+          format: UUID
+          type: string
+        in: path
+        required: true
+        x-validator: '@ValidAuthorizationServerRequest'
+  /{authorizationServerId}/authorization/:
+    get:
+      tags:
+        - AuthorizationServer
+      parameters:
+        - name: code_challenge
+          description: ""
+          schema:
+            type: string
+          in: query
+        - name: code_challenge_method
+          description: ""
+          schema:
+            type: string
+          in: query
+        - name: redirect_uri
+          description: ""
+          schema:
+            type: string
+          in: query
+        - name: response_type
+          description: ""
+          schema:
+            enum:
+              - code
+              - client_credentials
+            type: string
+          in: query
+          required: true
+        - name: scope
+          description: ""
+          schema:
+            type: string
+          in: query
+        - name: state
+          description: ""
+          schema:
+            type: string
+          in: query
+        - name: nonce
+          description: ""
+          schema:
+            type: string
+          in: query
+      responses:
+        "200":
+          content:
+            text/html:
+              schema:
+                type: string
+          description: Login screen
+      summary: Authorization Endpoint
+    post:
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserAuthorizationRequest'
+        required: true
+      tags:
+        - AuthorizationServer
+      parameters:
+        - name: code_challenge
+          description: ""
+          schema:
+            type: string
+          in: query
+        - name: code_challenge_method
+          description: ""
+          schema:
+            type: string
+          in: query
+        - name: redirect_uri
+          description: ""
+          schema:
+            type: string
+          in: query
+        - name: response_type
+          description: ""
+          schema:
+            enum:
+              - code
+              - client_credentials
+            type: string
+          in: query
+          required: true
+        - name: scope
+          description: ""
+          schema:
+            type: string
+          in: query
+        - name: state
+          description: ""
+          schema:
+            type: string
+          in: query
+        - name: nonce
+          description: ""
+          schema:
+            type: string
+          in: query
+      responses:
+        "200":
+          content:
+            text/html: {}
+          description: Rerender the form when the user does not provide valid credentials.
+        "302":
+          description: Redirect the user back to the redirect uri on success.
+    parameters:
+      - name: authorizationServerId
+        schema:
+          format: UUID
+          type: string
+        in: path
+        required: true
+        x-validator: '@ValidAuthorizationServerRequest'
+      - name: client_id
+        description: ""
+        schema:
+          type: string
+        in: query
+        required: true
+  /{authorizationServerId}/token/:
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccessTokenRequest'
+        required: true
+        x-validator: '@ValidAccessTokenRequest'
+      tags:
+        - AuthorizationServer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccessTokenResponse'
+          description: Get an Access Token
+      summary: Token Endpoint
+    parameters:
+      - name: authorizationServerId
         schema:
           format: UUID
           type: string

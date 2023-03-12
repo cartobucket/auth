@@ -1,6 +1,13 @@
 package com.cartobucket.auth.services.impls;
 
-import com.cartobucket.auth.model.generated.*;
+import com.cartobucket.auth.exceptions.notfound.AuthorizationServerNotFound;
+import com.cartobucket.auth.model.generated.AuthorizationServerRequest;
+import com.cartobucket.auth.model.generated.AuthorizationServerResponse;
+import com.cartobucket.auth.model.generated.AuthorizationServersResponse;
+import com.cartobucket.auth.model.generated.JWK;
+import com.cartobucket.auth.model.generated.JWKS;
+import com.cartobucket.auth.model.generated.TemplateRequest;
+import com.cartobucket.auth.model.generated.TemplateTypeEnum;
 import com.cartobucket.auth.models.AuthorizationServer;
 import com.cartobucket.auth.models.SigningKey;
 import com.cartobucket.auth.models.mappers.AuthorizationServerMapper;
@@ -13,6 +20,7 @@ import io.quarkus.qute.Qute;
 import io.smallrye.jwt.util.KeyUtils;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
+import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.NotAuthorizedException;
 import jakarta.ws.rs.NotFoundException;
 import org.jose4j.jwa.AlgorithmConstraints;
@@ -31,7 +39,11 @@ import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 import java.security.interfaces.RSAPublicKey;
 import java.time.OffsetDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.HashMap;
+import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -90,8 +102,8 @@ public class AuthorizationServerServiceImpl implements AuthorizationServerServic
     }
 
     @Override
-    public JWKS getJwksForAuthorizationServer(AuthorizationServer authorizationServer) {
-        var singingKeys = singingKeyRepository.findAllByAuthorizationServerId(authorizationServer.getId());
+    public JWKS getJwksForAuthorizationServer(UUID authorizationServerId) {
+        var singingKeys = singingKeyRepository.findAllByAuthorizationServerId(authorizationServerId);
         try {
             List<JWK> keys = new ArrayList<>();
             for (var key : singingKeys) {
@@ -126,22 +138,21 @@ public class AuthorizationServerServiceImpl implements AuthorizationServerServic
 
     @Override
     public AuthorizationServer getAuthorizationServer(UUID authorizationServerId) {
-        final var authorizationServer = authorizationServerRepository.findById(authorizationServerId);
-        if (authorizationServer.isEmpty()) {
-            throw new NotFoundException("An Authorization Server with that id could not be found");
-        }
-        return authorizationServer.get();
+        return authorizationServerRepository
+                .findById(authorizationServerId)
+                .orElseThrow(AuthorizationServerNotFound::new);
     }
 
     @Override
+    @Transactional
     public AuthorizationServerResponse updateAuthorizationServer(UUID authorizationServerId, AuthorizationServerRequest authorizationServerRequest) {
-        var authServer = authorizationServerRepository.findById(authorizationServerId);
-        if (authServer.isEmpty()) {
-            throw new NotFoundException();
-        }
+        var authServer = authorizationServerRepository
+                .findById(authorizationServerId)
+                .orElseThrow(AuthorizationServerNotFound::new);
+
         var authorizationServer = AuthorizationServerMapper.from(authorizationServerRequest);
         authorizationServer.setId(authorizationServerId);
-        authorizationServer.setCreatedOn(authServer.get().getCreatedOn());
+        authorizationServer.setCreatedOn(authServer.getCreatedOn());
         authorizationServer.setUpdatedOn(OffsetDateTime.now());
         authorizationServerRepository.save(authorizationServer);
         return AuthorizationServerMapper.toResponse(authorizationServer);
@@ -160,18 +171,26 @@ public class AuthorizationServerServiceImpl implements AuthorizationServerServic
     }
 
     @Override
+    @Transactional
     public void deleteAuthorizationServer(UUID authorizationServerId) {
-        var authorizationServer = authorizationServerRepository.findById(authorizationServerId);
-        if (authorizationServer.isEmpty()) {
-            throw new NotFoundException("An Authorization Server with that id could not be found");
-        }
-        authorizationServerRepository.delete(authorizationServer.get());
+        authorizationServerRepository.delete(
+                authorizationServerRepository
+                        .findById(authorizationServerId)
+                        .orElseThrow(AuthorizationServerNotFound::new)); // TODO this should cascade.
     }
 
     @Override
     public String renderLogin(UUID authorizationServerId) {
-        var template = templateService.getTemplateForAuthorizationServer(authorizationServerId);
-        return Qute.fmt(new String(Base64.getDecoder().decode(template.getTemplate()))).render();
+        final var template = templateService.getTemplateForAuthorizationServer(
+                authorizationServerId,
+                TemplateTypeEnum.LOGIN
+        );
+        return Qute.fmt(
+                new String(Base64
+                        .getDecoder()
+                        .decode(template.getTemplate())
+                )
+        ).render();
     }
 
     @Override
@@ -188,7 +207,7 @@ public class AuthorizationServerServiceImpl implements AuthorizationServerServic
 
     @Override
     public JwtClaims validateJwtForAuthorizationServer(AuthorizationServer authorizationServer, String Jwt) {
-        final var jwks = getJwksForAuthorizationServer(authorizationServer);
+        final var jwks = getJwksForAuthorizationServer(authorizationServer.getId());
 
         try {
             JwtConsumerBuilder builder = new JwtConsumerBuilder()

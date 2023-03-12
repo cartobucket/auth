@@ -1,8 +1,14 @@
 package com.cartobucket.auth.services.impls;
 
+import com.cartobucket.auth.exceptions.notfound.ClientCodeNotFound;
+import com.cartobucket.auth.exceptions.notfound.ClientNotFound;
+import com.cartobucket.auth.exceptions.notfound.ProfileNotFound;
 import com.cartobucket.auth.model.generated.AccessTokenRequest;
 import com.cartobucket.auth.model.generated.AccessTokenResponse;
-import com.cartobucket.auth.models.*;
+import com.cartobucket.auth.models.AuthorizationServer;
+import com.cartobucket.auth.models.ClientCode;
+import com.cartobucket.auth.models.Profile;
+import com.cartobucket.auth.models.ProfileType;
 import com.cartobucket.auth.repositories.AuthorizationServerRepository;
 import com.cartobucket.auth.repositories.ClientCodeRepository;
 import com.cartobucket.auth.repositories.ClientRepository;
@@ -37,8 +43,11 @@ public class AccessTokenServiceImpl implements AccessTokenService {
 
     public AccessTokenServiceImpl(
             ApplicationService applicationService,
-            AuthorizationServerService authorizationServerService, ProfileRepository profileRepository,
-            AuthorizationServerRepository authorizationServerRepository, ClientCodeRepository clientCodeRepository, ClientRepository clientRepository) {
+            AuthorizationServerService authorizationServerService,
+            ProfileRepository profileRepository,
+            AuthorizationServerRepository authorizationServerRepository,
+            ClientCodeRepository clientCodeRepository,
+            ClientRepository clientRepository) {
         this.applicationService = applicationService;
         this.authorizationServerService = authorizationServerService;
         this.profileRepository = profileRepository;
@@ -56,18 +65,9 @@ public class AccessTokenServiceImpl implements AccessTokenService {
                 accessTokenRequest.getClientSecret()
         );
 
-        if (applicationSecret == null) {
-            throw new BadRequestException("Unable to locate the Application with the credentials provided");
-        }
-
-        if (applicationSecret.getAuthorizationServerId() != authorizationServer.getId()) {
-            throw new BadRequestException("The Application is not associated with the Authorization Server");
-        }
-
-        final var profile = profileRepository.findByResourceAndProfileType(
-                applicationSecret.getApplicationId(),
-                ProfileType.Application
-        );
+        final var profile = profileRepository
+                .findByResourceAndProfileType(applicationSecret.getApplicationId(), ProfileType.Application)
+                .orElseThrow(ProfileNotFound::new);
 
         var additionalClaims = new HashMap<String, Object>();
         additionalClaims.put("exp", OffsetDateTime.now().plus(authorizationServer.getClientCredentialsTokenExpiration(), ChronoUnit.SECONDS).toEpochSecond());
@@ -87,9 +87,11 @@ public class AccessTokenServiceImpl implements AccessTokenService {
 
     @Override
     public AccessTokenResponse fromAuthorizationCode(AuthorizationServer authorizationServer, AccessTokenRequest accessTokenRequest) {
-        final var clientCode = clientCodeRepository.findByCode(accessTokenRequest.getCode());
+        final var clientCode = clientCodeRepository
+                .findByCode(accessTokenRequest.getCode())
+                .orElseThrow(ClientCodeNotFound::new);
 
-        if (clientCode == null || !String.valueOf(clientCode.getClientId()).equals(accessTokenRequest.getClientId())) {
+        if (!String.valueOf(clientCode.getClientId()).equals(accessTokenRequest.getClientId())) {
             throw new BadRequestException("Unable to locate the Client with the credentials provided");
         }
 
@@ -101,7 +103,9 @@ public class AccessTokenServiceImpl implements AccessTokenService {
             throw new BadRequestException("The redirect_uri in the Access Token request does not match the redirect_uri during code generation");
         }
 
-        final var client = clientRepository.findById(clientCode.getClientId()).orElseThrow();
+        final var client = clientRepository
+                .findById(clientCode.getClientId())
+                .orElseThrow(ClientNotFound::new);
         if (!client.getRedirectUris().contains(URI.create(clientCode.getRedirectUri()))) {
             throw new BadRequestException("The redirect_uri in the Access Token request is not configured for the client");
         }
@@ -113,7 +117,7 @@ public class AccessTokenServiceImpl implements AccessTokenService {
         final var profile = profileRepository.findByResourceAndProfileType(
                 clientCode.getUserId(),
                 ProfileType.User
-        );
+        ).orElseThrow(ProfileNotFound::new);
 
         var additionalClaims = new HashMap<String, Object>();
         if (clientCode.getNonce() != null) {
