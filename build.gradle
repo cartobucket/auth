@@ -1,7 +1,7 @@
 plugins {
     id 'java'
     id 'io.quarkus'
-    id 'org.openapi.generator' version '6.2.0'
+    id 'org.openapi.generator' version '6.5.0'
     id("com.diffplug.spotless") version "6.16.0"
 }
 
@@ -28,10 +28,7 @@ dependencies {
     implementation 'io.quarkus:quarkus-resteasy-reactive'
     implementation 'io.quarkus:quarkus-resteasy-reactive-jackson'
     implementation 'io.quarkus:quarkus-resteasy-reactive-qute'
-    implementation 'jakarta.annotation:jakarta.annotation-api:2.1.1'
-    implementation 'jakarta.ws.rs:jakarta.ws.rs-api:3.1.0'
-    implementation 'jakarta.validation:jakarta.validation-api:3.0.2'
-    implementation 'com.tietoevry.quarkus:quarkus-resteasy-problem:3.0.0.Alpha4'
+    implementation 'com.tietoevry.quarkus:quarkus-resteasy-problem:3.0.0'
 
     // ORM
     implementation 'io.quarkus:quarkus-hibernate-orm'
@@ -40,7 +37,7 @@ dependencies {
     implementation 'io.quarkus:quarkus-hibernate-validator'
 
     // Security (password hashing)
-    implementation group: 'org.springframework.security', name: 'spring-security-core', version: '6.0.1'
+    implementation group: 'org.springframework.security', name: 'spring-security-core', version: '6.0.3'
 
     // Testing
     testImplementation 'io.quarkus:quarkus-junit5'

@@ -1389,6 +1389,21 @@ components:
         state: eyJrZXkiOiAiZXhhbXBsZSJ9
         code_challenge: YXNkZjk0cGl1b2gzMjYzCjIxNTYzNTE2MjRyZTM=
         code_challenge_method: S256
+    UserAuthorizationRequest2:
+      title: Root Type for UserAuthorization
+      description: ""
+      required:
+        - password
+        - username
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+      example:
+        username: test@acme.co
+        password: test
     UserAuthorizationRequest:
       title: Root Type for UserAuthorization
       description: ""
