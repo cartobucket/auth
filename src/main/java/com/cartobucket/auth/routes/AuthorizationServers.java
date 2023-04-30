@@ -1,6 +1,7 @@
 package com.cartobucket.auth.routes;
 
 import com.cartobucket.auth.generated.AuthorizationServersApi;
+import com.cartobucket.auth.model.generated.AccessTokenRequest;
 import com.cartobucket.auth.model.generated.AuthorizationServerRequest;
 import com.cartobucket.auth.models.mappers.AuthorizationServerMapper;
 import com.cartobucket.auth.services.AuthorizationServerService;
@@ -16,13 +17,21 @@ public class AuthorizationServers implements AuthorizationServersApi {
     }
 
     @Override
-    public Response authorizationServersAuthorizationServerIdDelete(UUID authorizationServerId) {
+    public Response createAuthorizationServer(AuthorizationServerRequest authorizationServerRequest) {
+        return Response
+                .ok()
+                .entity(authorizationServerService.createAuthorizationServer(authorizationServerRequest))
+                .build();
+    }
+
+    @Override
+    public Response deleteAuthorizationServer(UUID authorizationServerId) {
         authorizationServerService.deleteAuthorizationServer(authorizationServerId);
         return Response.ok().build();
     }
 
     @Override
-    public Response authorizationServersAuthorizationServerIdGet(UUID authorizationServerId) {
+    public Response getAuthorizationServer(UUID authorizationServerId) {
         return Response
                 .ok()
                 .entity(AuthorizationServerMapper.toResponse(
@@ -31,28 +40,17 @@ public class AuthorizationServers implements AuthorizationServersApi {
     }
 
     @Override
-    public Response authorizationServersAuthorizationServerIdPut(
-            UUID authorizationServerId,
-            AuthorizationServerRequest authorizationServerRequest
-    ) {
+    public Response listAuthorizationServers() {
+        return Response.ok().entity(authorizationServerService.getAuthorizationServers()).build();
+    }
+
+    @Override
+    public Response updateAuthorizationServer(UUID authorizationServerId, AuthorizationServerRequest authorizationServerRequest) {
         return Response
                 .ok()
                 .entity(authorizationServerService.updateAuthorizationServer(
                         authorizationServerId,
                         authorizationServerRequest))
-                .build();
-    }
-
-    @Override
-    public Response authorizationServersGet() {
-        return Response.ok().entity(authorizationServerService.getAuthorizationServers()).build();
-    }
-
-    @Override
-    public Response authorizationServersPost(AuthorizationServerRequest authorizationServerRequest) {
-        return Response
-                .ok()
-                .entity(authorizationServerService.createAuthorizationServer(authorizationServerRequest))
                 .build();
     }
 }

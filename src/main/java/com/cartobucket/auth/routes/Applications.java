@@ -24,43 +24,42 @@ public class Applications implements ApplicationsApi {
     }
 
     @Override
-    public Response applicationsApplicationIdDelete(UUID applicationId) {
+    public Response createApplication(ApplicationRequest applicationRequest) {
+        return Response.ok().entity(applicationService.createApplication(applicationRequest)).build();
+    }
+
+    @Override
+    public Response createApplicationSecret(UUID applicationId, ApplicationSecretRequest applicationSecretRequest) {
+        return Response.ok().entity(applicationService.createApplicationSecret(applicationId, applicationSecretRequest)).build();
+    }
+
+    @Override
+    public Response deleteApplication(UUID applicationId) {
         applicationService.deleteApplication(applicationId);
         return Response.ok().build();
     }
 
     @Override
-    public Response applicationsApplicationIdGet(UUID applicationId) {
-        return Response.ok().entity(applicationService.getApplication(applicationId)).build();
-    }
-
-    @Override
-    public Response applicationsApplicationIdSecretsGet(UUID applicationId) {
-        return Response.ok().entity(applicationService.getApplicationSecrets(applicationId)).build();
-    }
-
-    @Override
-    public Response applicationsApplicationIdSecretsPost(UUID applicationId, ApplicationSecretRequest applicationSecretRequest) {
-        return Response.ok().entity(applicationService.createApplicationSecret(applicationId, applicationSecretRequest)).build();
-    }
-
-    @Override
-    public Response applicationsApplicationIdSecretsSecretIdDelete(UUID applicationId, UUID secretId) {
+    public Response deleteApplicationSecret(UUID applicationId, UUID secretId) {
         applicationService.deleteApplicationSecret(applicationId, secretId);
         return Response.ok().build();
     }
 
     @Override
-    public Response applicationsGet(List<UUID> authorizationServerIds) {
+    public Response getApplication(UUID applicationId) {
+        return Response.ok().entity(applicationService.getApplication(applicationId)).build();
+    }
+
+    @Override
+    public Response listApplicationSecrets(UUID applicationId) {
+        return Response.ok().entity(applicationService.getApplicationSecrets(applicationId)).build();
+    }
+
+    @Override
+    public Response listApplications(List<UUID> authorizationServerIds) {
         return Response
                 .ok()
                 .entity(applicationService.getApplications(ApplicationRequestFilterMapper.to(authorizationServerIds)))
                 .build();
     }
-
-    @Override
-    public Response applicationsPost(ApplicationRequest applicationRequest) {
-        return Response.ok().entity(applicationService.createApplication(applicationRequest)).build();
-    }
-
 }

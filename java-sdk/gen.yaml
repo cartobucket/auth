@@ -1,0 +1,10 @@
+configVersion: 1.0.0
+generation:
+  telemetryEnabled: false
+  sdkClassName: SDK
+  singleTagPerOp: false
+java:
+  version: 0.0.1
+  artifactID: api
+  groupID: com.cartobucket.auth
+  projectName: Cartobucket Auth

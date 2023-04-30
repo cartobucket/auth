@@ -17,23 +17,23 @@ public class Clients implements ClientsApi {
     }
 
     @Override
-    public Response clientsClientIdDelete(UUID clientId) {
+    public Response createClient(ClientRequest clientRequest) {
+        return Response.ok().entity(clientService.createClient(clientRequest)).build();
+    }
+
+    @Override
+    public Response deleteClient(UUID clientId) {
         clientService.deleteClient(clientId);
         return Response.ok().build();
     }
 
     @Override
-    public Response clientsClientIdGet(UUID clientId) {
+    public Response getClient(UUID clientId) {
         return Response.ok().entity(clientService.getClient(clientId)).build();
     }
 
     @Override
-    public Response clientsClientIdPut(UUID clientId, ClientRequest clientRequest) {
-        return Response.ok().entity(clientService.updateClient(clientId, clientRequest)).build();
-    }
-
-    @Override
-    public Response clientsGet(List<UUID> authorizationServerIds) {
+    public Response listClients(List<UUID> authorizationServerIds) {
         return Response
                 .ok()
                 .entity(clientService.getClients(ClientRequestFilterMapper.to(authorizationServerIds)))
@@ -41,7 +41,7 @@ public class Clients implements ClientsApi {
     }
 
     @Override
-    public Response clientsPost(ClientRequest clientRequest) {
-        return Response.ok().entity(clientService.createClient(clientRequest)).build();
+    public Response updateClient(UUID clientId, ClientRequest clientRequest) {
+        return Response.ok().entity(clientService.updateClient(clientId, clientRequest)).build();
     }
 }

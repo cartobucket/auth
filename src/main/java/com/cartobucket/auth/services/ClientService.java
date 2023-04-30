@@ -5,7 +5,7 @@ import com.cartobucket.auth.model.generated.ClientRequest;
 import com.cartobucket.auth.model.generated.ClientRequestFilter;
 import com.cartobucket.auth.model.generated.ClientResponse;
 import com.cartobucket.auth.model.generated.ClientsResponse;
-import com.cartobucket.auth.model.generated.UserAuthorizationRequest2;
+import com.cartobucket.auth.model.generated.PasswordAuthRequest;
 import com.cartobucket.auth.models.AuthorizationServer;
 import com.cartobucket.auth.models.ClientCode;
 
@@ -15,7 +15,7 @@ public interface ClientService {
     ClientCode buildClientCodeForEmailAndPassword(
             AuthorizationServer authorizationServer,
             AuthorizationRequest authorizationRequest,
-            UserAuthorizationRequest2 userAuthorizationRequest
+            PasswordAuthRequest userAuthorizationRequest
     );
 
     void deleteClient(UUID clientId);

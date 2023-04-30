@@ -2,7 +2,7 @@ package com.cartobucket.auth.routes;
 
 import com.cartobucket.auth.generated.AuthorizationServerApi;
 import com.cartobucket.auth.model.generated.AccessTokenRequest;
-import com.cartobucket.auth.model.generated.UserAuthorizationRequest2;
+import com.cartobucket.auth.model.generated.PasswordAuthRequest;
 import com.cartobucket.auth.routes.mappers.AuthorizationRequestMapper;
 import com.cartobucket.auth.services.AccessTokenService;
 import com.cartobucket.auth.services.AuthorizationServerService;
@@ -16,6 +16,8 @@ import org.jose4j.jwt.MalformedClaimException;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
 public class AuthorizationServer implements AuthorizationServerApi {
@@ -35,24 +37,9 @@ public class AuthorizationServer implements AuthorizationServerApi {
         this.userService = userService;
     }
 
-
     @Override
     @Consumes({"*/*"})
-    public Response authorizationServerIdAuthorizationGet(
-            UUID authorizationServerId,
-            String clientId,
-            String responseType,
-            String codeChallenge,
-            String codeChallengeMethod,
-            String redirectUri,
-            String scope,
-            String state,
-            String nonce) {
-        return Response.ok().entity(authorizationServerService.renderLogin(authorizationServerId)).build();
-    }
-
-    @Override
-    public Response authorizationServerIdAuthorizationPost(UUID authorizationServerId, String clientId, String responseType, String username, String password, String codeChallenge, String codeChallengeMethod, String redirectUri, String scope, String state, String nonce) {
+    public Response createAuthorizationCode(UUID authorizationServerId, String clientId, String responseType, String codeChallenge, String codeChallengeMethod, String redirectUri, String scope, String state, String nonce, String username, String password) {
         var authorizationRequest = AuthorizationRequestMapper.from(
                 clientId,
                 responseType,
@@ -63,7 +50,7 @@ public class AuthorizationServer implements AuthorizationServerApi {
                 state,
                 nonce
         );
-        var userAuthorizationRequest = new UserAuthorizationRequest2();
+        var userAuthorizationRequest = new PasswordAuthRequest();
         userAuthorizationRequest.setUsername(username);
         userAuthorizationRequest.setPassword(password);
         final var authorizationServer = authorizationServerService.getAuthorizationServer(authorizationServerId);
@@ -83,15 +70,82 @@ public class AuthorizationServer implements AuthorizationServerApi {
     }
 
     @Override
-    public Response authorizationServerIdJwksGet(UUID authorizationServerId) {
+    public Response getAuthorizationServerJwks(UUID authorizationServerId) {
         return Response.ok().entity(
                 authorizationServerService.getJwksForAuthorizationServer(authorizationServerId)
         ).build();
     }
 
     @Override
+    public Response getOpenIdConnectionWellKnown(UUID authorizationServerId) {
+        final var authorizationServer = authorizationServerService.getAuthorizationServer(authorizationServerId);
+        var wellKnown = new com.cartobucket.auth.model.generated.WellKnown();
+        wellKnown.setIssuer(String.valueOf(authorizationServer.getServerUrl()));
+        wellKnown.setAuthorizationEndpoint(
+                authorizationServer.getServerUrl() + "/" + authorizationServer.getId() + "/authorization/");
+        wellKnown.setTokenEndpoint(
+                authorizationServer.getServerUrl() + "/" + authorizationServer.getId() + "token/");
+        wellKnown.setJwksUri(
+                authorizationServer.getServerUrl() + "/" + authorizationServer.getId() + "/jwks/");
+        wellKnown.setRevocationEndpoint(
+                authorizationServer.getServerUrl() + "/" + authorizationServer.getId() + "/revocation/");
+        wellKnown.setUserinfoEndpoint(
+                authorizationServer.getServerUrl() + "/" + authorizationServer.getId() + "/userinfo/");
+        wellKnown.setTokenEndpointAuthMethodsSupported(
+                List.of(
+                        com.cartobucket.auth.model.generated.WellKnown.TokenEndpointAuthMethodsSupportedEnum.POST
+                )
+        );
+        wellKnown.setIdTokenSigningAlgValuesSupported(
+                List.of(
+                        com.cartobucket.auth.model.generated.WellKnown.IdTokenSigningAlgValuesSupportedEnum.RS256
+                )
+        );
+        wellKnown.setResponseTypesSupported(
+                Arrays.asList(
+                        com.cartobucket.auth.model.generated.WellKnown.ResponseTypesSupportedEnum.CODE,
+                        com.cartobucket.auth.model.generated.WellKnown.ResponseTypesSupportedEnum.CODE_ID_TOKEN,
+                        com.cartobucket.auth.model.generated.WellKnown.ResponseTypesSupportedEnum.TOKEN
+                )
+        );
+        wellKnown.setCodeChallengeMethodsSupported(List.of(com.cartobucket.auth.model.generated.WellKnown.CodeChallengeMethodsSupportedEnum.S256));
+        wellKnown.setGrantTypesSupported(
+                Arrays.asList(
+                        AccessTokenRequest.GrantTypeEnum.CLIENT_CREDENTIALS.value(),
+                        AccessTokenRequest.GrantTypeEnum.AUTHORIZATION_CODE.value()
+                )
+        );
+        return Response.ok().entity(wellKnown).build();
+    }
+
+    @Override
+    public Response getUserInfo(UUID authorizationServerId, String authorization) {
+        final var authorizationServer = authorizationServerService.getAuthorizationServer(
+                authorizationServerId
+        );
+        // TODO: Maybe this makes more sense in the userService?
+        final var jwtClaims = authorizationServerService.validateJwtForAuthorizationServer(
+                authorizationServer,
+                authorization
+        );
+        try {
+            return Response
+                    .ok()
+                    .entity(userService.getUser(UUID.fromString(jwtClaims.getSubject())).getProfile())
+                    .build();
+        } catch (MalformedClaimException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    @Override
     @Consumes({ "*/*" })
-    public Response authorizationServerIdTokenPost(UUID authorizationServerId, AccessTokenRequest accessTokenRequest) {
+    public Response initiateAuthorization(UUID authorizationServerId, String clientId, String responseType, String codeChallenge, String codeChallengeMethod, String redirectUri, String scope, String state, String nonce) {
+        return Response.ok().entity(authorizationServerService.renderLogin(authorizationServerId)).build();
+    }
+
+    @Override
+    public Response issueToken(UUID authorizationServerId, AccessTokenRequest accessTokenRequest) {
         final var authorizationServer = authorizationServerService.getAuthorizationServer(authorizationServerId);
         switch (accessTokenRequest.getGrantType()) {
             case CLIENT_CREDENTIALS -> {
@@ -108,25 +162,5 @@ public class AuthorizationServer implements AuthorizationServerApi {
             }
         }
         throw new BadRequestException();
-    }
-
-    @Override
-    public Response authorizationServerIdUserinfoGet(UUID authorizationServerId, String idToken) {
-        final var authorizationServer = authorizationServerService.getAuthorizationServer(
-                authorizationServerId
-        );
-        // TODO: Maybe this makes more sense in the userService?
-        final var jwtClaims = authorizationServerService.validateJwtForAuthorizationServer(
-                authorizationServer,
-                idToken
-        );
-        try {
-            return Response
-                    .ok()
-                    .entity(userService.getUser(UUID.fromString(jwtClaims.getSubject())).getProfile())
-                    .build();
-        } catch (MalformedClaimException ex) {
-            throw new RuntimeException(ex);
-        }
     }
 }
