@@ -17,24 +17,24 @@ public class Scopes implements ScopesApi {
     }
 
     @Override
-    public Response scopesGet(List<UUID> authorizationServerId) {
-        var requestFilter = ScopeRequestFilterMapper.to(authorizationServerId);
-        return Response.ok().entity(scopeService.getScopes(requestFilter)).build();
-    }
-
-    @Override
-    public Response scopesPost(ScopeRequest scopeRequest) {
+    public Response createScope(ScopeRequest scopeRequest) {
         return Response.ok().entity(scopeService.createScope(scopeRequest)).build();
     }
 
     @Override
-    public Response scopesScopeIdDelete(UUID scopeId) {
+    public Response deleteScope(UUID scopeId) {
         scopeService.deleteScope(scopeId);
         return Response.ok().build();
     }
 
     @Override
-    public Response scopesScopeIdGet(UUID scopeId) {
+    public Response getScope(UUID scopeId) {
         return Response.ok().entity(scopeService.getScope(scopeId)).build();
+    }
+
+    @Override
+    public Response listScopes(List<UUID> authorizationServerId) {
+        var requestFilter = ScopeRequestFilterMapper.to(authorizationServerId);
+        return Response.ok().entity(scopeService.getScopes(requestFilter)).build();
     }
 }

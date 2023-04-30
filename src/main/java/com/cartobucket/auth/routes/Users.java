@@ -17,7 +17,23 @@ public class Users implements UsersApi {
     }
 
     @Override
-    public Response usersGet(List<UUID> authorizationServerIds) {
+    public Response createUser(UserRequest userRequest) {
+        return Response.ok().entity(userService.createUser(userRequest)).build();
+    }
+
+    @Override
+    public Response deleteUser(UUID userId) {
+        userService.deleteUser(userId);
+        return Response.ok().build();
+    }
+
+    @Override
+    public Response getUser(UUID userId) {
+        return Response.ok().entity(userService.getUser(userId)).build();
+    }
+
+    @Override
+    public Response listUsers(List<UUID> authorizationServerIds) {
         return Response
                 .ok()
                 .entity(userService.getUsers(UserRequestFilterMapper.to(authorizationServerIds)))
@@ -25,23 +41,7 @@ public class Users implements UsersApi {
     }
 
     @Override
-    public Response usersPost(UserRequest userRequest) {
-        return Response.ok().entity(userService.createUser(userRequest)).build();
-    }
-
-    @Override
-    public Response usersUserIdDelete(UUID userId) {
-        userService.deleteUser(userId);
-        return Response.ok().build();
-    }
-
-    @Override
-    public Response usersUserIdGet(UUID userId) {
-        return Response.ok().entity(userService.getUser(userId)).build();
-    }
-
-    @Override
-    public Response usersUserIdPut(UUID userId, UserRequest userRequest) {
+    public Response updateUser(UUID userId, UserRequest userRequest) {
         return Response.ok().entity(userService.updateUser(userId, userRequest)).build();
     }
 }

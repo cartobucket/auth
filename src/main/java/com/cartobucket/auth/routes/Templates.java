@@ -18,15 +18,7 @@ public class Templates implements TemplatesApi {
     }
 
     @Override
-    public Response templatesGet(List<UUID> authorizationServerId) {
-        return Response
-                .ok()
-                .entity(templateService.getTemplates(TemplateRequestFilterMapper.to(authorizationServerId)))
-                .build();
-    }
-
-    @Override
-    public Response templatesPost(TemplateRequest templateRequest) {
+    public Response createTemplate(TemplateRequest templateRequest) {
         return Response
                 .ok()
                 .entity(templateService.createTemplate(templateRequest))
@@ -34,17 +26,26 @@ public class Templates implements TemplatesApi {
     }
 
     @Override
-    public Response templatesTemplateIdDelete(UUID templateId) {
+    public Response deleteTemplate(UUID templateId) {
+        templateService.deleteTemplate(templateId);
         return Response.ok().build();
     }
 
     @Override
-    public Response templatesTemplateIdGet(UUID templateId) {
+    public Response getTemplate(UUID templateId) {
         return Response.ok().entity(templateService.getTemplate(templateId)).build();
     }
 
     @Override
-    public Response templatesTemplateIdPut(UUID templateId, TemplateRequest templateRequest) {
+    public Response listTemplates(List<UUID> authorizationServerIds) {
+        return Response
+                .ok()
+                .entity(templateService.getTemplates(TemplateRequestFilterMapper.to(authorizationServerIds)))
+                .build();
+    }
+
+    @Override
+    public Response updateTemplate(UUID templateId, TemplateRequest templateRequest) {
         return Response.ok().entity(templateService.updateTemplate(templateId, templateRequest)).build();
     }
 }

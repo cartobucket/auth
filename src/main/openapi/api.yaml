@@ -1,4 +1,3 @@
----
 openapi: 3.0.2
 info:
   title: Cartobucket Auth
@@ -6,109 +5,28 @@ info:
   description: OAuth 2.1/OIDC Server.
   contact:
     name: Bryce Groff
-    url: https://github.com/cartobucket/auth
-    email: brycegroff@gmail.com
+    url: 'https://github.com/cartobucket/auth'
+    email: bryce@cartobucket.com
   license:
     name: MIT License
-    url: https://opensource.org/licenses/MIT
+    url: 'https://opensource.org/licenses/MIT'
+servers:
+  -
+    url: 'https://auth.cartobucket.com'
+    description: ''
 paths:
-  /applications/{applicationId}:
-    get:
-      tags:
-        - Applications
-      parameters:
-        - name: applicationId
-          schema:
-            format: UUID
-            type: string
-          in: path
-          required: true
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApplicationResponse'
-          description: Get Application
-    delete:
-      tags:
-        - Applications
-      parameters:
-        - name: applicationId
-          schema:
-            format: UUID
-            type: string
-          in: path
-          required: true
-      responses:
-        "204":
-          description: Application Deleted
-        "404":
-          description: Application Not Found
-  /applications/{applicationId}/secrets/:
-    get:
-      tags:
-        - Applications
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApplicationSecretsResponse'
-          description: List the secrets
-    post:
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ApplicationSecretRequest'
-      tags:
-        - Applications
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApplicationSecretResponse'
-          description: Create an application secret
-    parameters:
-      - name: applicationId
-        schema:
-          format: UUID
-          type: string
-        in: path
-        required: true
-  /applications/{applicationId}/secrets/{secretId}/:
-    delete:
-      tags:
-        - Applications
-      responses:
-        "204":
-          description: Delete secret
-    parameters:
-      - name: applicationId
-        schema:
-          format: UUID
-          type: string
-        in: path
-        required: true
-      - name: secretId
-        schema:
-          format: UUID
-          type: string
-        in: path
-        required: true
   /authorizationServers/:
     get:
       tags:
         - AuthorizationServers
       responses:
-        "200":
+        '200':
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/AuthorizationServersResponse'
           description: Get a list of the authorization servers.
+      operationId: listAuthorizationServers
     post:
       requestBody:
         content:
@@ -119,127 +37,21 @@ paths:
       tags:
         - AuthorizationServers
       responses:
-        "200":
+        '200':
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/AuthorizationServerResponse'
           description: Create a new Authorization Server.
-  /authorizationServers/{authorizationServerId}:
-    get:
-      tags:
-        - AuthorizationServers
-      parameters:
-        - name: authorizationServerId
-          schema:
-            format: UUID
-            type: string
-          in: path
-          required: true
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AuthorizationServerResponse'
-          description: Get an Authorization Server.
-    put:
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/AuthorizationServerRequest'
-        required: true
-      tags:
-        - AuthorizationServers
-      parameters:
-        - name: authorizationServerId
-          schema:
-            format: UUID
-            type: string
-          in: path
-          required: true
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AuthorizationServerResponse'
-          description: Update the full body of an Authorization Server.
-    delete:
-      tags:
-        - AuthorizationServers
-      parameters:
-        - name: authorizationServerId
-          schema:
-            format: UUID
-            type: string
-          in: path
-          required: true
-      responses:
-        "204":
-          description: Delete an Authorization Server.
-  /users/{userId}:
-    get:
-      tags:
-        - Users
-      parameters:
-        - name: userId
-          schema:
-            format: UUID
-            type: string
-          in: path
-          required: true
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UserResponse'
-          description: Get a User.
-    put:
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UserRequest'
-        required: true
-      tags:
-        - Users
-      parameters:
-        - name: userId
-          schema:
-            format: UUID
-            type: string
-          in: path
-          required: true
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UserResponse'
-          description: Update a User.
-    delete:
-      tags:
-        - Users
-      parameters:
-        - name: userId
-          schema:
-            format: UUID
-            type: string
-          in: path
-          required: true
-      responses:
-        "200":
-          description: Delete a User.
+      operationId: createAuthorizationServer
   /applications/:
     get:
       tags:
         - Applications
       parameters:
-        - name: authorizationServerId
-          description: ""
+        -
+          name: authorizationServerIds
+          description: ''
           schema:
             type: array
             items:
@@ -247,12 +59,13 @@ paths:
               type: string
           in: query
       responses:
-        "200":
+        '200':
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApplicationsResponse'
           description: Get Applications
+      operationId: listApplications
     post:
       requestBody:
         content:
@@ -262,19 +75,21 @@ paths:
       tags:
         - Applications
       responses:
-        "200":
+        '200':
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApplicationResponse'
           description: Create Application
+      operationId: createApplication
   /users/:
     get:
       tags:
         - Users
       parameters:
-        - name: authorizationServerId
-          description: ""
+        -
+          name: authorizationServerIds
+          description: ''
           schema:
             type: array
             items:
@@ -282,12 +97,13 @@ paths:
               type: string
           in: query
       responses:
-        "200":
+        '200':
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/UsersResponse'
           description: Get a list of User.
+      operationId: listUsers
     post:
       requestBody:
         content:
@@ -298,19 +114,21 @@ paths:
       tags:
         - Users
       responses:
-        "200":
+        '200':
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/UserResponse'
           description: Create a User.
+      operationId: createUser
   /templates/:
     get:
       tags:
         - Templates
       parameters:
-        - name: authorizationServerId
-          description: ""
+        -
+          name: authorizationServerIds
+          description: ''
           schema:
             type: array
             items:
@@ -318,12 +136,13 @@ paths:
               type: string
           in: query
       responses:
-        "200":
+        '200':
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/TemplateResponse'
           description: Gets a list of clients.
+      operationId: listTemplates
     post:
       requestBody:
         content:
@@ -334,19 +153,21 @@ paths:
       tags:
         - Templates
       responses:
-        "200":
+        '200':
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/TemplateResponse'
           description: Creates a new client.
+      operationId: createTemplate
   /clients/:
     get:
       tags:
         - Clients
       parameters:
-        - name: authorizationServerId
-          description: ""
+        -
+          name: authorizationServerIds
+          description: ''
           schema:
             type: array
             items:
@@ -354,12 +175,13 @@ paths:
               type: string
           in: query
       responses:
-        "200":
+        '200':
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ClientsResponse'
           description: Gets a list of clients.
+      operationId: listClients
     post:
       requestBody:
         content:
@@ -370,100 +192,21 @@ paths:
       tags:
         - Clients
       responses:
-        "200":
+        '200':
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ClientResponse'
           description: Creates a new client.
-  /clients/{clientId}:
-    get:
-      tags:
-        - Clients
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ClientResponse'
-          description: Get the client.
-    put:
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ClientRequest'
-        required: true
-      tags:
-        - Clients
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ClientResponse'
-          description: Update the whole client.
-    delete:
-      tags:
-        - Clients
-      responses:
-        "200":
-          description: Delete the client.
-    parameters:
-      - name: clientId
-        description: The clientId of the resource.
-        schema:
-          format: UUID
-          type: string
-        in: path
-        required: true
-  /templates/{templateId}/:
-    get:
-      tags:
-        - Templates
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/TemplateResponse'
-          description: Get the template.
-    put:
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/TemplateRequest'
-        required: true
-      tags:
-        - Templates
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/TemplateResponse'
-          description: Update the whole template.
-    delete:
-      tags:
-        - Templates
-      responses:
-        "200":
-          description: Delete the template.
-    parameters:
-      - name: templateId
-        schema:
-          format: UUID
-          type: string
-        in: path
-        required: true
+      operationId: createClient
   /scopes/:
     get:
       tags:
         - Scopes
       parameters:
-        - name: authorizationServerId
-          description: ""
+        -
+          name: authorizationServerIds
+          description: ''
           schema:
             type: array
             items:
@@ -471,12 +214,13 @@ paths:
               type: string
           in: query
       responses:
-        "200":
+        '200':
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ScopesResponse'
           description: Gets a list of clients.
+      operationId: listScopes
     post:
       requestBody:
         content:
@@ -487,145 +231,112 @@ paths:
       tags:
         - Scopes
       responses:
-        "200":
+        '200':
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ScopeResponse'
           description: Creates a new client.
-  /scopes/{scopeId}/:
-    get:
-      tags:
-        - Scopes
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ScopeResponse'
-          description: Get the template.
-    delete:
-      tags:
-        - Scopes
-      responses:
-        "200":
-          description: Delete the template.
-    parameters:
-      - name: scopeId
-        schema:
-          format: UUID
-          type: string
-        in: path
-        required: true
-  /{authorizationServerId}/issuer/:
-    parameters:
-      - name: authorizationServerId
-        schema:
-          format: UUID
-          type: string
-        in: path
-        required: true
-        x-validator: '@ValidAuthroizationServerRequest'
-  /{authorizationServerId}/end_session/:
-    parameters:
-      - name: authorizationServerId
-        schema:
-          format: UUID
-          type: string
-        in: path
-        required: true
-        x-validator: '@ValidAuthorizationServerRequest'
-  /{authorizationServerId}/jwks/:
-    summary: JWKS
-    description: JWKS
+      operationId: createScope
+  '/{authorizationServerId}/.well-known/openid-connect/':
     get:
       tags:
         - AuthorizationServer
       responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/JWKS'
-          description: JWKS
-      summary: JWKS
-    parameters:
-      - name: authorizationServerId
-        schema:
-          format: UUID
-          type: string
-        in: path
-        required: true
-        x-validator: '@ValidAuthorizationServerRequest'
-  /{authorizationServerId}/userinfo/:
-    summary: Get userinfo
-    get:
-      tags:
-        - AuthorizationServer
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                type: object
-          description: Get userinfo
-      summary: User Info
-    parameters:
-      - name: authorizationServerId
-        schema:
-          format: UUID
-          type: string
-        in: path
-        required: true
-        x-validator: '@ValidAuthorizationServerRequest'
-      - name: Authorization
-        description: ""
-        schema:
-          type: string
-        in: header
-        required: true
-  /{authorizationServerId}/.well-known/openid-connect/:
-    get:
-      tags:
-        - WellKnown
-      responses:
-        "200":
+        '200':
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/WellKnown'
           description: Returns a well-known configuration object.
+      operationId: getOpenIdConnectionWellKnown
       summary: Well Known Endpoint
     parameters:
-      - name: authorizationServerId
+      -
+        examples:
+          authorizationServerId:
+            value: 99de126f-cb58-4f92-bd80-afbc354c253d
+        name: authorizationServerId
         schema:
           format: UUID
           type: string
         in: path
         required: true
         x-validator: '@ValidAuthorizationServerRequest'
-  /{authorizationServerId}/authorization/:
+  '/authorizationServers/{authorizationServerId}':
+    get:
+      tags:
+        - AuthorizationServers
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthorizationServerResponse'
+          description: Get an Authorization Server.
+      operationId: getAuthorizationServer
+    put:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthorizationServerRequest'
+        required: true
+      tags:
+        - AuthorizationServers
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthorizationServerResponse'
+          description: Update the full body of an Authorization Server.
+      operationId: updateAuthorizationServer
+    delete:
+      tags:
+        - AuthorizationServers
+      responses:
+        '204':
+          description: Delete an Authorization Server.
+      operationId: deleteAuthorizationServer
+    parameters:
+      -
+        examples:
+          authorizationServerId:
+            value: 99de126f-cb58-4f92-bd80-afbc354c253d
+        name: authorizationServerId
+        schema:
+          format: UUID
+          type: string
+        in: path
+        required: true
+        x-validator: '@ValidAuthorizationServerRequest'
+  '/{authorizationServerId}/authorization/':
     get:
       tags:
         - AuthorizationServer
       parameters:
-        - name: code_challenge
-          description: ""
+        -
+          name: code_challenge
+          description: ''
           schema:
             type: string
           in: query
-        - name: code_challenge_method
-          description: ""
+        -
+          name: code_challenge_method
+          description: ''
           schema:
             type: string
           in: query
-        - name: redirect_uri
-          description: ""
+        -
+          name: redirect_uri
+          description: ''
           schema:
             type: string
           in: query
-        - name: response_type
-          description: ""
+        -
+          name: response_type
+          description: ''
           schema:
             enum:
               - code
@@ -633,56 +344,64 @@ paths:
             type: string
           in: query
           required: true
-        - name: scope
-          description: ""
+        -
+          name: scope
+          description: ''
           schema:
             type: string
           in: query
-        - name: state
-          description: ""
+        -
+          name: state
+          description: ''
           schema:
             type: string
           in: query
-        - name: nonce
-          description: ""
+        -
+          name: nonce
+          description: ''
           schema:
             type: string
           in: query
       responses:
-        "200":
+        '200':
           content:
             text/html:
               schema:
                 type: string
           description: Login screen
+      operationId: initiateAuthorization
       summary: Authorization Endpoint
     post:
       requestBody:
         content:
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/UserAuthorizationRequest'
+              $ref: '#/components/schemas/PasswordAuthRequest'
         required: true
       tags:
         - AuthorizationServer
       parameters:
-        - name: code_challenge
-          description: ""
+        -
+          name: code_challenge
+          description: ''
           schema:
             type: string
           in: query
-        - name: code_challenge_method
-          description: ""
+        -
+          name: code_challenge_method
+          description: ''
           schema:
             type: string
           in: query
-        - name: redirect_uri
-          description: ""
+        -
+          name: redirect_uri
+          description: ''
           schema:
             type: string
           in: query
-        - name: response_type
-          description: ""
+        -
+          name: response_type
+          description: ''
           schema:
             enum:
               - code
@@ -690,43 +409,105 @@ paths:
             type: string
           in: query
           required: true
-        - name: scope
-          description: ""
+        -
+          name: scope
+          description: ''
           schema:
             type: string
           in: query
-        - name: state
-          description: ""
+        -
+          name: state
+          description: ''
           schema:
             type: string
           in: query
-        - name: nonce
-          description: ""
+        -
+          name: nonce
+          description: ''
           schema:
             type: string
           in: query
       responses:
-        "200":
+        '200':
           content:
             text/html: {}
           description: Rerender the form when the user does not provide valid credentials.
-        "302":
+        '302':
           description: Redirect the user back to the redirect uri on success.
+      operationId: createAuthorizationCode
     parameters:
-      - name: authorizationServerId
+      -
+        examples:
+          authorizationServerId:
+            value: 99de126f-cb58-4f92-bd80-afbc354c253d
+        name: authorizationServerId
         schema:
           format: UUID
           type: string
         in: path
         required: true
         x-validator: '@ValidAuthorizationServerRequest'
-      - name: client_id
-        description: ""
+      -
+        name: client_id
+        description: ''
         schema:
           type: string
         in: query
         required: true
-  /{authorizationServerId}/token/:
+  '/{authorizationServerId}/end_session/':
+    parameters:
+      -
+        examples:
+          authorizationServerId:
+            value: 99de126f-cb58-4f92-bd80-afbc354c253d
+        name: authorizationServerId
+        schema:
+          format: UUID
+          type: string
+        in: path
+        required: true
+        x-validator: '@ValidAuthorizationServerRequest'
+  '/{authorizationServerId}/issuer/':
+    parameters:
+      -
+        examples:
+          authorizationServerId:
+            value: 99de126f-cb58-4f92-bd80-afbc354c253d
+        name: authorizationServerId
+        schema:
+          format: UUID
+          type: string
+        in: path
+        required: true
+        x-validator: '@ValidAuthroizationServerRequest'
+  '/{authorizationServerId}/jwks/':
+    summary: JWKS
+    description: JWKS
+    get:
+      tags:
+        - AuthorizationServer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JWKS'
+          description: JWKS
+      operationId: getAuthorizationServerJwks
+      summary: JWKS
+    parameters:
+      -
+        examples:
+          authorizationServerId:
+            value: 99de126f-cb58-4f92-bd80-afbc354c253d
+        name: authorizationServerId
+        schema:
+          format: UUID
+          type: string
+        in: path
+        required: true
+        x-validator: '@ValidAuthorizationServerRequest'
+  '/{authorizationServerId}/token/':
     post:
       requestBody:
         content:
@@ -738,15 +519,325 @@ paths:
       tags:
         - AuthorizationServer
       responses:
-        "200":
+        '200':
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/AccessTokenResponse'
           description: Get an Access Token
+      operationId: issueToken
       summary: Token Endpoint
     parameters:
-      - name: authorizationServerId
+      -
+        examples:
+          authorizationServerId:
+            value: 99de126f-cb58-4f92-bd80-afbc354c253d
+        name: authorizationServerId
+        schema:
+          format: UUID
+          type: string
+        in: path
+        required: true
+  '/{authorizationServerId}/userinfo/':
+    summary: Get userinfo
+    get:
+      tags:
+        - AuthorizationServer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+          description: Get userinfo
+      operationId: getUserInfo
+      summary: User Info
+    parameters:
+      -
+        examples:
+          authorizationServerId:
+            value: 99de126f-cb58-4f92-bd80-afbc354c253d
+        name: authorizationServerId
+        schema:
+          format: UUID
+          type: string
+        in: path
+        required: true
+        x-validator: '@ValidAuthorizationServerRequest'
+      -
+        name: Authorization
+        description: ''
+        schema:
+          type: string
+        in: header
+        required: true
+  '/applications/{applicationId}':
+    get:
+      tags:
+        - Applications
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApplicationResponse'
+          description: Get Application
+      operationId: getApplication
+    delete:
+      tags:
+        - Applications
+      responses:
+        '204':
+          description: Application Deleted
+        '404':
+          description: Application Not Found
+      operationId: deleteApplication
+    parameters:
+      -
+        examples:
+          applicationId:
+            value: 99de126f-cb58-4f92-bd80-afbc354c253d
+        name: applicationId
+        schema:
+          format: UUID
+          type: string
+        in: path
+        required: true
+  '/applications/{applicationId}/secrets/':
+    get:
+      tags:
+        - Applications
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApplicationSecretsResponse'
+          description: List the secrets
+      operationId: listApplicationSecrets
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApplicationSecretRequest'
+      tags:
+        - Applications
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApplicationSecretResponse'
+          description: Create an application secret
+      operationId: createApplicationSecret
+    parameters:
+      -
+        examples:
+          applicationId:
+            value: 99de126f-cb58-4f92-bd80-afbc354c253d
+        name: applicationId
+        schema:
+          format: UUID
+          type: string
+        in: path
+        required: true
+  '/applications/{applicationId}/secrets/{secretId}/':
+    delete:
+      tags:
+        - Applications
+      responses:
+        '204':
+          description: Delete secret
+      operationId: deleteApplicationSecret
+    parameters:
+      -
+        examples:
+          applicationId:
+            value: 99de126f-cb58-4f92-bd80-afbc354c253d
+        name: applicationId
+        schema:
+          format: UUID
+          type: string
+        in: path
+        required: true
+      -
+        examples:
+          secretId:
+            value: 99de126f-cb58-4f92-bd80-afbc354c253d
+        name: secretId
+        schema:
+          format: UUID
+          type: string
+        in: path
+        required: true
+  '/clients/{clientId}':
+    get:
+      tags:
+        - Clients
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientResponse'
+          description: Get the client.
+      operationId: getClient
+    put:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClientRequest'
+        required: true
+      tags:
+        - Clients
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientResponse'
+          description: Update the whole client.
+      operationId: updateClient
+    delete:
+      tags:
+        - Clients
+      responses:
+        '200':
+          description: Delete the client.
+      operationId: deleteClient
+    parameters:
+      -
+        examples:
+          clientId:
+            value: 99de126f-cb58-4f92-bd80-afbc354c253d
+        name: clientId
+        description: The clientId of the resource.
+        schema:
+          format: UUID
+          type: string
+        in: path
+        required: true
+  '/scopes/{scopeId}/':
+    get:
+      tags:
+        - Scopes
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScopeResponse'
+          description: Get the template.
+      operationId: getScope
+    delete:
+      tags:
+        - Scopes
+      responses:
+        '200':
+          description: Delete the template.
+      operationId: deleteScope
+    parameters:
+      -
+        examples:
+          scopeId:
+            value: 99de126f-cb58-4f92-bd80-afbc354c253d
+        name: scopeId
+        schema:
+          format: UUID
+          type: string
+        in: path
+        required: true
+  '/templates/{templateId}/':
+    get:
+      tags:
+        - Templates
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TemplateResponse'
+          description: Get the template.
+      operationId: getTemplate
+    put:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TemplateRequest'
+        required: true
+      tags:
+        - Templates
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TemplateResponse'
+          description: Update the whole template.
+      operationId: updateTemplate
+    delete:
+      tags:
+        - Templates
+      responses:
+        '200':
+          description: Delete the template.
+      operationId: deleteTemplate
+    parameters:
+      -
+        examples:
+          templateId:
+            value: 99de126f-cb58-4f92-bd80-afbc354c253d
+        name: templateId
+        schema:
+          format: UUID
+          type: string
+        in: path
+        required: true
+  '/users/{userId}':
+    get:
+      tags:
+        - Users
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+          description: Get a User.
+      operationId: getUser
+    put:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+        required: true
+      tags:
+        - Users
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+          description: Update a User.
+      operationId: updateUser
+    delete:
+      tags:
+        - Users
+      responses:
+        '200':
+          description: Delete a User.
+      operationId: deleteUser
+    parameters:
+      -
+        examples:
+          userId:
+            value: 99de126f-cb58-4f92-bd80-afbc354c253d
+        name: userId
         schema:
           format: UUID
           type: string
@@ -756,7 +847,7 @@ components:
   schemas:
     WellKnown:
       title: Root Type for WellKnown
-      description: ""
+      description: ''
       type: object
       properties:
         issuer:
@@ -838,11 +929,11 @@ components:
           items:
             type: string
       example:
-        issuer: https://accounts.example.com
-        authorization_endpoint: https://accounts.example.com/authorization_endpoint/
-        token_endpoint: https://accounts.example.com/token_endpoint/
-        userinfo_endpoint: https://accounts.example.com/userinfo_endpoint/
-        jwks_uri: https://accounts.example.com/jwks_uri/
+        issuer: 'https://accounts.example.com'
+        authorization_endpoint: 'https://accounts.example.com/authorization_endpoint/'
+        token_endpoint: 'https://accounts.example.com/token_endpoint/'
+        userinfo_endpoint: 'https://accounts.example.com/userinfo_endpoint/'
+        jwks_uri: 'https://accounts.example.com/jwks_uri/'
         response_types_supported:
           - code
           - token
@@ -885,7 +976,7 @@ components:
           - client_credentials
     JWKS:
       title: Root Type for JWKS
-      description: ""
+      description: ''
       type: object
       properties:
         keys:
@@ -894,29 +985,35 @@ components:
             $ref: '#/components/schemas/JWK'
       example:
         keys:
-          - kid: n7h97O0YMBfLZDCHI60r6GC4VtcLJSK2dfKUVBDbF1w
+          -
+            kid: n7h97O0YMBfLZDCHI60r6GC4VtcLJSK2dfKUVBDbF1w
             kty: RSA
             alg: RS256
             use: sig
-            "n": meCAjDZk4scn7XcWZPPeQ9WdgquCjLLADUQuGwZkpmM9c2fRHBK7NNOtUHqDlTDq-lQ-5Sh3JN8ZCn0UcTig_EqEA5JneysnyPXGDmU7xOTiQj0WZ2eriuaLfrByT9pnpvZcyT6RH_L6Heienjiswrt1OC_coqnF7o1d5lAWdJlFhwv39-r4s67TAmNFMPa8tqax2ywLAUK4D1gn6MKmpHrTY4NUUTInIaVtNzaZOVWcXDui4PBLeut5xJZbZyz6QsFnjV_5bS3Wa9F0zcF-Yi6AS2U8CjxoLmvvZglBCDJlnc-srfYw6hwIwQihirp0_-kHUbVNxwgsZj8d_2p6Aw
+            'n': >-
+              meCAjDZk4scn7XcWZPPeQ9WdgquCjLLADUQuGwZkpmM9c2fRHBK7NNOtUHqDlTDq-lQ-5Sh3JN8ZCn0UcTig_EqEA5JneysnyPXGDmU7xOTiQj0WZ2eriuaLfrByT9pnpvZcyT6RH_L6Heienjiswrt1OC_coqnF7o1d5lAWdJlFhwv39-r4s67TAmNFMPa8tqax2ywLAUK4D1gn6MKmpHrTY4NUUTInIaVtNzaZOVWcXDui4PBLeut5xJZbZyz6QsFnjV_5bS3Wa9F0zcF-Yi6AS2U8CjxoLmvvZglBCDJlnc-srfYw6hwIwQihirp0_-kHUbVNxwgsZj8d_2p6Aw
             e: AQAB
             x5c:
-              - MIICozCCAYsCBgGDs3zGNzANBgkqhkiG9w0BAQsFADAVMRMwEQYDVQQDDApOZHB0Yy10ZXN0MB4XDTIyMTAwNzE3MjU0MloXDTMyMTAwNzE3MjcyMlowFTETMBEGA1UEAwwKTmRwdGMtdGVzdDCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAJnggIw2ZOLHJ+13FmTz3kPVnYKrgoyywA1ELhsGZKZjPXNn0RwSuzTTrVB6g5Uw6vpUPuUodyTfGQp9FHE4oPxKhAOSZ3srJ8j1xg5lO8Tk4kI9Fmdnq4rmi36wck/aZ6b2XMk+kR/y+h3onp44rMK7dTgv3KKpxe6NXeZQFnSZRYcL9/fq+LOu0wJjRTD2vLamsdssCwFCuA9YJ+jCpqR602ODVFEyJyGlbTc2mTlVnFw7ouDwS3rrecSWW2cs+kLBZ41f+W0t1mvRdM3BfmIugEtlPAo8aC5r72YJQQgyZZ3PrK32MOocCMEIoYq6dP/pB1G1TccILGY/Hf9qegMCAwEAATANBgkqhkiG9w0BAQsFAAOCAQEAPAAsLeUCIDKzxLjqziMno5rIN/KOKOTiZJoq5ep6u5I8x7Q/5tld9pxrT84A4PFH0lRHVWkG9vVatXiUJFXwR5Hx4UW5E3Zswqs5cWj/8fuDaPJbKsYol8wDGcr0p+E4LySed7ReYo6NQU8v8QXSvBvwUpBk99iYhoNGMqx0p21z7SklqdmE6trWu+rVwyh1bGOTRBFXD3eKp5bRWBwRV58xNwVG+EUBhYM7BIzH73j3Vl1muCHg1oYxiayRuEyuAMSlCTr/QeyLbD6L4JGqiHWpNJQVgyT7U/r/xwQEF1PbmPqduVyJq9RJf06Plg1iWwyOBsB5t8GlhOGOOJIpaQ==
+              - >-
+                MIICozCCAYsCBgGDs3zGNzANBgkqhkiG9w0BAQsFADAVMRMwEQYDVQQDDApOZHB0Yy10ZXN0MB4XDTIyMTAwNzE3MjU0MloXDTMyMTAwNzE3MjcyMlowFTETMBEGA1UEAwwKTmRwdGMtdGVzdDCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAJnggIw2ZOLHJ+13FmTz3kPVnYKrgoyywA1ELhsGZKZjPXNn0RwSuzTTrVB6g5Uw6vpUPuUodyTfGQp9FHE4oPxKhAOSZ3srJ8j1xg5lO8Tk4kI9Fmdnq4rmi36wck/aZ6b2XMk+kR/y+h3onp44rMK7dTgv3KKpxe6NXeZQFnSZRYcL9/fq+LOu0wJjRTD2vLamsdssCwFCuA9YJ+jCpqR602ODVFEyJyGlbTc2mTlVnFw7ouDwS3rrecSWW2cs+kLBZ41f+W0t1mvRdM3BfmIugEtlPAo8aC5r72YJQQgyZZ3PrK32MOocCMEIoYq6dP/pB1G1TccILGY/Hf9qegMCAwEAATANBgkqhkiG9w0BAQsFAAOCAQEAPAAsLeUCIDKzxLjqziMno5rIN/KOKOTiZJoq5ep6u5I8x7Q/5tld9pxrT84A4PFH0lRHVWkG9vVatXiUJFXwR5Hx4UW5E3Zswqs5cWj/8fuDaPJbKsYol8wDGcr0p+E4LySed7ReYo6NQU8v8QXSvBvwUpBk99iYhoNGMqx0p21z7SklqdmE6trWu+rVwyh1bGOTRBFXD3eKp5bRWBwRV58xNwVG+EUBhYM7BIzH73j3Vl1muCHg1oYxiayRuEyuAMSlCTr/QeyLbD6L4JGqiHWpNJQVgyT7U/r/xwQEF1PbmPqduVyJq9RJf06Plg1iWwyOBsB5t8GlhOGOOJIpaQ==
             x5t: xoivC29M-elGM11ifPKDuMShiu0
-            x5t#S256: 58mTv9dKrsEmx7n11rR3vDwlLBOdbhUCf4rmUP4vLkI
-          - kid: CXPHOcjZ8wTmQaeL0Nao2HIoIrJTOo-pUVBrVW8bGoU
+            'x5t#S256': 58mTv9dKrsEmx7n11rR3vDwlLBOdbhUCf4rmUP4vLkI
+          -
+            kid: CXPHOcjZ8wTmQaeL0Nao2HIoIrJTOo-pUVBrVW8bGoU
             kty: RSA
             alg: RSA-OAEP
             use: enc
-            "n": xl6Rmvd5-FjgfIMbJo61a34qMwxus4TftpYShMo8gxB601u07HvXfX8pMVYufh7fYEZut5tTrqoqSx8GL28imDXRMifoWIayhb-Q_JJFGQMJjx5XTKoGloB_kVXR5-YXDx_siU4qbaKsKd_pH6JD8EHB7w1GaFC3KGi--wfrZyIEJEaxK7CXiXTKLjeQHZ8KVSpPJL4xxloZuS2y-JHKmJRt_pskN4260gl-a4D37V0O6E_e3xBOU5c7M293ibGnH5UR5Ufm7KusUdrYFH6TzhnnkQJDHLtzMdaMatsnfTNS1ZYef8UpZyl0_p8TMvRiwdHazEEWijHAIFCTMfx15w
+            'n': >-
+              xl6Rmvd5-FjgfIMbJo61a34qMwxus4TftpYShMo8gxB601u07HvXfX8pMVYufh7fYEZut5tTrqoqSx8GL28imDXRMifoWIayhb-Q_JJFGQMJjx5XTKoGloB_kVXR5-YXDx_siU4qbaKsKd_pH6JD8EHB7w1GaFC3KGi--wfrZyIEJEaxK7CXiXTKLjeQHZ8KVSpPJL4xxloZuS2y-JHKmJRt_pskN4260gl-a4D37V0O6E_e3xBOU5c7M293ibGnH5UR5Ufm7KusUdrYFH6TzhnnkQJDHLtzMdaMatsnfTNS1ZYef8UpZyl0_p8TMvRiwdHazEEWijHAIFCTMfx15w
             e: AQAB
             x5c:
-              - MIICozCCAYsCBgGDs3zHpzANBgkqhkiG9w0BAQsFADAVMRMwEQYDVQQDDApOZHB0Yy10ZXN0MB4XDTIyMTAwNzE3MjU0MloXDTMyMTAwNzE3MjcyMlowFTETMBEGA1UEAwwKTmRwdGMtdGVzdDCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAMZekZr3efhY4HyDGyaOtWt+KjMMbrOE37aWEoTKPIMQetNbtOx7131/KTFWLn4e32BGbrebU66qKksfBi9vIpg10TIn6FiGsoW/kPySRRkDCY8eV0yqBpaAf5FV0efmFw8f7IlOKm2irCnf6R+iQ/BBwe8NRmhQtyhovvsH62ciBCRGsSuwl4l0yi43kB2fClUqTyS+McZaGbktsviRypiUbf6bJDeNutIJfmuA9+1dDuhP3t8QTlOXOzNvd4mxpx+VEeVH5uyrrFHa2BR+k84Z55ECQxy7czHWjGrbJ30zUtWWHn/FKWcpdP6fEzL0YsHR2sxBFooxwCBQkzH8decCAwEAATANBgkqhkiG9w0BAQsFAAOCAQEAKG8+o3zKMq5Ge4oliY4ht62zkd//ucoif25sU+8+XgTpz3IIFy47zCGdOhAG0JroqklQY20mKWnJGuWEbwc1ZqON/C/nnw2N2vIi7IHNUCX7+1B8pAcbmYU+FslAdsnJm6lui97gIADA+I7GoM++ovxzKknrTOH8eBSVtHFv/SotMbqLNAHDitb1W4zaO8MFITIwBlnI3n+jvETULeYFeCcFVvsxmsFEOvJZxIyFeWukw+NxyTBJeS5WEmJFMFqE7pkGJvGRl3iPYc/+7tQSNzPL6Wi9PvCzbFF+GpS5LRCTyUE+v+ldxwYnv7oo4zirWZOUxhI4kEOTo48HnItfOw==
+              - >-
+                MIICozCCAYsCBgGDs3zHpzANBgkqhkiG9w0BAQsFADAVMRMwEQYDVQQDDApOZHB0Yy10ZXN0MB4XDTIyMTAwNzE3MjU0MloXDTMyMTAwNzE3MjcyMlowFTETMBEGA1UEAwwKTmRwdGMtdGVzdDCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAMZekZr3efhY4HyDGyaOtWt+KjMMbrOE37aWEoTKPIMQetNbtOx7131/KTFWLn4e32BGbrebU66qKksfBi9vIpg10TIn6FiGsoW/kPySRRkDCY8eV0yqBpaAf5FV0efmFw8f7IlOKm2irCnf6R+iQ/BBwe8NRmhQtyhovvsH62ciBCRGsSuwl4l0yi43kB2fClUqTyS+McZaGbktsviRypiUbf6bJDeNutIJfmuA9+1dDuhP3t8QTlOXOzNvd4mxpx+VEeVH5uyrrFHa2BR+k84Z55ECQxy7czHWjGrbJ30zUtWWHn/FKWcpdP6fEzL0YsHR2sxBFooxwCBQkzH8decCAwEAATANBgkqhkiG9w0BAQsFAAOCAQEAKG8+o3zKMq5Ge4oliY4ht62zkd//ucoif25sU+8+XgTpz3IIFy47zCGdOhAG0JroqklQY20mKWnJGuWEbwc1ZqON/C/nnw2N2vIi7IHNUCX7+1B8pAcbmYU+FslAdsnJm6lui97gIADA+I7GoM++ovxzKknrTOH8eBSVtHFv/SotMbqLNAHDitb1W4zaO8MFITIwBlnI3n+jvETULeYFeCcFVvsxmsFEOvJZxIyFeWukw+NxyTBJeS5WEmJFMFqE7pkGJvGRl3iPYc/+7tQSNzPL6Wi9PvCzbFF+GpS5LRCTyUE+v+ldxwYnv7oo4zirWZOUxhI4kEOTo48HnItfOw==
             x5t: kN0agfIDCc9Z0NmhpgdYv7-NWVk
-            x5t#S256: EgDdxvMIJGHahBN2cbLAbjKfCiTd-hqY9zsKxUt1oV0
+            'x5t#S256': EgDdxvMIJGHahBN2cbLAbjKfCiTd-hqY9zsKxUt1oV0
     AccessTokenResponse:
       title: Root Type for AccessToken
-      description: ""
+      description: ''
       type: object
       properties:
         access_token:
@@ -935,7 +1032,7 @@ components:
           format: JWT
           type: string
         scope:
-          description: ""
+          description: ''
           type: string
       example:
         access_token: xxxxx.yyyyy.zzzzz
@@ -946,7 +1043,7 @@ components:
         scope: test.read
     AccessTokenRequest:
       title: Root Type for AccessTokenRequest
-      description: ""
+      description: ''
       type: object
       properties:
         client_id:
@@ -959,24 +1056,24 @@ components:
             - authorization_code
           type: string
         code:
-          description: ""
+          description: ''
           type: string
         redirect_uri:
-          description: ""
+          description: ''
           type: string
         code_verifier:
-          description: ""
+          description: ''
           type: string
         scope:
-          description: ""
+          description: ''
           type: string
       example:
-        client_id: ""
-        client_secret: ""
+        client_id: ''
+        client_secret: ''
         grant_type: client_credentials
     ApplicationSecretRequest:
       title: Root Type for ApplicationSecretRequest
-      description: ""
+      description: ''
       type: object
       properties:
         expires_in:
@@ -985,7 +1082,7 @@ components:
         scopes:
           type: string
         name:
-          description: ""
+          description: ''
           type: string
       example:
         expires_in: 12000
@@ -993,7 +1090,7 @@ components:
         name: Test Secret
     AuthorizationServerRequest:
       title: Root Type for AuthorizationServerRequest
-      description: ""
+      description: ''
       required:
         - name
         - audience
@@ -1013,17 +1110,17 @@ components:
           format: int32
           type: integer
         name:
-          description: ""
+          description: ''
           type: string
       example:
         name: Test Authorization Server
-        serverUrl: https://accounts.cartobucket.com
-        audience: api://
+        serverUrl: 'https://accounts.cartobucket.com'
+        audience: 'api://'
         clientCredentialsTokenExpiration: 300
         authorizationCodeTokenExpiration: 100
     AuthorizationServerResponse:
       title: Root Type for AuthorizationServerResponse
-      description: ""
+      description: ''
       required:
         - name
         - createdOn
@@ -1043,26 +1140,26 @@ components:
           format: int32
           type: integer
         name:
-          description: ""
+          description: ''
           type: string
         createdOn:
-          description: ""
+          description: ''
           type: string
         updatedOn:
-          description: ""
+          description: ''
           type: string
       example:
         id: becb7180-4b1e-4f2b-812e-f1b86455725c
         name: Test Authorization Server
-        serverUrl: https://accounts.cartobucket.com
-        audience: api://
+        serverUrl: 'https://accounts.cartobucket.com'
+        audience: 'api://'
         clientCredentialsTokenExpiration: 300
         authorizationCodeTokenExpiration: 100
-        createdOn: 2023-01-12T02:53:55+00:00
-        updatedOn: 2023-01-12T02:53:55+00:00
+        createdOn: '2023-01-12T02:53:55+00:00'
+        updatedOn: '2023-01-12T02:53:55+00:00'
     AuthorizationServersResponse:
       title: Root Type for AuthorizationServersResponse
-      description: ""
+      description: ''
       type: object
       properties:
         authorizationServers:
@@ -1074,7 +1171,7 @@ components:
           - {}
     JWK:
       title: Root Type for JWK
-      description: ""
+      description: ''
       type: object
       properties:
         kid:
@@ -1085,7 +1182,7 @@ components:
           type: string
         use:
           type: string
-        "n":
+        'n':
           type: string
         e:
           type: string
@@ -1095,22 +1192,24 @@ components:
             type: string
         x5t:
           type: string
-        x5t#S256:
+        'x5t#S256':
           type: string
       example:
         kid: n7h97O0YMBfLZDCHI60r6GC4VtcLJSK2dfKUVBDbF1w
         kty: RSA
         alg: RS256
         use: sig
-        "n": meCAjDZk4scn7XcWZPPeQ9WdgquCjLLADUQuGwZkpmM9c2fRHBK7NNOtUHqDlTDq-lQ-5Sh3JN8ZCn0UcTig_EqEA5JneysnyPXGDmU7xOTiQj0WZ2eriuaLfrByT9pnpvZcyT6RH_L6Heienjiswrt1OC_coqnF7o1d5lAWdJlFhwv39-r4s67TAmNFMPa8tqax2ywLAUK4D1gn6MKmpHrTY4NUUTInIaVtNzaZOVWcXDui4PBLeut5xJZbZyz6QsFnjV_5bS3Wa9F0zcF-Yi6AS2U8CjxoLmvvZglBCDJlnc-srfYw6hwIwQihirp0_-kHUbVNxwgsZj8d_2p6Aw
+        'n': >-
+          meCAjDZk4scn7XcWZPPeQ9WdgquCjLLADUQuGwZkpmM9c2fRHBK7NNOtUHqDlTDq-lQ-5Sh3JN8ZCn0UcTig_EqEA5JneysnyPXGDmU7xOTiQj0WZ2eriuaLfrByT9pnpvZcyT6RH_L6Heienjiswrt1OC_coqnF7o1d5lAWdJlFhwv39-r4s67TAmNFMPa8tqax2ywLAUK4D1gn6MKmpHrTY4NUUTInIaVtNzaZOVWcXDui4PBLeut5xJZbZyz6QsFnjV_5bS3Wa9F0zcF-Yi6AS2U8CjxoLmvvZglBCDJlnc-srfYw6hwIwQihirp0_-kHUbVNxwgsZj8d_2p6Aw
         e: AQAB
         x5c:
-          - MIICozCCAYsCBgGDs3zGNzANBgkqhkiG9w0BAQsFADAVMRMwEQYDVQQDDApOZHB0Yy10ZXN0MB4XDTIyMTAwNzE3MjU0MloXDTMyMTAwNzE3MjcyMlowFTETMBEGA1UEAwwKTmRwdGMtdGVzdDCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAJnggIw2ZOLHJ+13FmTz3kPVnYKrgoyywA1ELhsGZKZjPXNn0RwSuzTTrVB6g5Uw6vpUPuUodyTfGQp9FHE4oPxKhAOSZ3srJ8j1xg5lO8Tk4kI9Fmdnq4rmi36wck/aZ6b2XMk+kR/y+h3onp44rMK7dTgv3KKpxe6NXeZQFnSZRYcL9/fq+LOu0wJjRTD2vLamsdssCwFCuA9YJ+jCpqR602ODVFEyJyGlbTc2mTlVnFw7ouDwS3rrecSWW2cs+kLBZ41f+W0t1mvRdM3BfmIugEtlPAo8aC5r72YJQQgyZZ3PrK32MOocCMEIoYq6dP/pB1G1TccILGY/Hf9qegMCAwEAATANBgkqhkiG9w0BAQsFAAOCAQEAPAAsLeUCIDKzxLjqziMno5rIN/KOKOTiZJoq5ep6u5I8x7Q/5tld9pxrT84A4PFH0lRHVWkG9vVatXiUJFXwR5Hx4UW5E3Zswqs5cWj/8fuDaPJbKsYol8wDGcr0p+E4LySed7ReYo6NQU8v8QXSvBvwUpBk99iYhoNGMqx0p21z7SklqdmE6trWu+rVwyh1bGOTRBFXD3eKp5bRWBwRV58xNwVG+EUBhYM7BIzH73j3Vl1muCHg1oYxiayRuEyuAMSlCTr/QeyLbD6L4JGqiHWpNJQVgyT7U/r/xwQEF1PbmPqduVyJq9RJf06Plg1iWwyOBsB5t8GlhOGOOJIpaQ==
+          - >-
+            MIICozCCAYsCBgGDs3zGNzANBgkqhkiG9w0BAQsFADAVMRMwEQYDVQQDDApOZHB0Yy10ZXN0MB4XDTIyMTAwNzE3MjU0MloXDTMyMTAwNzE3MjcyMlowFTETMBEGA1UEAwwKTmRwdGMtdGVzdDCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAJnggIw2ZOLHJ+13FmTz3kPVnYKrgoyywA1ELhsGZKZjPXNn0RwSuzTTrVB6g5Uw6vpUPuUodyTfGQp9FHE4oPxKhAOSZ3srJ8j1xg5lO8Tk4kI9Fmdnq4rmi36wck/aZ6b2XMk+kR/y+h3onp44rMK7dTgv3KKpxe6NXeZQFnSZRYcL9/fq+LOu0wJjRTD2vLamsdssCwFCuA9YJ+jCpqR602ODVFEyJyGlbTc2mTlVnFw7ouDwS3rrecSWW2cs+kLBZ41f+W0t1mvRdM3BfmIugEtlPAo8aC5r72YJQQgyZZ3PrK32MOocCMEIoYq6dP/pB1G1TccILGY/Hf9qegMCAwEAATANBgkqhkiG9w0BAQsFAAOCAQEAPAAsLeUCIDKzxLjqziMno5rIN/KOKOTiZJoq5ep6u5I8x7Q/5tld9pxrT84A4PFH0lRHVWkG9vVatXiUJFXwR5Hx4UW5E3Zswqs5cWj/8fuDaPJbKsYol8wDGcr0p+E4LySed7ReYo6NQU8v8QXSvBvwUpBk99iYhoNGMqx0p21z7SklqdmE6trWu+rVwyh1bGOTRBFXD3eKp5bRWBwRV58xNwVG+EUBhYM7BIzH73j3Vl1muCHg1oYxiayRuEyuAMSlCTr/QeyLbD6L4JGqiHWpNJQVgyT7U/r/xwQEF1PbmPqduVyJq9RJf06Plg1iWwyOBsB5t8GlhOGOOJIpaQ==
         x5t: xoivC29M-elGM11ifPKDuMShiu0
-        x5t#S256: 58mTv9dKrsEmx7n11rR3vDwlLBOdbhUCf4rmUP4vLkI
+        'x5t#S256': 58mTv9dKrsEmx7n11rR3vDwlLBOdbhUCf4rmUP4vLkI
     ClientRequest:
       title: Root Type for ClientRequest
-      description: ""
+      description: ''
       type: object
       properties:
         name:
@@ -1122,17 +1221,17 @@ components:
           items:
             type: string
         scopes:
-          description: ""
+          description: ''
           type: string
       example:
         name: Test Client
         authorizationServerId: 66a2270e-0385-4aa4-a2ce-79bb12fa16ff
         redirectUris:
-          - https://accounts.cartobucket.com
+          - 'https://accounts.cartobucket.com'
         scopes: test.read test.write
     ClientResponse:
       title: Root Type for ClientResponse
-      description: ""
+      description: ''
       type: object
       properties:
         id:
@@ -1152,20 +1251,20 @@ components:
           format: date-time
           type: string
         scopes:
-          description: ""
+          description: ''
           type: string
       example:
         id: e1d1dc54-4799-4d09-a250-8bff9061419a
         name: Test Client
         authorizationServerId: 66a2270e-0385-4aa4-a2ce-79bb12fa16ff
         redirectUris:
-          - https://accounts.cartobucket.com
+          - 'https://accounts.cartobucket.com'
         scopes: test.read test.write
-        createdOn: 2023-01-08T02:05:30+00:00
-        updatedOn: 2023-01-08T02:05:30+00:00
+        createdOn: '2023-01-08T02:05:30+00:00'
+        updatedOn: '2023-01-08T02:05:30+00:00'
     ClientsResponse:
       title: Root Type for ClientsResponse
-      description: ""
+      description: ''
       type: object
       properties:
         clients:
@@ -1177,7 +1276,7 @@ components:
           - {}
     ApplicationsResponse:
       title: Root Type for ApplicationsResponse
-      description: ""
+      description: ''
       type: object
       properties:
         applications:
@@ -1186,16 +1285,17 @@ components:
             $ref: '#/components/schemas/ApplicationResponse'
       example:
         applications:
-          - id: c4d47e35-48bf-45ab-a1a6-8f3e272423f2
+          -
+            id: c4d47e35-48bf-45ab-a1a6-8f3e272423f2
             name: Example Application
-            client_id: ""
-            client_secret: ""
+            client_id: ''
+            client_secret: ''
             profile: {}
-            createdOn: 2023-01-08T18:49:59+00:00
-            updatedOn: 2023-01-08T18:49:59+00:00
+            createdOn: '2023-01-08T18:49:59+00:00'
+            updatedOn: '2023-01-08T18:49:59+00:00'
     ApplicationRequest:
       title: Root Type for ApplicationRequest
-      description: ""
+      description: ''
       required:
         - authorizationServerId
         - name
@@ -1211,7 +1311,7 @@ components:
           type: object
         authorizationServerId:
           format: UUID
-          description: ""
+          description: ''
           type: string
       example:
         name: Example Application
@@ -1221,7 +1321,7 @@ components:
         authorizationServerId: 52a10a2d-080c-4aaa-a184-ec3ba982a9bd
     ApplicationResponse:
       title: Root Type for ApplicationResponse
-      description: ""
+      description: ''
       required:
         - authorizationServerId
       type: object
@@ -1230,7 +1330,7 @@ components:
           type: string
         authorizationServerId:
           format: UUID
-          description: ""
+          description: ''
           type: string
         name:
           type: string
@@ -1249,14 +1349,14 @@ components:
       example:
         id: c4d47e35-48bf-45ab-a1a6-8f3e272423f2
         name: Example Application
-        client_id: ""
-        client_secret: ""
+        client_id: ''
+        client_secret: ''
         profile: {}
-        createdOn: 2023-01-08T18:49:59+00:00
-        updatedOn: 2023-01-08T18:49:59+00:00
+        createdOn: '2023-01-08T18:49:59+00:00'
+        updatedOn: '2023-01-08T18:49:59+00:00'
     UsersResponse:
       title: Root Type for UsersResponse
-      description: ""
+      description: ''
       type: object
       properties:
         users:
@@ -1267,7 +1367,7 @@ components:
         users: []
     UserRequest:
       title: Root Type for UserRequest
-      description: ""
+      description: ''
       type: object
       properties:
         authorizationServerId:
@@ -1287,7 +1387,7 @@ components:
           lastName: Person
     UserResponse:
       title: Root Type for UserResponse
-      description: ""
+      description: ''
       type: object
       properties:
         id:
@@ -1314,22 +1414,22 @@ components:
         profile:
           firstName: Test
           lastName: Person
-        createdOn: 2023-01-09T00:14:02+00:00
-        updatedOn: 2023-01-09T00:14:02+00:00
+        createdOn: '2023-01-09T00:14:02+00:00'
+        updatedOn: '2023-01-09T00:14:02+00:00'
     ApplicationSecretsResponse:
-      description: ""
+      description: ''
       required:
         - applicationSecrets
       type: object
       properties:
         applicationSecrets:
-          description: ""
+          description: ''
           type: array
           items:
             $ref: '#/components/schemas/ApplicationSecretResponse'
     ApplicationSecretResponse:
       title: Root Type for ApplicationSecretResponse
-      description: ""
+      description: ''
       required:
         - name
         - id
@@ -1338,14 +1438,14 @@ components:
         client_secret:
           type: string
         name:
-          description: ""
+          description: ''
           type: string
         id:
           format: UUID
-          description: ""
+          description: ''
           type: string
         expires_in:
-          description: ""
+          description: ''
           type: integer
       example:
         id: 76f31822-7956-4020-8731-e7a5c557f576
@@ -1353,7 +1453,7 @@ components:
         client_secret: 8743b52063cd84097a65d1633f5c74f5
     AuthorizationRequest:
       title: Root Type for AuthorizationRequest
-      description: ""
+      description: ''
       required:
         - client_id
         - response_type
@@ -1377,51 +1477,21 @@ components:
             - S256
           type: string
         scope:
-          description: ""
+          description: ''
           type: string
         nonce:
-          description: ""
+          description: ''
           type: string
       example:
         response_type: code
         client_id: 5ae13a6c-6858-4656-ac18-7b0c7401aa52
-        redirect_uri: https://api.cartobucket.com/callback
+        redirect_uri: 'https://api.cartobucket.com/callback'
         state: eyJrZXkiOiAiZXhhbXBsZSJ9
         code_challenge: YXNkZjk0cGl1b2gzMjYzCjIxNTYzNTE2MjRyZTM=
         code_challenge_method: S256
-    UserAuthorizationRequest2:
-      title: Root Type for UserAuthorization
-      description: ""
-      required:
-        - password
-        - username
-      type: object
-      properties:
-        username:
-          type: string
-        password:
-          type: string
-      example:
-        username: test@acme.co
-        password: test
-    UserAuthorizationRequest:
-      title: Root Type for UserAuthorization
-      description: ""
-      required:
-        - password
-        - username
-      type: object
-      properties:
-        username:
-          type: string
-        password:
-          type: string
-      example:
-        username: test@acme.co
-        password: test
     ApplicationRequestFilter:
       title: Root Type for ApplicationRequestFilter
-      description: ""
+      description: ''
       type: object
       properties:
         authorizationServerIds:
@@ -1434,7 +1504,7 @@ components:
           - f06618ae-0569-4c6c-a0ad-147e07506229
     ClientRequestFilter:
       title: Root Type for ApplicationRequestFilter
-      description: ""
+      description: ''
       type: object
       properties:
         authorizationServerIds:
@@ -1447,7 +1517,7 @@ components:
           - f06618ae-0569-4c6c-a0ad-147e07506229
     UserRequestFilter:
       title: Root Type for ApplicationRequestFilter
-      description: ""
+      description: ''
       type: object
       properties:
         authorizationServerIds:
@@ -1459,13 +1529,13 @@ components:
         authorizationServerIds:
           - f06618ae-0569-4c6c-a0ad-147e07506229
     TemplateTypeEnum:
-      description: ""
+      description: ''
       enum:
         - login
       type: string
     TemplateRequest:
       title: Root Type for TemplateRequest
-      description: ""
+      description: ''
       required:
         - templateType
         - template
@@ -1479,15 +1549,16 @@ components:
           type: string
         authorizationServerId:
           format: UUID
-          description: ""
+          description: ''
           type: string
       example:
         authorizationServerId: 5b4daf7f-48d5-4afb-bd43-7b667b3dc3c8
         templateType: login
-        template: PCFET0NUWVBFIGh0bWw+CjxodG1sPgo8Ym9keT4KCjxoMT5NeSBGaXJzdCBIZWFkaW5nPC9oMT4KCjxwPk15IGZpcnN0IHBhcmFncmFwaC48L3A+Cgo8L2JvZHk+CjwvaHRtbD4KCg==
+        template: >-
+          PCFET0NUWVBFIGh0bWw+CjxodG1sPgo8Ym9keT4KCjxoMT5NeSBGaXJzdCBIZWFkaW5nPC9oMT4KCjxwPk15IGZpcnN0IHBhcmFncmFwaC48L3A+Cgo8L2JvZHk+CjwvaHRtbD4KCg==
     TemplatesResponse:
       title: Root Type for TemplatesResponse
-      description: ""
+      description: ''
       type: object
       properties:
         templates:
@@ -1496,14 +1567,16 @@ components:
             $ref: '#/components/schemas/TemplateResponse'
       example:
         templates:
-          - id: 03557b53-3a05-46f2-a10e-8ea5e95539b2
+          -
+            id: 03557b53-3a05-46f2-a10e-8ea5e95539b2
             templateType: login
-            template: PCFET0NUWVBFIGh0bWw+CjxodG1sPgo8Ym9keT4KCjxoMT5NeSBGaXJzdCBIZWFkaW5nPC9oMT4KCjxwPk15IGZpcnN0IHBhcmFncmFwaC48L3A+Cgo8L2JvZHk+CjwvaHRtbD4KCg==
-            createdOn: 2023-01-13T02:58:12+00:00
-            updatedOn: 2023-01-13T02:58:12+00:00
+            template: >-
+              PCFET0NUWVBFIGh0bWw+CjxodG1sPgo8Ym9keT4KCjxoMT5NeSBGaXJzdCBIZWFkaW5nPC9oMT4KCjxwPk15IGZpcnN0IHBhcmFncmFwaC48L3A+Cgo8L2JvZHk+CjwvaHRtbD4KCg==
+            createdOn: '2023-01-13T02:58:12+00:00'
+            updatedOn: '2023-01-13T02:58:12+00:00'
     TemplateRequestFilter:
       title: Root Type for ApplicationRequestFilter
-      description: ""
+      description: ''
       type: object
       properties:
         authorizationServerIds:
@@ -1516,14 +1589,14 @@ components:
           - f06618ae-0569-4c6c-a0ad-147e07506229
     TemplateResponse:
       title: Root Type for TemplateResponse
-      description: ""
+      description: ''
       type: object
       properties:
         id:
           type: string
         authorizationServerId:
           format: UUID
-          description: ""
+          description: ''
           type: string
         templateType:
           type: string
@@ -1539,12 +1612,13 @@ components:
       example:
         id: 03557b53-3a05-46f2-a10e-8ea5e95539b2
         templateType: login
-        template: PCFET0NUWVBFIGh0bWw+CjxodG1sPgo8Ym9keT4KCjxoMT5NeSBGaXJzdCBIZWFkaW5nPC9oMT4KCjxwPk15IGZpcnN0IHBhcmFncmFwaC48L3A+Cgo8L2JvZHk+CjwvaHRtbD4KCg==
-        createdOn: 2023-01-13T02:58:12+00:00
-        updatedOn: 2023-01-13T02:58:12+00:00
+        template: >-
+          PCFET0NUWVBFIGh0bWw+CjxodG1sPgo8Ym9keT4KCjxoMT5NeSBGaXJzdCBIZWFkaW5nPC9oMT4KCjxwPk15IGZpcnN0IHBhcmFncmFwaC48L3A+Cgo8L2JvZHk+CjwvaHRtbD4KCg==
+        createdOn: '2023-01-13T02:58:12+00:00'
+        updatedOn: '2023-01-13T02:58:12+00:00'
     ScopeRequest:
       title: Root Type for ClientRequest
-      description: ""
+      description: ''
       required:
         - name
         - authorizationServerId
@@ -1559,14 +1633,14 @@ components:
         authorizationServerId: 66a2270e-0385-4aa4-a2ce-79bb12fa16ff
     ScopeResponse:
       title: Root Type for TemplateResponse
-      description: ""
+      description: ''
       type: object
       properties:
         id:
           type: string
         authorizationServerId:
           format: UUID
-          description: ""
+          description: ''
           type: string
         createdOn:
           format: date-time
@@ -1579,11 +1653,11 @@ components:
       example:
         id: 03557b53-3a05-46f2-a10e-8ea5e95539b2
         name: test_scope
-        createdOn: 2023-01-13T02:58:12+00:00
-        updatedOn: 2023-01-13T02:58:12+00:00
+        createdOn: '2023-01-13T02:58:12+00:00'
+        updatedOn: '2023-01-13T02:58:12+00:00'
     ScopesResponse:
       title: Root Type for TemplatesResponse
-      description: ""
+      description: ''
       required:
         - scopes
       type: object
@@ -1594,13 +1668,14 @@ components:
             $ref: '#/components/schemas/ScopeResponse'
       example:
         scopes:
-          - id: 03557b53-3a05-46f2-a10e-8ea5e95539b2
+          -
+            id: 03557b53-3a05-46f2-a10e-8ea5e95539b2
             name: test_scope
-            createdOn: 2023-01-13T02:58:12+00:00
-            updatedOn: 2023-01-13T02:58:12+00:00
+            createdOn: '2023-01-13T02:58:12+00:00'
+            updatedOn: '2023-01-13T02:58:12+00:00'
     ScopeRequestFilter:
       title: Root Type for ApplicationRequestFilter
-      description: ""
+      description: ''
       type: object
       properties:
         authorizationServerIds:
@@ -1611,3 +1686,46 @@ components:
       example:
         authorizationServerIds:
           - f06618ae-0569-4c6c-a0ad-147e07506229
+    PasswordAuthRequest:
+      title: Root Type for PasswordAuthRequest
+      description: ''
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+      example:
+        username: foo@bar.com
+        password: foobar2000
+tags:
+  -
+    name: Applications
+    description: >-
+      Applications are used for Server to Server communication. Each Application has a set of Scopes. An
+      ApplicationSecret can be created for each Server and the ApplicationSecret can have the same set
+      of Scopes as the Application, or a subset.
+  -
+    name: AuthorizationServers
+    description: An AuthorizationServer is the top level domain model that grants AccessTokens.
+  -
+    name: Clients
+    description: >-
+      Clients are used to initiate and Authorization Code Flow. Currently only Username/Password logins
+      are available.
+  -
+    name: Scopes
+    description: >-
+      Scopes are a set of tags used to indicate Authorization. Currently only static Scopes are
+      supported.
+  -
+    name: Templates
+    description: Templates are used to render information such as the login page.
+  -
+    name: Users
+    description: >-
+      Users represent a person entity in the system. The User domain model is used in the Authorization
+      Code Flow and can be granted Access Tokens through a Client.
+  -
+    name: AuthorizationServer
+    description: This is where the interaction with the Authorization Server occurs.

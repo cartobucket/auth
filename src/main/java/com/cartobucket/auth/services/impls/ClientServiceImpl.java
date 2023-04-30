@@ -5,7 +5,7 @@ import com.cartobucket.auth.model.generated.ClientRequest;
 import com.cartobucket.auth.model.generated.ClientRequestFilter;
 import com.cartobucket.auth.model.generated.ClientResponse;
 import com.cartobucket.auth.model.generated.ClientsResponse;
-import com.cartobucket.auth.model.generated.UserAuthorizationRequest2;
+import com.cartobucket.auth.model.generated.PasswordAuthRequest;
 import com.cartobucket.auth.models.AuthorizationServer;
 import com.cartobucket.auth.models.ClientCode;
 import com.cartobucket.auth.models.mappers.ClientMapper;
@@ -50,7 +50,7 @@ public class ClientServiceImpl implements ClientService {
     public ClientCode buildClientCodeForEmailAndPassword(
             AuthorizationServer authorizationServer,
             AuthorizationRequest authorizationRequest,
-            UserAuthorizationRequest2 userAuthorizationRequest) {
+            PasswordAuthRequest userAuthorizationRequest) {
         var client = clientRepository.findById(UUID.fromString(authorizationRequest.getClientId()));
         if (client.isEmpty() || !client.get().getAuthorizationServerId().equals(authorizationServer.getId())) {
             throw new BadRequestException("Unable to find the Client with the credentials provided");
