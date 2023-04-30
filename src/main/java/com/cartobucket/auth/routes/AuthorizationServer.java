@@ -2,7 +2,7 @@ package com.cartobucket.auth.routes;
 
 import com.cartobucket.auth.generated.AuthorizationServerApi;
 import com.cartobucket.auth.model.generated.AccessTokenRequest;
-import com.cartobucket.auth.model.generated.UserAuthorizationRequest;
+import com.cartobucket.auth.model.generated.UserAuthorizationRequest2;
 import com.cartobucket.auth.routes.mappers.AuthorizationRequestMapper;
 import com.cartobucket.auth.services.AccessTokenService;
 import com.cartobucket.auth.services.AuthorizationServerService;
@@ -63,7 +63,7 @@ public class AuthorizationServer implements AuthorizationServerApi {
                 state,
                 nonce
         );
-        var userAuthorizationRequest = new UserAuthorizationRequest();
+        var userAuthorizationRequest = new UserAuthorizationRequest2();
         userAuthorizationRequest.setUsername(username);
         userAuthorizationRequest.setPassword(password);
         final var authorizationServer = authorizationServerService.getAuthorizationServer(authorizationServerId);
