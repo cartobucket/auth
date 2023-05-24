@@ -10,7 +10,7 @@ import java.util.UUID;
 public class UserMapper {
     public static User from(UserRequest userRequest) {
         var user = new User();
-        user.setAuthorizationServerId(UUID.fromString(userRequest.getAuthorizationServerId()));
+        user.setAuthorizationServerId(userRequest.getAuthorizationServerId());
         user.setUsername(userRequest.getUsername());
         user.setEmail(userRequest.getEmail());
 

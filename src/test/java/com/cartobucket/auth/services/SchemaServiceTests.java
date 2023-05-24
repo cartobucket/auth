@@ -4,6 +4,8 @@ import com.cartobucket.auth.models.Profile;
 import com.cartobucket.auth.models.Schema;
 import com.cartobucket.auth.repositories.SchemaRepository;
 import com.cartobucket.auth.services.impls.SchemaServiceImpl;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.inject.Inject;
 import org.junit.jupiter.api.Test;
 
@@ -13,7 +15,17 @@ public class SchemaServiceTests {
 
     @Inject
     SchemaRepository schemaRepository;
-    static String OPEN_ID_PROFILE_SCHEMA = """
+
+    @Test
+    void testValidation() throws JsonProcessingException {
+        var profile = new Profile();
+        Map<String, Object> profileMap = Map.of(
+                "name", "Test User"
+        );
+        profile.setProfile(profileMap);
+
+        var schema = new Schema();
+        schema.setSchema(new ObjectMapper().readValue("""
             {
               "$schema": "https://json-schema.org/draft/2020-12/schema",
               "title": "OpenID Connect Standard Claims",
@@ -127,18 +139,7 @@ public class SchemaServiceTests {
               },
               "required": ["name", "given_name", "address.street_address"]
             }
-            """;
-
-    @Test
-    void testValidation() {
-        var profile = new Profile();
-        Map<String, Object> profileMap = Map.of(
-                "name", "Test User"
-        );
-        profile.setProfile(profileMap);
-
-        var schema = new Schema();
-        schema.setSchema(OPEN_ID_PROFILE_SCHEMA);
+            """, Map.class));
 
         final var schemaService = new SchemaServiceImpl(schemaRepository);
         var errors = schemaService.validateProfileAgainstSchema(profile, schema);

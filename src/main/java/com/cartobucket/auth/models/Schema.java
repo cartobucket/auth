@@ -4,8 +4,11 @@ import com.networknt.schema.SpecVersion;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.time.OffsetDateTime;
+import java.util.Map;
 import java.util.UUID;
 
 @Entity
@@ -17,14 +20,15 @@ public class Schema {
     private UUID authorizationServerId;
     private String name;
     private SpecVersion.VersionFlag jsonSchemaVersion;
-    private String schema;
+    @JdbcTypeCode(SqlTypes.JSON)
+    private Map<String, Object> schema;
     private OffsetDateTime createdOn;
     private OffsetDateTime updatedOn;
-    public String getSchema() {
+    public Map<String, Object> getSchema() {
         return schema;
     }
 
-    public void setSchema(String schema) {
+    public void setSchema(Map<String, Object> schema) {
         this.schema = schema;
     }
 

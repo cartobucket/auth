@@ -72,6 +72,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/ApplicationRequest'
+        required: true
       tags:
         - Applications
       responses:
@@ -262,7 +263,7 @@ paths:
           type: string
         in: path
         required: true
-        x-validator: '@ValidAuthorizationServerRequest'
+        x-validator: '@ValidAuthorizationServer'
   '/authorizationServers/{authorizationServerId}':
     get:
       tags:
@@ -310,7 +311,7 @@ paths:
           type: string
         in: path
         required: true
-        x-validator: '@ValidAuthorizationServerRequest'
+        x-validator: '@ValidAuthorizationServer'
   '/{authorizationServerId}/authorization/':
     get:
       tags:
@@ -446,7 +447,7 @@ paths:
           type: string
         in: path
         required: true
-        x-validator: '@ValidAuthorizationServerRequest'
+        x-validator: '@ValidAuthorizationServer'
       -
         name: client_id
         description: ''
@@ -466,7 +467,7 @@ paths:
           type: string
         in: path
         required: true
-        x-validator: '@ValidAuthorizationServerRequest'
+        x-validator: '@ValidAuthorizationServer'
   '/{authorizationServerId}/issuer/':
     parameters:
       -
@@ -506,7 +507,7 @@ paths:
           type: string
         in: path
         required: true
-        x-validator: '@ValidAuthorizationServerRequest'
+        x-validator: '@ValidAuthorizationServer'
   '/{authorizationServerId}/token/':
     post:
       requestBody:
@@ -563,7 +564,7 @@ paths:
           type: string
         in: path
         required: true
-        x-validator: '@ValidAuthorizationServerRequest'
+        x-validator: '@ValidAuthorizationServer'
       -
         name: Authorization
         description: ''
@@ -843,6 +844,105 @@ paths:
           type: string
         in: path
         required: true
+  '/schemas/{schemaId}':
+    summary: Path used to manage a single SchemaRequest.
+    description: >-
+      The REST endpoint/path used to get, update, and delete single instances of an `SchemaRequest`. 
+      This path contains `GET`, `PUT`, and `DELETE` operations used to perform the get, update, and
+      delete tasks, respectively.
+    get:
+      tags:
+        - Schemas
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SchemaRequest'
+          description: Successful response - returns a single `SchemaRequest`.
+      operationId: getSchemaRequest
+      summary: Get a SchemaRequest
+      description: Gets the details of a single instance of a `SchemaRequest`.
+    put:
+      requestBody:
+        description: Updated `SchemaRequest` information.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SchemaRequest'
+        required: true
+      tags:
+        - Schemas
+      responses:
+        '202':
+          description: Successful response.
+      operationId: updateSchemaRequest
+      summary: Update a SchemaRequest
+      description: Updates an existing `SchemaRequest`.
+    delete:
+      tags:
+        - Schemas
+      responses:
+        '204':
+          description: Successful response.
+      operationId: deleteSchemaRequest
+      summary: Delete a SchemaRequest
+      description: Deletes an existing `SchemaRequest`.
+    parameters:
+      -
+        name: schemaId
+        description: A unique identifier for a `SchemaRequest`.
+        schema:
+          format: UUID
+          type: string
+        in: path
+        required: true
+  /schemas:
+    summary: Path used to manage the list of schemarequests.
+    description: >-
+      The REST endpoint/path used to list and create zero or more `SchemaRequest` entities.  This path
+      contains a `GET` and `POST` operation to perform the list and create tasks, respectively.
+    get:
+      tags:
+        - Schemas
+      parameters:
+        -
+          name: authorizationServerIds
+          description: A list of Authorization Servers to filter the results by.
+          schema:
+            type: array
+            items:
+              format: UUID
+              type: string
+          in: query
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SchemaRequest'
+          description: Successful response - returns an array of `SchemaRequest` entities.
+      operationId: getSchemaRequests
+      summary: List All SchemaRequests
+      description: Gets a list of all `SchemaRequest` entities.
+    post:
+      requestBody:
+        description: A new `SchemaRequest` to be created.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SchemaRequest'
+        required: true
+      tags:
+        - Schemas
+      responses:
+        '201':
+          description: Successful response.
+      operationId: createSchemaRequest
+      summary: Create a SchemaRequest
+      description: Creates a new instance of a `SchemaRequest`.
 components:
   schemas:
     WellKnown:
@@ -1207,28 +1307,6 @@ components:
             MIICozCCAYsCBgGDs3zGNzANBgkqhkiG9w0BAQsFADAVMRMwEQYDVQQDDApOZHB0Yy10ZXN0MB4XDTIyMTAwNzE3MjU0MloXDTMyMTAwNzE3MjcyMlowFTETMBEGA1UEAwwKTmRwdGMtdGVzdDCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAJnggIw2ZOLHJ+13FmTz3kPVnYKrgoyywA1ELhsGZKZjPXNn0RwSuzTTrVB6g5Uw6vpUPuUodyTfGQp9FHE4oPxKhAOSZ3srJ8j1xg5lO8Tk4kI9Fmdnq4rmi36wck/aZ6b2XMk+kR/y+h3onp44rMK7dTgv3KKpxe6NXeZQFnSZRYcL9/fq+LOu0wJjRTD2vLamsdssCwFCuA9YJ+jCpqR602ODVFEyJyGlbTc2mTlVnFw7ouDwS3rrecSWW2cs+kLBZ41f+W0t1mvRdM3BfmIugEtlPAo8aC5r72YJQQgyZZ3PrK32MOocCMEIoYq6dP/pB1G1TccILGY/Hf9qegMCAwEAATANBgkqhkiG9w0BAQsFAAOCAQEAPAAsLeUCIDKzxLjqziMno5rIN/KOKOTiZJoq5ep6u5I8x7Q/5tld9pxrT84A4PFH0lRHVWkG9vVatXiUJFXwR5Hx4UW5E3Zswqs5cWj/8fuDaPJbKsYol8wDGcr0p+E4LySed7ReYo6NQU8v8QXSvBvwUpBk99iYhoNGMqx0p21z7SklqdmE6trWu+rVwyh1bGOTRBFXD3eKp5bRWBwRV58xNwVG+EUBhYM7BIzH73j3Vl1muCHg1oYxiayRuEyuAMSlCTr/QeyLbD6L4JGqiHWpNJQVgyT7U/r/xwQEF1PbmPqduVyJq9RJf06Plg1iWwyOBsB5t8GlhOGOOJIpaQ==
         x5t: xoivC29M-elGM11ifPKDuMShiu0
         'x5t#S256': 58mTv9dKrsEmx7n11rR3vDwlLBOdbhUCf4rmUP4vLkI
-    ClientRequest:
-      title: Root Type for ClientRequest
-      description: ''
-      type: object
-      properties:
-        name:
-          type: string
-        authorizationServerId:
-          type: string
-        redirectUris:
-          type: array
-          items:
-            type: string
-        scopes:
-          description: ''
-          type: string
-      example:
-        name: Test Client
-        authorizationServerId: 66a2270e-0385-4aa4-a2ce-79bb12fa16ff
-        redirectUris:
-          - 'https://accounts.cartobucket.com'
-        scopes: test.read test.write
     ClientResponse:
       title: Root Type for ClientResponse
       description: ''
@@ -1293,32 +1371,6 @@ components:
             profile: {}
             createdOn: '2023-01-08T18:49:59+00:00'
             updatedOn: '2023-01-08T18:49:59+00:00'
-    ApplicationRequest:
-      title: Root Type for ApplicationRequest
-      description: ''
-      required:
-        - authorizationServerId
-        - name
-      type: object
-      properties:
-        name:
-          type: string
-        client_id:
-          type: string
-        client_secret:
-          type: string
-        profile:
-          type: object
-        authorizationServerId:
-          format: UUID
-          description: ''
-          type: string
-      example:
-        name: Example Application
-        client_id: 8743b52063cd84097a65d1633f5c74f5
-        client_secret: f0fda58630310a6dd91a7d8f0a4ceda2
-        profile: {}
-        authorizationServerId: 52a10a2d-080c-4aaa-a184-ec3ba982a9bd
     ApplicationResponse:
       title: Root Type for ApplicationResponse
       description: ''
@@ -1365,26 +1417,6 @@ components:
             $ref: '#/components/schemas/UserResponse'
       example:
         users: []
-    UserRequest:
-      title: Root Type for UserRequest
-      description: ''
-      type: object
-      properties:
-        authorizationServerId:
-          type: string
-        username:
-          type: string
-        email:
-          type: string
-        profile:
-          type: object
-      example:
-        authorizationServerId: 100462bc-34fa-4d07-9fa2-88ae04ce4420
-        username: test
-        email: test@acme.co
-        profile:
-          firstName: Test
-          lastName: Person
     UserResponse:
       title: Root Type for UserResponse
       description: ''
@@ -1533,29 +1565,6 @@ components:
       enum:
         - login
       type: string
-    TemplateRequest:
-      title: Root Type for TemplateRequest
-      description: ''
-      required:
-        - templateType
-        - template
-        - authorizationServerId
-      type: object
-      properties:
-        templateType:
-          $ref: '#/components/schemas/TemplateTypeEnum'
-        template:
-          format: bytes
-          type: string
-        authorizationServerId:
-          format: UUID
-          description: ''
-          type: string
-      example:
-        authorizationServerId: 5b4daf7f-48d5-4afb-bd43-7b667b3dc3c8
-        templateType: login
-        template: >-
-          PCFET0NUWVBFIGh0bWw+CjxodG1sPgo8Ym9keT4KCjxoMT5NeSBGaXJzdCBIZWFkaW5nPC9oMT4KCjxwPk15IGZpcnN0IHBhcmFncmFwaC48L3A+Cgo8L2JvZHk+CjwvaHRtbD4KCg==
     TemplatesResponse:
       title: Root Type for TemplatesResponse
       description: ''
@@ -1616,21 +1625,6 @@ components:
           PCFET0NUWVBFIGh0bWw+CjxodG1sPgo8Ym9keT4KCjxoMT5NeSBGaXJzdCBIZWFkaW5nPC9oMT4KCjxwPk15IGZpcnN0IHBhcmFncmFwaC48L3A+Cgo8L2JvZHk+CjwvaHRtbD4KCg==
         createdOn: '2023-01-13T02:58:12+00:00'
         updatedOn: '2023-01-13T02:58:12+00:00'
-    ScopeRequest:
-      title: Root Type for ClientRequest
-      description: ''
-      required:
-        - name
-        - authorizationServerId
-      type: object
-      properties:
-        name:
-          type: string
-        authorizationServerId:
-          type: string
-      example:
-        name: test_scope
-        authorizationServerId: 66a2270e-0385-4aa4-a2ce-79bb12fa16ff
     ScopeResponse:
       title: Root Type for TemplateResponse
       description: ''
@@ -1698,6 +1692,455 @@ components:
       example:
         username: foo@bar.com
         password: foobar2000
+    SchemaResponse:
+      title: Root Type for SchemaRequest
+      description: SchemaRequest
+      required:
+        - id
+        - schema
+        - name
+        - authorizationServer
+        - schemaVersion
+      type: object
+      properties:
+        authorizationServer:
+          format: UUID
+          type: string
+        name:
+          type: string
+        schemaVersion:
+          type: string
+        schema:
+          type: object
+        id:
+          format: UUID
+          description: ''
+          type: string
+      example:
+        id: 4d0eb4c0-4847-474b-a7e9-7e14ea22329d
+        authorizationServer: c55c4197-146d-40eb-9f87-6cec80deac18
+        name: OpenID Connect Standard Claims
+        schemaVersion: 'https://json-schema.org/draft/2020-12/schema'
+        schema:
+          $schema: 'https://json-schema.org/draft/2020-12/schema'
+          title: OpenID Connect Standard Claims
+          type: object
+          additionalProperties: true
+          properties:
+            name:
+              type: string
+              description: The full name of the end-user
+            given_name:
+              type: string
+              description: The given name of the end-user
+            family_name:
+              type: string
+              description: The family name of the end-user
+            middle_name:
+              type: string
+              description: The middle name of the end-user
+            nickname:
+              type: string
+              description: The nickname of the end-user
+            preferred_username:
+              type: string
+              description: The preferred username of the end-user
+            profile:
+              type: string
+              description: The URL of the end-user's profile page
+            picture:
+              type: string
+              description: The URL of the end-user's profile picture
+            website:
+              type: string
+              description: The URL of the end-user's website
+            email:
+              type: string
+              description: The email address of the end-user
+            email_verified:
+              type: boolean
+              description: Whether the end-user's email address has been verified
+            gender:
+              type: string
+              description: The end-user's gender
+            birthdate:
+              type: string
+              format: date
+              description: The end-user's birthdate
+            zoneinfo:
+              type: string
+              description: The end-user's time zone
+            locale:
+              type: string
+              description: The end-user's locale
+            phone_number:
+              type: string
+              description: The end-user's phone number
+            phone_number_verified:
+              type: boolean
+              description: Whether the end-user's phone number has been verified
+            address:
+              type: object
+              description: The end-user's address
+              additionalProperties: true
+              properties:
+                formatted:
+                  type: string
+                  description: 'The full address, formatted for display'
+                street_address:
+                  type: string
+                  description: The street address
+                locality:
+                  type: string
+                  description: The city or locality
+                region:
+                  type: string
+                  description: The state or region
+                postal_code:
+                  type: string
+                  description: The postal code
+                country:
+                  type: string
+                  description: The country
+            updated_at:
+              type: integer
+              description: When the end-user's information was last updated
+    SchemaRequestFilter:
+      title: Root Type for ApplicationRequestFilter
+      description: ''
+      type: object
+      properties:
+        authorizationServerIds:
+          type: array
+          items:
+            format: UUID
+            type: string
+      example:
+        authorizationServerIds:
+          - f06618ae-0569-4c6c-a0ad-147e07506229
+    SchemasResponse:
+      title: Root Type for SchemasResponse
+      description: ''
+      required:
+        - schemas
+      type: object
+      properties:
+        schemas:
+          type: array
+          items:
+            $ref: '#/components/schemas/SchemaResponse'
+      example:
+        scopes:
+          -
+            id: 4d0eb4c0-4847-474b-a7e9-7e14ea22329d
+            authorizationServer: c55c4197-146d-40eb-9f87-6cec80deac18
+            name: OpenID Connect Standard Claims
+            schemaVersion: 'https://json-schema.org/draft/2020-12/schema'
+            schema:
+              $schema: 'https://json-schema.org/draft/2020-12/schema'
+              title: OpenID Connect Standard Claims
+              type: object
+              additionalProperties: true
+              properties:
+                name:
+                  type: string
+                  description: The full name of the end-user
+                given_name:
+                  type: string
+                  description: The given name of the end-user
+                family_name:
+                  type: string
+                  description: The family name of the end-user
+                middle_name:
+                  type: string
+                  description: The middle name of the end-user
+                nickname:
+                  type: string
+                  description: The nickname of the end-user
+                preferred_username:
+                  type: string
+                  description: The preferred username of the end-user
+                profile:
+                  type: string
+                  description: The URL of the end-user's profile page
+                picture:
+                  type: string
+                  description: The URL of the end-user's profile picture
+                website:
+                  type: string
+                  description: The URL of the end-user's website
+                email:
+                  type: string
+                  description: The email address of the end-user
+                email_verified:
+                  type: boolean
+                  description: Whether the end-user's email address has been verified
+                gender:
+                  type: string
+                  description: The end-user's gender
+                birthdate:
+                  type: string
+                  format: date
+                  description: The end-user's birthdate
+                zoneinfo:
+                  type: string
+                  description: The end-user's time zone
+                locale:
+                  type: string
+                  description: The end-user's locale
+                phone_number:
+                  type: string
+                  description: The end-user's phone number
+                phone_number_verified:
+                  type: boolean
+                  description: Whether the end-user's phone number has been verified
+                address:
+                  type: object
+                  description: The end-user's address
+                  additionalProperties: true
+                  properties:
+                    formatted:
+                      type: string
+                      description: 'The full address, formatted for display'
+                    street_address:
+                      type: string
+                      description: The street address
+                    locality:
+                      type: string
+                      description: The city or locality
+                    region:
+                      type: string
+                      description: The state or region
+                    postal_code:
+                      type: string
+                      description: The postal code
+                    country:
+                      type: string
+                      description: The country
+                updated_at:
+                  type: integer
+                  description: When the end-user's information was last updated
+    UserRequest:
+      title: Root Type for UserRequest
+      description: ''
+      type: object
+      properties:
+        authorizationServerId:
+          format: UUID
+          type: string
+          x-field-extra-annotation: '@ValidAuthorizationServer'
+        username:
+          type: string
+        email:
+          type: string
+        profile:
+          type: object
+      example:
+        authorizationServerId: 100462bc-34fa-4d07-9fa2-88ae04ce4420
+        username: test
+        email: test@acme.co
+        profile:
+          firstName: Test
+          lastName: Person
+    TemplateRequest:
+      title: Root Type for TemplateRequest
+      description: ''
+      required:
+        - templateType
+        - template
+        - authorizationServerId
+      type: object
+      properties:
+        templateType:
+          $ref: '#/components/schemas/TemplateTypeEnum'
+        template:
+          format: bytes
+          type: string
+        authorizationServerId:
+          format: UUID
+          description: ''
+          type: string
+          x-field-extra-annotation: '@ValidAuthorizationServer'
+      example:
+        authorizationServerId: 5b4daf7f-48d5-4afb-bd43-7b667b3dc3c8
+        templateType: login
+        template: >-
+          PCFET0NUWVBFIGh0bWw+CjxodG1sPgo8Ym9keT4KCjxoMT5NeSBGaXJzdCBIZWFkaW5nPC9oMT4KCjxwPk15IGZpcnN0IHBhcmFncmFwaC48L3A+Cgo8L2JvZHk+CjwvaHRtbD4KCg==
+    ScopeRequest:
+      title: Root Type for ClientRequest
+      description: ''
+      required:
+        - name
+        - authorizationServerId
+      type: object
+      properties:
+        name:
+          type: string
+        authorizationServerId:
+          format: UUID
+          type: string
+          x-field-extra-annotation: '@ValidAuthorizationServer'
+      example:
+        name: test_scope
+        authorizationServerId: 66a2270e-0385-4aa4-a2ce-79bb12fa16ff
+    SchemaRequest:
+      title: Root Type for SchemaRequest
+      description: SchemaRequest
+      required:
+        - authorizationServer
+        - name
+        - schemaVersion
+      type: object
+      properties:
+        authorizationServer:
+          format: UUID
+          type: string
+          x-field-extra-annotation: '@ValidAuthorizationServer'
+        name:
+          type: string
+        schemaVersion:
+          type: string
+        schema:
+          type: object
+      example:
+        authorizationServer: c55c4197-146d-40eb-9f87-6cec80deac18
+        name: OpenID Connect Standard Claims
+        schemaVersion: 'https://json-schema.org/draft/2020-12/schema'
+        schema:
+          $schema: 'https://json-schema.org/draft/2020-12/schema'
+          title: OpenID Connect Standard Claims
+          type: object
+          additionalProperties: true
+          properties:
+            name:
+              type: string
+              description: The full name of the end-user
+            given_name:
+              type: string
+              description: The given name of the end-user
+            family_name:
+              type: string
+              description: The family name of the end-user
+            middle_name:
+              type: string
+              description: The middle name of the end-user
+            nickname:
+              type: string
+              description: The nickname of the end-user
+            preferred_username:
+              type: string
+              description: The preferred username of the end-user
+            profile:
+              type: string
+              description: The URL of the end-user's profile page
+            picture:
+              type: string
+              description: The URL of the end-user's profile picture
+            website:
+              type: string
+              description: The URL of the end-user's website
+            email:
+              type: string
+              description: The email address of the end-user
+            email_verified:
+              type: boolean
+              description: Whether the end-user's email address has been verified
+            gender:
+              type: string
+              description: The end-user's gender
+            birthdate:
+              type: string
+              format: date
+              description: The end-user's birthdate
+            zoneinfo:
+              type: string
+              description: The end-user's time zone
+            locale:
+              type: string
+              description: The end-user's locale
+            phone_number:
+              type: string
+              description: The end-user's phone number
+            phone_number_verified:
+              type: boolean
+              description: Whether the end-user's phone number has been verified
+            address:
+              type: object
+              description: The end-user's address
+              additionalProperties: true
+              properties:
+                formatted:
+                  type: string
+                  description: 'The full address, formatted for display'
+                street_address:
+                  type: string
+                  description: The street address
+                locality:
+                  type: string
+                  description: The city or locality
+                region:
+                  type: string
+                  description: The state or region
+                postal_code:
+                  type: string
+                  description: The postal code
+                country:
+                  type: string
+                  description: The country
+            updated_at:
+              type: integer
+              description: When the end-user's information was last updated
+    ClientRequest:
+      title: Root Type for ClientRequest
+      description: ''
+      type: object
+      properties:
+        name:
+          type: string
+        authorizationServerId:
+          format: UUID
+          type: string
+          x-field-extra-annotation: '@ValidAuthorizationServer'
+        redirectUris:
+          type: array
+          items:
+            type: string
+        scopes:
+          description: ''
+          type: string
+      example:
+        name: Test Client
+        authorizationServerId: 66a2270e-0385-4aa4-a2ce-79bb12fa16ff
+        redirectUris:
+          - 'https://accounts.cartobucket.com'
+        scopes: test.read test.write
+    ApplicationRequest:
+      title: Root Type for ApplicationRequest
+      description: ''
+      required:
+        - authorizationServerId
+        - name
+      type: object
+      properties:
+        name:
+          type: string
+        client_id:
+          type: string
+        client_secret:
+          type: string
+        profile:
+          type: object
+        authorizationServerId:
+          format: UUID
+          description: ''
+          type: string
+          x-field-extra-annotation: '@ValidAuthorizationServer'
+      example:
+        name: Example Application
+        client_id: 8743b52063cd84097a65d1633f5c74f5
+        client_secret: f0fda58630310a6dd91a7d8f0a4ceda2
+        profile: {}
+        authorizationServerId: 52a10a2d-080c-4aaa-a184-ec3ba982a9bd
 tags:
   -
     name: Applications
@@ -1729,3 +2172,6 @@ tags:
   -
     name: AuthorizationServer
     description: This is where the interaction with the Authorization Server occurs.
+  -
+    name: Schemas
+    description: ''

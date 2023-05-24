@@ -50,20 +50,18 @@ public class ScopeServiceImpl implements ScopeService {
     @Override
     @Transactional
     public void deleteScope(UUID scopeId) {
-        var scope = scopeRepository.findById(scopeId);
-        if (scope.isEmpty()) {
-            throw new NotFoundException();
-        }
-        scopeRepository.deleteById(scopeId);
+        var scope = scopeRepository
+                .findById(scopeId)
+                .orElseThrow(NotFoundException::new);
+        scopeRepository.delete(scope);
     }
 
     @Override
     public ScopeResponse getScope(UUID scopeId) {
-        var scope = scopeRepository.findById(scopeId);
-        if (scope.isEmpty()) {
-            throw new NotFoundException();
-        }
-        return ScopeMapper.toResponse(scope.get());
+        var scope = scopeRepository
+                .findById(scopeId)
+                .orElseThrow(NotFoundException::new);
+        return ScopeMapper.toResponse(scope);
     }
 
     @Override

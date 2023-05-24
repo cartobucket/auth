@@ -18,7 +18,7 @@ import static jakarta.validation.constraintvalidation.ValidationTarget.ANNOTATED
 import static java.lang.annotation.ElementType.*;
 
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = { ValidAuthorizationServerRequest.Validator.class })
+@Constraint(validatedBy = { ValidAuthorizationServer.Validator.class })
 @Target(value = {
         METHOD,
         FIELD,
@@ -28,18 +28,18 @@ import static java.lang.annotation.ElementType.*;
         TYPE_USE})
 @SupportedValidationTarget(ANNOTATED_ELEMENT)
 @Documented
-public @interface ValidAuthorizationServerRequest {
+public @interface ValidAuthorizationServer {
     String message() default "The Authorization Server was not found";
 
     Class<? extends Payload>[] payload() default {};
 
     Class<?>[] groups() default {};
-    public class Validator implements ConstraintValidator<ValidAuthorizationServerRequest, UUID> {
+    public class Validator implements ConstraintValidator<ValidAuthorizationServer, UUID> {
         @Inject
         AuthorizationServerRepository authorizationServerRepository;
 
         @Override
-        public void initialize(ValidAuthorizationServerRequest constraintAnnotation) {
+        public void initialize(ValidAuthorizationServer constraintAnnotation) {
             ConstraintValidator.super.initialize(constraintAnnotation);
         }
 
