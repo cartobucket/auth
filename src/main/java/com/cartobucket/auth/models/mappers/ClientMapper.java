@@ -13,7 +13,7 @@ public class ClientMapper {
     public static Client to(ClientRequest clientRequest) {
         var client = new Client();
         client.setName(clientRequest.getName());
-        client.setAuthorizationServerId(UUID.fromString(clientRequest.getAuthorizationServerId()));
+        client.setAuthorizationServerId(clientRequest.getAuthorizationServerId());
         client.setRedirectUris(clientRequest.getRedirectUris().stream().map(URI::create).toList());
         client.setScopes(ScopeService.scopeStringToScopeList(clientRequest.getScopes()));
         return client;

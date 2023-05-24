@@ -10,7 +10,7 @@ public class ScopeMapper {
     public static Scope to(ScopeRequest scopeRequest) {
         var scope = new Scope();
         scope.setName(scopeRequest.getName());
-        scope.setAuthorizationServerId(UUID.fromString(scopeRequest.getAuthorizationServerId()));
+        scope.setAuthorizationServerId(scopeRequest.getAuthorizationServerId());
         return scope;
     }
 

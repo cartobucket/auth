@@ -2,7 +2,7 @@ package com.cartobucket.auth.routes;
 
 import com.cartobucket.auth.generated.AuthorizationServerApi;
 import com.cartobucket.auth.model.generated.AccessTokenRequest;
-import com.cartobucket.auth.model.generated.PasswordAuthRequest;
+import com.cartobucket.auth.models.PasswordAuthRequest;
 import com.cartobucket.auth.routes.mappers.AuthorizationRequestMapper;
 import com.cartobucket.auth.services.AccessTokenService;
 import com.cartobucket.auth.services.AuthorizationServerService;
