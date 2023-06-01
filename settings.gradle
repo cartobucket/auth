@@ -9,3 +9,7 @@ pluginManagement {
     }
 }
 rootProject.name='auth'
+include 'auth-api-server'
+include 'auth-authorization-server'
+include 'auth-data'
+include 'auth-data-server'

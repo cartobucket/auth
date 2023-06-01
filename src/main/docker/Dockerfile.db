@@ -1,3 +1,0 @@
-FROM postgres:15
-
-ADD cartobucket-auth.sql /docker-entrypoint-initdb.d/cartobucket-auth.sql

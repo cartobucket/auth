@@ -1,0 +1,1 @@
+{{#isPathParam}}{{ vendorExtensions.x-validator }} @PathParam("{{baseName}}"){{#useBeanValidation}}{{>beanValidationPathParams}}{{/useBeanValidation}}{{#useSwaggerAnnotations}}{{#description}} @ApiParam("{{.}}"){{/description}}{{/useSwaggerAnnotations}} {{{dataType}}} {{paramName}}{{/isPathParam}}
