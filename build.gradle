@@ -18,37 +18,37 @@ repositories {
 dependencies {
 
     // Tooling
-    implementation 'com.google.googlejavaformat:google-java-format:1.16.0'
-    implementation group: 'io.swagger', name: 'swagger-annotations', version: '1.6.9'
-    implementation group: 'org.openapitools', name: 'jackson-databind-nullable', version: '0.2.4'
-
-    // JSON Schema
-    implementation 'org.apache.camel.quarkus:camel-quarkus-json-validator'
-    implementation enforcedPlatform("${quarkusPlatformGroupId}:quarkus-camel-bom:${quarkusPlatformVersion}")
-    implementation enforcedPlatform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}")
-
-    // Http
-    implementation 'io.quarkus:quarkus-arc'
-    implementation 'io.quarkus:quarkus-resteasy-reactive'
-    implementation 'io.quarkus:quarkus-resteasy-reactive-jackson'
-    implementation 'io.quarkus:quarkus-resteasy-reactive-qute'
-    implementation 'com.tietoevry.quarkus:quarkus-resteasy-problem:3.0.0'
-
-    // ORM
-    implementation 'io.quarkus:quarkus-hibernate-orm'
-    implementation 'io.quarkus:quarkus-jdbc-postgresql'
-    implementation 'io.quarkus:quarkus-spring-data-jpa'
-    implementation 'io.quarkus:quarkus-hibernate-validator'
-
-    // Security (password hashing)
-    implementation group: 'org.springframework.security', name: 'spring-security-core', version: '6.0.3'
-
-    // Testing
-    testImplementation 'io.quarkus:quarkus-junit5'
-    testImplementation 'io.rest-assured:rest-assured'
-
-    // JOSE
-    implementation 'io.quarkus:quarkus-smallrye-jwt-build'
+//    implementation 'com.google.googlejavaformat:google-java-format:1.16.0'
+//    implementation group: 'io.swagger', name: 'swagger-annotations', version: '1.6.9'
+//    implementation group: 'org.openapitools', name: 'jackson-databind-nullable', version: '0.2.4'
+//
+//    // JSON Schema
+//    implementation 'org.apache.camel.quarkus:camel-quarkus-json-validator'
+//    implementation enforcedPlatform("${quarkusPlatformGroupId}:quarkus-camel-bom:${quarkusPlatformVersion}")
+//    implementation enforcedPlatform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}")
+//
+//    // Http
+//    implementation 'io.quarkus:quarkus-arc'
+//    implementation 'io.quarkus:quarkus-resteasy-reactive'
+//    implementation 'io.quarkus:quarkus-resteasy-reactive-jackson'
+//    implementation 'io.quarkus:quarkus-resteasy-reactive-qute'
+//    implementation 'com.tietoevry.quarkus:quarkus-resteasy-problem:3.0.0'
+//
+//    // ORM
+//    implementation 'io.quarkus:quarkus-hibernate-orm'
+//    implementation 'io.quarkus:quarkus-jdbc-postgresql'
+//    implementation 'io.quarkus:quarkus-spring-data-jpa'
+//    implementation 'io.quarkus:quarkus-hibernate-validator'
+//
+//    // Security (password hashing)
+//    implementation group: 'org.springframework.security', name: 'spring-security-core', version: '6.0.3'
+//
+//    // Testing
+//    testImplementation 'io.quarkus:quarkus-junit5'
+//    testImplementation 'io.rest-assured:rest-assured'
+//
+//    // JOSE
+//    implementation 'io.quarkus:quarkus-smallrye-jwt-build'
 
 }
 

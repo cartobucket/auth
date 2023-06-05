@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "com.cartobucket.auth";
+option java_outer_classname = "ScopeProto";
+
+import "google/protobuf/timestamp.proto";
+
+
+service Scope {
+  rpc CreateScope (ScopeCreate) returns (ScopeResponse) {}
+}
+
+message ScopeCreate {
+  string authorizationServerId = 1;
+  string name = 2;
+}
+
+message ScopeResponse {
+  string id = 1;
+  string authorizationServerId = 2;
+  string name = 3;
+  google.protobuf.Timestamp createdOn = 4;
+  google.protobuf.Timestamp updatedOn = 5;
+}
