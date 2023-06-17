@@ -32,11 +32,12 @@ message AuthorizationServerDeleteRequest {
 }
 
 message AuthorizationServerUpdateRequest {
-  string name = 1;
-  string serverUrl = 2;
-  string audience = 3;
-  int64 clientCredentialsTokenExpiration = 4;
-  int64 authorizationCodeTokenExpiration = 5;
+  string id = 1;
+  string name = 2;
+  string serverUrl = 3;
+  string audience = 4;
+  int64 clientCredentialsTokenExpiration = 5;
+  int64 authorizationCodeTokenExpiration = 6;
 }
 
 message AuthorizationServerCreateResponse {
