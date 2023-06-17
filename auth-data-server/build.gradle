@@ -17,7 +17,7 @@ dependencies {
 //    implementation 'io.quarkus:quarkus-hibernate-reactive-panache'
 //    implementation 'io.quarkus:quarkus-reactive-pg-client'
     implementation 'io.quarkus:quarkus-arc'
-//    implementation project(path: ':auth-data')
+    implementation project(path: ':auth-data')
     testImplementation 'io.quarkus:quarkus-junit5'
 
     implementation 'io.quarkus:quarkus-hibernate-orm'
@@ -30,9 +30,6 @@ dependencies {
 
     // Security (password hashing)
     implementation group: 'org.springframework.security', name: 'spring-security-core', version: '6.0.3'
-
-    // TODO: This is only here for the exceptions
-    implementation 'io.quarkus:quarkus-resteasy-reactive'
 
 }
 

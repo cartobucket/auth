@@ -1,0 +1,68 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "com.cartobucket.auth.rpc";
+option java_outer_classname = "AuthorizationServerProto";
+
+import "google/protobuf/timestamp.proto";
+
+
+service AuthorizationServers {
+  rpc CreateAuthorizationServer (AuthorizationServerCreateRequest) returns (AuthorizationServerCreateResponse) {};
+  rpc ListAuthorizationServers (AuthorizationServerListRequest) returns (AuthorizationServersListResponse) {};
+  rpc DeleteAuthorizationServer (AuthorizationServerDeleteRequest) returns (AuthorizationServerResponse) {};
+  rpc UpdateAuthorizationServer (AuthorizationServerUpdateRequest) returns (AuthorizationServerResponse) {};
+}
+
+message AuthorizationServerCreateRequest {
+  string name = 1;
+  string serverUrl = 2;
+  string audience = 3;
+  int64 clientCredentialsTokenExpiration = 4;
+  int64 authorizationCodeTokenExpiration = 5;
+}
+
+message AuthorizationServerListRequest {
+  int64 limit = 2;
+  int64 offset = 3;
+}
+
+message AuthorizationServerDeleteRequest {
+  string authorizationServerId = 1;
+}
+
+message AuthorizationServerUpdateRequest {
+  string name = 1;
+  string serverUrl = 2;
+  string audience = 3;
+  int64 clientCredentialsTokenExpiration = 4;
+  int64 authorizationCodeTokenExpiration = 5;
+}
+
+message AuthorizationServerCreateResponse {
+  string id = 1;
+  string name = 2;
+  string serverUrl = 3;
+  string audience = 4;
+  int64 clientCredentialsTokenExpiration = 5;
+  int64 authorizationCodeTokenExpiration = 6;
+  google.protobuf.Timestamp createdOn = 7;
+  google.protobuf.Timestamp updatedOn = 8;
+}
+
+message AuthorizationServerResponse {
+  string id = 1;
+  string name = 2;
+  string serverUrl = 3;
+  string audience = 4;
+  int64 clientCredentialsTokenExpiration = 5;
+  int64 authorizationCodeTokenExpiration = 6;
+  google.protobuf.Timestamp createdOn = 7;
+  google.protobuf.Timestamp updatedOn = 8;
+}
+
+message AuthorizationServersListResponse {
+  repeated AuthorizationServerResponse authorizationServers = 1;
+  int64 limit = 2;
+  int64 offset = 3;
+}

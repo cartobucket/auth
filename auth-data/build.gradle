@@ -16,8 +16,6 @@ dependencies {
     implementation group: 'io.swagger', name: 'swagger-annotations', version: '1.6.9'
     implementation 'io.quarkus:quarkus-hibernate-validator'
 
-    implementation 'io.quarkus:quarkus-hibernate-reactive'
-
     implementation 'io.quarkus:quarkus-grpc'
     implementation 'io.quarkus:quarkus-arc'
     testImplementation 'io.quarkus:quarkus-junit5'
