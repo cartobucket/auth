@@ -173,7 +173,7 @@ public class ApplicationService implements com.cartobucket.auth.data.services.Ap
 
     @Override
     public List<Application> getApplications(final List<UUID> authorizationServerIds) {
-        if (!authorizationServerIds.isEmpty()) {
+        if (authorizationServerIds.isEmpty()) {
             return StreamSupport
                     .stream(applicationRepository.findAll().spliterator(), false)
                     .map(ApplicationMapper::from)
