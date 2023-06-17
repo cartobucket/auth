@@ -24,6 +24,7 @@ import com.cartobucket.auth.data.services.AuthorizationServerService;
 import com.cartobucket.auth.rpc.AuthorizationServerCreateRequest;
 import com.cartobucket.auth.rpc.AuthorizationServerCreateResponse;
 import com.cartobucket.auth.rpc.AuthorizationServerDeleteRequest;
+import com.cartobucket.auth.rpc.AuthorizationServerGetRequest;
 import com.cartobucket.auth.rpc.AuthorizationServerListRequest;
 import com.cartobucket.auth.rpc.AuthorizationServerResponse;
 import com.cartobucket.auth.rpc.AuthorizationServerUpdateRequest;
@@ -106,9 +107,9 @@ public class AuthorizationServerRpcService implements AuthorizationServers {
     @Override
     @Blocking
     public Uni<AuthorizationServerResponse> deleteAuthorizationServer(AuthorizationServerDeleteRequest request) {
-        final var authorizationServerId = UUID.fromString(request.getAuthorizationServerId());
+        final var authorizationServerId = UUID.fromString(request.getId());
         authorizationServerService.deleteAuthorizationServer(authorizationServerId);
-        return Uni.createFrom().item(AuthorizationServerResponse.newBuilder().setId(request.getAuthorizationServerId()).build());
+        return Uni.createFrom().item(AuthorizationServerResponse.newBuilder().setId(request.getId()).build());
     }
 
     @Override
@@ -141,5 +142,25 @@ public class AuthorizationServerRpcService implements AuthorizationServers {
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public Uni<AuthorizationServerResponse> getAuthorizationServer(AuthorizationServerGetRequest request) {
+        var authorizationServer = authorizationServerService.getAuthorizationServer(UUID.fromString(request.getId()));
+        return Uni
+                .createFrom()
+                .item(
+                        AuthorizationServerResponse
+                                .newBuilder()
+                                .setId(String.valueOf(authorizationServer.getId()))
+                                .setName(authorizationServer.getName())
+                                .setAudience(authorizationServer.getAudience())
+                                .setServerUrl(String.valueOf(authorizationServer.getServerUrl()))
+                                .setAuthorizationCodeTokenExpiration(authorizationServer.getAuthorizationCodeTokenExpiration())
+                                .setClientCredentialsTokenExpiration(authorizationServer.getClientCredentialsTokenExpiration())
+                                .setCreatedOn(Timestamp.newBuilder().setSeconds(authorizationServer.getCreatedOn().toEpochSecond()).build())
+                                .setUpdatedOn(Timestamp.newBuilder().setSeconds(authorizationServer.getUpdatedOn().toEpochSecond()).build())
+                                .build()
+                );
     }
 }

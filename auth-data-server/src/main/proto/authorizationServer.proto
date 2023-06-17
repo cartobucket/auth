@@ -12,6 +12,7 @@ service AuthorizationServers {
   rpc ListAuthorizationServers (AuthorizationServerListRequest) returns (AuthorizationServersListResponse) {};
   rpc DeleteAuthorizationServer (AuthorizationServerDeleteRequest) returns (AuthorizationServerResponse) {};
   rpc UpdateAuthorizationServer (AuthorizationServerUpdateRequest) returns (AuthorizationServerResponse) {};
+  rpc GetAuthorizationServer (AuthorizationServerGetRequest) returns (AuthorizationServerResponse) {};
 }
 
 message AuthorizationServerCreateRequest {
@@ -28,7 +29,7 @@ message AuthorizationServerListRequest {
 }
 
 message AuthorizationServerDeleteRequest {
-  string authorizationServerId = 1;
+  string id = 1;
 }
 
 message AuthorizationServerUpdateRequest {
@@ -38,6 +39,10 @@ message AuthorizationServerUpdateRequest {
   string audience = 4;
   int64 clientCredentialsTokenExpiration = 5;
   int64 authorizationCodeTokenExpiration = 6;
+}
+
+message AuthorizationServerGetRequest {
+  string id = 1;
 }
 
 message AuthorizationServerCreateResponse {
