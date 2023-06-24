@@ -29,5 +29,5 @@ import java.util.UUID;
 public interface ProfileRepository extends CrudRepository<Profile, UUID> {
     Optional<Profile> findByResourceAndProfileType(UUID resource, ProfileType profileType);
 
-    void deleteByResourceIdAndProfileType(UUID userId, ProfileType user);
+    void deleteByResourceAndProfileType(UUID resource, ProfileType profileType);
 }

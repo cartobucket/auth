@@ -32,6 +32,8 @@ import com.cartobucket.auth.data.services.AuthorizationServerService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 import org.graalvm.collections.Pair;
+import org.springframework.security.crypto.bcrypt.BCrypt;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -85,6 +87,7 @@ public class UserService implements com.cartobucket.auth.data.services.UserServi
 
         profile.setCreatedOn(OffsetDateTime.now());
         profile.setUpdatedOn(OffsetDateTime.now());
+        profile.setProfileType(ProfileType.User);
         profile.setResource(_user.getId());
         var _profile = ProfileMapper.from(profileRepository.save(ProfileMapper.to(profile)));
         return Pair.create(_user, _profile);
@@ -93,7 +96,7 @@ public class UserService implements com.cartobucket.auth.data.services.UserServi
     @Override
     @Transactional
     public void deleteUser(final UUID userId) {
-        profileRepository.deleteByResourceIdAndProfileType(userId, ProfileType.User);
+        profileRepository.deleteByResourceAndProfileType(userId, ProfileType.User);
         userRepository.deleteById(userId);
     }
 
@@ -120,8 +123,8 @@ public class UserService implements com.cartobucket.auth.data.services.UserServi
                 .findById(userId)
                 .orElseThrow(UserNotFound::new);
 
-        _user.setId(user.getId());
-        _user.setAuthorizationServerId(user.getAuthorizationServerId());
+        _user.setEmail(user.getEmail());
+        _user.setUsername(user.getUsername());
         _user.setUpdatedOn(OffsetDateTime.now());
         _user = userRepository.save(_user);
 
@@ -133,5 +136,16 @@ public class UserService implements com.cartobucket.auth.data.services.UserServi
         _profile = profileRepository.save(_profile);
 
         return Pair.create(UserMapper.from(_user), ProfileMapper.from(_profile));
+    }
+
+    @Override
+    public String setPassword(User user, String password) {
+        // TODO: This config should be pulled from the Authorization Server
+        final var encoder = new BCryptPasswordEncoder();
+        final var passwordHash = encoder.encode(password);
+        user.setPasswordHash(passwordHash);
+        user.setUpdatedOn(OffsetDateTime.now());
+        userRepository.save(UserMapper.to(user));
+        return passwordHash;
     }
 }
