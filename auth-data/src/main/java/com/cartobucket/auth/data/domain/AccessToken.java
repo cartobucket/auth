@@ -20,26 +20,15 @@
 
 package com.cartobucket.auth.data.domain;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
-import jakarta.validation.Valid;
 
 import java.util.Objects;
 
 /**
 * 
 **/
-@ApiModel(description = "")
-@JsonTypeName("AccessTokenResponse")
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaJAXRSSpecServerCodegen", date = "2023-05-29T17:50:42.716026387-07:00[America/Los_Angeles]")
-@com.fasterxml.jackson.annotation.JsonInclude(com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL)
 
 public class AccessToken {
-    private @Valid String accessToken;
+    private String accessToken;
             public enum TokenTypeEnum {
 
     BEARER(String.valueOf("Bearer"));
@@ -56,7 +45,6 @@ public class AccessToken {
     }
 
     @Override
-    @JsonValue
     public String toString() {
         return String.valueOf(value);
     }
@@ -76,7 +64,6 @@ public class AccessToken {
         throw new IllegalArgumentException("Unexpected string value '" + s + "'");
 	}
 	
-    @JsonCreator
     public static TokenTypeEnum fromValue(String value) {
         for (TokenTypeEnum b : TokenTypeEnum.values()) {
             if (b.value.equals(value)) {
@@ -87,11 +74,11 @@ public class AccessToken {
     }
 }
 
-    private @Valid TokenTypeEnum tokenType;
-    private @Valid String refreshToken;
-    private @Valid Integer expiresIn;
-    private @Valid String idToken;
-    private @Valid String scope;
+    private TokenTypeEnum tokenType;
+    private String refreshToken;
+    private Integer expiresIn;
+    private String idToken;
+    private String scope;
 
     /**
     **/
@@ -101,13 +88,10 @@ public class AccessToken {
     }
 
     
-        @ApiModelProperty(value = "")
-    @JsonProperty("access_token")
       public String getAccessToken() {
     return accessToken;
     }
 
-    @JsonProperty("access_token")
     public void setAccessToken(String accessToken) {
     this.accessToken = accessToken;
     }
@@ -120,13 +104,10 @@ public class AccessToken {
     }
 
     
-        @ApiModelProperty(value = "")
-    @JsonProperty("token_type")
       public TokenTypeEnum getTokenType() {
     return tokenType;
     }
 
-    @JsonProperty("token_type")
     public void setTokenType(TokenTypeEnum tokenType) {
     this.tokenType = tokenType;
     }
@@ -139,13 +120,10 @@ public class AccessToken {
     }
 
     
-        @ApiModelProperty(value = "")
-    @JsonProperty("refresh_token")
       public String getRefreshToken() {
     return refreshToken;
     }
 
-    @JsonProperty("refresh_token")
     public void setRefreshToken(String refreshToken) {
     this.refreshToken = refreshToken;
     }
@@ -158,13 +136,10 @@ public class AccessToken {
     }
 
     
-        @ApiModelProperty(value = "")
-    @JsonProperty("expires_in")
       public Integer getExpiresIn() {
     return expiresIn;
     }
 
-    @JsonProperty("expires_in")
     public void setExpiresIn(Integer expiresIn) {
     this.expiresIn = expiresIn;
     }
@@ -177,13 +152,10 @@ public class AccessToken {
     }
 
     
-        @ApiModelProperty(value = "")
-    @JsonProperty("id_token")
       public String getIdToken() {
     return idToken;
     }
 
-    @JsonProperty("id_token")
     public void setIdToken(String idToken) {
     this.idToken = idToken;
     }
@@ -197,13 +169,10 @@ public class AccessToken {
     }
 
     
-        @ApiModelProperty(value = "")
-    @JsonProperty("scope")
       public String getScope() {
     return scope;
     }
 
-    @JsonProperty("scope")
     public void setScope(String scope) {
     this.scope = scope;
     }

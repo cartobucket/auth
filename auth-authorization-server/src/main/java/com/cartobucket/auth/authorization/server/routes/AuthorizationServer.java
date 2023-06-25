@@ -178,14 +178,10 @@ public class AuthorizationServer implements AuthorizationServerApi {
                 authorizationServer,
                 authorization
         );
-        try {
-            return Response
-                    .ok()
-                    .entity(userService.getUser(UUID.fromString(jwtClaims.getSubject())).getRight().getProfile())
-                    .build();
-        } catch (MalformedClaimException ex) {
-            throw new RuntimeException(ex);
-        }
+        return Response
+                .ok()
+                .entity(userService.getUser(UUID.fromString(String.valueOf(jwtClaims.get("sub")))).getRight().getProfile())
+                .build();
     }
 
     @Override

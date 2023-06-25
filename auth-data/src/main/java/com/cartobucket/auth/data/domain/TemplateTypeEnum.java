@@ -19,9 +19,6 @@
 
 package com.cartobucket.auth.data.domain;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonValue;
-
 public enum TemplateTypeEnum {
 
     LOGIN("login");
@@ -42,7 +39,6 @@ public enum TemplateTypeEnum {
         throw new IllegalArgumentException("Unexpected string value '" + s + "'");
     }
 
-    @JsonCreator
     public static TemplateTypeEnum fromValue(String value) {
         for (TemplateTypeEnum b : TemplateTypeEnum.values()) {
             if (b.value.equals(value)) {
@@ -53,7 +49,6 @@ public enum TemplateTypeEnum {
     }
 
     @Override
-    @JsonValue
     public String toString() {
         return String.valueOf(value);
     }

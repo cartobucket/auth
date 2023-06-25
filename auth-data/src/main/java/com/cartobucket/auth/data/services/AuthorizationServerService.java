@@ -25,9 +25,9 @@ import com.cartobucket.auth.data.domain.AuthorizationServer;
 import com.cartobucket.auth.data.domain.JWK;
 import com.cartobucket.auth.data.domain.JWKS;
 import com.cartobucket.auth.data.domain.SigningKey;
-import org.jose4j.jwt.JwtClaims;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 
@@ -41,5 +41,5 @@ public interface AuthorizationServerService {
     List<AuthorizationServer> getAuthorizationServers();
     void deleteAuthorizationServer(final UUID authorizationServerId) throws AuthorizationServerNotFound;
     SigningKey getSigningKeysForAuthorizationServer(AuthorizationServer authorizationServer);
-    JwtClaims validateJwtForAuthorizationServer(final AuthorizationServer authorizationServer, final String Jwt) throws NotAuthorized;
+    Map<String, Object> validateJwtForAuthorizationServer(final AuthorizationServer authorizationServer, final String Jwt) throws NotAuthorized;
 }

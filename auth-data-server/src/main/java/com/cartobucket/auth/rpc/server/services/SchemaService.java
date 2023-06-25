@@ -36,6 +36,7 @@ import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 @ApplicationScoped
@@ -48,13 +49,16 @@ public class SchemaService implements com.cartobucket.auth.data.services.SchemaS
     }
 
     @Override
-    public Set<ValidationMessage> validateProfileAgainstSchema(Profile profile, Schema schema) {
+    public Set<String> validateProfileAgainstSchema(Profile profile, Schema schema) {
         try {
             var factory = JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V202012);
             var jsonSchema = factory.getSchema(objectMapper.writeValueAsString(schema.getSchema()));
             return jsonSchema.validate(
                     objectMapper.convertValue(profile.getProfile(), JsonNode.class)
-            );
+                    )
+                    .stream()
+                    .map(ValidationMessage::toString)
+                    .collect(Collectors.toSet());
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }

@@ -19,8 +19,6 @@
 
 package com.cartobucket.auth.data.domain;
 
-import com.networknt.schema.SpecVersion;
-
 import java.time.OffsetDateTime;
 import java.util.Map;
 import java.util.UUID;
@@ -30,7 +28,7 @@ public class Schema {
 
     private UUID authorizationServerId;
     private String name;
-    private SpecVersion.VersionFlag jsonSchemaVersion;
+    private String jsonSchemaVersion;
     private Map<String, Object> schema;
     private OffsetDateTime createdOn;
     private OffsetDateTime updatedOn;
@@ -83,10 +81,10 @@ public class Schema {
     }
 
     public String getJsonSchemaVersion() {
-        return jsonSchemaVersion.name();
+        return jsonSchemaVersion;
     }
 
     public void setJsonSchemaVersion(String jsonSchemaVersion) {
-        this.jsonSchemaVersion = SpecVersion.VersionFlag.valueOf(jsonSchemaVersion);
+        this.jsonSchemaVersion = jsonSchemaVersion;
     }
 }

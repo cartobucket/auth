@@ -22,14 +22,13 @@ package com.cartobucket.auth.data.services;
 import com.cartobucket.auth.data.exceptions.notfound.SchemaNotFound;
 import com.cartobucket.auth.data.domain.Profile;
 import com.cartobucket.auth.data.domain.Schema;
-import com.networknt.schema.ValidationMessage;
 
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
 public interface SchemaService {
-    Set<ValidationMessage> validateProfileAgainstSchema(final Profile profile, final Schema schema);
+    Set<String> validateProfileAgainstSchema(final Profile profile, final Schema schema);
 
     Schema createSchema(final Schema schema);
 

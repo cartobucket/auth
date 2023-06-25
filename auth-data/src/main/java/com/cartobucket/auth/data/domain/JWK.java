@@ -20,12 +20,6 @@
 
 package com.cartobucket.auth.data.domain;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
-import jakarta.validation.Valid;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -33,21 +27,16 @@ import java.util.Objects;
 /**
 * 
 **/
-@ApiModel(description = "")
-@JsonTypeName("JWK")
-@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaJAXRSSpecServerCodegen", date = "2023-05-23T21:07:45.072820760-07:00[America/Los_Angeles]")
-@com.fasterxml.jackson.annotation.JsonInclude(com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL)
-
 public class JWK   {
-    private @Valid String kid;
-    private @Valid String kty;
-    private @Valid String alg;
-    private @Valid String use;
-    private @Valid String n;
-    private @Valid String e;
-    private @Valid List<String> x5c;
-    private @Valid String x5t;
-    private @Valid String x5tHashS256;
+    private String kid;
+    private String kty;
+    private String alg;
+    private String use;
+    private String n;
+    private String e;
+    private List<String> x5c;
+    private String x5t;
+    private String x5tHashS256;
 
     /**
     **/
@@ -56,14 +45,10 @@ public class JWK   {
     return this;
     }
 
-    
-        @ApiModelProperty(value = "")
-    @JsonProperty("kid")
       public String getKid() {
     return kid;
     }
 
-    @JsonProperty("kid")
     public void setKid(String kid) {
     this.kid = kid;
     }
@@ -75,14 +60,10 @@ public class JWK   {
     return this;
     }
 
-    
-        @ApiModelProperty(value = "")
-    @JsonProperty("kty")
       public String getKty() {
     return kty;
     }
 
-    @JsonProperty("kty")
     public void setKty(String kty) {
     this.kty = kty;
     }
@@ -94,14 +75,10 @@ public class JWK   {
     return this;
     }
 
-    
-        @ApiModelProperty(value = "")
-    @JsonProperty("alg")
       public String getAlg() {
     return alg;
     }
 
-    @JsonProperty("alg")
     public void setAlg(String alg) {
     this.alg = alg;
     }
@@ -113,14 +90,10 @@ public class JWK   {
     return this;
     }
 
-    
-        @ApiModelProperty(value = "")
-    @JsonProperty("use")
       public String getUse() {
     return use;
     }
 
-    @JsonProperty("use")
     public void setUse(String use) {
     this.use = use;
     }
@@ -132,14 +105,10 @@ public class JWK   {
     return this;
     }
 
-    
-        @ApiModelProperty(value = "")
-    @JsonProperty("n")
       public String getN() {
     return n;
     }
 
-    @JsonProperty("n")
     public void setN(String n) {
     this.n = n;
     }
@@ -151,14 +120,10 @@ public class JWK   {
     return this;
     }
 
-    
-        @ApiModelProperty(value = "")
-    @JsonProperty("e")
       public String getE() {
     return e;
     }
 
-    @JsonProperty("e")
     public void setE(String e) {
     this.e = e;
     }
@@ -170,14 +135,10 @@ public class JWK   {
     return this;
     }
 
-    
-        @ApiModelProperty(value = "")
-    @JsonProperty("x5c")
       public List<String> getX5c() {
     return x5c;
     }
 
-    @JsonProperty("x5c")
     public void setX5c(List<String> x5c) {
     this.x5c = x5c;
     }
@@ -205,14 +166,10 @@ public class JWK   {
     return this;
     }
 
-    
-        @ApiModelProperty(value = "")
-    @JsonProperty("x5t")
       public String getX5t() {
     return x5t;
     }
 
-    @JsonProperty("x5t")
     public void setX5t(String x5t) {
     this.x5t = x5t;
     }
@@ -224,14 +181,10 @@ public class JWK   {
     return this;
     }
 
-    
-        @ApiModelProperty(value = "")
-    @JsonProperty("x5t#S256")
       public String getX5tHashS256() {
     return x5tHashS256;
     }
 
-    @JsonProperty("x5t#S256")
     public void setX5tHashS256(String x5tHashS256) {
     this.x5tHashS256 = x5tHashS256;
     }

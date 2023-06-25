@@ -202,7 +202,7 @@ public class AuthorizationServerService implements com.cartobucket.auth.data.ser
     }
 
     @Override
-    public JwtClaims validateJwtForAuthorizationServer(AuthorizationServer authorizationServer, String Jwt) throws NotAuthorized {
+    public Map<String, Object> validateJwtForAuthorizationServer(AuthorizationServer authorizationServer, String Jwt) throws NotAuthorized {
         final var jwks = getJwksForAuthorizationServer(authorizationServer.getId());
 
         try {
@@ -226,7 +226,7 @@ public class AuthorizationServerService implements com.cartobucket.auth.data.ser
                 var jwtConsumer = builder.build();
                 jwtClaims = jwtConsumer.processToClaims(Jwt.split(" ")[1]);
                 if (jwtClaims != null) {
-                    return jwtClaims;
+                    return jwtClaims.getClaimsMap();
                 }
             }
         } catch (InvalidJwtException e) {
