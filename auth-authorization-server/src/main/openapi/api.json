@@ -1,0 +1,843 @@
+{
+  "openapi": "3.0.2",
+  "info": {
+    "title": "Cartobucket Auth Authorization Server",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/{authorizationServerId}/.well-known/openid-connect/": {
+      "get": {
+        "tags": [
+          "AuthorizationServer"
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WellKnown"
+                }
+              }
+            },
+            "description": "Returns a well-known configuration object."
+          }
+        },
+        "operationId": "getOpenIdConnectionWellKnown",
+        "summary": "Well Known Endpoint"
+      },
+      "parameters": [
+        {
+          "examples": {
+            "authorizationServerId": {
+              "value": "99de126f-cb58-4f92-bd80-afbc354c253d"
+            }
+          },
+          "name": "authorizationServerId",
+          "schema": {
+            "format": "UUID",
+            "type": "string"
+          },
+          "in": "path",
+          "required": true,
+          "x-validator": "@ValidAuthorizationServer"
+        }
+      ]
+    },
+    "/{authorizationServerId}/authorization/": {
+      "get": {
+        "tags": [
+          "AuthorizationServer"
+        ],
+        "parameters": [
+          {
+            "name": "code_challenge",
+            "description": "",
+            "schema": {
+              "type": "string"
+            },
+            "in": "query"
+          },
+          {
+            "name": "code_challenge_method",
+            "description": "",
+            "schema": {
+              "type": "string"
+            },
+            "in": "query"
+          },
+          {
+            "name": "redirect_uri",
+            "description": "",
+            "schema": {
+              "type": "string"
+            },
+            "in": "query"
+          },
+          {
+            "name": "response_type",
+            "description": "",
+            "schema": {
+              "enum": [
+                "code",
+                "client_credentials"
+              ],
+              "type": "string"
+            },
+            "in": "query",
+            "required": true
+          },
+          {
+            "name": "scope",
+            "description": "",
+            "schema": {
+              "type": "string"
+            },
+            "in": "query"
+          },
+          {
+            "name": "state",
+            "description": "",
+            "schema": {
+              "type": "string"
+            },
+            "in": "query"
+          },
+          {
+            "name": "nonce",
+            "description": "",
+            "schema": {
+              "type": "string"
+            },
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "text/html": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": "Login screen"
+          }
+        },
+        "operationId": "initiateAuthorization",
+        "summary": "Authorization Endpoint"
+      },
+      "post": {
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/PasswordAuthRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "tags": [
+          "AuthorizationServer"
+        ],
+        "parameters": [
+          {
+            "name": "code_challenge",
+            "description": "",
+            "schema": {
+              "type": "string"
+            },
+            "in": "query"
+          },
+          {
+            "name": "code_challenge_method",
+            "description": "",
+            "schema": {
+              "type": "string"
+            },
+            "in": "query"
+          },
+          {
+            "name": "redirect_uri",
+            "description": "",
+            "schema": {
+              "type": "string"
+            },
+            "in": "query"
+          },
+          {
+            "name": "response_type",
+            "description": "",
+            "schema": {
+              "enum": [
+                "code",
+                "client_credentials"
+              ],
+              "type": "string"
+            },
+            "in": "query",
+            "required": true
+          },
+          {
+            "name": "scope",
+            "description": "",
+            "schema": {
+              "type": "string"
+            },
+            "in": "query"
+          },
+          {
+            "name": "state",
+            "description": "",
+            "schema": {
+              "type": "string"
+            },
+            "in": "query"
+          },
+          {
+            "name": "nonce",
+            "description": "",
+            "schema": {
+              "type": "string"
+            },
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "text/html": {}
+            },
+            "description": "Rerender the form when the user does not provide valid credentials."
+          },
+          "302": {
+            "description": "Redirect the user back to the redirect uri on success."
+          }
+        },
+        "operationId": "createAuthorizationCode"
+      },
+      "parameters": [
+        {
+          "examples": {
+            "authorizationServerId": {
+              "value": "99de126f-cb58-4f92-bd80-afbc354c253d"
+            }
+          },
+          "name": "authorizationServerId",
+          "schema": {
+            "format": "UUID",
+            "type": "string"
+          },
+          "in": "path",
+          "required": true,
+          "x-validator": "@ValidAuthorizationServer"
+        },
+        {
+          "name": "client_id",
+          "description": "",
+          "schema": {
+            "type": "string"
+          },
+          "in": "query",
+          "required": true
+        }
+      ]
+    },
+    "/{authorizationServerId}/end_session/": {
+      "parameters": [
+        {
+          "examples": {
+            "authorizationServerId": {
+              "value": "99de126f-cb58-4f92-bd80-afbc354c253d"
+            }
+          },
+          "name": "authorizationServerId",
+          "schema": {
+            "format": "UUID",
+            "type": "string"
+          },
+          "in": "path",
+          "required": true,
+          "x-validator": "@ValidAuthorizationServer"
+        }
+      ]
+    },
+    "/{authorizationServerId}/issuer/": {
+      "parameters": [
+        {
+          "examples": {
+            "authorizationServerId": {
+              "value": "99de126f-cb58-4f92-bd80-afbc354c253d"
+            }
+          },
+          "name": "authorizationServerId",
+          "schema": {
+            "format": "UUID",
+            "type": "string"
+          },
+          "in": "path",
+          "required": true,
+          "x-validator": "@ValidAuthroizationServerRequest"
+        }
+      ]
+    },
+    "/{authorizationServerId}/jwks/": {
+      "summary": "JWKS",
+      "description": "JWKS",
+      "get": {
+        "tags": [
+          "AuthorizationServer"
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JWKS"
+                }
+              }
+            },
+            "description": "JWKS"
+          }
+        },
+        "operationId": "getAuthorizationServerJwks",
+        "summary": "JWKS"
+      },
+      "parameters": [
+        {
+          "examples": {
+            "authorizationServerId": {
+              "value": "99de126f-cb58-4f92-bd80-afbc354c253d"
+            }
+          },
+          "name": "authorizationServerId",
+          "schema": {
+            "format": "UUID",
+            "type": "string"
+          },
+          "in": "path",
+          "required": true,
+          "x-validator": "@ValidAuthorizationServer"
+        }
+      ]
+    },
+    "/{authorizationServerId}/token/": {
+      "post": {
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AccessTokenRequest"
+              }
+            }
+          },
+          "required": true,
+          "x-validator": "@ValidAccessTokenRequest"
+        },
+        "tags": [
+          "AuthorizationServer"
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccessTokenResponse"
+                }
+              }
+            },
+            "description": "Get an Access Token"
+          }
+        },
+        "operationId": "issueToken",
+        "summary": "Token Endpoint"
+      },
+      "parameters": [
+        {
+          "examples": {
+            "authorizationServerId": {
+              "value": "99de126f-cb58-4f92-bd80-afbc354c253d"
+            }
+          },
+          "name": "authorizationServerId",
+          "schema": {
+            "format": "UUID",
+            "type": "string"
+          },
+          "in": "path",
+          "required": true
+        }
+      ]
+    },
+    "/{authorizationServerId}/userinfo/": {
+      "summary": "Get userinfo",
+      "get": {
+        "tags": [
+          "AuthorizationServer"
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Get userinfo"
+          }
+        },
+        "operationId": "getUserInfo",
+        "summary": "User Info"
+      },
+      "parameters": [
+        {
+          "examples": {
+            "authorizationServerId": {
+              "value": "99de126f-cb58-4f92-bd80-afbc354c253d"
+            }
+          },
+          "name": "authorizationServerId",
+          "schema": {
+            "format": "UUID",
+            "type": "string"
+          },
+          "in": "path",
+          "required": true,
+          "x-validator": "@ValidAuthorizationServer"
+        },
+        {
+          "name": "Authorization",
+          "description": "",
+          "schema": {
+            "type": "string"
+          },
+          "in": "header",
+          "required": true
+        }
+      ]
+    }
+  },
+  "components": {
+    "schemas": {
+      "WellKnown": {
+        "title": "Root Type for WellKnown",
+        "description": "",
+        "type": "object",
+        "properties": {
+          "issuer": {
+            "format": "url",
+            "type": "string"
+          },
+          "authorization_endpoint": {
+            "format": "url",
+            "type": "string"
+          },
+          "token_endpoint": {
+            "format": "url",
+            "type": "string"
+          },
+          "userinfo_endpoint": {
+            "format": "url",
+            "type": "string"
+          },
+          "revocation_endpoint": {
+            "format": "url",
+            "type": "string"
+          },
+          "jwks_uri": {
+            "format": "url",
+            "type": "string"
+          },
+          "response_types_supported": {
+            "type": "array",
+            "items": {
+              "enum": [
+                "code",
+                "token",
+                "code id_token"
+              ],
+              "type": "string"
+            }
+          },
+          "subject_types_supported": {
+            "type": "array",
+            "items": {
+              "enum": [
+                "public"
+              ],
+              "type": "string"
+            }
+          },
+          "id_token_signing_alg_values_supported": {
+            "type": "array",
+            "items": {
+              "enum": [
+                "RS256",
+                "RS512",
+                "EdDSA"
+              ],
+              "type": "string"
+            }
+          },
+          "scopes_supported": {
+            "type": "array",
+            "items": {
+              "enum": [
+                "openid",
+                "email",
+                "profile"
+              ],
+              "type": "string"
+            }
+          },
+          "token_endpoint_auth_methods_supported": {
+            "type": "array",
+            "items": {
+              "enum": [
+                "client_secret_post",
+                "client_secret_basic"
+              ],
+              "type": "string"
+            }
+          },
+          "claims_supported": {
+            "type": "array",
+            "items": {
+              "enum": [
+                "aud",
+                "exp",
+                "family_name",
+                "given_name",
+                "iat",
+                "iss",
+                "name",
+                "sub"
+              ],
+              "type": "string"
+            }
+          },
+          "code_challenge_methods_supported": {
+            "type": "array",
+            "items": {
+              "enum": [
+                "S256"
+              ],
+              "type": "string"
+            }
+          },
+          "grant_types_supported": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "example": {
+          "issuer": "https://accounts.example.com",
+          "authorization_endpoint": "https://accounts.example.com/authorization_endpoint/",
+          "token_endpoint": "https://accounts.example.com/token_endpoint/",
+          "userinfo_endpoint": "https://accounts.example.com/userinfo_endpoint/",
+          "jwks_uri": "https://accounts.example.com/jwks_uri/",
+          "response_types_supported": [
+            "code",
+            "token",
+            "id_token",
+            "code token",
+            "code id_token",
+            "token id_token",
+            "code token id_token",
+            "none"
+          ],
+          "subject_types_supported": [
+            "public"
+          ],
+          "id_token_signing_alg_values_supported": [
+            "RS256"
+          ],
+          "scopes_supported": [
+            "openid",
+            "email",
+            "profile"
+          ],
+          "token_endpoint_auth_methods_supported": [
+            "client_secret_post",
+            "client_secret_basic"
+          ],
+          "claims_supported": [
+            "aud",
+            "email",
+            "email_verified",
+            "exp",
+            "family_name",
+            "given_name",
+            "iat",
+            "iss",
+            "locale",
+            "name",
+            "picture",
+            "sub"
+          ],
+          "code_challenge_methods_supported": [
+            "plain",
+            "S256"
+          ],
+          "grant_types_supported": [
+            "authorization_code",
+            "refresh_token",
+            "client_credentials"
+          ]
+        }
+      },
+      "JWKS": {
+        "title": "Root Type for JWKS",
+        "description": "",
+        "type": "object",
+        "properties": {
+          "keys": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/JWK"
+            }
+          }
+        },
+        "example": {
+          "keys": [
+            {
+              "kid": "n7h97O0YMBfLZDCHI60r6GC4VtcLJSK2dfKUVBDbF1w",
+              "kty": "RSA",
+              "alg": "RS256",
+              "use": "sig",
+              "n": "meCAjDZk4scn7XcWZPPeQ9WdgquCjLLADUQuGwZkpmM9c2fRHBK7NNOtUHqDlTDq-lQ-5Sh3JN8ZCn0UcTig_EqEA5JneysnyPXGDmU7xOTiQj0WZ2eriuaLfrByT9pnpvZcyT6RH_L6Heienjiswrt1OC_coqnF7o1d5lAWdJlFhwv39-r4s67TAmNFMPa8tqax2ywLAUK4D1gn6MKmpHrTY4NUUTInIaVtNzaZOVWcXDui4PBLeut5xJZbZyz6QsFnjV_5bS3Wa9F0zcF-Yi6AS2U8CjxoLmvvZglBCDJlnc-srfYw6hwIwQihirp0_-kHUbVNxwgsZj8d_2p6Aw",
+              "e": "AQAB",
+              "x5c": [
+                "MIICozCCAYsCBgGDs3zGNzANBgkqhkiG9w0BAQsFADAVMRMwEQYDVQQDDApOZHB0Yy10ZXN0MB4XDTIyMTAwNzE3MjU0MloXDTMyMTAwNzE3MjcyMlowFTETMBEGA1UEAwwKTmRwdGMtdGVzdDCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAJnggIw2ZOLHJ+13FmTz3kPVnYKrgoyywA1ELhsGZKZjPXNn0RwSuzTTrVB6g5Uw6vpUPuUodyTfGQp9FHE4oPxKhAOSZ3srJ8j1xg5lO8Tk4kI9Fmdnq4rmi36wck/aZ6b2XMk+kR/y+h3onp44rMK7dTgv3KKpxe6NXeZQFnSZRYcL9/fq+LOu0wJjRTD2vLamsdssCwFCuA9YJ+jCpqR602ODVFEyJyGlbTc2mTlVnFw7ouDwS3rrecSWW2cs+kLBZ41f+W0t1mvRdM3BfmIugEtlPAo8aC5r72YJQQgyZZ3PrK32MOocCMEIoYq6dP/pB1G1TccILGY/Hf9qegMCAwEAATANBgkqhkiG9w0BAQsFAAOCAQEAPAAsLeUCIDKzxLjqziMno5rIN/KOKOTiZJoq5ep6u5I8x7Q/5tld9pxrT84A4PFH0lRHVWkG9vVatXiUJFXwR5Hx4UW5E3Zswqs5cWj/8fuDaPJbKsYol8wDGcr0p+E4LySed7ReYo6NQU8v8QXSvBvwUpBk99iYhoNGMqx0p21z7SklqdmE6trWu+rVwyh1bGOTRBFXD3eKp5bRWBwRV58xNwVG+EUBhYM7BIzH73j3Vl1muCHg1oYxiayRuEyuAMSlCTr/QeyLbD6L4JGqiHWpNJQVgyT7U/r/xwQEF1PbmPqduVyJq9RJf06Plg1iWwyOBsB5t8GlhOGOOJIpaQ=="
+              ],
+              "x5t": "xoivC29M-elGM11ifPKDuMShiu0",
+              "x5t#S256": "58mTv9dKrsEmx7n11rR3vDwlLBOdbhUCf4rmUP4vLkI"
+            },
+            {
+              "kid": "CXPHOcjZ8wTmQaeL0Nao2HIoIrJTOo-pUVBrVW8bGoU",
+              "kty": "RSA",
+              "alg": "RSA-OAEP",
+              "use": "enc",
+              "n": "xl6Rmvd5-FjgfIMbJo61a34qMwxus4TftpYShMo8gxB601u07HvXfX8pMVYufh7fYEZut5tTrqoqSx8GL28imDXRMifoWIayhb-Q_JJFGQMJjx5XTKoGloB_kVXR5-YXDx_siU4qbaKsKd_pH6JD8EHB7w1GaFC3KGi--wfrZyIEJEaxK7CXiXTKLjeQHZ8KVSpPJL4xxloZuS2y-JHKmJRt_pskN4260gl-a4D37V0O6E_e3xBOU5c7M293ibGnH5UR5Ufm7KusUdrYFH6TzhnnkQJDHLtzMdaMatsnfTNS1ZYef8UpZyl0_p8TMvRiwdHazEEWijHAIFCTMfx15w",
+              "e": "AQAB",
+              "x5c": [
+                "MIICozCCAYsCBgGDs3zHpzANBgkqhkiG9w0BAQsFADAVMRMwEQYDVQQDDApOZHB0Yy10ZXN0MB4XDTIyMTAwNzE3MjU0MloXDTMyMTAwNzE3MjcyMlowFTETMBEGA1UEAwwKTmRwdGMtdGVzdDCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAMZekZr3efhY4HyDGyaOtWt+KjMMbrOE37aWEoTKPIMQetNbtOx7131/KTFWLn4e32BGbrebU66qKksfBi9vIpg10TIn6FiGsoW/kPySRRkDCY8eV0yqBpaAf5FV0efmFw8f7IlOKm2irCnf6R+iQ/BBwe8NRmhQtyhovvsH62ciBCRGsSuwl4l0yi43kB2fClUqTyS+McZaGbktsviRypiUbf6bJDeNutIJfmuA9+1dDuhP3t8QTlOXOzNvd4mxpx+VEeVH5uyrrFHa2BR+k84Z55ECQxy7czHWjGrbJ30zUtWWHn/FKWcpdP6fEzL0YsHR2sxBFooxwCBQkzH8decCAwEAATANBgkqhkiG9w0BAQsFAAOCAQEAKG8+o3zKMq5Ge4oliY4ht62zkd//ucoif25sU+8+XgTpz3IIFy47zCGdOhAG0JroqklQY20mKWnJGuWEbwc1ZqON/C/nnw2N2vIi7IHNUCX7+1B8pAcbmYU+FslAdsnJm6lui97gIADA+I7GoM++ovxzKknrTOH8eBSVtHFv/SotMbqLNAHDitb1W4zaO8MFITIwBlnI3n+jvETULeYFeCcFVvsxmsFEOvJZxIyFeWukw+NxyTBJeS5WEmJFMFqE7pkGJvGRl3iPYc/+7tQSNzPL6Wi9PvCzbFF+GpS5LRCTyUE+v+ldxwYnv7oo4zirWZOUxhI4kEOTo48HnItfOw=="
+              ],
+              "x5t": "kN0agfIDCc9Z0NmhpgdYv7-NWVk",
+              "x5t#S256": "EgDdxvMIJGHahBN2cbLAbjKfCiTd-hqY9zsKxUt1oV0"
+            }
+          ]
+        }
+      },
+      "JWK": {
+        "title": "Root Type for JWK",
+        "description": "",
+        "type": "object",
+        "properties": {
+          "kid": {
+            "type": "string"
+          },
+          "kty": {
+            "type": "string"
+          },
+          "alg": {
+            "type": "string"
+          },
+          "use": {
+            "type": "string"
+          },
+          "n": {
+            "type": "string"
+          },
+          "e": {
+            "type": "string"
+          },
+          "x5c": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "x5t": {
+            "type": "string"
+          },
+          "x5t#S256": {
+            "type": "string"
+          }
+        },
+        "example": {
+          "kid": "n7h97O0YMBfLZDCHI60r6GC4VtcLJSK2dfKUVBDbF1w",
+          "kty": "RSA",
+          "alg": "RS256",
+          "use": "sig",
+          "n": "meCAjDZk4scn7XcWZPPeQ9WdgquCjLLADUQuGwZkpmM9c2fRHBK7NNOtUHqDlTDq-lQ-5Sh3JN8ZCn0UcTig_EqEA5JneysnyPXGDmU7xOTiQj0WZ2eriuaLfrByT9pnpvZcyT6RH_L6Heienjiswrt1OC_coqnF7o1d5lAWdJlFhwv39-r4s67TAmNFMPa8tqax2ywLAUK4D1gn6MKmpHrTY4NUUTInIaVtNzaZOVWcXDui4PBLeut5xJZbZyz6QsFnjV_5bS3Wa9F0zcF-Yi6AS2U8CjxoLmvvZglBCDJlnc-srfYw6hwIwQihirp0_-kHUbVNxwgsZj8d_2p6Aw",
+          "e": "AQAB",
+          "x5c": [
+            "MIICozCCAYsCBgGDs3zGNzANBgkqhkiG9w0BAQsFADAVMRMwEQYDVQQDDApOZHB0Yy10ZXN0MB4XDTIyMTAwNzE3MjU0MloXDTMyMTAwNzE3MjcyMlowFTETMBEGA1UEAwwKTmRwdGMtdGVzdDCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAJnggIw2ZOLHJ+13FmTz3kPVnYKrgoyywA1ELhsGZKZjPXNn0RwSuzTTrVB6g5Uw6vpUPuUodyTfGQp9FHE4oPxKhAOSZ3srJ8j1xg5lO8Tk4kI9Fmdnq4rmi36wck/aZ6b2XMk+kR/y+h3onp44rMK7dTgv3KKpxe6NXeZQFnSZRYcL9/fq+LOu0wJjRTD2vLamsdssCwFCuA9YJ+jCpqR602ODVFEyJyGlbTc2mTlVnFw7ouDwS3rrecSWW2cs+kLBZ41f+W0t1mvRdM3BfmIugEtlPAo8aC5r72YJQQgyZZ3PrK32MOocCMEIoYq6dP/pB1G1TccILGY/Hf9qegMCAwEAATANBgkqhkiG9w0BAQsFAAOCAQEAPAAsLeUCIDKzxLjqziMno5rIN/KOKOTiZJoq5ep6u5I8x7Q/5tld9pxrT84A4PFH0lRHVWkG9vVatXiUJFXwR5Hx4UW5E3Zswqs5cWj/8fuDaPJbKsYol8wDGcr0p+E4LySed7ReYo6NQU8v8QXSvBvwUpBk99iYhoNGMqx0p21z7SklqdmE6trWu+rVwyh1bGOTRBFXD3eKp5bRWBwRV58xNwVG+EUBhYM7BIzH73j3Vl1muCHg1oYxiayRuEyuAMSlCTr/QeyLbD6L4JGqiHWpNJQVgyT7U/r/xwQEF1PbmPqduVyJq9RJf06Plg1iWwyOBsB5t8GlhOGOOJIpaQ=="
+          ],
+          "x5t": "xoivC29M-elGM11ifPKDuMShiu0",
+          "x5t#S256": "58mTv9dKrsEmx7n11rR3vDwlLBOdbhUCf4rmUP4vLkI"
+        }
+      },
+      "PasswordAuthRequest": {
+        "title": "Root Type for PasswordAuthRequest",
+        "description": "",
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          }
+        },
+        "example": {
+          "username": "foo@bar.com",
+          "password": "foobar2000"
+        }
+      },
+      "AccessTokenResponse": {
+        "title": "Root Type for AccessToken",
+        "description": "",
+        "type": "object",
+        "properties": {
+          "access_token": {
+            "format": "JWT",
+            "type": "string"
+          },
+          "token_type": {
+            "enum": [
+              "Bearer"
+            ],
+            "type": "string"
+          },
+          "refresh_token": {
+            "type": "string"
+          },
+          "expires_in": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "id_token": {
+            "format": "JWT",
+            "type": "string"
+          },
+          "scope": {
+            "description": "",
+            "type": "string"
+          }
+        },
+        "example": {
+          "access_token": "xxxxx.yyyyy.zzzzz",
+          "token_type": "Bearer",
+          "refresh_token": "8xLOxBtZp8",
+          "expires_in": 3600,
+          "id_token": "xxxxx.yyyyy.zzzzz",
+          "scope": "test.read"
+        }
+      },
+      "AccessTokenRequest": {
+        "title": "Root Type for AccessTokenRequest",
+        "description": "",
+        "type": "object",
+        "properties": {
+          "client_id": {
+            "type": "string"
+          },
+          "client_secret": {
+            "type": "string"
+          },
+          "grant_type": {
+            "enum": [
+              "client_credentials",
+              "authorization_code"
+            ],
+            "type": "string"
+          },
+          "code": {
+            "description": "",
+            "type": "string"
+          },
+          "redirect_uri": {
+            "description": "",
+            "type": "string"
+          },
+          "code_verifier": {
+            "description": "",
+            "type": "string"
+          },
+          "scope": {
+            "description": "",
+            "type": "string"
+          }
+        },
+        "example": {
+          "client_id": "",
+          "client_secret": "",
+          "grant_type": "client_credentials"
+        }
+      },
+      "AuthorizationRequest": {
+        "title": "Root Type for AuthorizationRequest",
+        "description": "",
+        "required": [
+          "client_id",
+          "response_type"
+        ],
+        "type": "object",
+        "properties": {
+          "response_type": {
+            "enum": [
+              "code",
+              "client_credentials"
+            ],
+            "type": "string"
+          },
+          "client_id": {
+            "type": "string"
+          },
+          "redirect_uri": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "code_challenge": {
+            "type": "string"
+          },
+          "code_challenge_method": {
+            "enum": [
+              "S256"
+            ],
+            "type": "string"
+          },
+          "scope": {
+            "description": "",
+            "type": "string"
+          },
+          "nonce": {
+            "description": "",
+            "type": "string"
+          }
+        },
+        "example": {
+          "response_type": "code",
+          "client_id": "5ae13a6c-6858-4656-ac18-7b0c7401aa52",
+          "redirect_uri": "https://api.cartobucket.com/callback",
+          "state": "eyJrZXkiOiAiZXhhbXBsZSJ9",
+          "code_challenge": "YXNkZjk0cGl1b2gzMjYzCjIxNTYzNTE2MjRyZTM=",
+          "code_challenge_method": "S256"
+        }
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "AuthorizationServer",
+      "description": "This is where the interaction with the Authorization Server occurs."
+    }
+  ]
+}

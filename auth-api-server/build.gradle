@@ -3,7 +3,7 @@ import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
 plugins {
     id 'java'
     id 'io.quarkus'
-    id 'org.openapi.generator' version '6.5.0'
+    id 'org.openapi.generator' version '6.6.0'
 }
 
 repositories {
@@ -23,9 +23,6 @@ dependencies {
     implementation 'io.quarkus:quarkus-arc'
     implementation project(':auth-data')
     testImplementation 'io.quarkus:quarkus-junit5'
-
-    implementation 'io.quarkus:quarkus-smallrye-jwt-build'
-
 }
 
 group 'com.cartobucket.auth'
@@ -48,7 +45,7 @@ compileTestJava {
     options.encoding = 'UTF-8'
 }
 
-def specFile = "$projectDir/src/main/openapi/api.yaml"
+def specFile = "$projectDir/src/main/openapi/api.json"
 
 task generateApiServer(type: GenerateTask) {
     def serverOutputDir = "$buildDir/generated/api/server"
