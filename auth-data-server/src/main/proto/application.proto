@@ -5,6 +5,7 @@ option java_package = "com.cartobucket.auth.rpc";
 option java_outer_classname = "ApplicationProto";
 
 import "google/protobuf/timestamp.proto";
+import "google/protobuf/struct.proto";
 
 
 service Applications {
@@ -20,6 +21,7 @@ message ApplicationCreateRequest {
   string clientId = 1;
   string name = 2;
   string authorizationServerId = 3;
+  google.protobuf.Struct profile = 4;
 }
 
 message ApplicationListRequest {
@@ -35,6 +37,7 @@ message ApplicationDeleteRequest {
 message ApplicationUpdateRequest {
   string id = 1;
   string name = 2;
+  google.protobuf.Struct profile = 3;
 }
 
 message ApplicationGetRequest {
@@ -46,8 +49,9 @@ message ApplicationCreateResponse {
   string clientId = 2;
   string name = 3;
   string authorizationServerId = 4;
-  google.protobuf.Timestamp createdOn = 5;
-  google.protobuf.Timestamp updatedOn = 6;
+  google.protobuf.Struct profile = 5;
+  google.protobuf.Timestamp createdOn = 7;
+  google.protobuf.Timestamp updatedOn = 8;
 }
 
 message ApplicationResponse {
@@ -55,8 +59,9 @@ message ApplicationResponse {
   string clientId = 2;
   string name = 3;
   string authorizationServerId = 4;
-  google.protobuf.Timestamp createdOn = 5;
-  google.protobuf.Timestamp updatedOn = 6;
+  google.protobuf.Struct profile = 5;
+  google.protobuf.Timestamp createdOn = 6;
+  google.protobuf.Timestamp updatedOn = 7;
 }
 
 message ApplicationListResponse {

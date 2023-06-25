@@ -32,12 +32,15 @@ import com.cartobucket.auth.rpc.ApplicationListResponse;
 import com.cartobucket.auth.rpc.ApplicationResponse;
 import com.cartobucket.auth.rpc.ApplicationUpdateRequest;
 import com.cartobucket.auth.rpc.Applications;
+import com.cartobucket.auth.rpc.server.entities.mappers.ProfileMapper;
+import com.google.protobuf.Struct;
 import com.google.protobuf.Timestamp;
 import io.quarkus.grpc.GrpcService;
 import io.smallrye.common.annotation.Blocking;
 import io.smallrye.mutiny.Uni;
 
 import java.util.Collections;
+import java.util.Map;
 import java.util.UUID;
 
 @GrpcService
@@ -57,10 +60,11 @@ public class ApplicationRpcService implements Applications {
         application.setAuthorizationServerId(UUID.fromString(request.getAuthorizationServerId()));
 
         var profile = new Profile();
-        profile.setProfile(Collections.emptyMap()); // TODO: Figure this out
+        profile.setProfile(ProfileMapper.fromProtoMap(request.getProfile().getFieldsMap()));
 
         final var applicationAndProfile = applicationService.createApplication(application, profile);
         final var _application = applicationAndProfile.getLeft();
+        final var _profile = applicationAndProfile.getRight();
 
         return Uni
                 .createFrom()
@@ -71,6 +75,7 @@ public class ApplicationRpcService implements Applications {
                                 .setAuthorizationServerId(String.valueOf(_application.getAuthorizationServerId()))
                                 .setName(_application.getName())
                                 .setClientId(_application.getClientId())
+                                .setProfile(ProfileMapper.toProtoMap(_profile.getProfile()))
                                 .setCreatedOn(Timestamp.newBuilder().setSeconds(_application.getCreatedOn().toEpochSecond()).build())
                                 .setUpdatedOn(Timestamp.newBuilder().setSeconds(_application.getUpdatedOn().toEpochSecond()).build())
                                 .build()
@@ -125,6 +130,9 @@ public class ApplicationRpcService implements Applications {
         final var application = applicationAndProfile.getLeft();
         application.setName(request.getName());
 
+        final var profile = applicationAndProfile.getRight();
+        profile.setProfile(ProfileMapper.fromProtoMap(request.getProfile().getFieldsMap()));
+
         // TODO: Implement the update in the service.
         return Uni
                 .createFrom()
@@ -135,6 +143,7 @@ public class ApplicationRpcService implements Applications {
                                 .setAuthorizationServerId(String.valueOf(application.getAuthorizationServerId()))
                                 .setName(application.getName())
                                 .setClientId(application.getClientId())
+                                .setProfile(ProfileMapper.toProtoMap(profile.getProfile()))
                                 .setCreatedOn(Timestamp.newBuilder().setSeconds(application.getCreatedOn().toEpochSecond()).build())
                                 .setUpdatedOn(Timestamp.newBuilder().setSeconds(application.getUpdatedOn().toEpochSecond()).build())
                                 .build()
@@ -146,6 +155,7 @@ public class ApplicationRpcService implements Applications {
     public Uni<ApplicationResponse> getApplication(ApplicationGetRequest request) {
         final var applicationAndProfile = applicationService.getApplication(UUID.fromString(request.getApplicationId()));
         final var application = applicationAndProfile.getLeft();
+        final var profile = applicationAndProfile.getRight();
         return Uni
                 .createFrom()
                 .item(
@@ -155,6 +165,7 @@ public class ApplicationRpcService implements Applications {
                                 .setAuthorizationServerId(String.valueOf(application.getAuthorizationServerId()))
                                 .setName(application.getName())
                                 .setClientId(application.getClientId())
+                                .setProfile(ProfileMapper.toProtoMap(profile.getProfile()))
                                 .setCreatedOn(Timestamp.newBuilder().setSeconds(application.getCreatedOn().toEpochSecond()).build())
                                 .setUpdatedOn(Timestamp.newBuilder().setSeconds(application.getUpdatedOn().toEpochSecond()).build())
                                 .build()

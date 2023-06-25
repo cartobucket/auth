@@ -96,8 +96,10 @@ public class ApplicationService implements com.cartobucket.auth.data.services.Ap
         var _application = ApplicationMapper.from(applicationRepository.save(ApplicationMapper.to(application)));
 
         profile.setResource(_application.getId());
-        profile.setAuthorizationServerId(_application.getAuthorizationServerId());
         profile.setProfileType(ProfileType.Application);
+        profile.setAuthorizationServerId(_application.getAuthorizationServerId());
+        profile.setCreatedOn(OffsetDateTime.now());
+        profile.setUpdatedOn(OffsetDateTime.now());
         var _profile = ProfileMapper.from(profileRepository.save(ProfileMapper.to(profile)));
 
         return Pair.create(_application, _profile);
