@@ -5,6 +5,7 @@ option java_package = "com.cartobucket.auth.rpc";
 option java_outer_classname = "UserProto";
 
 import "google/protobuf/timestamp.proto";
+import "google/protobuf/struct.proto";
 
 
 service Users {
@@ -21,6 +22,7 @@ message UserCreateRequest {
   string username = 2;
   string email = 3;
   string password = 4;
+  google.protobuf.Struct profile = 5;
 }
 
 message UserListRequest {
@@ -37,6 +39,7 @@ message UserUpdateRequest {
   string id = 1;
   string username = 2;
   string email = 3;
+  google.protobuf.Struct profile = 4;
 }
 
 message UserGetRequest {
@@ -55,8 +58,9 @@ message UserCreateResponse {
   string username = 3;
   string email = 4;
   string passwordHash = 5;
-  google.protobuf.Timestamp createdOn = 6;
-  google.protobuf.Timestamp updatedOn = 7;
+  google.protobuf.Struct profile = 6;
+  google.protobuf.Timestamp createdOn = 7;
+  google.protobuf.Timestamp updatedOn = 8;
 }
 
 message UserResponse {
@@ -65,8 +69,9 @@ message UserResponse {
   string username = 3;
   string email = 4;
   string passwordHash = 5;
-  google.protobuf.Timestamp createdOn = 6;
-  google.protobuf.Timestamp updatedOn = 7;
+  google.protobuf.Struct profile = 6;
+  google.protobuf.Timestamp createdOn = 7;
+  google.protobuf.Timestamp updatedOn = 8;
 }
 
 message UserListResponse {

@@ -34,6 +34,7 @@ import com.cartobucket.auth.rpc.UserSetPasswordRequest;
 import com.cartobucket.auth.rpc.UserSetPasswordResponse;
 import com.cartobucket.auth.rpc.UserUpdateRequest;
 import com.cartobucket.auth.rpc.Users;
+import com.cartobucket.auth.rpc.server.entities.mappers.ProfileMapper;
 import com.google.protobuf.Timestamp;
 import io.quarkus.grpc.GrpcService;
 import io.smallrye.common.annotation.Blocking;
@@ -57,10 +58,14 @@ public class UserRpcService implements Users {
         user.setAuthorizationServerId(UUID.fromString(request.getAuthorizationServerId()));
         user.setEmail(request.getEmail());
         user.setUsername(request.getUsername());
+
         var profile = new Profile();
+        profile.setProfile(ProfileMapper.fromProtoMap(request.getProfile().getFieldsMap()));
+
         var userAndProfile = userService.createUser(Pair.create(user, profile));
         user = userAndProfile.getLeft();
         profile = userAndProfile.getRight();
+        profile.setProfile(ProfileMapper.fromProtoMap(request.getProfile().getFieldsMap()));
 
         if (!request.getPassword().isEmpty()) {
             user.setPasswordHash(userService.setPassword(user, request.getPassword()));
@@ -76,6 +81,7 @@ public class UserRpcService implements Users {
                                 .setUsername(user.getUsername())
                                 .setAuthorizationServerId(String.valueOf(user.getAuthorizationServerId()))
                                 .setPasswordHash(user.getPasswordHash())
+                                .setProfile(ProfileMapper.toProtoMap(profile.getProfile()))
                                 .setCreatedOn(Timestamp.newBuilder().setSeconds(user.getCreatedOn().toEpochSecond()).build())
                                 .setUpdatedOn(Timestamp.newBuilder().setSeconds(user.getUpdatedOn().toEpochSecond()).build())
                                 .build()
@@ -131,9 +137,15 @@ public class UserRpcService implements Users {
         user.setId(UUID.fromString(request.getId()));
         user.setUsername(request.getUsername());
         user.setEmail(request.getEmail());
-        var userAndProfiler = userService.updateUser(user.getId(), Pair.create(user, new Profile()));
+
+        var profile = new Profile();
+        profile.setResource(user.getId());
+        profile.setProfile(ProfileMapper.fromProtoMap(request.getProfile().getFieldsMap()));
+        var userAndProfiler = userService.updateUser(user.getId(), Pair.create(user, profile));
 
         user = userAndProfiler.getLeft();
+        profile = userAndProfiler.getRight();
+
         return Uni
                 .createFrom()
                 .item(
@@ -144,6 +156,7 @@ public class UserRpcService implements Users {
                                 .setUsername(user.getUsername())
                                 .setAuthorizationServerId(String.valueOf(user.getAuthorizationServerId()))
                                 .setPasswordHash(user.getPasswordHash())
+                                .setProfile(ProfileMapper.toProtoMap(profile.getProfile()))
                                 .setCreatedOn(Timestamp.newBuilder().setSeconds(user.getCreatedOn().toEpochSecond()).build())
                                 .setUpdatedOn(Timestamp.newBuilder().setSeconds(user.getUpdatedOn().toEpochSecond()).build())
                                 .build()
@@ -155,6 +168,7 @@ public class UserRpcService implements Users {
     public Uni<UserResponse> getUser(UserGetRequest request) {
         final var userAndProfile = userService.getUser(UUID.fromString(request.getId()));
         final var user = userAndProfile.getLeft();
+        final var profile = userAndProfile.getRight();
 
         return Uni
                 .createFrom()
@@ -166,6 +180,7 @@ public class UserRpcService implements Users {
                                 .setUsername(user.getUsername())
                                 .setAuthorizationServerId(String.valueOf(user.getAuthorizationServerId()))
                                 .setPasswordHash(user.getPasswordHash())
+                                .setProfile(ProfileMapper.toProtoMap(profile.getProfile()))
                                 .setCreatedOn(Timestamp.newBuilder().setSeconds(user.getCreatedOn().toEpochSecond()).build())
                                 .setUpdatedOn(Timestamp.newBuilder().setSeconds(user.getUpdatedOn().toEpochSecond()).build())
                                 .build()

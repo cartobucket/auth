@@ -33,14 +33,11 @@ import com.cartobucket.auth.rpc.ApplicationResponse;
 import com.cartobucket.auth.rpc.ApplicationUpdateRequest;
 import com.cartobucket.auth.rpc.Applications;
 import com.cartobucket.auth.rpc.server.entities.mappers.ProfileMapper;
-import com.google.protobuf.Struct;
 import com.google.protobuf.Timestamp;
 import io.quarkus.grpc.GrpcService;
 import io.smallrye.common.annotation.Blocking;
 import io.smallrye.mutiny.Uni;
 
-import java.util.Collections;
-import java.util.Map;
 import java.util.UUID;
 
 @GrpcService
