@@ -19,9 +19,9 @@
 
 package com.cartobucket.auth.rpc.server.services;
 
-import com.cartobucket.auth.rpc.server.entities.mappers.ScopeMapper;
-import com.cartobucket.auth.data.exceptions.notfound.ScopeNotFound;
 import com.cartobucket.auth.data.domain.Scope;
+import com.cartobucket.auth.data.exceptions.notfound.ScopeNotFound;
+import com.cartobucket.auth.rpc.server.entities.mappers.ScopeMapper;
 import com.cartobucket.auth.rpc.server.repositories.ScopeRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;

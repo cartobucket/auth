@@ -12,8 +12,8 @@ dependencies {
     implementation enforcedPlatform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}")
 
     implementation 'io.quarkus:quarkus-grpc'
+    implementation 'io.quarkus:quarkus-arc'
     testImplementation 'io.quarkus:quarkus-junit5'
-
 }
 
 group 'com.cartobucket.auth'

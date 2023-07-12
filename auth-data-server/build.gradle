@@ -9,21 +9,19 @@ repositories {
 }
 
 dependencies {
+    implementation project(path: ':auth-data')
+
     implementation 'org.apache.camel.quarkus:camel-quarkus-json-validator'
     implementation enforcedPlatform("${quarkusPlatformGroupId}:quarkus-camel-bom:${quarkusPlatformVersion}")
     implementation enforcedPlatform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}")
 
     implementation 'io.quarkus:quarkus-grpc'
-//    implementation 'io.quarkus:quarkus-hibernate-reactive-panache'
-//    implementation 'io.quarkus:quarkus-reactive-pg-client'
     implementation 'io.quarkus:quarkus-arc'
-    implementation project(path: ':auth-data')
     testImplementation 'io.quarkus:quarkus-junit5'
 
     implementation 'io.quarkus:quarkus-hibernate-orm'
     implementation 'io.quarkus:quarkus-jdbc-postgresql'
     implementation 'io.quarkus:quarkus-spring-data-jpa'
-    //implementation 'io.quarkus:quarkus-spring-data-jpa'
 
     // JOSE
     implementation 'io.quarkus:quarkus-smallrye-jwt-build'

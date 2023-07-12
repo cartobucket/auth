@@ -21,13 +21,18 @@ package com.cartobucket.auth.rpc.server.rpc;
 
 import com.cartobucket.auth.data.domain.Scope;
 import com.cartobucket.auth.data.exceptions.notfound.ScopeNotFound;
-import com.cartobucket.auth.rpc.Scopes;
+import com.cartobucket.auth.data.rpc.ScopeCreateRequest;
+import com.cartobucket.auth.data.rpc.ScopeCreateResponse;
+import com.cartobucket.auth.data.rpc.ScopeDeleteRequest;
+import com.cartobucket.auth.data.rpc.ScopeListRequest;
+import com.cartobucket.auth.data.rpc.ScopeResponse;
+import com.cartobucket.auth.data.rpc.Scopes;
+import com.cartobucket.auth.data.rpc.ScopesListResponse;
 import com.cartobucket.auth.data.services.ScopeService;
 import com.google.protobuf.Timestamp;
 import io.quarkus.grpc.GrpcService;
 import io.smallrye.common.annotation.Blocking;
 import io.smallrye.mutiny.Uni;
-import jakarta.transaction.Transactional;
 
 import java.util.UUID;
 
@@ -40,15 +45,14 @@ public class ScopeRpcService implements Scopes {
     }
 
     @Override
-    @Transactional
     @Blocking
-    public Uni<com.cartobucket.auth.rpc.ScopeCreateResponse> createScope(com.cartobucket.auth.rpc.ScopeCreateRequest request) {
+    public Uni<ScopeCreateResponse> createScope(ScopeCreateRequest request) {
         var scope = new Scope();
         scope.setName(request.getName());
         scope.setAuthorizationServerId(UUID.fromString(request.getAuthorizationServerId()));
         scope = scopeService.createScope(scope);
 
-        var response = com.cartobucket.auth.rpc.ScopeCreateResponse
+        var response = ScopeCreateResponse
                 .newBuilder()
                 .setId(String.valueOf(scope.getId()))
                 .setName(scope.getName())
@@ -64,7 +68,7 @@ public class ScopeRpcService implements Scopes {
 
     @Override
     @Blocking
-    public Uni<com.cartobucket.auth.rpc.ScopesListResponse> listScopes(com.cartobucket.auth.rpc.ScopeListRequest request) {
+    public Uni<ScopesListResponse> listScopes(ScopeListRequest request) {
         final var scopes = scopeService.getScopes(
                 request.getAuthorizationServerIdsList()
                         .stream()
@@ -72,12 +76,12 @@ public class ScopeRpcService implements Scopes {
                         .toList()
         );
 
-        var response = com.cartobucket.auth.rpc.ScopesListResponse
+        var response = ScopesListResponse
                 .newBuilder()
                 .setLimit(0)
                 .setOffset(0);
         for (var scope : scopes) {
-            response.addScopes(com.cartobucket.auth.rpc.ScopeResponse
+            response.addScopes(ScopeResponse
                     .newBuilder()
                     .setId(String.valueOf(scope.getId()))
                     .setName(scope.getName())
@@ -91,13 +95,12 @@ public class ScopeRpcService implements Scopes {
     }
 
     @Override
-    @Blocking
-    public Uni<com.cartobucket.auth.rpc.ScopeResponse> deleteScope(com.cartobucket.auth.rpc.ScopeDeleteRequest request) {
+    public Uni<ScopeResponse> deleteScope(ScopeDeleteRequest request) {
         final var scopeId = UUID.fromString(request.getAuthorizationServerId());
         try {
             scopeService.deleteScope(scopeId);
             return Uni.createFrom().item(
-                    com.cartobucket.auth.rpc.ScopeResponse
+                    ScopeResponse
                             .newBuilder()
                             .setId(String.valueOf(scopeId))
                             .build()
