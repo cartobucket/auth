@@ -8,9 +8,11 @@ import "google/protobuf/timestamp.proto";
 
 
 service Scopes {
-  rpc CreateScope (ScopeCreateRequest) returns (ScopeCreateResponse) {};
+  rpc CreateScope (ScopeCreateRequest) returns (ScopeResponse) {};
   rpc ListScopes (ScopeListRequest) returns (ScopesListResponse) {};
   rpc DeleteScope (ScopeDeleteRequest) returns (ScopeResponse) {};
+  rpc GetScope (ScopeGetRequest) returns (ScopeResponse) {};
+
 }
 
 message ScopeCreateRequest {
@@ -25,15 +27,7 @@ message ScopeListRequest {
 }
 
 message ScopeDeleteRequest {
-  string authorizationServerId = 1;
-}
-
-message ScopeCreateResponse {
   string id = 1;
-  string authorizationServerId = 2;
-  string name = 3;
-  google.protobuf.Timestamp createdOn = 4;
-  google.protobuf.Timestamp updatedOn = 5;
 }
 
 message ScopeResponse {
@@ -48,4 +42,8 @@ message ScopesListResponse {
   repeated ScopeResponse scopes = 1;
   int64 limit = 2;
   int64 offset = 3;
+}
+
+message ScopeGetRequest {
+  string id = 1;
 }

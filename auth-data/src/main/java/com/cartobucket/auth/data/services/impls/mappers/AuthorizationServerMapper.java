@@ -19,24 +19,15 @@
 
 package com.cartobucket.auth.data.services.impls.mappers;
 
-import com.cartobucket.auth.data.domain.Scope;
-import com.cartobucket.auth.data.rpc.ScopeResponse;
-import com.cartobucket.auth.data.rpc.ScopeResponse;
-import io.smallrye.mutiny.Uni;
+import com.cartobucket.auth.data.domain.AuthorizationServer;
+import com.cartobucket.auth.rpc.AuthorizationServerResponse;
 
-import java.time.Instant;
-import java.time.OffsetDateTime;
-import java.time.ZoneId;
 import java.util.UUID;
 
-public class ScopeMapper {
-    public static Scope toScope(ScopeResponse scopeResponse) {
-        var scope = new Scope();
-        scope.setId(UUID.fromString(scopeResponse.getId()));
-        scope.setName(scopeResponse.getName());
-        scope.setAuthorizationServerId(UUID.fromString(scopeResponse.getAuthorizationServerId()));
-        scope.setCreatedOn(OffsetDateTime.ofInstant(Instant.ofEpochSecond(scopeResponse.getCreatedOn().getSeconds()), ZoneId.of("UTC")));
-        scope.setUpdatedOn(OffsetDateTime.ofInstant(Instant.ofEpochSecond(scopeResponse.getUpdatedOn().getSeconds()), ZoneId.of("UTC")));
-        return scope;
+public class AuthorizationServerMapper {
+    public static AuthorizationServer toAuthorizationServer(AuthorizationServerResponse authorizationServerResponse) {
+        var authorizationServer = new AuthorizationServer();
+        authorizationServer.setId(UUID.fromString(authorizationServerResponse.getId()));
+        return authorizationServer;
     }
 }

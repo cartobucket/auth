@@ -22,8 +22,8 @@ package com.cartobucket.auth.rpc.server.rpc;
 import com.cartobucket.auth.data.domain.Scope;
 import com.cartobucket.auth.data.exceptions.notfound.ScopeNotFound;
 import com.cartobucket.auth.data.rpc.ScopeCreateRequest;
-import com.cartobucket.auth.data.rpc.ScopeCreateResponse;
 import com.cartobucket.auth.data.rpc.ScopeDeleteRequest;
+import com.cartobucket.auth.data.rpc.ScopeGetRequest;
 import com.cartobucket.auth.data.rpc.ScopeListRequest;
 import com.cartobucket.auth.data.rpc.ScopeResponse;
 import com.cartobucket.auth.data.rpc.Scopes;
@@ -46,13 +46,13 @@ public class ScopeRpcService implements Scopes {
 
     @Override
     @Blocking
-    public Uni<ScopeCreateResponse> createScope(ScopeCreateRequest request) {
+    public Uni<ScopeResponse> createScope(ScopeCreateRequest request) {
         var scope = new Scope();
         scope.setName(request.getName());
         scope.setAuthorizationServerId(UUID.fromString(request.getAuthorizationServerId()));
         scope = scopeService.createScope(scope);
 
-        var response = ScopeCreateResponse
+        var response = ScopeResponse
                 .newBuilder()
                 .setId(String.valueOf(scope.getId()))
                 .setName(scope.getName())
@@ -95,18 +95,32 @@ public class ScopeRpcService implements Scopes {
     }
 
     @Override
+    @Blocking
     public Uni<ScopeResponse> deleteScope(ScopeDeleteRequest request) {
-        final var scopeId = UUID.fromString(request.getAuthorizationServerId());
-        try {
-            scopeService.deleteScope(scopeId);
-            return Uni.createFrom().item(
-                    ScopeResponse
-                            .newBuilder()
-                            .setId(String.valueOf(scopeId))
-                            .build()
-            );
-        } catch (ScopeNotFound e) {
-            throw new RuntimeException(e);
-        }
+        final var scopeId = UUID.fromString(request.getId());
+        scopeService.deleteScope(scopeId);
+        return Uni.createFrom().item(
+                ScopeResponse
+                        .newBuilder()
+                        .setId(String.valueOf(scopeId))
+                        .build()
+        );
+    }
+
+    @Override
+    @Blocking
+    public Uni<ScopeResponse> getScope(ScopeGetRequest request) {
+        final var scope = scopeService.getScope(UUID.fromString(request.getId()));
+
+        return Uni
+                .createFrom()
+                .item(ScopeResponse
+                        .newBuilder()
+                        .setId(String.valueOf(scope.getId()))
+                        .setName(scope.getName())
+                        .setAuthorizationServerId(String.valueOf(scope.getAuthorizationServerId()))
+                        .setCreatedOn(Timestamp.newBuilder().setSeconds(scope.getCreatedOn().toEpochSecond()).build())
+                        .setUpdatedOn(Timestamp.newBuilder().setSeconds(scope.getUpdatedOn().toEpochSecond()).build())
+                        .build());
     }
 }

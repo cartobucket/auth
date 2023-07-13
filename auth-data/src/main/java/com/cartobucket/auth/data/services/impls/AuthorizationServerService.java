@@ -25,9 +25,17 @@ import com.cartobucket.auth.data.domain.JWKS;
 import com.cartobucket.auth.data.domain.SigningKey;
 import com.cartobucket.auth.data.exceptions.NotAuthorized;
 import com.cartobucket.auth.data.exceptions.notfound.AuthorizationServerNotFound;
+import com.cartobucket.auth.data.rpc.MutinyScopesGrpc;
+import com.cartobucket.auth.data.services.impls.mappers.AuthorizationServerMapper;
+import com.cartobucket.auth.rpc.AuthorizationServerGetRequest;
+import com.cartobucket.auth.rpc.MutinyAuthorizationServersGrpc;
 import io.quarkus.arc.DefaultBean;
+import io.quarkus.grpc.GrpcClient;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -35,10 +43,24 @@ import java.util.UUID;
 @DefaultBean
 @ApplicationScoped
 public class AuthorizationServerService implements com.cartobucket.auth.data.services.AuthorizationServerService {
+    @Inject
+    @GrpcClient("authorizationServers")
+    MutinyAuthorizationServersGrpc.MutinyAuthorizationServersStub authorizationServerClient;
 
     @Override
-    public AuthorizationServer getAuthorizationServer(UUID authorizationServerId) throws AuthorizationServerNotFound {
-        return null;
+    public AuthorizationServer getAuthorizationServer(UUID authorizationServerId) {
+        var authorizationServer = AuthorizationServerMapper.toAuthorizationServer(
+                authorizationServerClient
+                        .getAuthorizationServer(
+                                AuthorizationServerGetRequest
+                                        .newBuilder()
+                                        .setId(String.valueOf(authorizationServerId))
+                                        .build()
+                        )
+                        .await()
+                        .atMost(Duration.of(3, ChronoUnit.SECONDS))
+                );
+        return authorizationServer;
     }
 
     @Override

@@ -19,11 +19,10 @@
 
 package com.cartobucket.auth.data.services.impls;
 
+import com.cartobucket.auth.data.rpc.*;
 import com.cartobucket.auth.data.services.impls.mappers.ScopeMapper;
 import com.cartobucket.auth.data.domain.Scope;
 import com.cartobucket.auth.data.exceptions.notfound.ScopeNotFound;
-import com.cartobucket.auth.data.rpc.MutinyScopesGrpc;
-import com.cartobucket.auth.data.rpc.ScopeListRequest;
 import io.quarkus.arc.DefaultBean;
 import io.quarkus.grpc.GrpcClient;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -39,17 +38,23 @@ import java.util.UUID;
 public class ScopeService implements com.cartobucket.auth.data.services.ScopeService {
 
     @Inject
-    @GrpcClient("scopes") MutinyScopesGrpc.MutinyScopesStub scopesClient;
-
-//    public ScopeService(Scopes scopes) {
-//        this.scopes = scopes;
-//    }
+    @GrpcClient("scopes")
+    MutinyScopesGrpc.MutinyScopesStub scopesClient;
 
     @Override
     public List<Scope> getScopes(List<UUID> authorizationServerIds) {
-        var scopesRequest = ScopeListRequest.newBuilder().build();
-        final var scopes = scopesClient.listScopes(scopesRequest);
-        return scopes
+        var scopesRequest = ScopeListRequest
+                .newBuilder()
+                .addAllAuthorizationServerIds(
+                        authorizationServerIds
+                                .stream()
+                                .map(String::valueOf)
+                                .toList()
+                )
+                .build();
+
+        return scopesClient
+                .listScopes(scopesRequest)
                 .await()
                 .atMost(Duration.of(3, ChronoUnit.SECONDS))
                 .getScopesList()
@@ -60,17 +65,43 @@ public class ScopeService implements com.cartobucket.auth.data.services.ScopeSer
 
     @Override
     public Scope createScope(Scope scope) {
-        return null;
+        return ScopeMapper
+                .toScope(
+                        scopesClient
+                                .createScope(ScopeCreateRequest
+                                        .newBuilder()
+                                        .setName(scope.getName())
+                                        .setAuthorizationServerId(String.valueOf(scope.getAuthorizationServerId()))
+                                        .build()
+                                )
+                                .await()
+                                .atMost(Duration.of(3, ChronoUnit.SECONDS))
+                );
     }
 
     @Override
     public void deleteScope(UUID scopeId) throws ScopeNotFound {
-
+        scopesClient
+                .deleteScope(
+                        ScopeDeleteRequest
+                                .newBuilder()
+                                .setId(String.valueOf(scopeId))
+                                .build()
+                )
+                .await()
+                .atMost(Duration.of(3, ChronoUnit.SECONDS));
     }
 
     @Override
     public Scope getScope(UUID scopeId) throws ScopeNotFound {
-        return null;
+        return ScopeMapper
+                .toScope(
+                        scopesClient
+                                .getScope(ScopeGetRequest.newBuilder().setId(String.valueOf(scopeId)).build()
+                                )
+                                .await()
+                                .atMost(Duration.of(3, ChronoUnit.SECONDS))
+                );
     }
 
     @Override

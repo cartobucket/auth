@@ -145,6 +145,7 @@ public class AuthorizationServerRpcService implements AuthorizationServers {
     }
 
     @Override
+    @Blocking
     public Uni<AuthorizationServerResponse> getAuthorizationServer(AuthorizationServerGetRequest request) {
         var authorizationServer = authorizationServerService.getAuthorizationServer(UUID.fromString(request.getId()));
         return Uni
