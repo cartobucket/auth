@@ -60,12 +60,12 @@ public class UserRpcService implements Users {
         user.setUsername(request.getUsername());
 
         var profile = new Profile();
-        profile.setProfile(ProfileMapper.fromProtoMap(request.getProfile().getFieldsMap()));
+        profile.setProfile(Profile.fromProtoMap(request.getProfile().getFieldsMap()));
 
         var userAndProfile = userService.createUser(Pair.create(user, profile));
         user = userAndProfile.getLeft();
         profile = userAndProfile.getRight();
-        profile.setProfile(ProfileMapper.fromProtoMap(request.getProfile().getFieldsMap()));
+        profile.setProfile(Profile.fromProtoMap(request.getProfile().getFieldsMap()));
 
         if (!request.getPassword().isEmpty()) {
             user.setPasswordHash(userService.setPassword(user, request.getPassword()));
@@ -81,7 +81,7 @@ public class UserRpcService implements Users {
                                 .setUsername(user.getUsername())
                                 .setAuthorizationServerId(String.valueOf(user.getAuthorizationServerId()))
                                 .setPasswordHash(user.getPasswordHash())
-                                .setProfile(ProfileMapper.toProtoMap(profile.getProfile()))
+                                .setProfile(Profile.toProtoMap(profile.getProfile()))
                                 .setCreatedOn(Timestamp.newBuilder().setSeconds(user.getCreatedOn().toEpochSecond()).build())
                                 .setUpdatedOn(Timestamp.newBuilder().setSeconds(user.getUpdatedOn().toEpochSecond()).build())
                                 .build()
@@ -140,7 +140,7 @@ public class UserRpcService implements Users {
 
         var profile = new Profile();
         profile.setResource(user.getId());
-        profile.setProfile(ProfileMapper.fromProtoMap(request.getProfile().getFieldsMap()));
+        profile.setProfile(Profile.fromProtoMap(request.getProfile().getFieldsMap()));
         var userAndProfiler = userService.updateUser(user.getId(), Pair.create(user, profile));
 
         user = userAndProfiler.getLeft();
@@ -156,7 +156,7 @@ public class UserRpcService implements Users {
                                 .setUsername(user.getUsername())
                                 .setAuthorizationServerId(String.valueOf(user.getAuthorizationServerId()))
                                 .setPasswordHash(user.getPasswordHash())
-                                .setProfile(ProfileMapper.toProtoMap(profile.getProfile()))
+                                .setProfile(Profile.toProtoMap(profile.getProfile()))
                                 .setCreatedOn(Timestamp.newBuilder().setSeconds(user.getCreatedOn().toEpochSecond()).build())
                                 .setUpdatedOn(Timestamp.newBuilder().setSeconds(user.getUpdatedOn().toEpochSecond()).build())
                                 .build()
@@ -180,7 +180,7 @@ public class UserRpcService implements Users {
                                 .setUsername(user.getUsername())
                                 .setAuthorizationServerId(String.valueOf(user.getAuthorizationServerId()))
                                 .setPasswordHash(user.getPasswordHash())
-                                .setProfile(ProfileMapper.toProtoMap(profile.getProfile()))
+                                .setProfile(Profile.toProtoMap(profile.getProfile()))
                                 .setCreatedOn(Timestamp.newBuilder().setSeconds(user.getCreatedOn().toEpochSecond()).build())
                                 .setUpdatedOn(Timestamp.newBuilder().setSeconds(user.getUpdatedOn().toEpochSecond()).build())
                                 .build()

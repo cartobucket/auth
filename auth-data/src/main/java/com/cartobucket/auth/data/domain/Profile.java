@@ -20,9 +20,16 @@
 package com.cartobucket.auth.data.domain;
 
 
+import com.google.protobuf.ListValue;
+import com.google.protobuf.Struct;
+import com.google.protobuf.Value;
+
 import java.time.OffsetDateTime;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class Profile {
     private UUID id;
@@ -93,5 +100,94 @@ public class Profile {
 
     public void setUpdatedOn(OffsetDateTime updatedOn) {
         this.updatedOn = updatedOn;
+    }
+
+
+    public static Map<String, Object> fromProtoMap(Map<String, Value> valueMap) {
+        return valueMap
+                .keySet()
+                .stream()
+                .collect(
+                        Collectors.toMap(
+                                key -> key,
+                                key -> {
+                                    var value = valueMap.get(key);
+                                    return toNative(value);
+                                }
+                        )
+                );
+    }
+
+    private static Object toNative(Value value) {
+        switch (value.getKindCase()) {
+            case NUMBER_VALUE -> {
+                return value.getNumberValue();
+            }
+            case STRING_VALUE -> {
+                return value.getStringValue();
+            }
+            case BOOL_VALUE -> {
+                return value.getBoolValue();
+            }
+            case STRUCT_VALUE -> {
+                return fromProtoMap(value.getStructValue().getFieldsMap());
+            }
+            case LIST_VALUE -> {
+                return value.getListValue().getValuesList().stream().map(Profile::toNative).toList();
+            }
+            default -> {
+                return "";
+            }
+        }
+    }
+
+    private static Value fromNative(Object value) {
+        if (value instanceof String) {
+            return Value.newBuilder().setStringValue(value.toString()).build();
+        } else if (value instanceof Integer) {
+            return Value.newBuilder().setNumberValue(((Integer) value).doubleValue()).build();
+        } else if (value instanceof Double) {
+            return Value.newBuilder().setNumberValue(((Double) value).doubleValue()).build();
+        } else if (value instanceof Boolean) {
+            return Value.newBuilder().setBoolValue((Boolean) value).build();
+        } else if (value instanceof HashMap) {
+            return Value.newBuilder().setStructValue(toProtoMap((HashMap) value)).build();
+        } else if (value instanceof List) {
+            // TODO: There is a bug in here.
+            return Value
+                    .newBuilder()
+                    .setListValue(
+                            ListValue
+                                    .newBuilder()
+                                    .addAllValues(
+                                            ((List<Value>) value)
+                                                    .stream()
+                                                    .map(Profile::fromNative)
+                                                    .toList()
+                                    )
+                    ).build();
+        } else {
+            return Value.newBuilder().build();
+        }
+    }
+
+    public static Struct toProtoMap(Map<String, Object> profile) {
+        var struct = Struct.newBuilder().putAllFields(
+                        profile
+                                .keySet()
+                                .stream()
+                                .collect(
+                                        Collectors
+                                                .toMap(
+                                                        key -> key,
+                                                        key -> {
+                                                            var value = profile.get(key);
+                                                            return fromNative(value);
+                                                        }
+                                                )
+                                )
+                )
+                .build();
+        return struct;
     }
 }

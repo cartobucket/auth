@@ -47,15 +47,17 @@ public class Applications implements ApplicationsApi {
 
     @Override
     public Response createApplication(ApplicationRequest applicationRequest) {
+        final var application = applicationService
+                .createApplication(
+                        ApplicationMapper.from(applicationRequest),
+                        ProfileMapper.toProfile((Map<String, Object>) applicationRequest.getProfile())
+                );
         return Response
                 .ok()
                 .entity(
-                        ApplicationMapper.toResponse(
-                                applicationService
-                                        .createApplication(
-                                                ApplicationMapper.from(applicationRequest),
-                                                ProfileMapper.toProfile((Map<String, Object>) applicationRequest.getProfile())
-                                        ).getLeft()
+                        ApplicationMapper.toResponseWithProfile(
+                                application.getLeft(),
+                                application.getRight()
                         )
                 )
                 .build();
@@ -96,11 +98,13 @@ public class Applications implements ApplicationsApi {
 
     @Override
     public Response getApplication(UUID applicationId) {
+        var application = applicationService.getApplication(applicationId);
         return Response
                 .ok()
                 .entity(
-                        ApplicationMapper.toResponse(
-                            applicationService.getApplication(applicationId).getLeft()
+                        ApplicationMapper.toResponseWithProfile(
+                            application.getLeft(),
+                            application.getRight()
                     )
                 )
                 .build();

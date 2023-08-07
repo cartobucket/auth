@@ -19,6 +19,7 @@
 
 package com.cartobucket.auth.api.server.routes.mappers;
 
+import com.cartobucket.auth.data.domain.Profile;
 import com.cartobucket.auth.model.generated.ApplicationRequest;
 import com.cartobucket.auth.model.generated.ApplicationResponse;
 import com.cartobucket.auth.model.generated.ApplicationSecretRequest;
@@ -52,6 +53,18 @@ public class ApplicationMapper {
         applicationResponse.setAuthorizationServerId(application.getAuthorizationServerId());
         applicationResponse.setCreatedOn(application.getCreatedOn());
         applicationResponse.setUpdatedOn(application.getUpdatedOn());
+        return applicationResponse;
+    }
+
+    public static ApplicationResponse toResponseWithProfile(Application application, Profile profile) {
+        var applicationResponse = new ApplicationResponse();
+        applicationResponse.setId(String.valueOf(application.getId()));
+        applicationResponse.setName(application.getName());
+        applicationResponse.setClientId(application.getClientId());
+        applicationResponse.setAuthorizationServerId(application.getAuthorizationServerId());
+        applicationResponse.setCreatedOn(application.getCreatedOn());
+        applicationResponse.setUpdatedOn(application.getUpdatedOn());
+        applicationResponse.setProfile(profile.getProfile());
         return applicationResponse;
     }
 
