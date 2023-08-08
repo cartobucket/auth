@@ -176,7 +176,7 @@ public class TokenService implements com.cartobucket.auth.data.services.TokenSer
             AuthorizationServer authorizationServer,
             Profile profile,
             Map<String, Object> additionalClaims) {
-        var jwk = authorizationServerService.getJwkForAuthorizationServer(authorizationServer);
+        final var signingKey = authorizationServerService.getSigningKeysForAuthorizationServer(authorizationServer.getId());
         try {
             var jwt = Jwt
                     .issuer(authorizationServer.getServerUrl().toExternalForm())
@@ -184,18 +184,18 @@ public class TokenService implements com.cartobucket.auth.data.services.TokenSer
                     .expiresIn(authorizationServer.getClientCredentialsTokenExpiration());
 
             jwt.jws()
-                    .algorithm(SignatureAlgorithm.valueOf(jwk.getAlg()))
-                    .keyId(jwk.getKid());
+                    .algorithm(
+                            switch (signingKey.getKeyType()) {
+                                default ->
+                                        SignatureAlgorithm.RS256;
+                            }
+                    )
+                    .keyId(String.valueOf(signingKey.getId()));
 
-            for (var entry : additionalClaims.entrySet()) {
-                jwt.claim(entry.getKey(), entry.getValue());
-            }
+            additionalClaims.forEach(jwt::claim);
 
             profile.getProfile().forEach(jwt::claim);
-            var token = jwt.sign(KeyUtils
-                    .decodePrivateKey(authorizationServerService
-                            .getSigningKeysForAuthorizationServer(authorizationServer)
-                            .getPrivateKey()));
+            final var token = jwt.sign(KeyUtils.decodePrivateKey(signingKey.getPrivateKey()));
 
             // TODO: This should be refactored into the caller.
             var accessToken = new AccessToken();

@@ -70,15 +70,6 @@ public class AuthorizationServerService implements com.cartobucket.auth.data.ser
         this.scopeRepository = scopeRepository;
     }
 
-    @Override
-    public JWK getJwkForAuthorizationServer(AuthorizationServer authorizationServer) {
-        try {
-            return buildJwk(getSigningKeysForAuthorizationServer(authorizationServer));
-        } catch (GeneralSecurityException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     public static SigningKey generateSigningKey(AuthorizationServer authorizationServer) {
         try {
             var singingKey = new SigningKey();
@@ -185,16 +176,17 @@ public class AuthorizationServerService implements com.cartobucket.auth.data.ser
                         .findById(authorizationServerId)
                         .orElseThrow(AuthorizationServerNotFound::new)
         );
-        // TODO this should cascade.
+        // TODO: this should cascade. Probably easier when we have streams from the WAL.
     }
 
     @Override
-    public SigningKey getSigningKeysForAuthorizationServer(AuthorizationServer authorizationServer) {
+    public SigningKey getSigningKeysForAuthorizationServer(final UUID authorizationServerId) {
         var keys = singingKeyRepository.findAllByAuthorizationServerId(
-                authorizationServer.getId()
+                authorizationServerId
         );
         var key =
                 keys.stream()
+                        .skip(new Random().nextInt(keys.size()))
                         .findFirst()
                         .map(SigningKeyMapper::from)
                         .orElseThrow();
@@ -202,7 +194,10 @@ public class AuthorizationServerService implements com.cartobucket.auth.data.ser
     }
 
     @Override
-    public Map<String, Object> validateJwtForAuthorizationServer(AuthorizationServer authorizationServer, String Jwt) throws NotAuthorized {
+    public Map<String, Object> validateJwtForAuthorizationServer(UUID authorizationServerId, String Jwt) throws NotAuthorized {
+        final var authorizationServer = authorizationServerRepository
+                .findById(authorizationServerId)
+                .orElseThrow();
         final var jwks = getJwksForAuthorizationServer(authorizationServer.getId());
 
         try {
@@ -243,10 +238,17 @@ public class AuthorizationServerService implements com.cartobucket.auth.data.ser
         jwk.setKid(key.getId().toString());
         jwk.setKty("RSA");
         jwk.setUse("sig");
-        jwk.setAlg(key.getAlgorithm());
+        jwk.setAlg(
+            switch (key.getKeyType()) {
+                default -> "RSA256";
+            }
+        );
         jwk.setE("AQAB");
         jwk.setN(Base64.getUrlEncoder().encodeToString(((RSAPublicKey)publicKey).getModulus().toByteArray()));
         jwk.setE(Base64.getUrlEncoder().encodeToString(((RSAPublicKey)publicKey).getPublicExponent().toByteArray()));
+        jwk.setX5c(Collections.emptyList());
+        jwk.setX5t("");
+        jwk.setX5tHashS256("");
         return jwk;
     }
 

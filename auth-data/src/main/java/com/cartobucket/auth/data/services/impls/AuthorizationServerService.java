@@ -20,15 +20,13 @@
 package com.cartobucket.auth.data.services.impls;
 
 import com.cartobucket.auth.data.domain.AuthorizationServer;
-import com.cartobucket.auth.data.domain.JWK;
 import com.cartobucket.auth.data.domain.JWKS;
+import com.cartobucket.auth.data.domain.Profile;
 import com.cartobucket.auth.data.domain.SigningKey;
 import com.cartobucket.auth.data.exceptions.NotAuthorized;
 import com.cartobucket.auth.data.exceptions.notfound.AuthorizationServerNotFound;
-import com.cartobucket.auth.data.rpc.MutinyScopesGrpc;
 import com.cartobucket.auth.data.services.impls.mappers.AuthorizationServerMapper;
-import com.cartobucket.auth.rpc.AuthorizationServerGetRequest;
-import com.cartobucket.auth.rpc.MutinyAuthorizationServersGrpc;
+import com.cartobucket.auth.rpc.*;
 import io.quarkus.arc.DefaultBean;
 import io.quarkus.grpc.GrpcClient;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -64,42 +62,109 @@ public class AuthorizationServerService implements com.cartobucket.auth.data.ser
     }
 
     @Override
-    public JWK getJwkForAuthorizationServer(AuthorizationServer authorizationServer) {
-        return null;
-    }
-
-    @Override
-    public JWKS getJwksForAuthorizationServer(UUID authorizationServerId) {
-        return null;
-    }
-
-    @Override
     public AuthorizationServer createAuthorizationServer(AuthorizationServer authorizationServer) {
-        return null;
+        return AuthorizationServerMapper.toAuthorizationServer(
+                authorizationServerClient.createAuthorizationServer(
+                        AuthorizationServerCreateRequest
+                                .newBuilder()
+                                .setName(authorizationServer.getName())
+                                .setAudience(authorizationServer.getAudience())
+                                .setServerUrl(String.valueOf(authorizationServer.getServerUrl()))
+                                .setAuthorizationCodeTokenExpiration(authorizationServer.getAuthorizationCodeTokenExpiration())
+                                .setClientCredentialsTokenExpiration(authorizationServer.getClientCredentialsTokenExpiration())
+                                .build()
+                        )
+                        .await()
+                        .atMost(Duration.of(3, ChronoUnit.SECONDS))
+        );
     }
 
     @Override
     public AuthorizationServer updateAuthorizationServer(UUID authorizationServerId, AuthorizationServer authorizationServer) throws AuthorizationServerNotFound {
-        return null;
+        return AuthorizationServerMapper.toAuthorizationServer(
+                authorizationServerClient.updateAuthorizationServer(
+                                AuthorizationServerUpdateRequest.newBuilder()
+                                        .setId(String.valueOf(authorizationServerId))
+                                        .setName(authorizationServer.getName())
+                                        .setAudience(authorizationServer.getAudience())
+                                        .setServerUrl(String.valueOf(authorizationServer.getServerUrl()))
+                                        .setAuthorizationCodeTokenExpiration(authorizationServer.getAuthorizationCodeTokenExpiration())
+                                        .setClientCredentialsTokenExpiration(authorizationServer.getClientCredentialsTokenExpiration())
+                                        .build()
+
+                        )
+                        .await()
+                        .atMost(Duration.of(3, ChronoUnit.SECONDS))
+        );
     }
 
     @Override
     public List<AuthorizationServer> getAuthorizationServers() {
-        return null;
+        return authorizationServerClient.listAuthorizationServers(
+                AuthorizationServerListRequest
+                        .newBuilder()
+                        .build()
+                )
+                .await()
+                .atMost(Duration.of(3, ChronoUnit.SECONDS))
+                .getAuthorizationServersList()
+                .stream()
+                .map(AuthorizationServerMapper::toAuthorizationServer)
+                .toList();
     }
 
     @Override
     public void deleteAuthorizationServer(UUID authorizationServerId) throws AuthorizationServerNotFound {
-
+        authorizationServerClient.deleteAuthorizationServer(
+                        AuthorizationServerDeleteRequest
+                                .newBuilder()
+                                .setId(String.valueOf(authorizationServerId))
+                                .build()
+                )
+                .await()
+                .atMost(Duration.of(3, ChronoUnit.SECONDS));
     }
 
     @Override
-    public SigningKey getSigningKeysForAuthorizationServer(AuthorizationServer authorizationServer) {
-        return null;
+    public SigningKey getSigningKeysForAuthorizationServer(final UUID authorizationServerId) {
+        final var signingKey = authorizationServerClient
+                .getAuthorizationServerSigningKey(
+                        AuthorizationServerGetRequest
+                                .newBuilder()
+                                .setId(String.valueOf(authorizationServerId))
+                                .build()
+                )
+                .await()
+                .atMost(Duration.of(3, ChronoUnit.SECONDS));
+        return AuthorizationServerMapper.toSigningKey(signingKey);
+    }
+
+
+    @Override
+    public JWKS getJwksForAuthorizationServer(UUID authorizationServerId) {
+        final var jwks = authorizationServerClient
+                .getAuthorizationServerJwks(
+                        AuthorizationServerGetRequest
+                                .newBuilder()
+                                .setId(String.valueOf(authorizationServerId))
+                                .build()
+                )
+                .await()
+                .atMost(Duration.of(3, ChronoUnit.SECONDS));
+        return AuthorizationServerMapper.toJwks(jwks);
     }
 
     @Override
-    public Map<String, Object> validateJwtForAuthorizationServer(AuthorizationServer authorizationServer, String Jwt) throws NotAuthorized {
-        return null;
+    public Map<String, Object> validateJwtForAuthorizationServer(UUID authorizationServerId, String Jwt) throws NotAuthorized {
+        final var claims = authorizationServerClient.validateJwtForAuthorizationServer(
+                ValidateJwtForAuthorizationServerRequest
+                        .newBuilder()
+                        .setAuthorizationServerId(String.valueOf(authorizationServerId))
+                        .setJwt(Jwt)
+                        .build()
+                )
+                .await()
+                .atMost(Duration.of(3, ChronoUnit.SECONDS));
+        return Profile.fromProtoMap(claims.getClaims().getFieldsMap());
     }
 }

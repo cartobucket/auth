@@ -20,14 +20,86 @@
 package com.cartobucket.auth.data.services.impls.mappers;
 
 import com.cartobucket.auth.data.domain.AuthorizationServer;
+import com.cartobucket.auth.data.domain.JWKS;
+import com.cartobucket.auth.data.domain.SigningKey;
+import com.cartobucket.auth.rpc.AuthorizationServerCreateResponse;
 import com.cartobucket.auth.rpc.AuthorizationServerResponse;
+import com.cartobucket.auth.rpc.AuthorizationServerSigningKeyResponse;
+import com.cartobucket.auth.rpc.JwksResponse;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.util.UUID;
 
 public class AuthorizationServerMapper {
     public static AuthorizationServer toAuthorizationServer(AuthorizationServerResponse authorizationServerResponse) {
         var authorizationServer = new AuthorizationServer();
         authorizationServer.setId(UUID.fromString(authorizationServerResponse.getId()));
+        try {
+            authorizationServer.setServerUrl(new URL(authorizationServerResponse.getServerUrl()));
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        }
+        authorizationServer.setAudience(authorizationServerResponse.getAudience());
+        authorizationServer.setName(authorizationServerResponse.getName());
+        authorizationServer.setAuthorizationCodeTokenExpiration(authorizationServerResponse.getAuthorizationCodeTokenExpiration());
+        authorizationServer.setClientCredentialsTokenExpiration(authorizationServerResponse .getClientCredentialsTokenExpiration());
+        authorizationServer.setCreatedOn(OffsetDateTime.ofInstant(Instant.ofEpochSecond(authorizationServerResponse.getCreatedOn().getSeconds()), ZoneId.of("UTC")));
+        authorizationServer.setUpdatedOn(OffsetDateTime.ofInstant(Instant.ofEpochSecond(authorizationServerResponse.getUpdatedOn().getSeconds()), ZoneId.of("UTC")));
+
         return authorizationServer;
+    }
+
+    public static AuthorizationServer toAuthorizationServer(AuthorizationServerCreateResponse authorizationServerCreateResponse) {
+        var authorizationServer = new AuthorizationServer();
+        authorizationServer.setId(UUID.fromString(authorizationServerCreateResponse.getId()));
+        try {
+            authorizationServer.setServerUrl(new URL(authorizationServerCreateResponse.getServerUrl()));
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        }
+        authorizationServer.setAudience(authorizationServerCreateResponse.getAudience());
+        authorizationServer.setName(authorizationServerCreateResponse.getName());
+        authorizationServer.setAuthorizationCodeTokenExpiration(authorizationServerCreateResponse.getAuthorizationCodeTokenExpiration());
+        authorizationServer.setClientCredentialsTokenExpiration(authorizationServerCreateResponse.getClientCredentialsTokenExpiration());
+        authorizationServer.setCreatedOn(OffsetDateTime.ofInstant(Instant.ofEpochSecond(authorizationServerCreateResponse.getCreatedOn().getSeconds()), ZoneId.of("UTC")));
+        authorizationServer.setUpdatedOn(OffsetDateTime.ofInstant(Instant.ofEpochSecond(authorizationServerCreateResponse.getUpdatedOn().getSeconds()), ZoneId.of("UTC")));
+        return authorizationServer;
+    }
+
+    public static SigningKey toSigningKey(AuthorizationServerSigningKeyResponse signingKey) {
+        var _signingKey = new SigningKey();
+        _signingKey.setId(UUID.fromString(signingKey.getId()));
+        _signingKey.setAuthorizationServerId(UUID.fromString(signingKey.getAuthorizationServerId()));
+        _signingKey.setKeyType(signingKey.getAlgorithm());
+        _signingKey.setPrivateKey(signingKey.getPrivateKey());
+        _signingKey.setPublicKey(signingKey.getPublicKey());
+        _signingKey.setCreatedOn(OffsetDateTime.ofInstant(Instant.ofEpochSecond(signingKey.getCreatedOn().getSeconds()), ZoneId.of("UTC")));
+        _signingKey.setUpdatedOn(OffsetDateTime.ofInstant(Instant.ofEpochSecond(signingKey.getUpdatedOn().getSeconds()), ZoneId.of("UTC")));
+        return _signingKey;
+    }
+
+    public static JWKS toJwks(JwksResponse jwks) {
+        // convert from the response to the JWKS type
+        var _jwks = new JWKS();
+        _jwks.setKeys(
+                jwks
+                        .getJwksList()
+                        .stream()
+                        .map(jwk -> {
+                            var _jwk = new com.cartobucket.auth.data.domain.JWK();
+                            _jwk.setKid(jwk.getKid());
+                            _jwk.setKty(jwk.getKty());
+                            _jwk.setAlg(jwk.getAlg());
+                            _jwk.setUse(jwk.getUse());
+                            _jwk.setN(jwk.getN());
+                            _jwk.setE(jwk.getE());
+                            return _jwk;
+                        })
+                        .toList());
+        return _jwks;
     }
 }

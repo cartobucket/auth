@@ -5,6 +5,7 @@ option java_package = "com.cartobucket.auth.rpc";
 option java_outer_classname = "AuthorizationServerProto";
 
 import "google/protobuf/timestamp.proto";
+import "google/protobuf/struct.proto";
 
 
 service AuthorizationServers {
@@ -13,6 +14,19 @@ service AuthorizationServers {
   rpc DeleteAuthorizationServer (AuthorizationServerDeleteRequest) returns (AuthorizationServerResponse) {};
   rpc UpdateAuthorizationServer (AuthorizationServerUpdateRequest) returns (AuthorizationServerResponse) {};
   rpc GetAuthorizationServer (AuthorizationServerGetRequest) returns (AuthorizationServerResponse) {};
+
+  rpc GetAuthorizationServerSigningKey (AuthorizationServerGetRequest) returns (AuthorizationServerSigningKeyResponse) {};
+  rpc GetAuthorizationServerJwks (AuthorizationServerGetRequest) returns (JwksResponse) {};
+  rpc ValidateJwtForAuthorizationServer(ValidateJwtForAuthorizationServerRequest) returns (ValidateJwtForAuthorizationServerResponse) {};
+}
+
+message ValidateJwtForAuthorizationServerRequest {
+  string jwt = 1;
+  string authorizationServerId = 2;
+}
+
+message ValidateJwtForAuthorizationServerResponse {
+  google.protobuf.Struct claims = 1;
 }
 
 message AuthorizationServerCreateRequest {
@@ -71,4 +85,30 @@ message AuthorizationServersListResponse {
   repeated AuthorizationServerResponse authorizationServers = 1;
   int64 limit = 2;
   int64 offset = 3;
+}
+
+message AuthorizationServerSigningKeyResponse {
+  string id = 1;
+  string algorithm = 2;
+  string publicKey = 3;
+  string privateKey = 4;
+  string authorizationServerId = 5;
+  google.protobuf.Timestamp createdOn = 6;
+  google.protobuf.Timestamp updatedOn = 7;
+}
+
+message JwksResponse {
+  repeated Jwk jwks = 1;
+}
+
+message Jwk {
+  string kty = 1;
+  string use = 2;
+  string kid = 3;
+  string alg = 4;
+  string n = 5;
+  string e = 6;
+  string x5c = 7;
+  string x5t = 8;
+  string x5tS256 = 9;
 }

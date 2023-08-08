@@ -34,12 +34,11 @@ import java.util.UUID;
 public interface AuthorizationServerService {
     // This method returns the actual AuthorizationServer object as it is a dependency of the rest of the system.
     AuthorizationServer getAuthorizationServer(final UUID authorizationServerId) throws AuthorizationServerNotFound;
-    JWK getJwkForAuthorizationServer(final AuthorizationServer authorizationServer);
-    JWKS getJwksForAuthorizationServer(final UUID authorizationServerId);
     AuthorizationServer createAuthorizationServer(final AuthorizationServer authorizationServer);
     AuthorizationServer updateAuthorizationServer(final UUID authorizationServerId, final AuthorizationServer authorizationServer) throws AuthorizationServerNotFound;
     List<AuthorizationServer> getAuthorizationServers();
     void deleteAuthorizationServer(final UUID authorizationServerId) throws AuthorizationServerNotFound;
-    SigningKey getSigningKeysForAuthorizationServer(AuthorizationServer authorizationServer);
-    Map<String, Object> validateJwtForAuthorizationServer(final AuthorizationServer authorizationServer, final String Jwt) throws NotAuthorized;
+    SigningKey getSigningKeysForAuthorizationServer(final UUID authorizationServerId);
+    Map<String, Object> validateJwtForAuthorizationServer(final UUID authorizationServerId, final String Jwt) throws NotAuthorized;
+    JWKS getJwksForAuthorizationServer(final UUID authorizationServerId);
 }

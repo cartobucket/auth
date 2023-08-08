@@ -19,6 +19,7 @@
 
 package com.cartobucket.auth.authorization.server.routes;
 
+import com.cartobucket.auth.authorization.server.routes.mappers.JwksMapper;
 import com.cartobucket.auth.data.exceptions.notfound.TemplateNotFound;
 import com.cartobucket.auth.generated.AuthorizationServerApi;
 import com.cartobucket.auth.model.generated.AccessTokenRequest;
@@ -121,9 +122,14 @@ public class AuthorizationServer implements AuthorizationServerApi {
 
     @Override
     public Response getAuthorizationServerJwks(UUID authorizationServerId) {
-        return Response.ok().entity(
-                authorizationServerService.getJwksForAuthorizationServer(authorizationServerId)
-        ).build();
+        return Response
+                .ok()
+                .entity(
+                        JwksMapper.to(
+                                authorizationServerService.getJwksForAuthorizationServer(authorizationServerId)
+                        )
+                )
+                .build();
     }
 
     @Override
@@ -170,12 +176,8 @@ public class AuthorizationServer implements AuthorizationServerApi {
 
     @Override
     public Response getUserInfo(UUID authorizationServerId, String authorization) {
-        final var authorizationServer = authorizationServerService.getAuthorizationServer(
-                authorizationServerId
-        );
-        // TODO: Maybe this makes more sense in the userService?
         final var jwtClaims = authorizationServerService.validateJwtForAuthorizationServer(
-                authorizationServer,
+                authorizationServerId,
                 authorization
         );
         return Response

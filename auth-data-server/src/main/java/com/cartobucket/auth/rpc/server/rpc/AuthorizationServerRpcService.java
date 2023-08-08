@@ -20,16 +20,10 @@
 package com.cartobucket.auth.rpc.server.rpc;
 
 import com.cartobucket.auth.data.domain.AuthorizationServer;
+import com.cartobucket.auth.data.domain.Profile;
 import com.cartobucket.auth.data.services.AuthorizationServerService;
-import com.cartobucket.auth.rpc.AuthorizationServerCreateRequest;
-import com.cartobucket.auth.rpc.AuthorizationServerCreateResponse;
-import com.cartobucket.auth.rpc.AuthorizationServerDeleteRequest;
-import com.cartobucket.auth.rpc.AuthorizationServerGetRequest;
-import com.cartobucket.auth.rpc.AuthorizationServerListRequest;
-import com.cartobucket.auth.rpc.AuthorizationServerResponse;
-import com.cartobucket.auth.rpc.AuthorizationServerUpdateRequest;
-import com.cartobucket.auth.rpc.AuthorizationServers;
-import com.cartobucket.auth.rpc.AuthorizationServersListResponse;
+import com.cartobucket.auth.rpc.*;
+import com.google.protobuf.ByteString;
 import com.google.protobuf.Timestamp;
 import io.quarkus.grpc.GrpcService;
 import io.smallrye.common.annotation.Blocking;
@@ -162,6 +156,77 @@ public class AuthorizationServerRpcService implements AuthorizationServers {
                                 .setCreatedOn(Timestamp.newBuilder().setSeconds(authorizationServer.getCreatedOn().toEpochSecond()).build())
                                 .setUpdatedOn(Timestamp.newBuilder().setSeconds(authorizationServer.getUpdatedOn().toEpochSecond()).build())
                                 .build()
+                );
+    }
+
+    @Override
+    @Blocking
+    public Uni<AuthorizationServerSigningKeyResponse> getAuthorizationServerSigningKey(AuthorizationServerGetRequest request) {
+        final var signingKey = authorizationServerService.getSigningKeysForAuthorizationServer(UUID.fromString(request.getId()));
+        return Uni
+                .createFrom()
+                .item(
+                        AuthorizationServerSigningKeyResponse
+                                .newBuilder()
+                                .setId(String.valueOf(signingKey.getId()))
+                                .setAlgorithm(signingKey.getKeyType())
+                                .setPrivateKey(signingKey.getPrivateKey())
+                                .setPublicKey(signingKey.getPublicKey())
+                                .setAuthorizationServerId(String.valueOf(signingKey.getAuthorizationServerId()))
+                                .setCreatedOn(Timestamp.newBuilder().setSeconds(signingKey.getCreatedOn().toEpochSecond()).build())
+                                .setUpdatedOn(Timestamp.newBuilder().setSeconds(signingKey.getUpdatedOn().toEpochSecond()).build())
+                                .build()
+                );
+    }
+
+    @Override
+    @Blocking
+    public Uni<JwksResponse> getAuthorizationServerJwks(AuthorizationServerGetRequest request) {
+        final var jwks = authorizationServerService.getJwksForAuthorizationServer(UUID.fromString(request.getId()));
+        return Uni
+                .createFrom()
+                .item(
+                        JwksResponse
+                                .newBuilder()
+                                .addAllJwks(
+                                        jwks
+                                                .getKeys()
+                                                .stream()
+                                                .map(jwk ->
+                                                        Jwk
+                                                                .newBuilder()
+                                                                // Map the jwk fields to the Jwk buidler
+                                                                .setAlg(jwk.getAlg())
+                                                                .setKid(jwk.getKid())
+                                                                .setKty(jwk.getKty())
+                                                                .setE(jwk.getE())
+                                                                .setN(jwk.getN())
+                                                                .setUse(jwk.getUse())
+                                                                .setX5C(String.valueOf(jwk.getX5c()))
+                                                                .setX5T(jwk.getX5t())
+                                                                .setX5TS256Bytes(ByteString.fromHex(jwk.getX5tHashS256()))
+                                                                .build()
+                                                )
+                                                .toList()
+                                )
+                                .build()
+                );
+    }
+
+    @Override
+    public Uni<ValidateJwtForAuthorizationServerResponse> validateJwtForAuthorizationServer(ValidateJwtForAuthorizationServerRequest request) {
+        final var claims = authorizationServerService
+                .validateJwtForAuthorizationServer(
+                        UUID.fromString(request.getAuthorizationServerId()),
+                        request.getJwt()
+                );
+
+        return Uni
+                .createFrom()
+                .item(ValidateJwtForAuthorizationServerResponse
+                        .newBuilder()
+                        .setClaims(Profile.toProtoMap(claims))
+                        .build()
                 );
     }
 }
