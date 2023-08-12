@@ -66,7 +66,6 @@ public @interface ValidAuthorizationServer {
 
         @Override
         public boolean isValid(UUID value, ConstraintValidatorContext context) {
-            AuthorizationServer authorizationServer;
             try {
                  applicationService.getAuthorizationServer(value);
             } catch (Exception e) {

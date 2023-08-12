@@ -60,6 +60,7 @@ public class TemplateService implements com.cartobucket.auth.data.services.Templ
     public Template createTemplate(final Template template) {
         template.setCreatedOn(OffsetDateTime.now());
         template.setUpdatedOn(OffsetDateTime.now());
+        // TODO: This does not catch the authorizationServerId & templateType constraint.
         return TemplateMapper.from(templateRepository.save(TemplateMapper.to(template)));
     }
 

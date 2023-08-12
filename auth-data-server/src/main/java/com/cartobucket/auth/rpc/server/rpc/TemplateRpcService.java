@@ -52,7 +52,11 @@ public class TemplateRpcService implements Templates {
     @Blocking
     public Uni<TemplateCreateResponse> createTemplate(TemplateCreateRequest request) {
         var template = new Template();
-        template.setTemplateType(TemplateTypeEnum.fromString(request.getTemplateType().name()));
+        template.setTemplateType(
+                switch (request.getTemplateType()) {
+                    default -> TemplateTypeEnum.LOGIN;
+                }
+        );
         template.setAuthorizationServerId(UUID.fromString(request.getAuthorizationServerId()));
         template.setTemplate(request.getTemplate().toByteArray());
         template = templateService.createTemplate(template);
@@ -64,7 +68,10 @@ public class TemplateRpcService implements Templates {
                                 .newBuilder()
                                 .setId(String.valueOf(template.getId()))
                                 .setAuthorizationServerId(String.valueOf(template.getAuthorizationServerId()))
-                                .setTemplateType(TemplateCreateResponse.TEMPLATE_TYPE.valueOf(template.getTemplateType().name()))
+                                .setTemplateType(switch (template.getTemplateType()){
+                                            default -> TemplateCreateResponse.TEMPLATE_TYPE.LOGIN;
+                                        }
+                                )
                                 .setTemplate(ByteString.copyFrom(template.getTemplate()))
                                 .setCreatedOn(Timestamp.newBuilder().setSeconds(template.getCreatedOn().toEpochSecond()).build())
                                 .setUpdatedOn(Timestamp.newBuilder().setSeconds(template.getUpdatedOn().toEpochSecond()).build())

@@ -21,9 +21,21 @@ package com.cartobucket.auth.data.services.impls;
 
 import com.cartobucket.auth.data.domain.Template;
 import com.cartobucket.auth.data.exceptions.notfound.TemplateNotFound;
+import com.cartobucket.auth.data.services.impls.mappers.TemplateMapper;
+import com.cartobucket.auth.rpc.MutinyTemplatesGrpc;
+import com.cartobucket.auth.rpc.TemplateCreateRequest;
+import com.cartobucket.auth.rpc.TemplateDeleteRequest;
+import com.cartobucket.auth.rpc.TemplateGetRequest;
+import com.cartobucket.auth.rpc.TemplateListRequest;
+import com.cartobucket.auth.rpc.TemplateUpdateRequest;
+import com.google.protobuf.ByteString;
 import io.quarkus.arc.DefaultBean;
+import io.quarkus.grpc.GrpcClient;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.UUID;
 
@@ -31,28 +43,89 @@ import java.util.UUID;
 @ApplicationScoped
 public class TemplateService implements com.cartobucket.auth.data.services.TemplateService {
 
+    @Inject
+    @GrpcClient("templates")
+    MutinyTemplatesGrpc.MutinyTemplatesStub templatesClient;
+
     @Override
     public List<Template> getTemplates(List<UUID> authorizationServerIds) {
-        return null;
+        return templatesClient
+                .listTemplates(
+                        TemplateListRequest
+                                .newBuilder()
+                                .addAllAuthorizationServerIds(authorizationServerIds.stream().map(UUID::toString).toList())
+                                .build()
+                )
+                .await()
+                .atMost(Duration.of(3, ChronoUnit.SECONDS))
+                .getTemplatesList()
+                .stream()
+                .map(TemplateMapper::to)
+                .toList();
     }
 
     @Override
     public Template createTemplate(Template template) {
-        return null;
+        return TemplateMapper.to(
+                templatesClient
+                        .createTemplate(
+                                TemplateCreateRequest
+                                        .newBuilder()
+                                        .setTemplate(ByteString.copyFrom(template.getTemplate()))
+                                        .setTemplateType(
+                                                switch (template.getTemplateType()) {
+                                                    default -> TemplateCreateRequest.TEMPLATE_TYPE.LOGIN;
+                                                }
+                                        )
+                                        .setAuthorizationServerId(String.valueOf(template.getAuthorizationServerId()))
+                                        .build()
+                        )
+                        .await()
+                        .atMost(Duration.of(3, ChronoUnit.SECONDS))
+        );
     }
 
     @Override
     public void deleteTemplate(UUID templateId) throws TemplateNotFound {
-
+        templatesClient
+                .deleteTemplate(
+                        TemplateDeleteRequest
+                                .newBuilder()
+                                .setId(String.valueOf(templateId))
+                                .build()
+                )
+                .await()
+                .atMost(Duration.of(3, ChronoUnit.SECONDS));
     }
 
     @Override
     public Template getTemplate(UUID templateId) throws TemplateNotFound {
-        return null;
+        return TemplateMapper.to(
+                templatesClient
+                        .getTemplate(
+                                TemplateGetRequest
+                                        .newBuilder()
+                                        .setId(String.valueOf(templateId))
+                                        .build()
+                        )
+                        .await()
+                        .atMost(Duration.of(3, ChronoUnit.SECONDS))
+        );
     }
 
     @Override
     public Template updateTemplate(UUID templateId, Template template) throws TemplateNotFound {
-        return null;
+        return TemplateMapper.to(
+                templatesClient
+                        .updateTemplate(
+                                TemplateUpdateRequest
+                                        .newBuilder()
+                                        .setId(String.valueOf(templateId))
+                                        .setTemplate(ByteString.copyFrom(template.getTemplate()))
+                                        .build()
+                        )
+                        .await()
+                        .atMost(Duration.of(3, ChronoUnit.SECONDS))
+        );
     }
 }
