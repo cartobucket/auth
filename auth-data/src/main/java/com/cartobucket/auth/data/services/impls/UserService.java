@@ -27,6 +27,7 @@ import com.cartobucket.auth.data.services.impls.mappers.UserMapper;
 import com.cartobucket.auth.rpc.MutinyUsersGrpc;
 import com.cartobucket.auth.rpc.UserCreateRequest;
 import com.cartobucket.auth.rpc.UserDeleteRequest;
+import com.cartobucket.auth.rpc.UserSetPasswordRequest;
 import com.cartobucket.auth.rpc.UserUpdateRequest;
 import io.quarkus.arc.DefaultBean;
 import io.quarkus.grpc.GrpcClient;
@@ -93,7 +94,9 @@ public class UserService implements com.cartobucket.auth.data.services.UserServi
                                 .newBuilder()
                                 .setId(String.valueOf(userId))
                                 .build()
-                );
+                )
+                .await()
+                .atMost(Duration.of(3, ChronoUnit.SECONDS));
     }
 
     @Override
@@ -113,6 +116,18 @@ public class UserService implements com.cartobucket.auth.data.services.UserServi
 
     @Override
     public Pair<User, Profile> updateUser(UUID userId, Pair<User, Profile> userProfilePair) throws UserNotFound, ProfileNotFound {
+        if (userProfilePair.getLeft().getPassword() != null && !userProfilePair.getLeft().getPassword().isEmpty()) {
+            usersClient.setUserPassword(
+                    UserSetPasswordRequest
+                            .newBuilder()
+                            .setId(String.valueOf(userId))
+                            .setPassword(userProfilePair.getLeft().getPassword())
+                            .build()
+                    )
+                    .await()
+                    .atMost(Duration.of(3, ChronoUnit.SECONDS));
+        }
+
         return UserMapper.toUserAndProfile(
                 usersClient
                         .updateUser(
