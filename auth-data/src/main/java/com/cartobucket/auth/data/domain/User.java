@@ -28,7 +28,7 @@ public class User {
 
     private UUID authorizationServerId;
 
-    private String passwordHash;
+    private String password;
 
     private String username;
 
@@ -70,12 +70,12 @@ public class User {
         this.updatedOn = updatedOn;
     }
 
-    public String getPasswordHash() {
-        return passwordHash;
+    public String getPassword() {
+        return password;
     }
 
-    public void setPasswordHash(String passwordHash) {
-        this.passwordHash = passwordHash;
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public String getUsername() {

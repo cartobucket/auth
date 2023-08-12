@@ -35,10 +35,12 @@ public class UserMapper {
         user.setAuthorizationServerId(userRequest.getAuthorizationServerId());
         user.setUsername(userRequest.getUsername());
         user.setEmail(userRequest.getEmail());
+        user.setPassword(userRequest.getPassword());
 
         var profile = new Profile();
         profile.setProfileType(ProfileType.User);
         profile.setProfile((Map<String, Object>) userRequest.getProfile());
+        profile.setAuthorizationServerId(userRequest.getAuthorizationServerId());
         return Pair.create(user, profile);
     }
     public static UserResponse toResponse(Pair<User, Profile> userProfilePair) {

@@ -30,7 +30,7 @@ public class UserMapper {
         _user.setAuthorizationServerId(user.getAuthorizationServerId());
         _user.setEmail(user.getEmail());
         _user.setUsername(user.getUsername());
-        _user.setPasswordHash(user.getPasswordHash());
+        _user.setPassword(user.getPasswordHash());
         return _user;
     }
 
@@ -42,7 +42,7 @@ public class UserMapper {
         _user.setAuthorizationServerId(user.getAuthorizationServerId());
         _user.setEmail(user.getEmail());
         _user.setUsername(user.getUsername());
-        _user.setPasswordHash(user.getPasswordHash());
+        _user.setPasswordHash(user.getPassword());
         return _user;
     }
 

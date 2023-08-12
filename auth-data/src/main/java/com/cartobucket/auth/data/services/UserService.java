@@ -39,5 +39,5 @@ public interface UserService {
 
     Pair<User, Profile> updateUser(final UUID userId, final Pair<User, Profile> userProfilePair) throws UserNotFound, ProfileNotFound;
 
-    String setPassword(User user, String password);
+    void setPassword(User user, String password);
 }

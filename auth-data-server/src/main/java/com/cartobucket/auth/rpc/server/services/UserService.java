@@ -32,7 +32,6 @@ import com.cartobucket.auth.data.services.AuthorizationServerService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 import org.graalvm.collections.Pair;
-import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.time.OffsetDateTime;
@@ -89,6 +88,7 @@ public class UserService implements com.cartobucket.auth.data.services.UserServi
         profile.setUpdatedOn(OffsetDateTime.now());
         profile.setProfileType(ProfileType.User);
         profile.setResource(_user.getId());
+        profile.setAuthorizationServerId(user.getAuthorizationServerId());
         var _profile = ProfileMapper.from(profileRepository.save(ProfileMapper.to(profile)));
         return Pair.create(_user, _profile);
     }
@@ -139,13 +139,12 @@ public class UserService implements com.cartobucket.auth.data.services.UserServi
     }
 
     @Override
-    public String setPassword(User user, String password) {
+    public void setPassword(User user, String password) {
         // TODO: This config should be pulled from the Authorization Server
         final var encoder = new BCryptPasswordEncoder();
         final var passwordHash = encoder.encode(password);
-        user.setPasswordHash(passwordHash);
+        user.setPassword(passwordHash);
         user.setUpdatedOn(OffsetDateTime.now());
         userRepository.save(UserMapper.to(user));
-        return passwordHash;
     }
 }

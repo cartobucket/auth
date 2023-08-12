@@ -57,10 +57,9 @@ message UserCreateResponse {
   string authorizationServerId = 2;
   string username = 3;
   string email = 4;
-  string passwordHash = 5;
-  google.protobuf.Struct profile = 6;
-  google.protobuf.Timestamp createdOn = 7;
-  google.protobuf.Timestamp updatedOn = 8;
+  google.protobuf.Struct profile = 5;
+  google.protobuf.Timestamp createdOn = 6;
+  google.protobuf.Timestamp updatedOn = 7;
 }
 
 message UserResponse {
@@ -68,10 +67,9 @@ message UserResponse {
   string authorizationServerId = 2;
   string username = 3;
   string email = 4;
-  string passwordHash = 5;
-  google.protobuf.Struct profile = 6;
-  google.protobuf.Timestamp createdOn = 7;
-  google.protobuf.Timestamp updatedOn = 8;
+  google.protobuf.Struct profile = 5;
+  google.protobuf.Timestamp createdOn = 6;
+  google.protobuf.Timestamp updatedOn = 7;
 }
 
 message UserListResponse {
@@ -81,5 +79,4 @@ message UserListResponse {
 }
 
 message UserSetPasswordResponse {
-  string passwordHash = 1;
 }

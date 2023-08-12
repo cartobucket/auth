@@ -34,7 +34,6 @@ import com.cartobucket.auth.rpc.UserSetPasswordRequest;
 import com.cartobucket.auth.rpc.UserSetPasswordResponse;
 import com.cartobucket.auth.rpc.UserUpdateRequest;
 import com.cartobucket.auth.rpc.Users;
-import com.cartobucket.auth.rpc.server.entities.mappers.ProfileMapper;
 import com.google.protobuf.Timestamp;
 import io.quarkus.grpc.GrpcService;
 import io.smallrye.common.annotation.Blocking;
@@ -68,7 +67,7 @@ public class UserRpcService implements Users {
         profile.setProfile(Profile.fromProtoMap(request.getProfile().getFieldsMap()));
 
         if (!request.getPassword().isEmpty()) {
-            user.setPasswordHash(userService.setPassword(user, request.getPassword()));
+            userService.setPassword(user, request.getPassword());
         }
 
         return Uni
@@ -80,7 +79,6 @@ public class UserRpcService implements Users {
                                 .setEmail(user.getEmail())
                                 .setUsername(user.getUsername())
                                 .setAuthorizationServerId(String.valueOf(user.getAuthorizationServerId()))
-                                .setPasswordHash(user.getPasswordHash())
                                 .setProfile(Profile.toProtoMap(profile.getProfile()))
                                 .setCreatedOn(Timestamp.newBuilder().setSeconds(user.getCreatedOn().toEpochSecond()).build())
                                 .setUpdatedOn(Timestamp.newBuilder().setSeconds(user.getUpdatedOn().toEpochSecond()).build())
@@ -112,7 +110,6 @@ public class UserRpcService implements Users {
                                                                 .setEmail(user.getEmail())
                                                                 .setUsername(user.getUsername())
                                                                 .setAuthorizationServerId(String.valueOf(user.getAuthorizationServerId()))
-                                                                .setPasswordHash(user.getPasswordHash())
                                                                 .setCreatedOn(Timestamp.newBuilder().setSeconds(user.getCreatedOn().toEpochSecond()).build())
                                                                 .setUpdatedOn(Timestamp.newBuilder().setSeconds(user.getUpdatedOn().toEpochSecond()).build())
                                                                 .build()
@@ -155,7 +152,6 @@ public class UserRpcService implements Users {
                                 .setEmail(user.getEmail())
                                 .setUsername(user.getUsername())
                                 .setAuthorizationServerId(String.valueOf(user.getAuthorizationServerId()))
-                                .setPasswordHash(user.getPasswordHash())
                                 .setProfile(Profile.toProtoMap(profile.getProfile()))
                                 .setCreatedOn(Timestamp.newBuilder().setSeconds(user.getCreatedOn().toEpochSecond()).build())
                                 .setUpdatedOn(Timestamp.newBuilder().setSeconds(user.getUpdatedOn().toEpochSecond()).build())
@@ -179,7 +175,6 @@ public class UserRpcService implements Users {
                                 .setEmail(user.getEmail())
                                 .setUsername(user.getUsername())
                                 .setAuthorizationServerId(String.valueOf(user.getAuthorizationServerId()))
-                                .setPasswordHash(user.getPasswordHash())
                                 .setProfile(Profile.toProtoMap(profile.getProfile()))
                                 .setCreatedOn(Timestamp.newBuilder().setSeconds(user.getCreatedOn().toEpochSecond()).build())
                                 .setUpdatedOn(Timestamp.newBuilder().setSeconds(user.getUpdatedOn().toEpochSecond()).build())
@@ -191,9 +186,9 @@ public class UserRpcService implements Users {
     @Blocking
     public Uni<UserSetPasswordResponse> setUserPassword(UserSetPasswordRequest request) {
         final var userAndProfile = userService.getUser(UUID.fromString(request.getId()));
-        final var passwordHash = userService.setPassword(userAndProfile.getLeft(), request.getPassword());
+        userService.setPassword(userAndProfile.getLeft(), request.getPassword());
         return Uni
                 .createFrom()
-                .item(UserSetPasswordResponse.newBuilder().setPasswordHash(passwordHash).build());
+                .item(UserSetPasswordResponse.newBuilder().build());
     }
 }

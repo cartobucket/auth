@@ -1152,7 +1152,9 @@
         },
         "example": {
           "authorizationServers": [
-            {}
+            {
+
+            }
           ]
         }
       },
@@ -1215,7 +1217,9 @@
         },
         "example": {
           "clients": [
-            {}
+            {
+
+            }
           ]
         }
       },
@@ -1238,7 +1242,9 @@
               "name": "Example Application",
               "client_id": "",
               "client_secret": "",
-              "profile": {},
+              "profile": {
+
+              },
               "createdOn": "2023-01-08T18:49:59+00:00",
               "updatedOn": "2023-01-08T18:49:59+00:00"
             }
@@ -1287,7 +1293,9 @@
           "name": "Example Application",
           "client_id": "",
           "client_secret": "",
-          "profile": {},
+          "profile": {
+
+          },
           "createdOn": "2023-01-08T18:49:59+00:00",
           "updatedOn": "2023-01-08T18:49:59+00:00"
         }
@@ -1305,7 +1313,8 @@
           }
         },
         "example": {
-          "users": []
+          "users": [
+          ]
         }
       },
       "UserResponse": {
@@ -1396,58 +1405,6 @@
           "id": "76f31822-7956-4020-8731-e7a5c557f576",
           "name": "Super Secret",
           "client_secret": "8743b52063cd84097a65d1633f5c74f5"
-        }
-      },
-      "AuthorizationRequest": {
-        "title": "Root Type for AuthorizationRequest",
-        "description": "",
-        "required": [
-          "client_id",
-          "response_type"
-        ],
-        "type": "object",
-        "properties": {
-          "response_type": {
-            "enum": [
-              "code",
-              "client_credentials"
-            ],
-            "type": "string"
-          },
-          "client_id": {
-            "type": "string"
-          },
-          "redirect_uri": {
-            "type": "string"
-          },
-          "state": {
-            "type": "string"
-          },
-          "code_challenge": {
-            "type": "string"
-          },
-          "code_challenge_method": {
-            "enum": [
-              "S256"
-            ],
-            "type": "string"
-          },
-          "scope": {
-            "description": "",
-            "type": "string"
-          },
-          "nonce": {
-            "description": "",
-            "type": "string"
-          }
-        },
-        "example": {
-          "response_type": "code",
-          "client_id": "5ae13a6c-6858-4656-ac18-7b0c7401aa52",
-          "redirect_uri": "https://api.cartobucket.com/callback",
-          "state": "eyJrZXkiOiAiZXhhbXBsZSJ9",
-          "code_challenge": "YXNkZjk0cGl1b2gzMjYzCjIxNTYzNTE2MjRyZTM=",
-          "code_challenge_method": "S256"
         }
       },
       "ApplicationRequestFilter": {
@@ -1981,6 +1938,9 @@
       "UserRequest": {
         "title": "Root Type for UserRequest",
         "description": "",
+        "required": [
+          "password"
+        ],
         "type": "object",
         "properties": {
           "authorizationServerId": {
@@ -1996,6 +1956,10 @@
           },
           "profile": {
             "type": "object"
+          },
+          "password": {
+            "description": "The password for a user when creating or updating the user.",
+            "type": "string"
           }
         },
         "example": {
@@ -2269,7 +2233,9 @@
           "name": "Example Application",
           "client_id": "8743b52063cd84097a65d1633f5c74f5",
           "client_secret": "f0fda58630310a6dd91a7d8f0a4ceda2",
-          "profile": {},
+          "profile": {
+
+          },
           "authorizationServerId": "52a10a2d-080c-4aaa-a184-ec3ba982a9bd"
         }
       }
