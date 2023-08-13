@@ -20,7 +20,7 @@
 package com.cartobucket.auth.data.services.impls;
 
 import com.cartobucket.auth.data.domain.AuthorizationServer;
-import com.cartobucket.auth.data.domain.JWKS;
+import com.cartobucket.auth.data.domain.JWK;
 import com.cartobucket.auth.data.domain.Profile;
 import com.cartobucket.auth.data.domain.SigningKey;
 import com.cartobucket.auth.data.exceptions.NotAuthorized;
@@ -31,6 +31,7 @@ import com.cartobucket.auth.rpc.AuthorizationServerDeleteRequest;
 import com.cartobucket.auth.rpc.AuthorizationServerGetRequest;
 import com.cartobucket.auth.rpc.AuthorizationServerListRequest;
 import com.cartobucket.auth.rpc.AuthorizationServerUpdateRequest;
+import com.cartobucket.auth.rpc.Jwk;
 import com.cartobucket.auth.rpc.MutinyAuthorizationServersGrpc;
 import com.cartobucket.auth.rpc.ValidateJwtForAuthorizationServerRequest;
 import io.quarkus.arc.DefaultBean;
@@ -147,7 +148,7 @@ public class AuthorizationServerService implements com.cartobucket.auth.data.ser
 
 
     @Override
-    public JWKS getJwksForAuthorizationServer(UUID authorizationServerId) {
+    public List<JWK> getJwksForAuthorizationServer(UUID authorizationServerId) {
         final var jwks = authorizationServerClient
                 .getAuthorizationServerJwks(
                         AuthorizationServerGetRequest
@@ -157,7 +158,19 @@ public class AuthorizationServerService implements com.cartobucket.auth.data.ser
                 )
                 .await()
                 .atMost(Duration.of(3, ChronoUnit.SECONDS));
-        return AuthorizationServerMapper.toJwks(jwks);
+        return jwks.getJwksList().stream().map(
+                jwk -> {
+                    final var _jwk = new JWK();
+                    _jwk.setAlg(jwk.getAlg());
+                    // TODO: this
+//                    _jwk.set(OffsetDateTime.ofInstant(Instant.ofEpochSecond(jwk.getCreatedOn().getSeconds()), ZoneId.of("UTC")));
+//                    _jwk.setId(UUID.fromString(jwk.getId()));
+//                    _jwk.setPrivateKey(jwk.getPrivateKey());
+//                    _jwk.setPublicKey(jwk.getPublicKey());
+//                    _jwk.setUpdatedOn(OffsetDateTime.ofInstant(Instant.ofEpochSecond(jwk.getUpdatedOn().getSeconds()), ZoneId.of("UTC")));
+                    return _jwk;
+                }
+        ).toList();
     }
 
     @Override

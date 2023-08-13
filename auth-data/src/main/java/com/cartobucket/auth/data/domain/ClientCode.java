@@ -26,7 +26,7 @@ import java.util.UUID;
 public class ClientCode {
     private UUID id;
 
-    private UUID clientId;
+    private String clientId;
 
     private UUID authorizationServerId;
 
@@ -56,11 +56,11 @@ public class ClientCode {
         return id;
     }
 
-    public UUID getClientId() {
+    public String getClientId() {
         return clientId;
     }
 
-    public void setClientId(UUID clientId) {
+    public void setClientId(String clientId) {
         this.clientId = clientId;
     }
 

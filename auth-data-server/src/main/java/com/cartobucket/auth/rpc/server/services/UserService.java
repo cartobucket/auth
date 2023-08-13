@@ -114,6 +114,19 @@ public class UserService implements com.cartobucket.auth.data.services.UserServi
     }
 
     @Override
+    public Pair<User, Profile> getUser(String username) throws UserNotFound, ProfileNotFound {
+        final var user = userRepository
+                .findByUsername(username)
+                .map(UserMapper::from)
+                .orElseThrow(UserNotFound::new);
+        final var profile = profileRepository
+                .findByResourceAndProfileType(user.getId(), ProfileType.User)
+                .map(ProfileMapper::from)
+                .orElseThrow(ProfileNotFound::new);
+        return Pair.create(user, profile);
+    }
+
+    @Override
     @Transactional
     public Pair<User, Profile> updateUser(final UUID userId, final Pair<User, Profile> userProfilePair) throws UserNotFound, ProfileNotFound {
         final var user = userProfilePair.getLeft();
@@ -146,5 +159,13 @@ public class UserService implements com.cartobucket.auth.data.services.UserServi
         user.setPassword(passwordHash);
         user.setUpdatedOn(OffsetDateTime.now());
         userRepository.save(UserMapper.to(user));
+    }
+
+    @Override
+    public boolean validatePassword(UUID userId, String password) {
+        final var user = userRepository
+                .findById(userId)
+                .orElseThrow();
+        return new BCryptPasswordEncoder().matches(password, user.getPasswordHash());
     }
 }

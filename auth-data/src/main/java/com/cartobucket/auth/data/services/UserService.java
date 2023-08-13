@@ -37,7 +37,11 @@ public interface UserService {
 
     Pair<User, Profile> getUser(final UUID userId) throws UserNotFound, ProfileNotFound;
 
+    Pair<User, Profile> getUser(final String username) throws UserNotFound, ProfileNotFound;
+
     Pair<User, Profile> updateUser(final UUID userId, final Pair<User, Profile> userProfilePair) throws UserNotFound, ProfileNotFound;
 
     void setPassword(User user, String password);
+
+    boolean validatePassword(final UUID userId, String password);
 }

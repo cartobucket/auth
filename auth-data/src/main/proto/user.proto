@@ -15,6 +15,7 @@ service Users {
   rpc UpdateUser (UserUpdateRequest) returns (UserResponse) {};
   rpc GetUser (UserGetRequest) returns (UserResponse) {};
   rpc SetUserPassword (UserSetPasswordRequest) returns (UserSetPasswordResponse) {};
+  rpc ValidateUserPassword (UserValidatePasswordRequest) returns (UserValidatePasswordResponse) {};
 }
 
 message UserCreateRequest {
@@ -51,6 +52,10 @@ message UserSetPasswordRequest {
   string password = 2;
 }
 
+message UserValidatePasswordRequest {
+  string id = 1;
+  string password = 2;
+}
 
 message UserCreateResponse {
   string id = 1;
@@ -79,4 +84,8 @@ message UserListResponse {
 }
 
 message UserSetPasswordResponse {
+}
+
+message UserValidatePasswordResponse {
+  bool isValid = 1;
 }

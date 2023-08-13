@@ -188,7 +188,7 @@ public class ClientRpcService implements Clients {
     @Override
     @Blocking
     public Uni<ClientResponse> getClient(ClientGetRequest request) {
-        final var client = clientService.getClient(UUID.fromString(request.getId()));
+        final var client = clientService.getClient(request.getId());
         return Uni
                 .createFrom()
                 .item(

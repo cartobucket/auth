@@ -23,9 +23,11 @@ import com.cartobucket.auth.rpc.server.entities.Client;
 import org.springframework.data.repository.CrudRepository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface ClientRepository extends CrudRepository<Client, UUID> {
     List<Client> findAllByAuthorizationServerIdIn(List<UUID> authorizationServerIds);
 
+    Optional<Client> findByClientId(String clientId);
 }

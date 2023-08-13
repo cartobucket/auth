@@ -21,7 +21,6 @@ package com.cartobucket.auth.rpc.server.services;
 
 import com.cartobucket.auth.data.domain.AuthorizationServer;
 import com.cartobucket.auth.data.domain.JWK;
-import com.cartobucket.auth.data.domain.JWKS;
 import com.cartobucket.auth.data.domain.SigningKey;
 import com.cartobucket.auth.data.domain.Template;
 import com.cartobucket.auth.data.domain.TemplateTypeEnum;
@@ -102,19 +101,14 @@ public class AuthorizationServerService implements com.cartobucket.auth.data.ser
     }
 
     @Override
-    public JWKS getJwksForAuthorizationServer(UUID authorizationServerId) {
-        var singingKeys = singingKeyRepository.findAllByAuthorizationServerId(authorizationServerId);
-        try {
-            List<JWK> keys = new ArrayList<>();
-            for (var key : singingKeys) {
-                keys.add(buildJwk(SigningKeyMapper.from(key)));
-            }
-            var jwks = new JWKS();
-            jwks.setKeys(keys);
-            return jwks;
-        } catch (GeneralSecurityException e) {
-            throw new RuntimeException(e);
-        }
+    public List<JWK> getJwksForAuthorizationServer(UUID authorizationServerId) {
+        return singingKeyRepository
+                .findAllByAuthorizationServerId(
+                        authorizationServerId
+                )
+                .stream()
+                .map(AuthorizationServerService::buildJwk)
+                .toList();
     }
 
     @Override
@@ -212,7 +206,7 @@ public class AuthorizationServerService implements com.cartobucket.auth.data.ser
                                     AlgorithmIdentifiers.RSA_USING_SHA256));
 
             JwtClaims jwtClaims = null;
-            for (final var jwk : jwks.getKeys()) {
+            for (final var jwk : jwks) {
                 var singingKey = singingKeyRepository.findByIdAndAuthorizationServerId(
                         UUID.fromString(jwk.getKid()),
                         authorizationServer.getId()
@@ -232,9 +226,16 @@ public class AuthorizationServerService implements com.cartobucket.auth.data.ser
         return null;
     }
 
-    private static JWK buildJwk(SigningKey key) throws GeneralSecurityException {
-        var publicKey = KeyUtils.decodePublicKey(key.getPublicKey());
+    private static JWK buildJwk(com.cartobucket.auth.rpc.server.entities.SigningKey key) {
         var jwk = new JWK();
+
+        try {
+            var publicKey = KeyUtils.decodePublicKey(key.getPublicKey());
+            jwk.setN(Base64.getUrlEncoder().encodeToString(((RSAPublicKey)publicKey).getModulus().toByteArray()));
+            jwk.setE(Base64.getUrlEncoder().encodeToString(((RSAPublicKey)publicKey).getPublicExponent().toByteArray()));
+        } catch (GeneralSecurityException e) {
+            throw new RuntimeException(e);
+        }
         jwk.setKid(key.getId().toString());
         jwk.setKty("RSA");
         jwk.setUse("sig");
@@ -244,8 +245,6 @@ public class AuthorizationServerService implements com.cartobucket.auth.data.ser
             }
         );
         jwk.setE("AQAB");
-        jwk.setN(Base64.getUrlEncoder().encodeToString(((RSAPublicKey)publicKey).getModulus().toByteArray()));
-        jwk.setE(Base64.getUrlEncoder().encodeToString(((RSAPublicKey)publicKey).getPublicExponent().toByteArray()));
         jwk.setX5c(Collections.emptyList());
         jwk.setX5t("");
         jwk.setX5tHashS256("");

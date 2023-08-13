@@ -19,26 +19,19 @@
 
 package com.cartobucket.auth.rpc.server.services;
 
-import com.cartobucket.auth.rpc.server.entities.mappers.ClientCodeMapper;
-import com.cartobucket.auth.rpc.server.entities.mappers.ClientMapper;
-import com.cartobucket.auth.data.exceptions.badrequests.CodeChallengeBadData;
-import com.cartobucket.auth.data.exceptions.notfound.ClientNotFound;
-import com.cartobucket.auth.data.domain.AuthorizationServer;
 import com.cartobucket.auth.data.domain.Client;
 import com.cartobucket.auth.data.domain.ClientCode;
-import com.cartobucket.auth.data.domain.PasswordAuthRequest;
+import com.cartobucket.auth.data.exceptions.badrequests.CodeChallengeBadData;
+import com.cartobucket.auth.data.exceptions.notfound.ClientNotFound;
+import com.cartobucket.auth.data.services.ScopeService;
+import com.cartobucket.auth.rpc.server.entities.mappers.ClientCodeMapper;
+import com.cartobucket.auth.rpc.server.entities.mappers.ClientMapper;
 import com.cartobucket.auth.rpc.server.repositories.ClientCodeRepository;
 import com.cartobucket.auth.rpc.server.repositories.ClientRepository;
 import com.cartobucket.auth.rpc.server.repositories.UserRepository;
-import com.cartobucket.auth.data.services.ScopeService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import java.math.BigInteger;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -60,59 +53,44 @@ public class ClientService implements com.cartobucket.auth.data.services.ClientS
 
     @Override
     @Transactional
-    public ClientCode buildClientCodeForEmailAndPassword(
-            AuthorizationServer authorizationServer,
-            UUID clientId,
-            String scopes,
-            String redirectUri,
-            String nonce,
-            String state,
-            String codeChallenge,
-            String codeChallengeMethod,
-            PasswordAuthRequest userAuthorizationRequest) throws CodeChallengeBadData {
-        var client = clientRepository.findById(clientId);
-        if (client.isEmpty() || !client.get().getAuthorizationServerId().equals(authorizationServer.getId())) {
+    public ClientCode createClientCode(
+            UUID authorizationServerId,
+            ClientCode clientCode
+    ) {
+        var client = clientRepository.findByClientId(clientCode.getClientId());
+        if (client.isEmpty() || !client.get().getAuthorizationServerId().equals(authorizationServerId)) {
             throw new CodeChallengeBadData("Unable to find the Client with the credentials provided");
         }
 
-        var user = userRepository.findByUsername(userAuthorizationRequest.getUsername());
-        if (user == null) {
-            throw new CodeChallengeBadData("Unable to find the User with the credentials provided");
-        }
+        // TODO: This should be done in the view
+//        var user = userRepository.findByUsername(userAuthorizationRequest.getUsername());
+//        if (user == null) {
+//            throw new CodeChallengeBadData("Unable to find the User with the credentials provided");
+//        }
 
         // Filter down to the scopes that are associated with the authorization server.
-        var _scopes =  scopeService.filterScopesForAuthorizationServerId(
-                authorizationServer.getId(),
-                scopes
+        // TODO: Fix this to use the scopes that are associated with the client.
+        var _scopes = scopeService.filterScopesForAuthorizationServerId(
+                authorizationServerId,
+                "" //scopes
         );
 
-        if (!new BCryptPasswordEncoder().matches(userAuthorizationRequest.getPassword(), user.getPasswordHash())) {
-            throw new CodeChallengeBadData("Unable to find the User with the credentials provided");
-        }
-        try {
-            final MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
-            String code = new BigInteger(1, messageDigest
-                    .digest(new SecureRandom()
-                            .generateSeed(120)))
-                    .toString(16);
+        // TODO: This should be moved to the User Serivce
+//        if (!new BCryptPasswordEncoder().matches(userAuthorizationRequest.getPassword(), user.getPasswordHash())) {
+//            throw new CodeChallengeBadData("Unable to find the User with the credentials provided");
+//        }
+//        try {
+//            final MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
+//            String code = new BigInteger(1, messageDigest
+//                    .digest(new SecureRandom()
+//                            .generateSeed(120)))
+//                    .toString(16);
 
-            var clientCode = new ClientCode();
-            clientCode.setClientId(client.get().getId());
-            clientCode.setCode(code);
-            clientCode.setRedirectUri(redirectUri);
-            clientCode.setCreatedOn(OffsetDateTime.now());
-            clientCode.setAuthorizationServerId(authorizationServer.getId());
-            clientCode.setUserId(user.getId());
-            clientCode.setNonce(nonce);
-            clientCode.setState(state);
-            clientCode.setCodeChallenge(codeChallenge);
-            clientCode.setCodeChallengeMethod(codeChallengeMethod);
-            clientCode.setScopes(_scopes);
-            clientCodeRepository.save(ClientCodeMapper.to(clientCode));
-            return clientCode;
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
-        }
+            var _clientCode = clientCodeRepository.save(new com.cartobucket.auth.rpc.server.entities.ClientCode());
+            return ClientCodeMapper.from(_clientCode);
+//        } catch (NoSuchAlgorithmException e) {
+//            throw new RuntimeException(e);
+//        }
     }
 
     @Override
@@ -122,9 +100,9 @@ public class ClientService implements com.cartobucket.auth.data.services.ClientS
     }
 
     @Override
-    public Client getClient(final UUID clientId) throws ClientNotFound {
+    public Client getClient(final String clientId) throws ClientNotFound {
         return clientRepository
-                .findById(clientId)
+                .findByClientId(clientId)
                 .map(ClientMapper::from)
                 .orElseThrow(ClientNotFound::new);
     }

@@ -190,12 +190,10 @@ public class AuthorizationServerRpcService implements AuthorizationServers {
                                 .newBuilder()
                                 .addAllJwks(
                                         jwks
-                                                .getKeys()
                                                 .stream()
                                                 .map(jwk ->
                                                         Jwk
                                                                 .newBuilder()
-                                                                // Map the jwk fields to the Jwk buidler
                                                                 .setAlg(jwk.getAlg())
                                                                 .setKid(jwk.getKid())
                                                                 .setKty(jwk.getKty())

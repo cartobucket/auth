@@ -21,30 +21,21 @@ package com.cartobucket.auth.data.services;
 
 import com.cartobucket.auth.data.exceptions.badrequests.CodeChallengeBadData;
 import com.cartobucket.auth.data.exceptions.notfound.ClientNotFound;
-import com.cartobucket.auth.data.domain.AuthorizationServer;
 import com.cartobucket.auth.data.domain.Client;
 import com.cartobucket.auth.data.domain.ClientCode;
-import com.cartobucket.auth.data.domain.PasswordAuthRequest;
 
 import java.util.List;
 import java.util.UUID;
 
 public interface ClientService {
-    ClientCode buildClientCodeForEmailAndPassword(
-            AuthorizationServer authorizationServer,
-            UUID clientId,
-            String scopes,
-            String redirectUri,
-            String nonce,
-            String state,
-            String codeChallenge,
-            String codeChallengeMethod,
-            PasswordAuthRequest userAuthorizationRequest
+    ClientCode createClientCode(
+            UUID authorizationServerId,
+            ClientCode clientCode
     ) throws CodeChallengeBadData;
 
     void deleteClient(UUID clientId);
 
-    Client getClient(UUID clientId) throws ClientNotFound;
+    Client getClient(String clientId) throws ClientNotFound;
 
     Client updateClient(UUID clientId, Client client) throws ClientNotFound;
 

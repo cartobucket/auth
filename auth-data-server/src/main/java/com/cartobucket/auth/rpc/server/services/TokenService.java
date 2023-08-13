@@ -51,6 +51,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 @ApplicationScoped
 public class TokenService implements com.cartobucket.auth.data.services.TokenService {
@@ -133,7 +134,7 @@ public class TokenService implements com.cartobucket.auth.data.services.TokenSer
         }
 
         final var client = clientRepository
-                .findById(clientCode.getClientId())
+                .findById(UUID.fromString(clientCode.getClientId()))
                 .orElseThrow(ClientNotFound::new);
         if (!client.getRedirectUris().contains(URI.create(clientCode.getRedirectUri()))) {
             throw new CodeChallengeBadData("The redirect_uri in the Access Token request is not configured for the client");

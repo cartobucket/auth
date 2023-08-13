@@ -60,7 +60,8 @@ public class Clients implements ClientsApi {
     public Response getClient(UUID clientId) {
         return Response
                 .ok()
-                .entity(ClientMapper.toResponse(clientService.getClient(clientId)))
+                // TODO: The clientId can be an arbitrary string.
+                .entity(ClientMapper.toResponse(clientService.getClient(String.valueOf(clientId))))
                 .build();
     }
 

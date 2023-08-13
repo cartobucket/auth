@@ -21,11 +21,13 @@ package com.cartobucket.auth.rpc.server.entities.mappers;
 
 import com.cartobucket.auth.data.domain.ClientCode;
 
+import java.util.UUID;
+
 public class ClientCodeMapper {
     public static ClientCode from (com.cartobucket.auth.rpc.server.entities.ClientCode clientCode) {
         var _clientCode = new ClientCode();
         _clientCode.setCode(clientCode.getCode());
-        _clientCode.setClientId(clientCode.getClientId());
+        _clientCode.setClientId(String.valueOf(clientCode.getClientId()));
         _clientCode.setCodeChallenge(clientCode.getCodeChallenge());
         _clientCode.setCodeChallengeMethod(clientCode.getCodeChallengeMethod());
         _clientCode.setId(clientCode.getId());
@@ -43,7 +45,7 @@ public class ClientCodeMapper {
     public static com.cartobucket.auth.rpc.server.entities.ClientCode to (ClientCode clientCode) {
         var _clientCode = new com.cartobucket.auth.rpc.server.entities.ClientCode();
         _clientCode.setCode(clientCode.getCode());
-        _clientCode.setClientId(clientCode.getClientId());
+        _clientCode.setClientId(UUID.fromString(clientCode.getClientId()));
         _clientCode.setCodeChallenge(clientCode.getCodeChallenge());
         _clientCode.setCodeChallengeMethod(clientCode.getCodeChallengeMethod());
         _clientCode.setId(clientCode.getId());

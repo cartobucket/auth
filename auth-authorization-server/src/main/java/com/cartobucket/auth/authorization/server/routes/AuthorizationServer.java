@@ -19,13 +19,12 @@
 
 package com.cartobucket.auth.authorization.server.routes;
 
-import com.cartobucket.auth.authorization.server.routes.mappers.JwksMapper;
+import com.cartobucket.auth.data.domain.ClientCode;
 import com.cartobucket.auth.data.exceptions.notfound.TemplateNotFound;
+import com.cartobucket.auth.data.services.ScopeService;
 import com.cartobucket.auth.generated.AuthorizationServerApi;
 import com.cartobucket.auth.model.generated.AccessTokenRequest;
-import com.cartobucket.auth.data.domain.PasswordAuthRequest;
 import com.cartobucket.auth.data.domain.TemplateTypeEnum;
-import com.cartobucket.auth.authorization.server.routes.mappers.AuthorizationRequestMapper;
 import com.cartobucket.auth.data.services.AuthorizationServerService;
 import com.cartobucket.auth.data.services.ClientService;
 import com.cartobucket.auth.data.services.TemplateService;
@@ -35,11 +34,11 @@ import io.quarkus.qute.Qute;
 import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.core.Response;
-import org.jose4j.jwt.MalformedClaimException;
 
 import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.time.OffsetDateTime;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Collections;
@@ -67,38 +66,61 @@ public class AuthorizationServer implements AuthorizationServerApi {
 
     @Override
     @Consumes({"*/*"})
-    public Response createAuthorizationCode(UUID authorizationServerId, String clientId, String responseType, String codeChallenge, String codeChallengeMethod, String redirectUri, String scope, String state, String nonce, String username, String password) {
-        var authorizationRequest = AuthorizationRequestMapper.from(
-                clientId,
-                responseType,
-                codeChallenge,
-                codeChallengeMethod,
-                redirectUri,
-                scope,
-                state,
-                nonce
-        );
-        var passwordAuthRequest = new PasswordAuthRequest();
-        passwordAuthRequest.setUsername(username);
-        passwordAuthRequest.setPassword(password);
-        final var authorizationServer = authorizationServerService.getAuthorizationServer(authorizationServerId);
-        final var code = clientService.buildClientCodeForEmailAndPassword(
-                authorizationServer,
-                UUID.fromString(clientId),
-                scope,
-                redirectUri,
-                nonce,
-                state,
-                codeChallenge,
-                codeChallengeMethod,
-                passwordAuthRequest
-        );
-        if (code == null) {
+    public Response createAuthorizationCode(
+            UUID authorizationServerId,
+            String clientId,
+            String responseType,
+            String codeChallenge,
+            String codeChallengeMethod,
+            String redirectUri,
+            String scope,
+            String state,
+            String nonce,
+            String username,
+            String password) {
+        final var user = userService.getUser(username).getLeft();
+        if (user == null) {
             return renderLoginScreen(authorizationServerId);
         }
+        if (user.getAuthorizationServerId() != authorizationServerId) {
+            return renderLoginScreen(authorizationServerId);
+        }
+        if (!userService.validatePassword(user.getId(), password)) {
+            return renderLoginScreen(authorizationServerId);
+        }
+        final var client = clientService.getClient(clientId);
+        if (client == null) {
+            return renderLoginScreen(authorizationServerId);
+        }
+        if (client.getAuthorizationServerId() != authorizationServerId) {
+            return renderLoginScreen(authorizationServerId);
+        }
+        if (client.getRedirectUris().contains(redirectUri)) {
+            return renderLoginScreen(authorizationServerId);
+        }
+        final var scopes = ScopeService.scopeStringToScopeList(scope);
+        if (client.getScopes().containsAll(scopes)) {
+            return renderLoginScreen(authorizationServerId);
+        }
+
+        var clientCode = new ClientCode();
+        clientCode.setClientId(clientId);
+        clientCode.setRedirectUri(redirectUri);
+        clientCode.setAuthorizationServerId(authorizationServerId);
+        clientCode.setNonce(nonce);
+        clientCode.setState(state);
+        clientCode.setCodeChallenge(codeChallenge);
+        clientCode.setCodeChallengeMethod(codeChallengeMethod);
+        clientCode.setScopes(ScopeService.scopeStringToScopeList(scope));
+
+        final var code = clientService.createClientCode(
+                authorizationServerId,
+                clientCode
+        );
+
         return Response.status(302).location(
                 URI.create(
-                        authorizationRequest.getRedirectUri() + "?code=" + URLEncoder.encode(code.getCode(), StandardCharsets.UTF_8) + "&state=" + URLEncoder.encode(authorizationRequest.getState(), StandardCharsets.UTF_8) + "&nonce=" + URLEncoder.encode(authorizationRequest.getNonce(), StandardCharsets.UTF_8) + "&scope" + URLEncoder.encode(authorizationRequest.getScope(), StandardCharsets.UTF_8)
+                        redirectUri + "?code=" + URLEncoder.encode(code.getCode(), StandardCharsets.UTF_8) + "&state=" + URLEncoder.encode(state, StandardCharsets.UTF_8) + "&nonce=" + URLEncoder.encode(nonce, StandardCharsets.UTF_8) + "&scope" + URLEncoder.encode(scope, StandardCharsets.UTF_8)
                 )
         ).build();
     }
@@ -125,9 +147,7 @@ public class AuthorizationServer implements AuthorizationServerApi {
         return Response
                 .ok()
                 .entity(
-                        JwksMapper.to(
-                                authorizationServerService.getJwksForAuthorizationServer(authorizationServerId)
-                        )
+                        authorizationServerService.getJwksForAuthorizationServer(authorizationServerId)
                 )
                 .build();
     }

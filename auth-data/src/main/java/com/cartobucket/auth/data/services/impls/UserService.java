@@ -29,6 +29,7 @@ import com.cartobucket.auth.rpc.UserCreateRequest;
 import com.cartobucket.auth.rpc.UserDeleteRequest;
 import com.cartobucket.auth.rpc.UserSetPasswordRequest;
 import com.cartobucket.auth.rpc.UserUpdateRequest;
+import com.cartobucket.auth.rpc.UserValidatePasswordRequest;
 import io.quarkus.arc.DefaultBean;
 import io.quarkus.grpc.GrpcClient;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -115,6 +116,11 @@ public class UserService implements com.cartobucket.auth.data.services.UserServi
     }
 
     @Override
+    public Pair<User, Profile> getUser(String username) throws UserNotFound, ProfileNotFound {
+        return null;
+    }
+
+    @Override
     public Pair<User, Profile> updateUser(UUID userId, Pair<User, Profile> userProfilePair) throws UserNotFound, ProfileNotFound {
         if (userProfilePair.getLeft().getPassword() != null && !userProfilePair.getLeft().getPassword().isEmpty()) {
             usersClient.setUserPassword(
@@ -155,5 +161,20 @@ public class UserService implements com.cartobucket.auth.data.services.UserServi
                 )
                 .await()
                 .atMost(Duration.of(3, ChronoUnit.SECONDS));
+    }
+
+    @Override
+    public boolean validatePassword(UUID userId, String password) {
+        return usersClient
+                .validateUserPassword(
+                        UserValidatePasswordRequest
+                                .newBuilder()
+                                .setId(String.valueOf(userId))
+                                .setPassword(password)
+                                .build()
+                )
+                .await()
+                .atMost(Duration.of(3, ChronoUnit.SECONDS))
+                .getIsValid();
     }
 }

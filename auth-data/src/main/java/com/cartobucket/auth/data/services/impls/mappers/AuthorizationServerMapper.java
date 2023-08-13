@@ -20,7 +20,7 @@
 package com.cartobucket.auth.data.services.impls.mappers;
 
 import com.cartobucket.auth.data.domain.AuthorizationServer;
-import com.cartobucket.auth.data.domain.JWKS;
+import com.cartobucket.auth.data.domain.JWK;
 import com.cartobucket.auth.data.domain.SigningKey;
 import com.cartobucket.auth.rpc.AuthorizationServerCreateResponse;
 import com.cartobucket.auth.rpc.AuthorizationServerResponse;
@@ -80,26 +80,5 @@ public class AuthorizationServerMapper {
         _signingKey.setCreatedOn(OffsetDateTime.ofInstant(Instant.ofEpochSecond(signingKey.getCreatedOn().getSeconds()), ZoneId.of("UTC")));
         _signingKey.setUpdatedOn(OffsetDateTime.ofInstant(Instant.ofEpochSecond(signingKey.getUpdatedOn().getSeconds()), ZoneId.of("UTC")));
         return _signingKey;
-    }
-
-    public static JWKS toJwks(JwksResponse jwks) {
-        // convert from the response to the JWKS type
-        var _jwks = new JWKS();
-        _jwks.setKeys(
-                jwks
-                        .getJwksList()
-                        .stream()
-                        .map(jwk -> {
-                            var _jwk = new com.cartobucket.auth.data.domain.JWK();
-                            _jwk.setKid(jwk.getKid());
-                            _jwk.setKty(jwk.getKty());
-                            _jwk.setAlg(jwk.getAlg());
-                            _jwk.setUse(jwk.getUse());
-                            _jwk.setN(jwk.getN());
-                            _jwk.setE(jwk.getE());
-                            return _jwk;
-                        })
-                        .toList());
-        return _jwks;
     }
 }

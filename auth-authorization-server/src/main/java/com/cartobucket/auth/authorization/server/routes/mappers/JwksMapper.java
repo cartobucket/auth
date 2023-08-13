@@ -34,10 +34,4 @@ public class JwksMapper {
         jwkModel.setUse(jwk.getUse());
         return jwkModel;
     }
-
-    public static JWKS to(com.cartobucket.auth.data.domain.JWKS jwks) {
-        var jwksModel = new JWKS();
-        jwksModel.setKeys(jwks.getKeys().stream().map(JwksMapper::to).toList());
-        return jwksModel;
-    }
 }

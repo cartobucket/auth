@@ -33,6 +33,8 @@ import com.cartobucket.auth.rpc.UserResponse;
 import com.cartobucket.auth.rpc.UserSetPasswordRequest;
 import com.cartobucket.auth.rpc.UserSetPasswordResponse;
 import com.cartobucket.auth.rpc.UserUpdateRequest;
+import com.cartobucket.auth.rpc.UserValidatePasswordRequest;
+import com.cartobucket.auth.rpc.UserValidatePasswordResponse;
 import com.cartobucket.auth.rpc.Users;
 import com.google.protobuf.Timestamp;
 import io.quarkus.grpc.GrpcService;
@@ -190,5 +192,23 @@ public class UserRpcService implements Users {
         return Uni
                 .createFrom()
                 .item(UserSetPasswordResponse.newBuilder().build());
+    }
+
+    @Override
+    @Blocking
+    public Uni<UserValidatePasswordResponse> validateUserPassword(UserValidatePasswordRequest request) {
+        return Uni
+                .createFrom()
+                .item(
+                        UserValidatePasswordResponse
+                                .newBuilder()
+                                .setIsValid(
+                                        userService.validatePassword(
+                                                UUID.fromString(request.getId()),
+                                                request.getPassword()
+                                        )
+                                )
+                                .build()
+                );
     }
 }

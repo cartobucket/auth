@@ -19,15 +19,24 @@
 
 package com.cartobucket.auth.data.services.impls;
 
-import com.cartobucket.auth.data.domain.AuthorizationServer;
 import com.cartobucket.auth.data.domain.Client;
 import com.cartobucket.auth.data.domain.ClientCode;
-import com.cartobucket.auth.data.domain.PasswordAuthRequest;
 import com.cartobucket.auth.data.exceptions.badrequests.CodeChallengeBadData;
 import com.cartobucket.auth.data.exceptions.notfound.ClientNotFound;
+import com.cartobucket.auth.data.services.impls.mappers.ClientsMapper;
+import com.cartobucket.auth.rpc.ClientDeleteRequest;
+import com.cartobucket.auth.rpc.ClientGetRequest;
+import com.cartobucket.auth.rpc.ClientListRequest;
+import com.cartobucket.auth.rpc.ClientUpdateRequest;
+import com.cartobucket.auth.rpc.MutinyAuthorizationServersGrpc;
+import com.cartobucket.auth.rpc.MutinyClientsGrpc;
 import io.quarkus.arc.DefaultBean;
+import io.quarkus.grpc.GrpcClient;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.UUID;
 
@@ -35,33 +44,103 @@ import java.util.UUID;
 @ApplicationScoped
 public class ClientService implements com.cartobucket.auth.data.services.ClientService {
 
+    @Inject
+    @GrpcClient("clients")
+    MutinyClientsGrpc.MutinyClientsStub clientsClient;
+
+    @Inject
+    @GrpcClient("authorizationServers")
+    MutinyAuthorizationServersGrpc.MutinyAuthorizationServersStub authorizationServersClient;
+
     @Override
-    public ClientCode buildClientCodeForEmailAndPassword(AuthorizationServer authorizationServer, UUID clientId, String scopes, String redirectUri, String nonce, String state, String codeChallenge, String codeChallengeMethod, PasswordAuthRequest userAuthorizationRequest) throws CodeChallengeBadData {
-        return null;
+    public ClientCode createClientCode(
+            UUID authorizationServerId,
+            ClientCode clientCode
+    ) throws CodeChallengeBadData {
+        return new ClientCode();
     }
 
     @Override
     public void deleteClient(UUID clientId) {
-
+        clientsClient.deleteClient(
+                ClientDeleteRequest
+                        .newBuilder()
+                        .setId(String.valueOf(clientId))
+                        .build()
+                )
+                .await()
+                .atMost(Duration.of(3, ChronoUnit.SECONDS));
     }
 
     @Override
-    public Client getClient(UUID clientId) throws ClientNotFound {
-        return null;
+    public Client getClient(String clientId) throws ClientNotFound {
+        return ClientsMapper.to(
+                clientsClient
+                    .getClient(
+                            ClientGetRequest
+                                    .newBuilder()
+                                    .setId(clientId)
+                                    .build()
+                    )
+                    .await()
+                    .atMost(Duration.of(3, ChronoUnit.SECONDS))
+        );
     }
 
     @Override
     public Client updateClient(UUID clientId, Client client) throws ClientNotFound {
-        return null;
+        return ClientsMapper.to(
+                clientsClient
+                        .updateClient(
+                                ClientUpdateRequest
+                                        .newBuilder()
+                                        .setId(String.valueOf(clientId))
+                                        .setName(client.getName())
+                                        .addAllScopes(client.getScopes())
+                                        .addAllRedirectUris(client.getRedirectUris().stream().map(String::valueOf).toList())
+                                        .build()
+                        )
+                        .await()
+                        .atMost(Duration.of(3, ChronoUnit.SECONDS))
+        );
     }
 
     @Override
     public List<Client> getClients(List<UUID> authorizationServerIds) {
-        return null;
+        return clientsClient.listClients(
+                ClientListRequest
+                        .newBuilder()
+                        .addAllAuthorizationServerIds(
+                                authorizationServerIds
+                                        .stream()
+                                        .map(String::valueOf)
+                                        .toList()
+                        )
+                        .build()
+                )
+                .await()
+                .atMost(Duration.of(3, ChronoUnit.SECONDS))
+                .getClientsList()
+                .stream()
+                .map(ClientsMapper::to)
+                .toList();
     }
 
     @Override
     public Client createClient(Client client) {
-        return null;
+        return ClientsMapper.to(
+                clientsClient
+                        .createClient(
+                                com.cartobucket.auth.rpc.ClientCreateRequest
+                                        .newBuilder()
+                                        .setName(client.getName())
+                                        .addAllScopes(client.getScopes())
+                                        .addAllRedirectUris(client.getRedirectUris().stream().map(String::valueOf).toList())
+                                        .setAuthorizationServerId(String.valueOf(client.getAuthorizationServerId()))
+                                        .build()
+                        )
+                        .await()
+                        .atMost(Duration.of(3, ChronoUnit.SECONDS))
+        );
     }
 }
