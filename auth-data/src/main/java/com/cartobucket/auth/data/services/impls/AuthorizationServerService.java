@@ -162,12 +162,11 @@ public class AuthorizationServerService implements com.cartobucket.auth.data.ser
                 jwk -> {
                     final var _jwk = new JWK();
                     _jwk.setAlg(jwk.getAlg());
-                    // TODO: this
-//                    _jwk.set(OffsetDateTime.ofInstant(Instant.ofEpochSecond(jwk.getCreatedOn().getSeconds()), ZoneId.of("UTC")));
-//                    _jwk.setId(UUID.fromString(jwk.getId()));
-//                    _jwk.setPrivateKey(jwk.getPrivateKey());
-//                    _jwk.setPublicKey(jwk.getPublicKey());
-//                    _jwk.setUpdatedOn(OffsetDateTime.ofInstant(Instant.ofEpochSecond(jwk.getUpdatedOn().getSeconds()), ZoneId.of("UTC")));
+                    _jwk.setKid(jwk.getKid());
+                    _jwk.setKty(jwk.getKty());
+                    _jwk.setUse(jwk.getUse());
+                    _jwk.setN(jwk.getN());
+                    _jwk.setE(jwk.getE());
                     return _jwk;
                 }
         ).toList();

@@ -20,12 +20,10 @@
 package com.cartobucket.auth.data.services.impls.mappers;
 
 import com.cartobucket.auth.data.domain.AuthorizationServer;
-import com.cartobucket.auth.data.domain.JWK;
 import com.cartobucket.auth.data.domain.SigningKey;
 import com.cartobucket.auth.rpc.AuthorizationServerCreateResponse;
 import com.cartobucket.auth.rpc.AuthorizationServerResponse;
 import com.cartobucket.auth.rpc.AuthorizationServerSigningKeyResponse;
-import com.cartobucket.auth.rpc.JwksResponse;
 
 import java.net.MalformedURLException;
 import java.net.URL;

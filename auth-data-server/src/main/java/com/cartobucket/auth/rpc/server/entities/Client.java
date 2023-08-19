@@ -38,6 +38,8 @@ public class Client {
 
     private String name;
 
+    private String clientId;
+
     private UUID authorizationServerId;
 
     @JdbcTypeCode(SqlTypes.JSON)
@@ -104,5 +106,13 @@ public class Client {
 
     public void setUpdatedOn(OffsetDateTime updatedOn) {
         this.updatedOn = updatedOn;
+    }
+
+    public String getClientId() {
+        return clientId;
+    }
+
+    public void setClientId(String clientId) {
+        this.clientId = clientId;
     }
 }
