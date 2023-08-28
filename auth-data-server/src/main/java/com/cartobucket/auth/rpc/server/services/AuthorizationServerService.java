@@ -19,19 +19,28 @@
 
 package com.cartobucket.auth.rpc.server.services;
 
+import com.cartobucket.auth.data.domain.AccessToken;
 import com.cartobucket.auth.data.domain.AuthorizationServer;
 import com.cartobucket.auth.data.domain.JWK;
+import com.cartobucket.auth.data.domain.Profile;
+import com.cartobucket.auth.data.domain.ProfileType;
 import com.cartobucket.auth.data.domain.SigningKey;
 import com.cartobucket.auth.data.domain.Template;
 import com.cartobucket.auth.data.domain.TemplateTypeEnum;
+import com.cartobucket.auth.data.exceptions.notfound.ProfileNotFound;
+import com.cartobucket.auth.data.services.ScopeService;
 import com.cartobucket.auth.rpc.server.entities.mappers.AuthorizationServerMapper;
+import com.cartobucket.auth.rpc.server.entities.mappers.ProfileMapper;
 import com.cartobucket.auth.rpc.server.entities.mappers.SigningKeyMapper;
 import com.cartobucket.auth.data.exceptions.NotAuthorized;
 import com.cartobucket.auth.data.exceptions.notfound.AuthorizationServerNotFound;
 import com.cartobucket.auth.rpc.server.repositories.AuthorizationServerRepository;
+import com.cartobucket.auth.rpc.server.repositories.ProfileRepository;
 import com.cartobucket.auth.rpc.server.repositories.ScopeRepository;
 import com.cartobucket.auth.rpc.server.repositories.SingingKeyRepository;
 import com.cartobucket.auth.data.services.TemplateService;
+import io.smallrye.jwt.algorithm.SignatureAlgorithm;
+import io.smallrye.jwt.build.Jwt;
 import io.smallrye.jwt.util.KeyUtils;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
@@ -51,6 +60,7 @@ import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 import java.security.interfaces.RSAPublicKey;
 import java.time.OffsetDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -61,12 +71,14 @@ public class AuthorizationServerService implements com.cartobucket.auth.data.ser
     final SingingKeyRepository singingKeyRepository;
     final TemplateService templateService;
     final ScopeRepository scopeRepository;
+    final ProfileRepository profileRepository;
 
-    public AuthorizationServerService(AuthorizationServerRepository authorizationServerRepository, SingingKeyRepository singingKeyRepository, TemplateService templateService, ScopeRepository scopeRepository) {
+    public AuthorizationServerService(AuthorizationServerRepository authorizationServerRepository, SingingKeyRepository singingKeyRepository, TemplateService templateService, ScopeRepository scopeRepository, ProfileRepository profileRepository) {
         this.authorizationServerRepository = authorizationServerRepository;
         this.singingKeyRepository = singingKeyRepository;
         this.templateService = templateService;
         this.scopeRepository = scopeRepository;
+        this.profileRepository = profileRepository;
     }
 
     public static SigningKey generateSigningKey(AuthorizationServer authorizationServer) {
@@ -109,6 +121,28 @@ public class AuthorizationServerService implements com.cartobucket.auth.data.ser
                 .stream()
                 .map(AuthorizationServerService::buildJwk)
                 .toList();
+    }
+
+    @Override
+    public AccessToken generateAccessToken(UUID authorizationServerId, UUID profileId, String subject, String scopes, long expiresInSeconds, String nonce) {
+        final var authorizationServer = authorizationServerRepository
+                .findById(authorizationServerId)
+                .orElseThrow();
+
+        final var profile = profileRepository.findByResourceId(
+                        profileId
+                )
+                .map(ProfileMapper::from)
+                .orElseThrow(ProfileNotFound::new);
+
+        var additionalClaims = new HashMap<String, Object>();
+        if (nonce != null) {
+            additionalClaims.put("nonce", nonce);
+        }
+        additionalClaims.put("scope", scopes);
+        additionalClaims.put("exp", OffsetDateTime.now().plusSeconds(expiresInSeconds).toEpochSecond());
+
+        return buildAccessTokenResponse(authorizationServer, profile, additionalClaims);
     }
 
     @Override
@@ -266,5 +300,43 @@ public class AuthorizationServerService implements com.cartobucket.auth.data.ser
             throw new RuntimeException(e);
         }
 
+    }
+
+    private AccessToken buildAccessTokenResponse(
+            com.cartobucket.auth.rpc.server.entities.AuthorizationServer authorizationServer,
+            Profile profile,
+            Map<String, Object> additionalClaims) {
+        final var signingKey = getSigningKeysForAuthorizationServer(authorizationServer.getId());
+        try {
+            var jwt = Jwt
+                    .issuer(authorizationServer.getServerUrl().toExternalForm())
+                    .audience(authorizationServer.getAudience())
+                    .expiresIn(authorizationServer.getClientCredentialsTokenExpiration());
+
+            jwt.jws()
+                    .algorithm(
+                            switch (signingKey.getKeyType()) {
+                                default ->
+                                        SignatureAlgorithm.RS256;
+                            }
+                    )
+                    .keyId(String.valueOf(signingKey.getId()));
+
+            additionalClaims.forEach(jwt::claim);
+
+            profile.getProfile().forEach(jwt::claim);
+            final var token = jwt.sign(KeyUtils.decodePrivateKey(signingKey.getPrivateKey()));
+
+            // TODO: This should be refactored into the caller.
+            var accessToken = new AccessToken();
+            accessToken.setAccessToken(token);
+            accessToken.setIdToken(token); // TODO: This is obviously wrong.
+            accessToken.setTokenType(AccessToken.TokenTypeEnum.BEARER);
+            accessToken.setExpiresIn(Math.toIntExact(authorizationServer.getAuthorizationCodeTokenExpiration()));
+            accessToken.setScope((String) additionalClaims.get("scope"));
+            return accessToken;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }

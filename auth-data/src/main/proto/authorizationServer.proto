@@ -18,6 +18,7 @@ service AuthorizationServers {
   rpc GetAuthorizationServerSigningKey (AuthorizationServerGetRequest) returns (AuthorizationServerSigningKeyResponse) {};
   rpc GetAuthorizationServerJwks (AuthorizationServerGetRequest) returns (JwksResponse) {};
   rpc ValidateJwtForAuthorizationServer(ValidateJwtForAuthorizationServerRequest) returns (ValidateJwtForAuthorizationServerResponse) {};
+  rpc GenerateAccessToken(GenerateAccessTokenRequest) returns (GenerateAccessTokenResponse) {};
 }
 
 message ValidateJwtForAuthorizationServerRequest {
@@ -111,4 +112,21 @@ message Jwk {
   string x5c = 7;
   string x5t = 8;
   string x5tS256 = 9;
+}
+
+message GenerateAccessTokenRequest {
+  string authorizationServerId = 1;
+  string profileId = 2;
+  string subject = 3;
+  string scopes = 4;
+  int64 expireInSeconds = 5;
+  optional string nonce = 6;
+}
+
+message GenerateAccessTokenResponse {
+  string accessToken = 1;
+  string idToken = 2;
+  int64 expireInSeconds = 3;
+  string scope = 4;
+  optional string refreshToken = 5;
 }

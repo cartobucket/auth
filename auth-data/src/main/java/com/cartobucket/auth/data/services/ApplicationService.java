@@ -46,4 +46,6 @@ public interface ApplicationService {
     void deleteApplicationSecret(final UUID applicationId, final UUID secretId) throws ApplicationSecretNoApplicationBadData, ApplicationSecretNotFound, ApplicationNotFound;
 
     List<Application> getApplications(final List<UUID> authorizationServerIds);
+
+    boolean isApplicationSecretValid(UUID authorizationServerId, UUID applicationId, String applicationSecret);
 }

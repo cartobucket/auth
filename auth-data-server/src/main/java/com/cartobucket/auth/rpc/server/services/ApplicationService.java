@@ -189,4 +189,29 @@ public class ApplicationService implements com.cartobucket.auth.data.services.Ap
         }
     }
 
+    @Override
+    public boolean isApplicationSecretValid(UUID authorizationServerId, UUID applicationId, String applicationSecret) {
+        try {
+            final var messageDigest = MessageDigest.getInstance("SHA-256");
+            final var secretHash = new BigInteger(
+                    1,
+                    messageDigest.digest(applicationSecret.getBytes())
+            ).toString(16);
+
+            final var _applicationSecret = applicationSecretRepository
+                    .findByApplicationSecretHash(secretHash);
+            if (_applicationSecret.isEmpty()) {
+                return false;
+            }
+
+            if (!applicationId.equals(_applicationSecret.get().getApplicationId())) {
+                throw new ApplicationSecretNoApplicationBadData();
+            }
+
+            return true;
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 }

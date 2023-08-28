@@ -19,13 +19,16 @@
 
 package com.cartobucket.auth.data.services.impls.mappers;
 
+import com.cartobucket.auth.data.domain.AccessToken;
 import com.cartobucket.auth.data.domain.AuthorizationServer;
 import com.cartobucket.auth.data.domain.SigningKey;
 import com.cartobucket.auth.rpc.AuthorizationServerCreateResponse;
 import com.cartobucket.auth.rpc.AuthorizationServerResponse;
 import com.cartobucket.auth.rpc.AuthorizationServerSigningKeyResponse;
+import com.cartobucket.auth.rpc.GenerateAccessTokenResponse;
 
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.time.Instant;
 import java.time.OffsetDateTime;
@@ -37,7 +40,7 @@ public class AuthorizationServerMapper {
         var authorizationServer = new AuthorizationServer();
         authorizationServer.setId(UUID.fromString(authorizationServerResponse.getId()));
         try {
-            authorizationServer.setServerUrl(new URL(authorizationServerResponse.getServerUrl()));
+            authorizationServer.setServerUrl(URI.create(authorizationServerResponse.getServerUrl()).toURL());
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }
@@ -55,7 +58,7 @@ public class AuthorizationServerMapper {
         var authorizationServer = new AuthorizationServer();
         authorizationServer.setId(UUID.fromString(authorizationServerCreateResponse.getId()));
         try {
-            authorizationServer.setServerUrl(new URL(authorizationServerCreateResponse.getServerUrl()));
+            authorizationServer.setServerUrl(URI.create(authorizationServerCreateResponse.getServerUrl()).toURL());
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }
@@ -78,5 +81,15 @@ public class AuthorizationServerMapper {
         _signingKey.setCreatedOn(OffsetDateTime.ofInstant(Instant.ofEpochSecond(signingKey.getCreatedOn().getSeconds()), ZoneId.of("UTC")));
         _signingKey.setUpdatedOn(OffsetDateTime.ofInstant(Instant.ofEpochSecond(signingKey.getUpdatedOn().getSeconds()), ZoneId.of("UTC")));
         return _signingKey;
+    }
+
+    public static AccessToken toAccessToken(GenerateAccessTokenResponse generateAccessTokenResponse) {
+        var accessToken = new AccessToken();
+        accessToken.setAccessToken(generateAccessTokenResponse.getAccessToken());
+        accessToken.setExpiresIn(Math.toIntExact(generateAccessTokenResponse.getExpireInSeconds()));
+        accessToken.setTokenType(AccessToken.TokenTypeEnum.BEARER);
+        accessToken.setScope(generateAccessTokenResponse.getScope());
+        accessToken.setRefreshToken(generateAccessTokenResponse.getRefreshToken());
+        return accessToken;
     }
 }

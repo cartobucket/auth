@@ -22,6 +22,7 @@ package com.cartobucket.auth.rpc.server.services;
 import com.cartobucket.auth.data.domain.Client;
 import com.cartobucket.auth.data.domain.ClientCode;
 import com.cartobucket.auth.data.exceptions.badrequests.CodeChallengeBadData;
+import com.cartobucket.auth.data.exceptions.notfound.ClientCodeNotFound;
 import com.cartobucket.auth.data.exceptions.notfound.ClientNotFound;
 import com.cartobucket.auth.data.services.ScopeService;
 import com.cartobucket.auth.rpc.server.entities.mappers.ClientCodeMapper;
@@ -62,35 +63,15 @@ public class ClientService implements com.cartobucket.auth.data.services.ClientS
             throw new CodeChallengeBadData("Unable to find the Client with the credentials provided");
         }
 
-        // TODO: This should be done in the view
-//        var user = userRepository.findByUsername(userAuthorizationRequest.getUsername());
-//        if (user == null) {
-//            throw new CodeChallengeBadData("Unable to find the User with the credentials provided");
-//        }
-
         // Filter down to the scopes that are associated with the authorization server.
-        // TODO: Fix this to use the scopes that are associated with the client.
         var _scopes = scopeService.filterScopesForAuthorizationServerId(
                 authorizationServerId,
-                "" //scopes
+                ScopeService.scopeListToScopeString(clientCode.getScopes())
         );
+        clientCode.setScopes(_scopes);
 
-        // TODO: This should be moved to the User Serivce
-//        if (!new BCryptPasswordEncoder().matches(userAuthorizationRequest.getPassword(), user.getPasswordHash())) {
-//            throw new CodeChallengeBadData("Unable to find the User with the credentials provided");
-//        }
-//        try {
-//            final MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
-//            String code = new BigInteger(1, messageDigest
-//                    .digest(new SecureRandom()
-//                            .generateSeed(120)))
-//                    .toString(16);
-
-            var _clientCode = clientCodeRepository.save(new com.cartobucket.auth.rpc.server.entities.ClientCode());
-            return ClientCodeMapper.from(_clientCode);
-//        } catch (NoSuchAlgorithmException e) {
-//            throw new RuntimeException(e);
-//        }
+        var _clientCode = clientCodeRepository.save(new com.cartobucket.auth.rpc.server.entities.ClientCode());
+        return ClientCodeMapper.from(_clientCode);
     }
 
     @Override
@@ -105,6 +86,13 @@ public class ClientService implements com.cartobucket.auth.data.services.ClientS
                 .findByClientId(clientId)
                 .map(ClientMapper::from)
                 .orElseThrow(ClientNotFound::new);
+    }
+
+    @Override
+    public ClientCode getClientCode(String clientCode) throws ClientCodeNotFound {
+        return clientCodeRepository.findByCode(clientCode)
+                .map(ClientCodeMapper::from)
+                .orElseThrow(ClientCodeNotFound::new);
     }
 
     @Override

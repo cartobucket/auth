@@ -22,6 +22,7 @@ package com.cartobucket.auth.data.services.impls;
 import com.cartobucket.auth.data.domain.Client;
 import com.cartobucket.auth.data.domain.ClientCode;
 import com.cartobucket.auth.data.exceptions.badrequests.CodeChallengeBadData;
+import com.cartobucket.auth.data.exceptions.notfound.ClientCodeNotFound;
 import com.cartobucket.auth.data.exceptions.notfound.ClientNotFound;
 import com.cartobucket.auth.data.services.impls.mappers.ClientsMapper;
 import com.cartobucket.auth.rpc.ClientDeleteRequest;
@@ -85,6 +86,11 @@ public class ClientService implements com.cartobucket.auth.data.services.ClientS
                     .await()
                     .atMost(Duration.of(3, ChronoUnit.SECONDS))
         );
+    }
+
+    @Override
+    public ClientCode getClientCode(String clientCode) throws ClientCodeNotFound {
+        return null;
     }
 
     @Override

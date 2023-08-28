@@ -20,6 +20,7 @@
 package com.cartobucket.auth.data.services;
 
 import com.cartobucket.auth.data.exceptions.badrequests.CodeChallengeBadData;
+import com.cartobucket.auth.data.exceptions.notfound.ClientCodeNotFound;
 import com.cartobucket.auth.data.exceptions.notfound.ClientNotFound;
 import com.cartobucket.auth.data.domain.Client;
 import com.cartobucket.auth.data.domain.ClientCode;
@@ -36,6 +37,8 @@ public interface ClientService {
     void deleteClient(UUID clientId);
 
     Client getClient(String clientId) throws ClientNotFound;
+
+    ClientCode getClientCode(String clientCode) throws ClientCodeNotFound;
 
     Client updateClient(UUID clientId, Client client) throws ClientNotFound;
 

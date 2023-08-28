@@ -36,10 +36,12 @@ import com.cartobucket.auth.rpc.ApplicationListRequest;
 import com.cartobucket.auth.rpc.ApplicationSecretCreateRequest;
 import com.cartobucket.auth.rpc.ApplicationSecretDeleteRequest;
 import com.cartobucket.auth.rpc.ApplicationSecretListRequest;
+import com.cartobucket.auth.rpc.IsApplicationSecretValidRequest;
 import com.cartobucket.auth.rpc.MutinyApplicationSecretsGrpc;
 import com.cartobucket.auth.rpc.MutinyApplicationsGrpc;
 import io.quarkus.arc.DefaultBean;
 import io.quarkus.grpc.GrpcClient;
+import io.smallrye.mutiny.Uni;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.graalvm.collections.Pair;
@@ -168,5 +170,19 @@ public class ApplicationService implements com.cartobucket.auth.data.services.Ap
                 .stream()
                 .map(ApplicationMapper::toApplication)
                 .toList();
+    }
+
+    @Override
+    public boolean isApplicationSecretValid(UUID authorizationServerId, UUID applicationId, String applicationSecret) {
+        return applicationSecretsClient.isApplicationSecretValid(
+                        IsApplicationSecretValidRequest.newBuilder()
+                        .setApplicationId(String.valueOf(applicationId))
+                        .setAuthorizationServerId(String.valueOf(authorizationServerId))
+                        .setApplicationSecret(applicationSecret)
+                        .build()
+                )
+                .await()
+                .atMost(Duration.of(3, ChronoUnit.SECONDS))
+                .getIsValid();
     }
 }

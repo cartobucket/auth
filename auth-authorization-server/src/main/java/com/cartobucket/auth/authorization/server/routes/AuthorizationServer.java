@@ -21,6 +21,7 @@ package com.cartobucket.auth.authorization.server.routes;
 
 import com.cartobucket.auth.data.domain.ClientCode;
 import com.cartobucket.auth.data.exceptions.notfound.TemplateNotFound;
+import com.cartobucket.auth.data.services.ApplicationService;
 import com.cartobucket.auth.data.services.ScopeService;
 import com.cartobucket.auth.generated.AuthorizationServerApi;
 import com.cartobucket.auth.model.generated.AccessTokenRequest;
@@ -28,7 +29,6 @@ import com.cartobucket.auth.data.domain.TemplateTypeEnum;
 import com.cartobucket.auth.data.services.AuthorizationServerService;
 import com.cartobucket.auth.data.services.ClientService;
 import com.cartobucket.auth.data.services.TemplateService;
-import com.cartobucket.auth.data.services.TokenService;
 import com.cartobucket.auth.data.services.UserService;
 import io.quarkus.qute.Qute;
 import jakarta.ws.rs.BadRequestException;
@@ -38,30 +38,30 @@ import jakarta.ws.rs.core.Response;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.time.OffsetDateTime;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
 
 public class AuthorizationServer implements AuthorizationServerApi {
-    final TokenService tokenService;
     final AuthorizationServerService authorizationServerService;
     final ClientService clientService;
     final UserService userService;
     final TemplateService templateService;
+    final ApplicationService applicationService;
 
     public AuthorizationServer(
-            TokenService accessTokenService,
             AuthorizationServerService authorizationServerService,
             ClientService clientService,
-            UserService userService, TemplateService templateService) {
-        this.tokenService = accessTokenService;
+            UserService userService, TemplateService templateService,
+            ApplicationService applicationService) {
         this.authorizationServerService = authorizationServerService;
         this.clientService = clientService;
         this.userService = userService;
         this.templateService = templateService;
+        this.applicationService = applicationService;
     }
 
     @Override
@@ -78,6 +78,8 @@ public class AuthorizationServer implements AuthorizationServerApi {
             String nonce,
             String username,
             String password) {
+        // TODO: Check the CSRF token
+
         final var user = userService.getUser(username).getLeft();
         if (user == null) {
             return renderLoginScreen(authorizationServerId);
@@ -123,23 +125,6 @@ public class AuthorizationServer implements AuthorizationServerApi {
                         redirectUri + "?code=" + URLEncoder.encode(code.getCode(), StandardCharsets.UTF_8) + "&state=" + URLEncoder.encode(state, StandardCharsets.UTF_8) + "&nonce=" + URLEncoder.encode(nonce, StandardCharsets.UTF_8) + "&scope" + URLEncoder.encode(scope, StandardCharsets.UTF_8)
                 )
         ).build();
-    }
-
-    private Response renderLoginScreen(UUID authorizationServerId) {
-        final var template = templateService
-                .getTemplates(Collections.singletonList(authorizationServerId))
-                .stream()
-                .filter(t -> t.getTemplateType() == TemplateTypeEnum.LOGIN)
-                .findFirst()
-                .orElseThrow(TemplateNotFound::new);
-
-        return Response
-                .ok()
-                .entity(
-                        Qute.fmt(new String(Base64.getDecoder().decode(template.getTemplate())))
-                                .render()
-                )
-                .build();
     }
 
     @Override
@@ -215,37 +200,80 @@ public class AuthorizationServer implements AuthorizationServerApi {
     @Override
     public Response issueToken(UUID authorizationServerId, AccessTokenRequest accessTokenRequest) {
         final var authorizationServer = authorizationServerService.getAuthorizationServer(authorizationServerId);
+
+        // TODO: This stuff should be moved to a validator
         switch (accessTokenRequest.getGrantType()) {
             case CLIENT_CREDENTIALS -> {
+                if (applicationService.isApplicationSecretValid(
+                        authorizationServerId,
+                        UUID.fromString(accessTokenRequest.getClientId()),
+                        accessTokenRequest.getClientSecret())) {
+                    throw new BadRequestException();
+                }
+
                 return Response
                         .ok()
                         .entity(
-                                tokenService
-                                        .fromClientCredentials(
-                                                authorizationServer,
+                                authorizationServerService
+                                        .generateAccessToken(
+                                                authorizationServerId,
+                                                UUID.fromString(accessTokenRequest.getClientId()),
                                                 accessTokenRequest.getClientId(),
-                                                accessTokenRequest.getClientSecret(),
-                                                accessTokenRequest.getScope()
+                                                accessTokenRequest.getScope(),
+                                                authorizationServer.getClientCredentialsTokenExpiration(),
+                                                null
                                         )
                         )
                         .build();
             }
             case AUTHORIZATION_CODE -> {
+                final var clientCode = clientService.getClientCode(accessTokenRequest.getCode());
+                if (clientCode == null) {
+                    throw new BadRequestException();
+                }
+
+                if (clientCode.getRedirectUri().equals(accessTokenRequest.getRedirectUri())) {
+                    throw new BadRequestException();
+                }
+                final var scopes = ScopeService.scopeStringToScopeList(accessTokenRequest.getScope());
+                // TODO: IntelliJ gave me this hint, not convinced, but gotta think about it more.
+                if (!new HashSet<>(clientCode.getScopes()).containsAll(scopes)) {
+                    throw new BadRequestException();
+                }
+
                 return Response
                         .ok()
                         .entity(
-                                tokenService
-                                        .fromAuthorizationCode(
-                                                authorizationServer,
-                                                accessTokenRequest.getCode(),
-                                                accessTokenRequest.getClientId(),
-                                                accessTokenRequest.getRedirectUri(),
-                                                accessTokenRequest.getCodeVerifier()
+                                authorizationServerService
+                                        .generateAccessToken(
+                                                authorizationServerId,
+                                                clientCode.getUserId(),
+                                                String.valueOf(clientCode.getUserId()),
+                                                accessTokenRequest.getScope(),
+                                                authorizationServer.getAuthorizationCodeTokenExpiration(),
+                                                clientCode.getNonce()
                                         )
                         )
                         .build();
             }
         }
         throw new BadRequestException();
+    }
+
+    private Response renderLoginScreen(UUID authorizationServerId) {
+        final var template = templateService
+                .getTemplates(Collections.singletonList(authorizationServerId))
+                .stream()
+                .filter(t -> t.getTemplateType() == TemplateTypeEnum.LOGIN)
+                .findFirst()
+                .orElseThrow(TemplateNotFound::new);
+
+        return Response
+                .ok()
+                .entity(
+                        Qute.fmt(new String(Base64.getDecoder().decode(template.getTemplate())))
+                                .render()
+                )
+                .build();
     }
 }

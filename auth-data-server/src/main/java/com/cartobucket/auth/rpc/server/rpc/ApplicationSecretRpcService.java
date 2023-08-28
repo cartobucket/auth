@@ -30,6 +30,8 @@ import com.cartobucket.auth.rpc.ApplicationSecretListRequest;
 import com.cartobucket.auth.rpc.ApplicationSecretListResponse;
 import com.cartobucket.auth.rpc.ApplicationSecretResponse;
 import com.cartobucket.auth.rpc.ApplicationSecrets;
+import com.cartobucket.auth.rpc.IsApplicationSecretValidRequest;
+import com.cartobucket.auth.rpc.IsApplicationSecretValidResponse;
 import com.google.protobuf.Timestamp;
 import io.quarkus.grpc.GrpcService;
 import io.smallrye.common.annotation.Blocking;
@@ -118,6 +120,24 @@ public class ApplicationSecretRpcService implements ApplicationSecrets {
                                 .setId(request.getId())
                                 .setApplicationId(request.getApplicationId())
                                 .build()
+                );
+    }
+
+    @Override
+    public Uni<IsApplicationSecretValidResponse> isApplicationSecretValid(IsApplicationSecretValidRequest request) {
+        return Uni
+                .createFrom()
+                .item(
+                    IsApplicationSecretValidResponse
+                            .newBuilder()
+                            .setIsValid(
+                                    applicationService.isApplicationSecretValid(
+                                            UUID.fromString(request.getAuthorizationServerId()),
+                                            UUID.fromString(request.getApplicationId()),
+                                            request.getApplicationSecret()
+                                    )
+                            )
+                            .build()
                 );
     }
 }

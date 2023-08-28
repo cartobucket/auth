@@ -19,6 +19,7 @@
 
 package com.cartobucket.auth.data.services.impls;
 
+import com.cartobucket.auth.data.domain.AccessToken;
 import com.cartobucket.auth.data.domain.AuthorizationServer;
 import com.cartobucket.auth.data.domain.JWK;
 import com.cartobucket.auth.data.domain.Profile;
@@ -31,7 +32,6 @@ import com.cartobucket.auth.rpc.AuthorizationServerDeleteRequest;
 import com.cartobucket.auth.rpc.AuthorizationServerGetRequest;
 import com.cartobucket.auth.rpc.AuthorizationServerListRequest;
 import com.cartobucket.auth.rpc.AuthorizationServerUpdateRequest;
-import com.cartobucket.auth.rpc.Jwk;
 import com.cartobucket.auth.rpc.MutinyAuthorizationServersGrpc;
 import com.cartobucket.auth.rpc.ValidateJwtForAuthorizationServerRequest;
 import io.quarkus.arc.DefaultBean;
@@ -52,6 +52,7 @@ public class AuthorizationServerService implements com.cartobucket.auth.data.ser
     @GrpcClient("authorizationServers")
     MutinyAuthorizationServersGrpc.MutinyAuthorizationServersStub authorizationServerClient;
 
+    // TODO: Should probably cache here.
     @Override
     public AuthorizationServer getAuthorizationServer(UUID authorizationServerId) {
         var authorizationServer = AuthorizationServerMapper.toAuthorizationServer(
@@ -170,6 +171,31 @@ public class AuthorizationServerService implements com.cartobucket.auth.data.ser
                     return _jwk;
                 }
         ).toList();
+    }
+
+    @Override
+    public AccessToken generateAccessToken(
+            UUID authorizationServerId,
+            UUID profileId,
+            String subject,
+            String scopes,
+            long expireInSeconds,
+            String nonce
+            ) {
+        return AuthorizationServerMapper.toAccessToken(
+                authorizationServerClient.generateAccessToken(
+                        com.cartobucket.auth.rpc.GenerateAccessTokenRequest
+                                .newBuilder()
+                                .setAuthorizationServerId(String.valueOf(authorizationServerId))
+                                .setProfileId(String.valueOf(profileId))
+                                .setSubject(subject)
+                                .setScopes(scopes)
+                                .setExpireInSeconds(expireInSeconds)
+                                .setNonce(nonce)
+                                .build()
+                )
+                .await()
+                .atMost(Duration.of(3, ChronoUnit.SECONDS)));
     }
 
     @Override

@@ -32,6 +32,8 @@ import com.cartobucket.auth.rpc.AuthorizationServerSigningKeyResponse;
 import com.cartobucket.auth.rpc.AuthorizationServerUpdateRequest;
 import com.cartobucket.auth.rpc.AuthorizationServers;
 import com.cartobucket.auth.rpc.AuthorizationServersListResponse;
+import com.cartobucket.auth.rpc.GenerateAccessTokenRequest;
+import com.cartobucket.auth.rpc.GenerateAccessTokenResponse;
 import com.cartobucket.auth.rpc.Jwk;
 import com.cartobucket.auth.rpc.JwksResponse;
 import com.cartobucket.auth.rpc.ValidateJwtForAuthorizationServerRequest;
@@ -43,6 +45,7 @@ import io.smallrye.common.annotation.Blocking;
 import io.smallrye.mutiny.Uni;
 
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.util.UUID;
 
@@ -62,7 +65,7 @@ public class AuthorizationServerRpcService implements AuthorizationServers {
             var authorizationServer = new AuthorizationServer();
             authorizationServer.setName(request.getName());
             authorizationServer.setAudience(request.getAudience());
-            authorizationServer.setServerUrl(new URL(request.getServerUrl()));
+            authorizationServer.setServerUrl(URI.create((request.getServerUrl())).toURL());
             authorizationServer.setAuthorizationCodeTokenExpiration(request.getAuthorizationCodeTokenExpiration());
             authorizationServer.setClientCredentialsTokenExpiration(request.getClientCredentialsTokenExpiration());
             authorizationServer = authorizationServerService.createAuthorizationServer(authorizationServer);
@@ -126,7 +129,7 @@ public class AuthorizationServerRpcService implements AuthorizationServers {
             var authorizationServer = authorizationServerService.getAuthorizationServer(UUID.fromString(request.getId()));
             authorizationServer.setName(request.getName());
             authorizationServer.setAudience(request.getAudience());
-            authorizationServer.setServerUrl(new URL(request.getServerUrl()));
+            authorizationServer.setServerUrl(URI.create(request.getServerUrl()).toURL());
             authorizationServer.setAuthorizationCodeTokenExpiration(request.getAuthorizationCodeTokenExpiration());
             authorizationServer.setClientCredentialsTokenExpiration(request.getClientCredentialsTokenExpiration());
             authorizationServer = authorizationServerService.updateAuthorizationServer(UUID.fromString(request.getId()), authorizationServer);
@@ -238,6 +241,31 @@ public class AuthorizationServerRpcService implements AuthorizationServers {
                         .newBuilder()
                         .setClaims(Profile.toProtoMap(claims))
                         .build()
+                );
+    }
+
+    @Override
+    public Uni<GenerateAccessTokenResponse> generateAccessToken(GenerateAccessTokenRequest request) {
+        final var accessToken = authorizationServerService.generateAccessToken(
+                UUID.fromString(request.getAuthorizationServerId()),
+                UUID.fromString(request.getProfileId()),
+                request.getSubject(),
+                request.getScopes(),
+                request.getExpireInSeconds(),
+                request.getNonce()
+        );
+
+        return Uni
+                .createFrom()
+                .item(
+                        GenerateAccessTokenResponse
+                                .newBuilder()
+                                .setAccessToken(accessToken.getAccessToken())
+                                .setIdToken(accessToken.getIdToken())
+                                .setExpireInSeconds(accessToken.getExpiresIn())
+                                .setScope(accessToken.getScope())
+                                .setRefreshToken(accessToken.getRefreshToken())
+                                .build()
                 );
     }
 }
