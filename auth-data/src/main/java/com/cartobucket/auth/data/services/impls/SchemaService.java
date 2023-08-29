@@ -22,16 +22,30 @@ package com.cartobucket.auth.data.services.impls;
 import com.cartobucket.auth.data.domain.Profile;
 import com.cartobucket.auth.data.domain.Schema;
 import com.cartobucket.auth.data.exceptions.notfound.SchemaNotFound;
+import com.cartobucket.auth.data.rpc.MutinySchemasGrpc;
+import com.cartobucket.auth.data.rpc.SchemaCreateRequest;
+import com.cartobucket.auth.data.rpc.SchemaDeleteRequest;
+import com.cartobucket.auth.data.services.impls.mappers.SchemaMapper;
 import io.quarkus.arc.DefaultBean;
+import io.quarkus.grpc.GrpcClient;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+import static io.smallrye.mutiny.operators.uni.UniBlockingAwait.await;
+
 @DefaultBean
 @ApplicationScoped
 public class SchemaService implements com.cartobucket.auth.data.services.SchemaService {
+
+    @Inject
+    @GrpcClient("schemas")
+    MutinySchemasGrpc.MutinySchemasStub schemasClient;
 
     @Override
     public Set<String> validateProfileAgainstSchema(Profile profile, Schema schema) {
@@ -40,22 +54,67 @@ public class SchemaService implements com.cartobucket.auth.data.services.SchemaS
 
     @Override
     public Schema createSchema(Schema schema) {
-        return null;
+        return SchemaMapper.to(
+                schemasClient
+                        .createSchema(
+                                SchemaCreateRequest
+                                        .newBuilder()
+                                        .setSchema(Profile.toProtoMap(schema.getSchema()))
+                                        .setName(schema.getName())
+                                        .setAuthorizationServerId(schema.getAuthorizationServerId().toString())
+                                        .build()
+                        )
+                        .await()
+                        .atMost(Duration.of(3, ChronoUnit.SECONDS))
+        );
     }
 
     @Override
     public void deleteSchema(UUID schemaId) throws SchemaNotFound {
-
+        schemasClient.deleteSchema(
+                SchemaDeleteRequest
+                        .newBuilder()
+                        .setId(String.valueOf(schemaId))
+                        .build()
+                )
+                .await()
+                .atMost(Duration.of(3, ChronoUnit.SECONDS));
     }
 
     @Override
     public Schema getSchema(UUID schemaId) throws SchemaNotFound {
-        return null;
+        return SchemaMapper.to(
+                schemasClient
+                        .getSchema(
+                                com.cartobucket.auth.data.rpc.SchemaGetRequest
+                                        .newBuilder()
+                                        .setId(String.valueOf(schemaId))
+                                        .build()
+                        )
+                        .await()
+                        .atMost(Duration.of(3, ChronoUnit.SECONDS))
+        );
     }
 
     @Override
     public List<Schema> getSchemas(List<UUID> authorizationServerIds) {
-        return null;
+        return schemasClient.listSchemas(
+                com.cartobucket.auth.data.rpc.SchemaListRequest
+                        .newBuilder()
+                        .addAllAuthorizationServerIds(
+                                authorizationServerIds
+                                        .stream()
+                                        .map(String::valueOf)
+                                        .toList()
+                        )
+                        .build()
+        )
+                .await()
+                .atMost(Duration.of(3, ChronoUnit.SECONDS))
+                .getSchemasList()
+                .stream()
+                .map(SchemaMapper::to)
+                .toList();
     }
 
     @Override

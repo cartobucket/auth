@@ -1,0 +1,51 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "com.cartobucket.auth.data.rpc";
+option java_outer_classname = "SchemaProto";
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/struct.proto";
+
+service Schemas {
+  rpc CreateSchema (SchemaCreateRequest) returns (SchemaResponse) {};
+  rpc ListSchemas (SchemaListRequest) returns (SchemasListResponse) {};
+  rpc DeleteSchema (SchemaDeleteRequest) returns (SchemaResponse) {};
+  rpc GetSchema (SchemaGetRequest) returns (SchemaResponse) {};
+
+}
+
+message SchemaCreateRequest {
+  string authorizationServerId = 1;
+  string name = 2;
+  google.protobuf.Struct schema = 3;
+}
+
+message SchemaListRequest {
+  repeated string authorizationServerIds = 1;
+  int64 limit = 2;
+  int64 offset = 3;
+}
+
+message SchemaDeleteRequest {
+  string id = 1;
+}
+
+message SchemaResponse {
+  string id = 1;
+  string authorizationServerId = 2;
+  string name = 3;
+  google.protobuf.Struct schema = 4;
+  google.protobuf.Timestamp createdOn = 5;
+  google.protobuf.Timestamp updatedOn = 6;
+}
+
+message SchemasListResponse {
+  repeated SchemaResponse Schemas = 1;
+  int64 limit = 2;
+  int64 offset = 3;
+}
+
+message SchemaGetRequest {
+  string id = 1;
+}
