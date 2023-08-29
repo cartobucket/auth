@@ -1,0 +1,132 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "com.cartobucket.auth.rpc";
+option java_outer_classname = "AuthorizationServerProto";
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/struct.proto";
+
+
+service AuthorizationServers {
+  rpc CreateAuthorizationServer (AuthorizationServerCreateRequest) returns (AuthorizationServerCreateResponse) {};
+  rpc ListAuthorizationServers (AuthorizationServerListRequest) returns (AuthorizationServersListResponse) {};
+  rpc DeleteAuthorizationServer (AuthorizationServerDeleteRequest) returns (AuthorizationServerResponse) {};
+  rpc UpdateAuthorizationServer (AuthorizationServerUpdateRequest) returns (AuthorizationServerResponse) {};
+  rpc GetAuthorizationServer (AuthorizationServerGetRequest) returns (AuthorizationServerResponse) {};
+
+  rpc GetAuthorizationServerSigningKey (AuthorizationServerGetRequest) returns (AuthorizationServerSigningKeyResponse) {};
+  rpc GetAuthorizationServerJwks (AuthorizationServerGetRequest) returns (JwksResponse) {};
+  rpc ValidateJwtForAuthorizationServer(ValidateJwtForAuthorizationServerRequest) returns (ValidateJwtForAuthorizationServerResponse) {};
+  rpc GenerateAccessToken(GenerateAccessTokenRequest) returns (GenerateAccessTokenResponse) {};
+}
+
+message ValidateJwtForAuthorizationServerRequest {
+  string jwt = 1;
+  string authorizationServerId = 2;
+}
+
+message ValidateJwtForAuthorizationServerResponse {
+  google.protobuf.Struct claims = 1;
+}
+
+message AuthorizationServerCreateRequest {
+  string name = 1;
+  string serverUrl = 2;
+  string audience = 3;
+  int64 clientCredentialsTokenExpiration = 4;
+  int64 authorizationCodeTokenExpiration = 5;
+}
+
+message AuthorizationServerListRequest {
+  int64 limit = 2;
+  int64 offset = 3;
+}
+
+message AuthorizationServerDeleteRequest {
+  string id = 1;
+}
+
+message AuthorizationServerUpdateRequest {
+  string id = 1;
+  string name = 2;
+  string serverUrl = 3;
+  string audience = 4;
+  int64 clientCredentialsTokenExpiration = 5;
+  int64 authorizationCodeTokenExpiration = 6;
+}
+
+message AuthorizationServerGetRequest {
+  string id = 1;
+}
+
+message AuthorizationServerCreateResponse {
+  string id = 1;
+  string name = 2;
+  string serverUrl = 3;
+  string audience = 4;
+  int64 clientCredentialsTokenExpiration = 5;
+  int64 authorizationCodeTokenExpiration = 6;
+  google.protobuf.Timestamp createdOn = 7;
+  google.protobuf.Timestamp updatedOn = 8;
+}
+
+message AuthorizationServerResponse {
+  string id = 1;
+  string name = 2;
+  string serverUrl = 3;
+  string audience = 4;
+  int64 clientCredentialsTokenExpiration = 5;
+  int64 authorizationCodeTokenExpiration = 6;
+  google.protobuf.Timestamp createdOn = 7;
+  google.protobuf.Timestamp updatedOn = 8;
+}
+
+message AuthorizationServersListResponse {
+  repeated AuthorizationServerResponse authorizationServers = 1;
+  int64 limit = 2;
+  int64 offset = 3;
+}
+
+message AuthorizationServerSigningKeyResponse {
+  string id = 1;
+  string algorithm = 2;
+  string publicKey = 3;
+  string privateKey = 4;
+  string authorizationServerId = 5;
+  google.protobuf.Timestamp createdOn = 6;
+  google.protobuf.Timestamp updatedOn = 7;
+}
+
+message JwksResponse {
+  repeated Jwk jwks = 1;
+}
+
+message Jwk {
+  string kty = 1;
+  string use = 2;
+  string kid = 3;
+  string alg = 4;
+  string n = 5;
+  string e = 6;
+  string x5c = 7;
+  string x5t = 8;
+  string x5tS256 = 9;
+}
+
+message GenerateAccessTokenRequest {
+  string authorizationServerId = 1;
+  string profileId = 2;
+  string subject = 3;
+  string scopes = 4;
+  int64 expireInSeconds = 5;
+  optional string nonce = 6;
+}
+
+message GenerateAccessTokenResponse {
+  string accessToken = 1;
+  string idToken = 2;
+  int64 expireInSeconds = 3;
+  string scope = 4;
+  optional string refreshToken = 5;
+}

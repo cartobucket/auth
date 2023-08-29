@@ -1,11 +1,15 @@
 pluginManagement {
-    repositories {
-        mavenCentral()
-        gradlePluginPortal()
-        mavenLocal()
-    }
-    plugins {
-        id "${quarkusPluginId}" version "${quarkusPluginVersion}"
-    }
+	repositories {
+		mavenCentral()
+		gradlePluginPortal()
+		mavenLocal()
+	}
+	plugins {
+		id "${quarkusPluginId}" version "${quarkusPluginVersion}"
+	}
 }
 rootProject.name='auth'
+include 'auth-api-server'
+include 'auth-authorization-server'
+include 'auth-data'
+include 'auth-data-server'

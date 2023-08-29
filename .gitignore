@@ -38,3 +38,6 @@ nb-configuration.xml
 # The node modules for building the login HTML
 login/node_modules
 
+# Files in examples that need to be excluded.
+examples/oidc_test/db.sqlite3
+examples/oidc_test/oidc_test/__pycache__/

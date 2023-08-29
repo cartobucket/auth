@@ -1,0 +1,75 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "com.cartobucket.auth.rpc";
+option java_outer_classname = "TemplateProto";
+
+import "google/protobuf/timestamp.proto";
+
+
+service Templates {
+  rpc CreateTemplate (TemplateCreateRequest) returns (TemplateCreateResponse) {};
+  rpc ListTemplates (TemplateListRequest) returns (TemplateListResponse) {};
+  rpc DeleteTemplate (TemplateDeleteRequest) returns (TemplateResponse) {};
+  rpc UpdateTemplate (TemplateUpdateRequest) returns (TemplateResponse) {};
+  rpc GetTemplate (TemplateGetRequest) returns (TemplateResponse) {};
+
+}
+
+message TemplateCreateRequest {
+  string authorizationServerId = 1;
+  enum TEMPLATE_TYPE {
+    LOGIN = 0;
+  };
+  TEMPLATE_TYPE templateType = 2;
+  bytes template = 3;
+}
+
+message TemplateListRequest {
+  repeated string authorizationServerIds = 1;
+  int64 limit = 2;
+  int64 offset = 3;
+}
+
+message TemplateDeleteRequest {
+  string id = 1;
+}
+
+message TemplateUpdateRequest {
+  string id = 1;
+  bytes template = 2;
+}
+
+message TemplateGetRequest {
+  string id = 1;
+}
+
+message TemplateCreateResponse {
+  string id = 1;
+  string authorizationServerId = 2;
+  enum TEMPLATE_TYPE {
+    LOGIN = 0;
+  };
+  TEMPLATE_TYPE templateType = 3;
+  bytes template = 4;
+  google.protobuf.Timestamp createdOn = 5;
+  google.protobuf.Timestamp updatedOn = 6;
+}
+
+message TemplateResponse {
+  string id = 1;
+  string authorizationServerId = 2;
+  enum TEMPLATE_TYPE {
+    LOGIN = 0;
+  };
+  TEMPLATE_TYPE templateType = 3;
+  bytes template = 4;
+  google.protobuf.Timestamp createdOn = 5;
+  google.protobuf.Timestamp updatedOn = 6;
+}
+
+message TemplateListResponse {
+  repeated TemplateResponse templates = 1;
+  int64 limit = 2;
+  int64 offset = 3;
+}

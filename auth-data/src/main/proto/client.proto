@@ -1,0 +1,71 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "com.cartobucket.auth.rpc";
+option java_outer_classname = "ClientProto";
+
+import "google/protobuf/timestamp.proto";
+
+
+service Clients {
+  rpc CreateClient (ClientCreateRequest) returns (ClientCreateResponse) {};
+  rpc ListClients (ClientListRequest) returns (ClientListResponse) {};
+  rpc DeleteClient (ClientDeleteRequest) returns (ClientResponse) {};
+  rpc UpdateClient (ClientUpdateRequest) returns (ClientResponse) {};
+  rpc GetClient (ClientGetRequest) returns (ClientResponse) {};
+
+}
+
+message ClientCreateRequest {
+  string name = 1;
+  string authorizationServerId = 2;
+  repeated string redirectUris = 3;
+  repeated string scopes = 4;
+}
+
+message ClientListRequest {
+  repeated string authorizationServerIds = 1;
+  int64 limit = 2;
+  int64 offset = 3;
+}
+
+message ClientDeleteRequest {
+  string id = 1;
+}
+
+message ClientUpdateRequest {
+  string id = 1;
+  string name = 2;
+  repeated string redirectUris = 3;
+  repeated string scopes = 4;
+}
+
+message ClientGetRequest {
+  string id = 1;
+}
+
+message ClientCreateResponse {
+  string id = 1;
+  string name = 2;
+  string authorizationServerId = 3;
+  repeated string redirectUris = 4;
+  repeated string scopes = 5;
+  google.protobuf.Timestamp createdOn = 6;
+  google.protobuf.Timestamp updatedOn = 7;
+}
+
+message ClientResponse {
+  string id = 1;
+  string name = 2;
+  string authorizationServerId = 3;
+  repeated string redirectUris = 4;
+  repeated string scopes = 5;
+  google.protobuf.Timestamp createdOn = 6;
+  google.protobuf.Timestamp updatedOn = 7;
+}
+
+message ClientListResponse {
+  repeated ClientResponse clients = 1;
+  int64 limit = 2;
+  int64 offset = 3;
+}
