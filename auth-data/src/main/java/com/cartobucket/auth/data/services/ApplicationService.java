@@ -19,6 +19,7 @@
 
 package com.cartobucket.auth.data.services;
 
+import com.cartobucket.auth.data.collections.Pair;
 import com.cartobucket.auth.data.exceptions.badrequests.ApplicationSecretNoApplicationBadData;
 import com.cartobucket.auth.data.exceptions.notfound.ApplicationNotFound;
 import com.cartobucket.auth.data.exceptions.notfound.ApplicationSecretNotFound;
@@ -26,7 +27,6 @@ import com.cartobucket.auth.data.exceptions.notfound.ProfileNotFound;
 import com.cartobucket.auth.data.domain.Application;
 import com.cartobucket.auth.data.domain.ApplicationSecret;
 import com.cartobucket.auth.data.domain.Profile;
-import org.graalvm.collections.Pair;
 
 import java.util.List;
 import java.util.UUID;

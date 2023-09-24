@@ -19,6 +19,7 @@
 
 package com.cartobucket.auth.data.services.impls.mappers;
 
+import com.cartobucket.auth.data.collections.Pair;
 import com.cartobucket.auth.data.domain.Application;
 import com.cartobucket.auth.data.domain.ApplicationSecret;
 import com.cartobucket.auth.data.domain.Profile;
@@ -26,7 +27,6 @@ import com.cartobucket.auth.data.domain.ProfileType;
 import com.cartobucket.auth.data.rpc.ScopeResponse;
 import com.cartobucket.auth.rpc.*;
 import io.smallrye.mutiny.Uni;
-import org.graalvm.collections.Pair;
 
 import java.time.Instant;
 import java.time.OffsetDateTime;

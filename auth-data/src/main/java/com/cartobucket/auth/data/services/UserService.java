@@ -19,11 +19,11 @@
 
 package com.cartobucket.auth.data.services;
 
+import com.cartobucket.auth.data.collections.Pair;
 import com.cartobucket.auth.data.exceptions.notfound.ProfileNotFound;
 import com.cartobucket.auth.data.exceptions.notfound.UserNotFound;
 import com.cartobucket.auth.data.domain.Profile;
 import com.cartobucket.auth.data.domain.User;
-import org.graalvm.collections.Pair;
 
 import java.util.List;
 import java.util.UUID;

@@ -19,6 +19,7 @@
 
 package com.cartobucket.auth.api.server.routes;
 
+import com.cartobucket.auth.data.collections.Pair;
 import com.cartobucket.auth.generated.UsersApi;
 import com.cartobucket.auth.model.generated.UserRequest;
 import com.cartobucket.auth.model.generated.UsersResponse;
@@ -27,7 +28,6 @@ import com.cartobucket.auth.data.domain.User;
 import com.cartobucket.auth.api.server.routes.mappers.UserMapper;
 import com.cartobucket.auth.data.services.UserService;
 import jakarta.ws.rs.core.Response;
-import org.graalvm.collections.Pair;
 
 import java.util.List;
 import java.util.UUID;

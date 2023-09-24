@@ -34,6 +34,7 @@ import com.cartobucket.auth.rpc.AuthorizationServerListRequest;
 import com.cartobucket.auth.rpc.AuthorizationServerUpdateRequest;
 import com.cartobucket.auth.rpc.MutinyAuthorizationServersGrpc;
 import com.cartobucket.auth.rpc.ValidateJwtForAuthorizationServerRequest;
+import io.grpc.StatusRuntimeException;
 import io.quarkus.arc.DefaultBean;
 import io.quarkus.grpc.GrpcClient;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -55,18 +56,24 @@ public class AuthorizationServerService implements com.cartobucket.auth.data.ser
     // TODO: Should probably cache here.
     @Override
     public AuthorizationServer getAuthorizationServer(UUID authorizationServerId) {
-        var authorizationServer = AuthorizationServerMapper.toAuthorizationServer(
-                authorizationServerClient
-                        .getAuthorizationServer(
-                                AuthorizationServerGetRequest
-                                        .newBuilder()
-                                        .setId(String.valueOf(authorizationServerId))
-                                        .build()
-                        )
-                        .await()
-                        .atMost(Duration.of(3, ChronoUnit.SECONDS))
-                );
-        return authorizationServer;
+        try {
+            var authorizationServer = AuthorizationServerMapper.toAuthorizationServer(
+                    authorizationServerClient
+                            .getAuthorizationServer(
+                                    AuthorizationServerGetRequest
+                                            .newBuilder()
+                                            .setId(String.valueOf(authorizationServerId))
+                                            .build()
+                            )
+                            .await()
+                            .atMost(Duration.of(3, ChronoUnit.SECONDS))
+            );
+            return authorizationServer;
+        }
+        catch (StatusRuntimeException e) {
+            // TODO: Log
+            throw new AuthorizationServerNotFound();
+        }
     }
 
     @Override

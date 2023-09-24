@@ -19,6 +19,7 @@
 
 package com.cartobucket.auth.rpc.server.services;
 
+import com.cartobucket.auth.data.collections.Pair;
 import com.cartobucket.auth.rpc.server.entities.mappers.ProfileMapper;
 import com.cartobucket.auth.rpc.server.entities.mappers.UserMapper;
 import com.cartobucket.auth.data.exceptions.notfound.ProfileNotFound;
@@ -31,7 +32,6 @@ import com.cartobucket.auth.rpc.server.repositories.UserRepository;
 import com.cartobucket.auth.data.services.AuthorizationServerService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
-import org.graalvm.collections.Pair;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.time.OffsetDateTime;

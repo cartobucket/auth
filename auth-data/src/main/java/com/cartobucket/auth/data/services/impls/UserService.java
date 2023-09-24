@@ -19,6 +19,7 @@
 
 package com.cartobucket.auth.data.services.impls;
 
+import com.cartobucket.auth.data.collections.Pair;
 import com.cartobucket.auth.data.domain.Profile;
 import com.cartobucket.auth.data.domain.User;
 import com.cartobucket.auth.data.exceptions.notfound.ProfileNotFound;
@@ -34,7 +35,6 @@ import io.quarkus.arc.DefaultBean;
 import io.quarkus.grpc.GrpcClient;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import org.graalvm.collections.Pair;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;

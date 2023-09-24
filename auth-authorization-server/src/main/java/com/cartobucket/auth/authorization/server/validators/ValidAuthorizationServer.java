@@ -19,6 +19,7 @@
 
 package com.cartobucket.auth.authorization.server.validators;
 
+import com.cartobucket.auth.data.exceptions.notfound.AuthorizationServerNotFound;
 import com.cartobucket.auth.data.services.AuthorizationServerService;
 import jakarta.inject.Inject;
 import jakarta.validation.Constraint;
@@ -64,12 +65,17 @@ public @interface ValidAuthorizationServer {
 
         @Override
         public boolean isValid(UUID value, ConstraintValidatorContext context) {
-            final var authorizationServer = applicationService.getAuthorizationServer(value);
-            if (authorizationServer == null) {
+            try {
+                applicationService.getAuthorizationServer(value);
+            }
+            catch (AuthorizationServerNotFound e) {
                 context
-                        .buildConstraintViolationWithTemplate("The Authorization Server was not found.")
+                        .buildConstraintViolationWithTemplate("The Authorization Server was not found with the given ID of " + value.toString())
                         .addConstraintViolation();
                 return false;
+            }
+            catch (Exception e) {
+                System.out.println("An unexpected error occurred while validating the Authorization Server ID of " + value.toString() + ": " + e.getMessage());
             }
             return true;
         }

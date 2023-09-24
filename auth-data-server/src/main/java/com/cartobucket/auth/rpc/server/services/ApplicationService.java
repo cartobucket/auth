@@ -19,6 +19,7 @@
 
 package com.cartobucket.auth.rpc.server.services;
 
+import com.cartobucket.auth.data.collections.Pair;
 import com.cartobucket.auth.rpc.server.entities.mappers.ApplicationMapper;
 import com.cartobucket.auth.rpc.server.entities.mappers.ApplicationSecretMapper;
 import com.cartobucket.auth.rpc.server.entities.mappers.ProfileMapper;
@@ -36,7 +37,6 @@ import com.cartobucket.auth.rpc.server.repositories.ProfileRepository;
 import com.cartobucket.auth.data.services.ScopeService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
-import org.graalvm.collections.Pair;
 
 import java.math.BigInteger;
 import java.security.MessageDigest;

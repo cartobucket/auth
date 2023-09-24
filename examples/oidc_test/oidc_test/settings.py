@@ -129,11 +129,10 @@ AUTHENTICATION_BACKENDS = [
     'mozilla_django_oidc.auth.OIDCAuthenticationBackend',
 ]
 
-OIDC_OP_AUTHORIZATION_ENDPOINT = "http://localhost:8080/4b36afc8-5205-49c1-af16-4dc6f96db982/authorization/"
-OIDC_OP_TOKEN_ENDPOINT = "http://localhost:8080/4b36afc8-5205-49c1-af16-4dc6f96db982/token/"
-OIDC_OP_USER_ENDPOINT = "http://localhost:8080/4b36afc8-5205-49c1-af16-4dc6f96db982/userinfo/"
-OIDC_OP_JWKS_ENDPOINT = "http://localhost:8080/4b36afc8-5205-49c1-af16-4dc6f96db982/jwks/"
-OIDC_OP_LOGOUT_ENDPOINT = "https://sso.ndptc.manoa.hawaii.edu/realms/ndptc-test/protocol/openid-connect/logout"
+OIDC_OP_AUTHORIZATION_ENDPOINT = "http://localhost:8080/becb7180-4b1e-4f2b-812e-f1b86455725c/authorization/"
+OIDC_OP_TOKEN_ENDPOINT = "http://localhost:8080/becb7180-4b1e-4f2b-812e-f1b86455725c/token/"
+OIDC_OP_USER_ENDPOINT = "http://localhost:8080/becb7180-4b1e-4f2b-812e-f1b86455725c/userinfo/"
+OIDC_OP_JWKS_ENDPOINT = "http://localhost:8080/becb7180-4b1e-4f2b-812e-f1b86455725c/jwks/"
 OIDC_RP_SIGN_ALGO = "RS256"
 
 OIDC_RP_CLIENT_ID = "0ccaa7a7-0cb5-4edf-9ec3-a3458bdce09e"

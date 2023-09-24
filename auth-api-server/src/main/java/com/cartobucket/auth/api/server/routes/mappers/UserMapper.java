@@ -19,12 +19,12 @@
 
 package com.cartobucket.auth.api.server.routes.mappers;
 
+import com.cartobucket.auth.data.collections.Pair;
 import com.cartobucket.auth.model.generated.UserRequest;
 import com.cartobucket.auth.model.generated.UserResponse;
 import com.cartobucket.auth.data.domain.Profile;
 import com.cartobucket.auth.data.domain.ProfileType;
 import com.cartobucket.auth.data.domain.User;
-import org.graalvm.collections.Pair;
 
 import java.util.Collections;
 import java.util.Map;

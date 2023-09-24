@@ -21,6 +21,7 @@ package com.cartobucket.auth.rpc.server.rpc;
 
 import com.cartobucket.auth.data.domain.AuthorizationServer;
 import com.cartobucket.auth.data.domain.Profile;
+import com.cartobucket.auth.data.exceptions.notfound.AuthorizationServerNotFound;
 import com.cartobucket.auth.data.services.AuthorizationServerService;
 import com.cartobucket.auth.rpc.AuthorizationServerCreateRequest;
 import com.cartobucket.auth.rpc.AuthorizationServerCreateResponse;
@@ -40,6 +41,7 @@ import com.cartobucket.auth.rpc.ValidateJwtForAuthorizationServerRequest;
 import com.cartobucket.auth.rpc.ValidateJwtForAuthorizationServerResponse;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.Timestamp;
+import io.grpc.Status;
 import io.quarkus.grpc.GrpcService;
 import io.smallrye.common.annotation.Blocking;
 import io.smallrye.mutiny.Uni;
@@ -157,22 +159,27 @@ public class AuthorizationServerRpcService implements AuthorizationServers {
     @Override
     @Blocking
     public Uni<AuthorizationServerResponse> getAuthorizationServer(AuthorizationServerGetRequest request) {
-        var authorizationServer = authorizationServerService.getAuthorizationServer(UUID.fromString(request.getId()));
-        return Uni
-                .createFrom()
-                .item(
-                        AuthorizationServerResponse
-                                .newBuilder()
-                                .setId(String.valueOf(authorizationServer.getId()))
-                                .setName(authorizationServer.getName())
-                                .setAudience(authorizationServer.getAudience())
-                                .setServerUrl(String.valueOf(authorizationServer.getServerUrl()))
-                                .setAuthorizationCodeTokenExpiration(authorizationServer.getAuthorizationCodeTokenExpiration())
-                                .setClientCredentialsTokenExpiration(authorizationServer.getClientCredentialsTokenExpiration())
-                                .setCreatedOn(Timestamp.newBuilder().setSeconds(authorizationServer.getCreatedOn().toEpochSecond()).build())
-                                .setUpdatedOn(Timestamp.newBuilder().setSeconds(authorizationServer.getUpdatedOn().toEpochSecond()).build())
-                                .build()
-                );
+        try {
+            var authorizationServer = authorizationServerService.getAuthorizationServer(UUID.fromString(request.getId()));
+            return Uni
+                    .createFrom()
+                    .item(
+                            AuthorizationServerResponse
+                                    .newBuilder()
+                                    .setId(String.valueOf(authorizationServer.getId()))
+                                    .setName(authorizationServer.getName())
+                                    .setAudience(authorizationServer.getAudience())
+                                    .setServerUrl(String.valueOf(authorizationServer.getServerUrl()))
+                                    .setAuthorizationCodeTokenExpiration(authorizationServer.getAuthorizationCodeTokenExpiration())
+                                    .setClientCredentialsTokenExpiration(authorizationServer.getClientCredentialsTokenExpiration())
+                                    .setCreatedOn(Timestamp.newBuilder().setSeconds(authorizationServer.getCreatedOn().toEpochSecond()).build())
+                                    .setUpdatedOn(Timestamp.newBuilder().setSeconds(authorizationServer.getUpdatedOn().toEpochSecond()).build())
+                                    .build()
+                    );
+        }
+        catch (AuthorizationServerNotFound e) {
+            throw Status.fromCode(Status.Code.NOT_FOUND).withDescription(e.getMessage()).withCause(e).asRuntimeException();
+        }
     }
 
     @Override

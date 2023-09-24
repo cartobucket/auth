@@ -20,6 +20,7 @@
 package com.cartobucket.auth.rpc.server.rpc;
 
 
+import com.cartobucket.auth.data.collections.Pair;
 import com.cartobucket.auth.data.domain.Profile;
 import com.cartobucket.auth.data.domain.User;
 import com.cartobucket.auth.data.services.UserService;
@@ -40,7 +41,6 @@ import com.google.protobuf.Timestamp;
 import io.quarkus.grpc.GrpcService;
 import io.smallrye.common.annotation.Blocking;
 import io.smallrye.mutiny.Uni;
-import org.graalvm.collections.Pair;
 
 import java.util.UUID;
 

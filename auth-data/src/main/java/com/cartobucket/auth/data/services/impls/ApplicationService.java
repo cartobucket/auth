@@ -19,6 +19,7 @@
 
 package com.cartobucket.auth.data.services.impls;
 
+import com.cartobucket.auth.data.collections.Pair;
 import com.cartobucket.auth.data.domain.Application;
 import com.cartobucket.auth.data.domain.ApplicationSecret;
 import com.cartobucket.auth.data.domain.Profile;
@@ -44,7 +45,6 @@ import io.quarkus.grpc.GrpcClient;
 import io.smallrye.mutiny.Uni;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import org.graalvm.collections.Pair;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;

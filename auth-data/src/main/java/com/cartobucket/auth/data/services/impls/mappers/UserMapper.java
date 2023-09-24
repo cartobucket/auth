@@ -1,11 +1,11 @@
 package com.cartobucket.auth.data.services.impls.mappers;
 
+import com.cartobucket.auth.data.collections.Pair;
 import com.cartobucket.auth.data.domain.Profile;
 import com.cartobucket.auth.data.domain.ProfileType;
 import com.cartobucket.auth.data.domain.User;
 import com.cartobucket.auth.rpc.UserCreateResponse;
 import com.cartobucket.auth.rpc.UserResponse;
-import org.graalvm.collections.Pair;
 
 import java.time.Instant;
 import java.time.OffsetDateTime;
@@ -41,7 +41,8 @@ public class UserMapper {
         profile.setCreatedOn(OffsetDateTime.ofInstant(Instant.ofEpochSecond(userCreateResponse.getCreatedOn().getSeconds()), ZoneId.of("UTC")));
         profile.setUpdatedOn(OffsetDateTime.ofInstant(Instant.ofEpochSecond(userCreateResponse.getUpdatedOn().getSeconds()), ZoneId.of("UTC")));
 
-        return Pair.create(user, profile);    }
+        return Pair.create(user, profile);
+    }
 
     public static Pair<User, Profile> toUserAndProfile(UserResponse userResponse) {
         var user = new User();
