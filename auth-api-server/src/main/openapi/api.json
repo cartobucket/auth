@@ -1048,45 +1048,6 @@
           "name": "Test Secret"
         }
       },
-      "AuthorizationServerRequest": {
-        "title": "Root Type for AuthorizationServerRequest",
-        "description": "",
-        "required": [
-          "name",
-          "audience",
-          "authorizationCodeTokenExpiration",
-          "clientCredentialsTokenExpiration",
-          "serverUrl"
-        ],
-        "type": "object",
-        "properties": {
-          "serverUrl": {
-            "type": "string"
-          },
-          "audience": {
-            "type": "string"
-          },
-          "clientCredentialsTokenExpiration": {
-            "format": "int32",
-            "type": "integer"
-          },
-          "authorizationCodeTokenExpiration": {
-            "format": "int32",
-            "type": "integer"
-          },
-          "name": {
-            "description": "",
-            "type": "string"
-          }
-        },
-        "example": {
-          "name": "Test Authorization Server",
-          "serverUrl": "https://accounts.cartobucket.com",
-          "audience": "api://",
-          "clientCredentialsTokenExpiration": 300,
-          "authorizationCodeTokenExpiration": 100
-        }
-      },
       "AuthorizationServerResponse": {
         "title": "Root Type for AuthorizationServerResponse",
         "description": "",
@@ -1939,7 +1900,6 @@
         "title": "Root Type for UserRequest",
         "description": "",
         "required": [
-          "password"
         ],
         "type": "object",
         "properties": {
@@ -2237,6 +2197,48 @@
 
           },
           "authorizationServerId": "52a10a2d-080c-4aaa-a184-ec3ba982a9bd"
+        }
+      },
+      "AuthorizationServerRequest": {
+        "title": "Root Type for AuthorizationServerRequest",
+        "description": "",
+        "required": [
+          "name",
+          "audience",
+          "authorizationCodeTokenExpiration",
+          "clientCredentialsTokenExpiration",
+          "serverUrl"
+        ],
+        "type": "object",
+        "properties": {
+          "serverUrl": {
+            "type": "string",
+            "x-validator": "@ValidAuthorizationServerUrl"
+          },
+          "audience": {
+            "type": "string",
+            "x-validator": "@ValidAuthorizationServerAudience"
+          },
+          "clientCredentialsTokenExpiration": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "authorizationCodeTokenExpiration": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "name": {
+            "description": "",
+            "type": "string",
+            "x-validator": "@ValidAuthorizationServerName"
+          }
+        },
+        "example": {
+          "name": "Test Authorization Server",
+          "serverUrl": "https://accounts.cartobucket.com",
+          "audience": "api://",
+          "clientCredentialsTokenExpiration": 300,
+          "authorizationCodeTokenExpiration": 100
         }
       }
     }
