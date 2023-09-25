@@ -2164,23 +2164,23 @@
       "ApplicationRequest": {
         "title": "Root Type for ApplicationRequest",
         "description": "",
-        "required": [
-          "authorizationServerId",
-          "name"
-        ],
         "type": "object",
         "properties": {
           "name": {
-            "type": "string"
+            "type": "string",
+            "x-field-extra-annotation": "@ValidApplicationName"
           },
           "client_id": {
-            "type": "string"
+            "type": "string",
+            "x-field-extra-annotation": "@ValidApplicationClientId"
           },
           "client_secret": {
-            "type": "string"
+            "type": "string",
+            "x-field-extra-annotation": "@ValidApplicationClientSecret"
           },
           "profile": {
-            "type": "object"
+            "type": "object",
+            "x-field-extra-annotation": "@ValidApplicationProfile"
           },
           "authorizationServerId": {
             "format": "UUID",
@@ -2203,21 +2203,18 @@
         "title": "Root Type for AuthorizationServerRequest",
         "description": "",
         "required": [
-          "name",
-          "audience",
           "authorizationCodeTokenExpiration",
-          "clientCredentialsTokenExpiration",
-          "serverUrl"
+          "clientCredentialsTokenExpiration"
         ],
         "type": "object",
         "properties": {
           "serverUrl": {
             "type": "string",
-            "x-validator": "@ValidAuthorizationServerUrl"
+            "x-field-extra-annotation": "@ValidAuthorizationServerUrl"
           },
           "audience": {
             "type": "string",
-            "x-validator": "@ValidAuthorizationServerAudience"
+            "x-field-extra-annotation": "@ValidAuthorizationServerAudience"
           },
           "clientCredentialsTokenExpiration": {
             "format": "int32",
@@ -2230,7 +2227,7 @@
           "name": {
             "description": "",
             "type": "string",
-            "x-validator": "@ValidAuthorizationServerName"
+            "x-field-extra-annotation": "@ValidAuthorizationServerName"
           }
         },
         "example": {
