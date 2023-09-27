@@ -17,7 +17,7 @@ service Applications {
 }
 
 message ApplicationCreateRequest {
-  string clientId = 1;
+  optional string clientId = 1;
   string name = 2;
   string authorizationServerId = 3;
   google.protobuf.Struct profile = 4;

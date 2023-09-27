@@ -29,7 +29,6 @@ import java.util.UUID;
 @Entity
 public class Application {
     @Id
-    @GeneratedValue
     private UUID id;
 
     private String clientId;

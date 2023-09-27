@@ -455,162 +455,6 @@
         "operationId": "createScope"
       }
     },
-    "/applications/{applicationId}": {
-      "get": {
-        "tags": [
-          "Applications"
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApplicationResponse"
-                }
-              }
-            },
-            "description": "Get Application"
-          }
-        },
-        "operationId": "getApplication"
-      },
-      "delete": {
-        "tags": [
-          "Applications"
-        ],
-        "responses": {
-          "204": {
-            "description": "Application Deleted"
-          },
-          "404": {
-            "description": "Application Not Found"
-          }
-        },
-        "operationId": "deleteApplication"
-      },
-      "parameters": [
-        {
-          "examples": {
-            "applicationId": {
-              "value": "99de126f-cb58-4f92-bd80-afbc354c253d"
-            }
-          },
-          "name": "applicationId",
-          "schema": {
-            "format": "UUID",
-            "type": "string"
-          },
-          "in": "path",
-          "required": true
-        }
-      ]
-    },
-    "/applications/{applicationId}/secrets/": {
-      "get": {
-        "tags": [
-          "Applications"
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApplicationSecretsResponse"
-                }
-              }
-            },
-            "description": "List the secrets"
-          }
-        },
-        "operationId": "listApplicationSecrets"
-      },
-      "post": {
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ApplicationSecretRequest"
-              }
-            }
-          }
-        },
-        "tags": [
-          "Applications"
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApplicationSecretResponse"
-                }
-              }
-            },
-            "description": "Create an application secret"
-          }
-        },
-        "operationId": "createApplicationSecret"
-      },
-      "parameters": [
-        {
-          "examples": {
-            "applicationId": {
-              "value": "99de126f-cb58-4f92-bd80-afbc354c253d"
-            }
-          },
-          "name": "applicationId",
-          "schema": {
-            "format": "UUID",
-            "type": "string"
-          },
-          "in": "path",
-          "required": true
-        }
-      ]
-    },
-    "/applications/{applicationId}/secrets/{secretId}/": {
-      "delete": {
-        "tags": [
-          "Applications"
-        ],
-        "responses": {
-          "204": {
-            "description": "Delete secret"
-          }
-        },
-        "operationId": "deleteApplicationSecret"
-      },
-      "parameters": [
-        {
-          "examples": {
-            "applicationId": {
-              "value": "99de126f-cb58-4f92-bd80-afbc354c253d"
-            }
-          },
-          "name": "applicationId",
-          "schema": {
-            "format": "UUID",
-            "type": "string"
-          },
-          "in": "path",
-          "required": true
-        },
-        {
-          "examples": {
-            "secretId": {
-              "value": "99de126f-cb58-4f92-bd80-afbc354c253d"
-            }
-          },
-          "name": "secretId",
-          "schema": {
-            "format": "UUID",
-            "type": "string"
-          },
-          "in": "path",
-          "required": true
-        }
-      ]
-    },
     "/clients/{clientId}": {
       "get": {
         "tags": [
@@ -1021,33 +865,169 @@
         "summary": "Create a SchemaRequest",
         "description": "Creates a new instance of a `SchemaRequest`."
       }
+    },
+    "/applications/{applicationId}/secrets/{secretId}/": {
+      "delete": {
+        "tags": [
+          "Applications"
+        ],
+        "responses": {
+          "204": {
+            "description": "Delete secret"
+          }
+        },
+        "operationId": "deleteApplicationSecret"
+      },
+      "parameters": [
+        {
+          "examples": {
+            "applicationId": {
+              "value": "99de126f-cb58-4f92-bd80-afbc354c253d"
+            }
+          },
+          "name": "applicationId",
+          "schema": {
+            "format": "UUID",
+            "type": "string"
+          },
+          "in": "path",
+          "required": true
+        },
+        {
+          "examples": {
+            "secretId": {
+              "value": "99de126f-cb58-4f92-bd80-afbc354c253d"
+            }
+          },
+          "name": "secretId",
+          "schema": {
+            "format": "UUID",
+            "type": "string"
+          },
+          "in": "path",
+          "required": true,
+          "x-validator": "@ValidApplication @ValidApplicationSecret"
+        }
+      ]
+    },
+    "/applications/{applicationId}/secrets/": {
+      "get": {
+        "tags": [
+          "Applications"
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApplicationSecretsResponse"
+                }
+              }
+            },
+            "description": "List the secrets"
+          }
+        },
+        "operationId": "listApplicationSecrets"
+      },
+      "post": {
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApplicationSecretRequest"
+              }
+            }
+          }
+        },
+        "tags": [
+          "Applications"
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApplicationSecretResponse"
+                }
+              }
+            },
+            "description": "Create an application secret"
+          }
+        },
+        "operationId": "createApplicationSecret"
+      },
+      "parameters": [
+        {
+          "examples": {
+            "applicationId": {
+              "value": "99de126f-cb58-4f92-bd80-afbc354c253d"
+            }
+          },
+          "name": "applicationId",
+          "schema": {
+            "format": "UUID",
+            "type": "string"
+          },
+          "in": "path",
+          "required": true,
+          "x-validator": "@ValidApplication"
+        }
+      ]
+    },
+    "/applications/{applicationId}": {
+      "get": {
+        "tags": [
+          "Applications"
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApplicationResponse"
+                }
+              }
+            },
+            "description": "Get Application"
+          }
+        },
+        "operationId": "getApplication"
+      },
+      "delete": {
+        "tags": [
+          "Applications"
+        ],
+        "responses": {
+          "204": {
+            "description": "Application Deleted"
+          },
+          "404": {
+            "description": "Application Not Found"
+          }
+        },
+        "operationId": "deleteApplication"
+      },
+      "parameters": [
+        {
+          "examples": {
+            "applicationId": {
+              "value": "99de126f-cb58-4f92-bd80-afbc354c253d"
+            }
+          },
+          "name": "applicationId",
+          "schema": {
+            "format": "UUID",
+            "type": "string"
+          },
+          "in": "path",
+          "required": true,
+          "x-validator": "@ValidApplication"
+        }
+      ]
     }
   },
   "components": {
     "schemas": {
-      "ApplicationSecretRequest": {
-        "title": "Root Type for ApplicationSecretRequest",
-        "description": "",
-        "type": "object",
-        "properties": {
-          "expires_in": {
-            "format": "int32",
-            "type": "integer"
-          },
-          "scopes": {
-            "type": "string"
-          },
-          "name": {
-            "description": "",
-            "type": "string"
-          }
-        },
-        "example": {
-          "expires_in": 12000,
-          "scopes": "test.read test.write",
-          "name": "Test Secret"
-        }
-      },
       "AuthorizationServerResponse": {
         "title": "Root Type for AuthorizationServerResponse",
         "description": "",
@@ -2161,44 +2141,6 @@
           "scopes": "test.read test.write"
         }
       },
-      "ApplicationRequest": {
-        "title": "Root Type for ApplicationRequest",
-        "description": "",
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string",
-            "x-field-extra-annotation": "@ValidApplicationName"
-          },
-          "client_id": {
-            "type": "string",
-            "x-field-extra-annotation": "@ValidApplicationClientId"
-          },
-          "client_secret": {
-            "type": "string",
-            "x-field-extra-annotation": "@ValidApplicationClientSecret"
-          },
-          "profile": {
-            "type": "object",
-            "x-field-extra-annotation": "@ValidApplicationProfile"
-          },
-          "authorizationServerId": {
-            "format": "UUID",
-            "description": "",
-            "type": "string",
-            "x-field-extra-annotation": "@ValidAuthorizationServer"
-          }
-        },
-        "example": {
-          "name": "Example Application",
-          "client_id": "8743b52063cd84097a65d1633f5c74f5",
-          "client_secret": "f0fda58630310a6dd91a7d8f0a4ceda2",
-          "profile": {
-
-          },
-          "authorizationServerId": "52a10a2d-080c-4aaa-a184-ec3ba982a9bd"
-        }
-      },
       "AuthorizationServerRequest": {
         "title": "Root Type for AuthorizationServerRequest",
         "description": "",
@@ -2236,6 +2178,69 @@
           "audience": "api://",
           "clientCredentialsTokenExpiration": 300,
           "authorizationCodeTokenExpiration": 100
+        }
+      },
+      "ApplicationRequest": {
+        "title": "Root Type for ApplicationRequest",
+        "description": "",
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "x-field-extra-annotation": "@ValidApplicationName"
+          },
+          "clientId": {
+            "type": "string",
+            "x-field-extra-annotation": "@ValidApplicationClientId"
+          },
+          "clientSecret": {
+            "type": "string",
+            "x-field-extra-annotation": "@ValidApplicationClientSecret"
+          },
+          "profile": {
+            "type": "object",
+            "x-field-extra-annotation": "@ValidApplicationProfile"
+          },
+          "authorizationServerId": {
+            "format": "UUID",
+            "description": "",
+            "type": "string",
+            "x-field-extra-annotation": "@ValidAuthorizationServer"
+          }
+        },
+        "example": {
+          "name": "Example Application",
+          "client_id": "8743b52063cd84097a65d1633f5c74f5",
+          "client_secret": "f0fda58630310a6dd91a7d8f0a4ceda2",
+          "profile": {
+
+          },
+          "authorizationServerId": "52a10a2d-080c-4aaa-a184-ec3ba982a9bd"
+        }
+      },
+      "ApplicationSecretRequest": {
+        "title": "Root Type for ApplicationSecretRequest",
+        "description": "",
+        "type": "object",
+        "properties": {
+          "expires_in": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "scopes": {
+            "type": "string",
+            "x-field-extra-annotation": "@ValidApplicationSecretScopes"
+          },
+          "name": {
+            "description": "",
+            "type": "string",
+            "x-field-extra-annotation": "@ValidApplicationSecretName"
+          }
+        },
+        "example": {
+          "expires_in": 12000,
+          "scopes": "test.read test.write",
+          "name": "Test Secret"
         }
       }
     }

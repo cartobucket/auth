@@ -38,10 +38,6 @@ public class ApplicationMapper {
         application.setAuthorizationServerId(applicationRequest.getAuthorizationServerId());
         if (applicationRequest.getClientId() != null) {
             application.setClientId(applicationRequest.getClientId());
-        } else {
-            var id = UUID.randomUUID();
-            application.setId(id);
-            application.setClientId(String.valueOf(id));
         }
         return application;
     }

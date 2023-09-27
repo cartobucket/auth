@@ -44,7 +44,8 @@ public class ApplicationRpcService implements Applications {
     @Blocking
     public Uni<ApplicationCreateResponse> createApplication(ApplicationCreateRequest request) {
         var application = new Application();
-        application.setClientId(request.getClientId());
+        application.setId(UUID.randomUUID());
+        application.setClientId(!request.getClientId().isEmpty() ? request.getClientId() : application.getId().toString());
         application.setName(request.getName());
         application.setAuthorizationServerId(UUID.fromString(request.getAuthorizationServerId()));
 

@@ -90,13 +90,19 @@ public class ApplicationService implements com.cartobucket.auth.data.services.Ap
 
     @Override
     public Pair<Application, Profile> createApplication(Application application, Profile profile) {
+        ApplicationCreateRequest.Builder createRequest = ApplicationCreateRequest
+                .newBuilder()
+                .setName(application.getName())
+                .setProfile(Profile.toProtoMap(profile.getProfile()))
+                .setAuthorizationServerId(String.valueOf(application.getAuthorizationServerId()));
+
+        if (application.getClientId() != null) {
+            createRequest.setClientId(application.getClientId());
+        }
+
         return ApplicationMapper.toApplicationWithProfile (
                 applicationClient.createApplication(
-                        ApplicationCreateRequest
-                                .newBuilder()
-                                .setName(application.getName())
-                                .setProfile(Profile.toProtoMap(profile.getProfile()))
-                                .setAuthorizationServerId(String.valueOf(application.getAuthorizationServerId()))
+                        createRequest
                                 .build()
                 )
                 .await()
