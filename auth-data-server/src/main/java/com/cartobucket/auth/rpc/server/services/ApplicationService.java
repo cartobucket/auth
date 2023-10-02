@@ -106,12 +106,8 @@ public class ApplicationService implements com.cartobucket.auth.data.services.Ap
     }
 
     @Override
-    public List<ApplicationSecret> getApplicationSecrets(final UUID applicationId) throws ApplicationNotFound {
-        final var application = applicationRepository
-                .findById(applicationId)
-                .orElseThrow(ApplicationNotFound::new);
-
-        return applicationSecretRepository.findByApplicationId(application.getId())
+    public List<ApplicationSecret> getApplicationSecrets(final List<UUID> applicationIds) throws ApplicationNotFound {
+        return applicationSecretRepository.findByApplicationIdIn(applicationIds)
                 .stream()
                 .map(ApplicationSecretMapper::from)
                 .toList();
@@ -120,10 +116,9 @@ public class ApplicationService implements com.cartobucket.auth.data.services.Ap
     @Override
     @Transactional
     public ApplicationSecret createApplicationSecret(
-            final UUID applicationId,
             final ApplicationSecret applicationSecret) throws ApplicationNotFound {
         final var application = applicationRepository
-                .findById(applicationId)
+                .findById(applicationSecret.getApplicationId())
                 .orElseThrow(ApplicationNotFound::new);
 
         var scopes = scopeService.filterScopesForAuthorizationServerId(
@@ -156,20 +151,13 @@ public class ApplicationService implements com.cartobucket.auth.data.services.Ap
 
     @Override
     @Transactional
-    public void deleteApplicationSecret(final UUID applicationId, final UUID secretId)
+    public void deleteApplicationSecret(final UUID secretId)
             throws ApplicationSecretNoApplicationBadData,
-            ApplicationSecretNotFound,
-            ApplicationNotFound {
-        final var application = applicationRepository
-                .findById(applicationId)
-                .orElseThrow(ApplicationNotFound::new);
-
+            ApplicationSecretNotFound
+    {
         final var secret = applicationSecretRepository
                 .findById(secretId)
                 .orElseThrow(ApplicationSecretNotFound::new);
-        if (!secret.getApplicationId().equals(application.getId())) {
-            throw new ApplicationSecretNoApplicationBadData();
-        }
         applicationSecretRepository.delete(secret);
     }
 

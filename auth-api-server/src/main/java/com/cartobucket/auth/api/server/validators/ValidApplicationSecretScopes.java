@@ -19,8 +19,11 @@
 
 package com.cartobucket.auth.api.server.validators;
 
+import com.cartobucket.auth.data.domain.Scope;
+import com.cartobucket.auth.data.services.ApplicationService;
 import com.cartobucket.auth.data.services.AuthorizationServerService;
 import com.cartobucket.auth.data.services.ScopeService;
+import com.cartobucket.auth.model.generated.ApplicationSecretRequest;
 import jakarta.inject.Inject;
 import jakarta.validation.Constraint;
 import jakarta.validation.ConstraintValidator;
@@ -32,6 +35,7 @@ import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.util.List;
 
 import static jakarta.validation.constraintvalidation.ValidationTarget.ANNOTATED_ELEMENT;
 import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
@@ -58,9 +62,11 @@ public @interface ValidApplicationSecretScopes {
     Class<? extends Payload>[] payload() default {};
 
     Class<?>[] groups() default {};
-    public class Validator implements ConstraintValidator<ValidApplicationSecretScopes, String> {
+    public class Validator implements ConstraintValidator<ValidApplicationSecretScopes, ApplicationSecretRequest> {
         @Inject
         ScopeService scopeService;
+        @Inject
+        ApplicationService applicationService;
 
         @Override
         public void initialize(ValidApplicationSecretScopes constraintAnnotation) {
@@ -68,8 +74,18 @@ public @interface ValidApplicationSecretScopes {
         }
 
         @Override
-        public boolean isValid(String value, ConstraintValidatorContext context) {
-            return true;
+        public boolean isValid(ApplicationSecretRequest value, ConstraintValidatorContext context) {
+            final var application = applicationService.getApplication(value.getApplicationId());
+            final var scopes = scopeService
+                    .getScopes(
+                            List.of(
+                                    application.getLeft().getAuthorizationServerId()
+                            )
+                    )
+                    .stream()
+                    .map(Scope::getName)
+                    .toList();
+            return scopes.containsAll(ScopeService.scopeStringToScopeList(value.getScopes()));
         }
     }
 }

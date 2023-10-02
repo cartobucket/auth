@@ -866,114 +866,6 @@
         "description": "Creates a new instance of a `SchemaRequest`."
       }
     },
-    "/applications/{applicationId}/secrets/{secretId}/": {
-      "delete": {
-        "tags": [
-          "Applications"
-        ],
-        "responses": {
-          "204": {
-            "description": "Delete secret"
-          }
-        },
-        "operationId": "deleteApplicationSecret"
-      },
-      "parameters": [
-        {
-          "examples": {
-            "applicationId": {
-              "value": "99de126f-cb58-4f92-bd80-afbc354c253d"
-            }
-          },
-          "name": "applicationId",
-          "schema": {
-            "format": "UUID",
-            "type": "string"
-          },
-          "in": "path",
-          "required": true
-        },
-        {
-          "examples": {
-            "secretId": {
-              "value": "99de126f-cb58-4f92-bd80-afbc354c253d"
-            }
-          },
-          "name": "secretId",
-          "schema": {
-            "format": "UUID",
-            "type": "string"
-          },
-          "in": "path",
-          "required": true,
-          "x-validator": "@ValidApplication @ValidApplicationSecret"
-        }
-      ]
-    },
-    "/applications/{applicationId}/secrets/": {
-      "get": {
-        "tags": [
-          "Applications"
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApplicationSecretsResponse"
-                }
-              }
-            },
-            "description": "List the secrets"
-          }
-        },
-        "operationId": "listApplicationSecrets"
-      },
-      "post": {
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ApplicationSecretRequest"
-              }
-            }
-          }
-        },
-        "tags": [
-          "Applications"
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApplicationSecretResponse"
-                }
-              }
-            },
-            "description": "Create an application secret"
-          }
-        },
-        "operationId": "createApplicationSecret"
-      },
-      "parameters": [
-        {
-          "examples": {
-            "applicationId": {
-              "value": "99de126f-cb58-4f92-bd80-afbc354c253d"
-            }
-          },
-          "name": "applicationId",
-          "schema": {
-            "format": "UUID",
-            "type": "string"
-          },
-          "in": "path",
-          "required": true,
-          "x-validator": "@ValidApplication"
-        }
-      ]
-    },
     "/applications/{applicationId}": {
       "get": {
         "tags": [
@@ -1022,6 +914,91 @@
           "in": "path",
           "required": true,
           "x-validator": "@ValidApplication"
+        }
+      ]
+    },
+    "/applicationSecrets/": {
+      "get": {
+        "tags": [
+          "Applications"
+        ],
+        "parameters": [
+          {
+            "name": "applicationIds",
+            "description": "",
+            "schema": {
+              "type": "array",
+              "items": {
+                "format": "UUID",
+                "type": "string"
+              }
+            },
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApplicationSecretsResponse"
+                }
+              }
+            },
+            "description": "List the secrets"
+          }
+        },
+        "operationId": "listApplicationSecrets"
+      },
+      "post": {
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApplicationSecretRequest"
+              }
+            }
+          }
+        },
+        "tags": [
+          "Applications"
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApplicationSecretResponse"
+                }
+              }
+            },
+            "description": "Create an application secret"
+          }
+        },
+        "operationId": "createApplicationSecret"
+      }
+    },
+    "/applicationSecrets/{secretId}/": {
+      "delete": {
+        "tags": [
+          "Applications"
+        ],
+        "responses": {
+          "204": {
+            "description": "Delete secret"
+          }
+        },
+        "operationId": "deleteApplicationSecret"
+      },
+      "parameters": [
+        {
+          "name": "secretId",
+          "schema": {
+            "format": "UUID",
+            "type": "string"
+          },
+          "in": "path",
+          "required": true
         }
       ]
     }
@@ -1314,38 +1291,6 @@
               "$ref": "#/components/schemas/ApplicationSecretResponse"
             }
           }
-        }
-      },
-      "ApplicationSecretResponse": {
-        "title": "Root Type for ApplicationSecretResponse",
-        "description": "",
-        "required": [
-          "name",
-          "id"
-        ],
-        "type": "object",
-        "properties": {
-          "client_secret": {
-            "type": "string"
-          },
-          "name": {
-            "description": "",
-            "type": "string"
-          },
-          "id": {
-            "format": "UUID",
-            "description": "",
-            "type": "string"
-          },
-          "expires_in": {
-            "description": "",
-            "type": "integer"
-          }
-        },
-        "example": {
-          "id": "76f31822-7956-4020-8731-e7a5c557f576",
-          "name": "Super Secret",
-          "client_secret": "8743b52063cd84097a65d1633f5c74f5"
         }
       },
       "ApplicationRequestFilter": {
@@ -2221,6 +2166,12 @@
       "ApplicationSecretRequest": {
         "title": "Root Type for ApplicationSecretRequest",
         "description": "",
+        "required": [
+          "applicationId",
+          "expires_in",
+          "name",
+          "scopes"
+        ],
         "type": "object",
         "properties": {
           "expires_in": {
@@ -2228,19 +2179,69 @@
             "type": "integer"
           },
           "scopes": {
-            "type": "string",
-            "x-field-extra-annotation": "@ValidApplicationSecretScopes"
+            "type": "string"
           },
           "name": {
             "description": "",
+            "maxLength": 400,
+            "minLength": 3,
             "type": "string",
             "x-field-extra-annotation": "@ValidApplicationSecretName"
+          },
+          "applicationId": {
+            "format": "UUID",
+            "description": "",
+            "type": "string",
+            "x-field-extra-annotation": "@ValidApplication"
           }
         },
         "example": {
           "expires_in": 12000,
           "scopes": "test.read test.write",
           "name": "Test Secret"
+        },
+        "x-class-extra-annotation": "@ValidApplicationSecretScopes"
+      },
+      "ApplicationSecretResponse": {
+        "title": "Root Type for ApplicationSecretResponse",
+        "description": "",
+        "required": [
+          "name",
+          "id"
+        ],
+        "type": "object",
+        "properties": {
+          "client_secret": {
+            "type": "string"
+          },
+          "name": {
+            "description": "",
+            "type": "string"
+          },
+          "id": {
+            "format": "UUID",
+            "description": "",
+            "type": "string"
+          },
+          "expires_in": {
+            "description": "",
+            "type": "integer"
+          },
+          "applicationId": {
+            "format": "UUID",
+            "description": "",
+            "type": "string"
+          },
+          "authorizationServerId": {
+            "format": "UUID",
+            "description": "",
+            "type": "string"
+          }
+        },
+        "example": {
+          "id": "76f31822-7956-4020-8731-e7a5c557f576",
+          "name": "Super Secret",
+          "client_secret": "8743b52063cd84097a65d1633f5c74f5"
         }
       }
     }

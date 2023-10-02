@@ -39,11 +39,11 @@ public interface ApplicationService {
 
     Pair<Application, Profile> createApplication(final Application application, final Profile profile);
 
-    List<ApplicationSecret> getApplicationSecrets(final UUID applicationId) throws ApplicationNotFound;
+    List<ApplicationSecret> getApplicationSecrets(final List<UUID> applicationId) throws ApplicationNotFound;
 
-    ApplicationSecret createApplicationSecret(final UUID applicationId, final ApplicationSecret applicationSecret) throws ApplicationNotFound;
+    ApplicationSecret createApplicationSecret(final ApplicationSecret applicationSecret) throws ApplicationNotFound;
 
-    void deleteApplicationSecret(final UUID applicationId, final UUID secretId) throws ApplicationSecretNoApplicationBadData, ApplicationSecretNotFound, ApplicationNotFound;
+    void deleteApplicationSecret(final UUID secretId) throws ApplicationSecretNoApplicationBadData, ApplicationSecretNotFound;
 
     List<Application> getApplications(final List<UUID> authorizationServerIds);
 

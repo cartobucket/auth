@@ -31,6 +31,7 @@ import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.util.List;
 import java.util.UUID;
 
 import static jakarta.validation.constraintvalidation.ValidationTarget.ANNOTATED_ELEMENT;
@@ -70,7 +71,7 @@ public @interface ValidApplicationSecret {
         @Override
         public boolean isValid(UUID value, ConstraintValidatorContext context) {
             try {
-                 applicationService.getApplicationSecrets(value);
+                 applicationService.getApplicationSecrets(List.of(value));
             } catch (Exception e) {
                 context
                         .buildConstraintViolationWithTemplate("");

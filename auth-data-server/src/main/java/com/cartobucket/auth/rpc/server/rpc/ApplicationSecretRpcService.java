@@ -37,6 +37,7 @@ import io.quarkus.grpc.GrpcService;
 import io.smallrye.common.annotation.Blocking;
 import io.smallrye.mutiny.Uni;
 
+import java.util.List;
 import java.util.UUID;
 
 @GrpcService
@@ -56,7 +57,6 @@ public class ApplicationSecretRpcService implements ApplicationSecrets {
         applicationSecret.setAuthorizationServerId(UUID.fromString(request.getAuthorizationServerId()));
         applicationSecret.setName(request.getName());
         applicationSecret = applicationService.createApplicationSecret(
-                UUID.fromString(request.getApplicationId()),
                 applicationSecret
         );
         return Uni
@@ -79,7 +79,11 @@ public class ApplicationSecretRpcService implements ApplicationSecrets {
     @Blocking
     public Uni<ApplicationSecretListResponse> listApplicationSecrets(ApplicationSecretListRequest request) {
         final var applicationSecrets = applicationService.getApplicationSecrets(
-                UUID.fromString(request.getApplicationId())
+                request
+                        .getApplicationIdList()
+                        .stream()
+                        .map(UUID::fromString)
+                        .toList()
         );
         return Uni
                 .createFrom()
@@ -109,7 +113,6 @@ public class ApplicationSecretRpcService implements ApplicationSecrets {
     @Blocking
     public Uni<ApplicationSecretResponse> deleteApplicationSecret(ApplicationSecretDeleteRequest request) {
         applicationService.deleteApplicationSecret(
-                UUID.fromString(request.getApplicationId()),
                 UUID.fromString(request.getId())
         );
         return Uni

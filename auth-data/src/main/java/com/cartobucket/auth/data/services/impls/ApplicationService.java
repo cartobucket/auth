@@ -112,11 +112,16 @@ public class ApplicationService implements com.cartobucket.auth.data.services.Ap
     }
 
     @Override
-    public List<ApplicationSecret> getApplicationSecrets(UUID applicationId) throws ApplicationNotFound {
+    public List<ApplicationSecret> getApplicationSecrets(List<UUID> applicationIds) throws ApplicationNotFound {
         return applicationSecretsClient.listApplicationSecrets(
                 ApplicationSecretListRequest
                         .newBuilder()
-                        .setApplicationId(String.valueOf(applicationId))
+                        .addAllApplicationId(
+                                applicationIds
+                                        .stream()
+                                        .map(String::valueOf)
+                                        .toList()
+                        )
                         .build()
                 )
                 .await()
@@ -128,12 +133,12 @@ public class ApplicationService implements com.cartobucket.auth.data.services.Ap
     }
 
     @Override
-    public ApplicationSecret createApplicationSecret(UUID applicationId, ApplicationSecret applicationSecret) throws ApplicationNotFound {
+    public ApplicationSecret createApplicationSecret(ApplicationSecret applicationSecret) throws ApplicationNotFound {
         return ApplicationMapper.toApplicationSecret(
                 applicationSecretsClient.createApplicationSecret(
                         ApplicationSecretCreateRequest
                                 .newBuilder()
-                                .setApplicationId(String.valueOf(applicationId))
+                                .setApplicationId(String.valueOf(applicationSecret.getApplicationId()))
                                 .setAuthorizationServerId(String.valueOf(applicationSecret.getAuthorizationServerId()))
                                 .setName(applicationSecret.getName())
                                 .build()
@@ -144,11 +149,10 @@ public class ApplicationService implements com.cartobucket.auth.data.services.Ap
     }
 
     @Override
-    public void deleteApplicationSecret(UUID applicationId, UUID secretId) throws ApplicationSecretNoApplicationBadData, ApplicationSecretNotFound, ApplicationNotFound {
+    public void deleteApplicationSecret(UUID secretId) throws ApplicationSecretNoApplicationBadData, ApplicationSecretNotFound, ApplicationNotFound {
         applicationSecretsClient.deleteApplicationSecret(
                 ApplicationSecretDeleteRequest
                         .newBuilder()
-                        .setApplicationId(String.valueOf(applicationId))
                         .setId(String.valueOf(secretId) )
                         .build()
                 )

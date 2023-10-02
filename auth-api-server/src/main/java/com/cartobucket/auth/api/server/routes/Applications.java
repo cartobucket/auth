@@ -21,6 +21,7 @@ package com.cartobucket.auth.api.server.routes;
 
 import com.cartobucket.auth.api.server.routes.mappers.ApplicationMapper;
 import com.cartobucket.auth.api.server.routes.mappers.ProfileMapper;
+import com.cartobucket.auth.data.domain.ApplicationSecret;
 import com.cartobucket.auth.generated.ApplicationsApi;
 import com.cartobucket.auth.model.generated.ApplicationRequest;
 import com.cartobucket.auth.model.generated.ApplicationSecretRequest;
@@ -30,6 +31,7 @@ import com.cartobucket.auth.data.services.ApplicationService;
 import com.cartobucket.auth.data.services.AuthorizationServerService;
 import jakarta.ws.rs.core.Response;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -64,15 +66,14 @@ public class Applications implements ApplicationsApi {
     }
 
     @Override
-    public Response createApplicationSecret(UUID applicationId, ApplicationSecretRequest applicationSecretRequest) {
-        final var application = applicationService.getApplication(applicationId);
+    public Response createApplicationSecret(ApplicationSecretRequest applicationSecretRequest) {
+        final var application = applicationService.getApplication(applicationSecretRequest.getApplicationId());
         return Response
                 .ok()
                 .entity(
                         ApplicationMapper.toSecretResponse(
                             applicationService
                                     .createApplicationSecret(
-                                            applicationId,
                                             ApplicationMapper.secretFrom(application.getLeft(), applicationSecretRequest)
                                     )
                     )
@@ -89,8 +90,8 @@ public class Applications implements ApplicationsApi {
     }
 
     @Override
-    public Response deleteApplicationSecret(UUID applicationId, UUID secretId) {
-        applicationService.deleteApplicationSecret(applicationId, secretId);
+    public Response deleteApplicationSecret(UUID secretId) {
+        applicationService.deleteApplicationSecret(secretId);
         return Response
                 .ok()
                 .build();
@@ -111,10 +112,10 @@ public class Applications implements ApplicationsApi {
     }
 
     @Override
-    public Response listApplicationSecrets(UUID applicationId) {
+    public Response listApplicationSecrets(List<UUID> applicationIds) {
         final var applicationSecretsResponse = new ApplicationSecretsResponse();
         applicationSecretsResponse.setApplicationSecrets(
-                applicationService.getApplicationSecrets(applicationId)
+                applicationService.getApplicationSecrets(applicationIds)
                         .stream()
                         .map(ApplicationMapper::toSecretResponse)
                         .collect(Collectors.toList())

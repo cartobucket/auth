@@ -72,6 +72,7 @@ public class ApplicationMapper {
         var _applicationSecret = new ApplicationSecret();
         _applicationSecret.setId(UUID.fromString(applicationSecret.getId()));
         _applicationSecret.setApplicationId(UUID.fromString(applicationSecret.getApplicationId()));
+        _applicationSecret.setAuthorizationServerId(UUID.fromString(applicationSecret.getAuthorizationServerId()));
         _applicationSecret.setName(applicationSecret.getName());
         _applicationSecret.setScopes(Collections.singletonList(applicationSecret.getScopes()));
         _applicationSecret.setApplicationSecret(applicationSecret.getApplicationSecret());

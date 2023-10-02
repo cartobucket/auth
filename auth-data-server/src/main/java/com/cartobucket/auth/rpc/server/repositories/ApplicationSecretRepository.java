@@ -27,7 +27,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface ApplicationSecretRepository extends CrudRepository<ApplicationSecret, UUID> {
-    List<ApplicationSecret> findByApplicationId(UUID applicationId);
+    List<ApplicationSecret> findByApplicationIdIn(List<UUID> applicationId);
 
     Optional<ApplicationSecret> findByApplicationIdAndId(UUID applicationId, UUID id);
 

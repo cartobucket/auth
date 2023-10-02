@@ -86,6 +86,8 @@ public class ApplicationMapper {
         secretResponse.setClientSecret(applicationSecret.getApplicationSecret());
         secretResponse.setId(applicationSecret.getId());
         secretResponse.setName(applicationSecret.getName());
+        secretResponse.setApplicationId(applicationSecret.getApplicationId());
+        secretResponse.setAuthorizationServerId(applicationSecret.getAuthorizationServerId());
         return secretResponse;
     }
 }
