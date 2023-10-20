@@ -24,13 +24,13 @@ import com.cartobucket.auth.model.generated.AuthorizationServerResponse;
 import com.cartobucket.auth.data.domain.AuthorizationServer;
 
 import java.net.MalformedURLException;
-import java.net.URL;
+import java.net.URI;
 
 public class AuthorizationServerMapper {
     public static AuthorizationServer from(AuthorizationServerRequest request) {
         var authorizationServer = new AuthorizationServer();
         try {
-            authorizationServer.setServerUrl(new URL(request.getServerUrl()));
+            authorizationServer.setServerUrl(URI.create(request.getServerUrl()).toURL());
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }
