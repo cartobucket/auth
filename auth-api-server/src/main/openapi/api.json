@@ -1821,95 +1821,6 @@
           ]
         }
       },
-      "UserRequest": {
-        "title": "Root Type for UserRequest",
-        "description": "",
-        "required": [
-        ],
-        "type": "object",
-        "properties": {
-          "authorizationServerId": {
-            "format": "UUID",
-            "type": "string",
-            "x-field-extra-annotation": "@ValidAuthorizationServer"
-          },
-          "username": {
-            "type": "string"
-          },
-          "email": {
-            "type": "string"
-          },
-          "profile": {
-            "type": "object"
-          },
-          "password": {
-            "description": "The password for a user when creating or updating the user.",
-            "type": "string"
-          }
-        },
-        "example": {
-          "authorizationServerId": "100462bc-34fa-4d07-9fa2-88ae04ce4420",
-          "username": "test",
-          "email": "test@acme.co",
-          "profile": {
-            "firstName": "Test",
-            "lastName": "Person"
-          }
-        }
-      },
-      "TemplateRequest": {
-        "title": "Root Type for TemplateRequest",
-        "description": "",
-        "required": [
-          "templateType",
-          "template",
-          "authorizationServerId"
-        ],
-        "type": "object",
-        "properties": {
-          "templateType": {
-            "$ref": "#/components/schemas/TemplateTypeEnum"
-          },
-          "template": {
-            "format": "bytes",
-            "type": "string"
-          },
-          "authorizationServerId": {
-            "format": "UUID",
-            "description": "",
-            "type": "string",
-            "x-field-extra-annotation": "@ValidAuthorizationServer"
-          }
-        },
-        "example": {
-          "authorizationServerId": "5b4daf7f-48d5-4afb-bd43-7b667b3dc3c8",
-          "templateType": "login",
-          "template": "PCFET0NUWVBFIGh0bWw+CjxodG1sPgo8Ym9keT4KCjxoMT5NeSBGaXJzdCBIZWFkaW5nPC9oMT4KCjxwPk15IGZpcnN0IHBhcmFncmFwaC48L3A+Cgo8L2JvZHk+CjwvaHRtbD4KCg=="
-        }
-      },
-      "ScopeRequest": {
-        "title": "Root Type for ClientRequest",
-        "description": "",
-        "required": [
-          "name",
-          "authorizationServerId"
-        ],
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string"
-          },
-          "authorizationServerId": {
-            "format": "UUID",
-            "type": "string",
-            "x-field-extra-annotation": "@ValidAuthorizationServer"
-          }
-        },
-        "example": {
-          "name": "test_scope",
-          "authorizationServerId": "66a2270e-0385-4aa4-a2ce-79bb12fa16ff"
-        }
-      },
       "SchemaRequest": {
         "title": "Root Type for SchemaRequest",
         "description": "SchemaRequest",
@@ -2051,39 +1962,6 @@
               }
             }
           }
-        }
-      },
-      "ClientRequest": {
-        "title": "Root Type for ClientRequest",
-        "description": "",
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string"
-          },
-          "authorizationServerId": {
-            "format": "UUID",
-            "type": "string",
-            "x-field-extra-annotation": "@ValidAuthorizationServer"
-          },
-          "redirectUris": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "scopes": {
-            "description": "",
-            "type": "string"
-          }
-        },
-        "example": {
-          "name": "Test Client",
-          "authorizationServerId": "66a2270e-0385-4aa4-a2ce-79bb12fa16ff",
-          "redirectUris": [
-            "https://accounts.cartobucket.com"
-          ],
-          "scopes": "test.read test.write"
         }
       },
       "AuthorizationServerRequest": {
@@ -2242,6 +2120,136 @@
           "id": "76f31822-7956-4020-8731-e7a5c557f576",
           "name": "Super Secret",
           "client_secret": "8743b52063cd84097a65d1633f5c74f5"
+        }
+      },
+      "ClientRequest": {
+        "title": "Root Type for ClientRequest",
+        "description": "",
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "x-field-extra-annotation": "@ValidClientName"
+          },
+          "authorizationServerId": {
+            "format": "UUID",
+            "type": "string",
+            "x-field-extra-annotation": "@ValidAuthorizationServer"
+          },
+          "redirectUris": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "x-field-extra-annotation": "@ValidClientRedirectUris"
+          },
+          "scopes": {
+            "description": "",
+            "type": "string"
+          }
+        },
+        "example": {
+          "name": "Test Client",
+          "authorizationServerId": "66a2270e-0385-4aa4-a2ce-79bb12fa16ff",
+          "redirectUris": [
+            "https://accounts.cartobucket.com"
+          ],
+          "scopes": "test.read test.write"
+        },
+        "x-class-extra-annotation": "@ValidClientScopes"
+      },
+      "ScopeRequest": {
+        "title": "Root Type for ClientRequest",
+        "description": "",
+        "required": [
+          "name",
+          "authorizationServerId"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "x-field-extra-annotation": "@ValidScopeName"
+          },
+          "authorizationServerId": {
+            "format": "UUID",
+            "type": "string",
+            "x-field-extra-annotation": "@ValidAuthorizationServer"
+          }
+        },
+        "example": {
+          "name": "test_scope",
+          "authorizationServerId": "66a2270e-0385-4aa4-a2ce-79bb12fa16ff"
+        }
+      },
+      "TemplateRequest": {
+        "title": "Root Type for TemplateRequest",
+        "description": "",
+        "required": [
+          "templateType",
+          "template",
+          "authorizationServerId"
+        ],
+        "type": "object",
+        "properties": {
+          "templateType": {
+            "$ref": "#/components/schemas/TemplateTypeEnum"
+          },
+          "template": {
+            "format": "bytes",
+            "type": "string",
+            "x-field-extra-annotation": "@ValidTemplate"
+          },
+          "authorizationServerId": {
+            "format": "UUID",
+            "description": "",
+            "type": "string",
+            "x-field-extra-annotation": "@ValidAuthorizationServer"
+          }
+        },
+        "example": {
+          "authorizationServerId": "5b4daf7f-48d5-4afb-bd43-7b667b3dc3c8",
+          "templateType": "login",
+          "template": "PCFET0NUWVBFIGh0bWw+CjxodG1sPgo8Ym9keT4KCjxoMT5NeSBGaXJzdCBIZWFkaW5nPC9oMT4KCjxwPk15IGZpcnN0IHBhcmFncmFwaC48L3A+Cgo8L2JvZHk+CjwvaHRtbD4KCg=="
+        }
+      },
+      "UserRequest": {
+        "title": "Root Type for UserRequest",
+        "description": "",
+        "required": [
+        ],
+        "type": "object",
+        "properties": {
+          "authorizationServerId": {
+            "format": "UUID",
+            "type": "string",
+            "x-field-extra-annotation": "@ValidAuthorizationServer"
+          },
+          "username": {
+            "type": "string",
+            "x-field-extra-annotation": "@ValidUsername"
+          },
+          "email": {
+            "type": "string",
+            "x-field-extra-annotation": "@ValidEmail"
+          },
+          "profile": {
+            "type": "object",
+            "x-field-extra-annotation": "@ValidUserProfile"
+          },
+          "password": {
+            "description": "The password for a user when creating or updating the user.",
+            "type": "string"
+          }
+        },
+        "example": {
+          "authorizationServerId": "100462bc-34fa-4d07-9fa2-88ae04ce4420",
+          "username": "test",
+          "email": "test@acme.co",
+          "profile": {
+            "firstName": "Test",
+            "lastName": "Person"
+          }
         }
       }
     }

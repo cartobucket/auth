@@ -19,10 +19,6 @@
 
 package com.cartobucket.auth.api.server.validators;
 
-import com.cartobucket.auth.data.domain.AuthorizationServer;
-import com.cartobucket.auth.data.exceptions.notfound.AuthorizationServerNotFound;
-import com.cartobucket.auth.data.services.AuthorizationServerService;
-import jakarta.inject.Inject;
 import jakarta.validation.Constraint;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
@@ -33,13 +29,17 @@ import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.util.UUID;
 
 import static jakarta.validation.constraintvalidation.ValidationTarget.ANNOTATED_ELEMENT;
-import static java.lang.annotation.ElementType.*;
+import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
+import static java.lang.annotation.ElementType.CONSTRUCTOR;
+import static java.lang.annotation.ElementType.FIELD;
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.PARAMETER;
+import static java.lang.annotation.ElementType.TYPE_USE;
 
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = { ValidAuthorizationServer.Validator.class })
+@Constraint(validatedBy = { ValidClientName.Validator.class })
 @Target(value = {
         METHOD,
         FIELD,
@@ -49,29 +49,24 @@ import static java.lang.annotation.ElementType.*;
         TYPE_USE})
 @SupportedValidationTarget(ANNOTATED_ELEMENT)
 @Documented
-public @interface ValidAuthorizationServer {
-    String message() default "The Authorization Server was not found";
+public @interface ValidClientName {
+    String message() default "must be greater than 3 characters and less than 400 characters and contain only letters, numbers, and dashes";
 
     Class<? extends Payload>[] payload() default {};
 
     Class<?>[] groups() default {};
-    public class Validator implements ConstraintValidator<ValidAuthorizationServer, UUID> {
-        @Inject
-        AuthorizationServerService applicationService;
-
+    public class Validator implements ConstraintValidator<ValidClientName, String> {
         @Override
-        public void initialize(ValidAuthorizationServer constraintAnnotation) {
+        public void initialize(ValidClientName constraintAnnotation) {
             ConstraintValidator.super.initialize(constraintAnnotation);
         }
 
         @Override
-        public boolean isValid(UUID value, ConstraintValidatorContext context) {
-            try {
-                 applicationService.getAuthorizationServer(value);
-            } catch (Exception e) {
+        public boolean isValid(String value, ConstraintValidatorContext context) {
+            if (value == null) {
                 return false;
             }
-            return true;
+            return value.length() >= 3 && value.length() <= 400;
         }
     }
 }

@@ -19,9 +19,10 @@
 
 package com.cartobucket.auth.api.server.validators;
 
-import com.cartobucket.auth.data.domain.AuthorizationServer;
-import com.cartobucket.auth.data.exceptions.notfound.AuthorizationServerNotFound;
-import com.cartobucket.auth.data.services.AuthorizationServerService;
+import com.cartobucket.auth.data.domain.Scope;
+import com.cartobucket.auth.data.services.ClientService;
+import com.cartobucket.auth.data.services.ScopeService;
+import com.cartobucket.auth.model.generated.ClientRequest;
 import jakarta.inject.Inject;
 import jakarta.validation.Constraint;
 import jakarta.validation.ConstraintValidator;
@@ -33,13 +34,18 @@ import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.util.UUID;
+import java.util.List;
 
 import static jakarta.validation.constraintvalidation.ValidationTarget.ANNOTATED_ELEMENT;
-import static java.lang.annotation.ElementType.*;
+import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
+import static java.lang.annotation.ElementType.CONSTRUCTOR;
+import static java.lang.annotation.ElementType.FIELD;
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.PARAMETER;
+import static java.lang.annotation.ElementType.TYPE_USE;
 
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = { ValidAuthorizationServer.Validator.class })
+@Constraint(validatedBy = { ValidClientScopes.Validator.class })
 @Target(value = {
         METHOD,
         FIELD,
@@ -49,29 +55,37 @@ import static java.lang.annotation.ElementType.*;
         TYPE_USE})
 @SupportedValidationTarget(ANNOTATED_ELEMENT)
 @Documented
-public @interface ValidAuthorizationServer {
-    String message() default "The Authorization Server was not found";
+public @interface ValidClientScopes {
+    String message() default "scopes must exist on the Authorization Server";
 
     Class<? extends Payload>[] payload() default {};
 
     Class<?>[] groups() default {};
-    public class Validator implements ConstraintValidator<ValidAuthorizationServer, UUID> {
+    public class Validator implements ConstraintValidator<ValidClientScopes, ClientRequest> {
         @Inject
-        AuthorizationServerService applicationService;
+        ScopeService scopeService;
 
         @Override
-        public void initialize(ValidAuthorizationServer constraintAnnotation) {
+        public void initialize(ValidClientScopes constraintAnnotation) {
             ConstraintValidator.super.initialize(constraintAnnotation);
         }
 
         @Override
-        public boolean isValid(UUID value, ConstraintValidatorContext context) {
-            try {
-                 applicationService.getAuthorizationServer(value);
-            } catch (Exception e) {
+        public boolean isValid(ClientRequest value, ConstraintValidatorContext context) {
+            if (value.getAuthorizationServerId() == null || value.getScopes() == null) {
                 return false;
             }
-            return true;
+
+            final var scopes = scopeService
+                    .getScopes(
+                            List.of(
+                                    value.getAuthorizationServerId()
+                            )
+                    )
+                    .stream()
+                    .map(Scope::getName)
+                    .toList();
+            return scopes.containsAll(ScopeService.scopeStringToScopeList(value.getScopes()));
         }
     }
 }
