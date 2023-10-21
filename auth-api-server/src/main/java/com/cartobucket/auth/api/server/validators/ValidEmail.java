@@ -53,7 +53,7 @@ import static java.lang.annotation.ElementType.TYPE_USE;
 @SupportedValidationTarget(ANNOTATED_ELEMENT)
 @Documented
 public @interface ValidEmail {
-    final private static String EMAIL_PATTERN = "^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$";
+    String EMAIL_PATTERN = "^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$";
     String message() default "must not be null and must match this regex " + EMAIL_PATTERN;
 
     Class<? extends Payload>[] payload() default {};
