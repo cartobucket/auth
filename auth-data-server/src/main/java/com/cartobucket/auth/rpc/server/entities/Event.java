@@ -1,5 +1,6 @@
 package com.cartobucket.auth.rpc.server.entities;
 
+import com.cartobucket.auth.data.domain.ResourceType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -18,6 +19,7 @@ public class Event {
     private EventType eventType;
     private String version;
     private UUID authorizationServerId;
+    private ResourceType resourceType;
     private UUID resourceId;
     @JdbcTypeCode(SqlTypes.JSON)
     private Map<String, Object> resource;
@@ -55,6 +57,14 @@ public class Event {
         this.authorizationServerId = authorizationServerId;
     }
 
+    public ResourceType getResourceType() {
+        return resourceType;
+    }
+
+    public void setResourceType(ResourceType resourceType) {
+        this.resourceType = resourceType;
+    }
+
     public UUID getResourceId() {
         return resourceId;
     }
@@ -78,5 +88,6 @@ public class Event {
     public void setCreatedOn(OffsetDateTime createdOn) {
         this.createdOn = createdOn;
     }
+
 
 }

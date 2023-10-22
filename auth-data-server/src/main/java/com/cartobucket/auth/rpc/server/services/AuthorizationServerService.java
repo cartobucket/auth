@@ -30,10 +30,12 @@ import com.cartobucket.auth.data.exceptions.NotAuthorized;
 import com.cartobucket.auth.data.exceptions.notfound.AuthorizationServerNotFound;
 import com.cartobucket.auth.data.exceptions.notfound.ProfileNotFound;
 import com.cartobucket.auth.data.services.TemplateService;
+import com.cartobucket.auth.rpc.server.entities.EventType;
 import com.cartobucket.auth.rpc.server.entities.mappers.AuthorizationServerMapper;
 import com.cartobucket.auth.rpc.server.entities.mappers.ProfileMapper;
 import com.cartobucket.auth.rpc.server.entities.mappers.SigningKeyMapper;
 import com.cartobucket.auth.rpc.server.repositories.AuthorizationServerRepository;
+import com.cartobucket.auth.rpc.server.repositories.EventRepository;
 import com.cartobucket.auth.rpc.server.repositories.ProfileRepository;
 import com.cartobucket.auth.rpc.server.repositories.SingingKeyRepository;
 import io.smallrye.jwt.algorithm.SignatureAlgorithm;
@@ -69,20 +71,23 @@ import java.util.stream.Collectors;
 @ApplicationScoped
 public class AuthorizationServerService implements com.cartobucket.auth.data.services.AuthorizationServerService {
     final AuthorizationServerRepository authorizationServerRepository;
+    final EventRepository eventRepository;
+    final ProfileRepository profileRepository;
     final SingingKeyRepository singingKeyRepository;
     final TemplateService templateService;
-    final ProfileRepository profileRepository;
 
     public AuthorizationServerService(
             AuthorizationServerRepository authorizationServerRepository,
+            EventRepository eventRepository,
+            ProfileRepository profileRepository,
             SingingKeyRepository singingKeyRepository,
-            TemplateService templateService,
-            ProfileRepository profileRepository
+            TemplateService templateService
     ) {
         this.authorizationServerRepository = authorizationServerRepository;
+        this.eventRepository = eventRepository;
+        this.profileRepository = profileRepository;
         this.singingKeyRepository = singingKeyRepository;
         this.templateService = templateService;
-        this.profileRepository = profileRepository;
     }
 
     public static SigningKey generateSigningKey(AuthorizationServer authorizationServer) {
@@ -128,7 +133,13 @@ public class AuthorizationServerService implements com.cartobucket.auth.data.ser
     }
 
     @Override
-    public AccessToken generateAccessToken(UUID authorizationServerId, UUID profileId, String subject, String scopes, long expiresInSeconds, String nonce) {
+    public AccessToken generateAccessToken(
+            UUID authorizationServerId,
+            UUID profileId,
+            String subject,
+            String scopes,
+            long expiresInSeconds,
+            String nonce) {
         final var authorizationServer = authorizationServerRepository
                 .findByIdOptional(authorizationServerId)
                 .orElseThrow();
@@ -158,10 +169,18 @@ public class AuthorizationServerService implements com.cartobucket.auth.data.ser
         var _authoriztionServer = AuthorizationServerMapper.to(authorizationServer);
         authorizationServerRepository.persist(_authoriztionServer);
         authorizationServer = AuthorizationServerMapper.from(_authoriztionServer);
+        eventRepository.createAuthorizationServerEvent(
+                authorizationServer,
+                EventType.CREATE
+        );
 
         // Create the signing keys
         var signingKey = SigningKeyMapper.to(generateSigningKey(authorizationServer));
         singingKeyRepository.persist(signingKey);
+        eventRepository.createSingingKeyEvent(
+                SigningKeyMapper.from(signingKey),
+                EventType.CREATE
+        );
 
         // Create the templates
         createDefaultTemplatesForAuthorizationServer(authorizationServer);
@@ -192,6 +211,10 @@ public class AuthorizationServerService implements com.cartobucket.auth.data.ser
         _authorizationServer.setAuthorizationCodeTokenExpiration(authorizationServer.getAuthorizationCodeTokenExpiration());
         _authorizationServer.setClientCredentialsTokenExpiration(authorizationServer.getClientCredentialsTokenExpiration());
         authorizationServerRepository.persist(_authorizationServer);
+        eventRepository.createAuthorizationServerEvent(
+                AuthorizationServerMapper.from(_authorizationServer),
+                EventType.UPDATE
+        );
         return AuthorizationServerMapper.from(_authorizationServer);
     }
 
@@ -207,12 +230,14 @@ public class AuthorizationServerService implements com.cartobucket.auth.data.ser
     @Override
     @Transactional
     public void deleteAuthorizationServer(final UUID authorizationServerId) throws AuthorizationServerNotFound {
-        authorizationServerRepository.delete(
-                authorizationServerRepository
-                        .findByIdOptional(authorizationServerId)
-                        .orElseThrow(AuthorizationServerNotFound::new)
+        final var authorizationServer = authorizationServerRepository
+                .findByIdOptional(authorizationServerId)
+                .orElseThrow(AuthorizationServerNotFound::new);
+        authorizationServerRepository.delete(authorizationServer);
+        eventRepository.createAuthorizationServerEvent(
+                AuthorizationServerMapper.from(authorizationServer),
+                EventType.DELETE
         );
-        // TODO: this should cascade. Probably easier when we have streams from the WAL.
     }
 
     @Override
@@ -302,12 +327,15 @@ public class AuthorizationServerService implements com.cartobucket.auth.data.ser
                 template.setTemplate(Base64.getEncoder().encode(contents.getBytes()));
                 template.setTemplateType(TemplateTypeEnum.LOGIN);
                 template.setAuthorizationServerId(authorizationServer.getId());
-                templateService.createTemplate(template);
+                var _template = templateService.createTemplate(template);
+                eventRepository.createTemplateEvent(
+                        _template,
+                        EventType.CREATE
+                );
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
     }
 
     private AccessToken buildAccessTokenResponse(
