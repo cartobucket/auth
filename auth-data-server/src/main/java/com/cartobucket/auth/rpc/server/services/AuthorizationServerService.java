@@ -23,22 +23,19 @@ import com.cartobucket.auth.data.domain.AccessToken;
 import com.cartobucket.auth.data.domain.AuthorizationServer;
 import com.cartobucket.auth.data.domain.JWK;
 import com.cartobucket.auth.data.domain.Profile;
-import com.cartobucket.auth.data.domain.ProfileType;
 import com.cartobucket.auth.data.domain.SigningKey;
 import com.cartobucket.auth.data.domain.Template;
 import com.cartobucket.auth.data.domain.TemplateTypeEnum;
+import com.cartobucket.auth.data.exceptions.NotAuthorized;
+import com.cartobucket.auth.data.exceptions.notfound.AuthorizationServerNotFound;
 import com.cartobucket.auth.data.exceptions.notfound.ProfileNotFound;
-import com.cartobucket.auth.data.services.ScopeService;
+import com.cartobucket.auth.data.services.TemplateService;
 import com.cartobucket.auth.rpc.server.entities.mappers.AuthorizationServerMapper;
 import com.cartobucket.auth.rpc.server.entities.mappers.ProfileMapper;
 import com.cartobucket.auth.rpc.server.entities.mappers.SigningKeyMapper;
-import com.cartobucket.auth.data.exceptions.NotAuthorized;
-import com.cartobucket.auth.data.exceptions.notfound.AuthorizationServerNotFound;
 import com.cartobucket.auth.rpc.server.repositories.AuthorizationServerRepository;
 import com.cartobucket.auth.rpc.server.repositories.ProfileRepository;
-import com.cartobucket.auth.rpc.server.repositories.ScopeRepository;
 import com.cartobucket.auth.rpc.server.repositories.SingingKeyRepository;
-import com.cartobucket.auth.data.services.TemplateService;
 import io.smallrye.jwt.algorithm.SignatureAlgorithm;
 import io.smallrye.jwt.build.Jwt;
 import io.smallrye.jwt.util.KeyUtils;
@@ -60,24 +57,31 @@ import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 import java.security.interfaces.RSAPublicKey;
 import java.time.OffsetDateTime;
-import java.time.temporal.ChronoUnit;
-import java.util.*;
+import java.util.Base64;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.UUID;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 @ApplicationScoped
 public class AuthorizationServerService implements com.cartobucket.auth.data.services.AuthorizationServerService {
     final AuthorizationServerRepository authorizationServerRepository;
     final SingingKeyRepository singingKeyRepository;
     final TemplateService templateService;
-    final ScopeRepository scopeRepository;
     final ProfileRepository profileRepository;
 
-    public AuthorizationServerService(AuthorizationServerRepository authorizationServerRepository, SingingKeyRepository singingKeyRepository, TemplateService templateService, ScopeRepository scopeRepository, ProfileRepository profileRepository) {
+    public AuthorizationServerService(
+            AuthorizationServerRepository authorizationServerRepository,
+            SingingKeyRepository singingKeyRepository,
+            TemplateService templateService,
+            ProfileRepository profileRepository
+    ) {
         this.authorizationServerRepository = authorizationServerRepository;
         this.singingKeyRepository = singingKeyRepository;
         this.templateService = templateService;
-        this.scopeRepository = scopeRepository;
         this.profileRepository = profileRepository;
     }
 
@@ -126,7 +130,7 @@ public class AuthorizationServerService implements com.cartobucket.auth.data.ser
     @Override
     public AccessToken generateAccessToken(UUID authorizationServerId, UUID profileId, String subject, String scopes, long expiresInSeconds, String nonce) {
         final var authorizationServer = authorizationServerRepository
-                .findById(authorizationServerId)
+                .findByIdOptional(authorizationServerId)
                 .orElseThrow();
 
         final var profile = profileRepository.findByResourceId(
@@ -151,11 +155,13 @@ public class AuthorizationServerService implements com.cartobucket.auth.data.ser
         authorizationServer.setCreatedOn(OffsetDateTime.now());
         authorizationServer.setUpdatedOn(OffsetDateTime.now());
 
-        authorizationServer = AuthorizationServerMapper.from(authorizationServerRepository.save(AuthorizationServerMapper.to(authorizationServer)));
+        var _authoriztionServer = AuthorizationServerMapper.to(authorizationServer);
+        authorizationServerRepository.persist(_authoriztionServer);
+        authorizationServer = AuthorizationServerMapper.from(_authoriztionServer);
 
         // Create the signing keys
         var signingKey = SigningKeyMapper.to(generateSigningKey(authorizationServer));
-        singingKeyRepository.save(signingKey);
+        singingKeyRepository.persist(signingKey);
 
         // Create the templates
         createDefaultTemplatesForAuthorizationServer(authorizationServer);
@@ -166,7 +172,7 @@ public class AuthorizationServerService implements com.cartobucket.auth.data.ser
     @Override
     public AuthorizationServer getAuthorizationServer(UUID authorizationServerId) throws AuthorizationServerNotFound {
         return authorizationServerRepository
-                .findById(authorizationServerId)
+                .findByIdOptional(authorizationServerId)
                 .map(AuthorizationServerMapper::from)
                 .orElseThrow(AuthorizationServerNotFound::new);
     }
@@ -175,7 +181,7 @@ public class AuthorizationServerService implements com.cartobucket.auth.data.ser
     @Transactional
     public AuthorizationServer updateAuthorizationServer(final UUID authorizationServerId, final AuthorizationServer authorizationServer) throws AuthorizationServerNotFound {
         var _authorizationServer = authorizationServerRepository
-                .findById(authorizationServerId)
+                .findByIdOptional(authorizationServerId)
                 .orElseThrow(AuthorizationServerNotFound::new);
 
         _authorizationServer.setCreatedOn(authorizationServer.getCreatedOn());
@@ -185,13 +191,15 @@ public class AuthorizationServerService implements com.cartobucket.auth.data.ser
         _authorizationServer.setName(authorizationServer.getName());
         _authorizationServer.setAuthorizationCodeTokenExpiration(authorizationServer.getAuthorizationCodeTokenExpiration());
         _authorizationServer.setClientCredentialsTokenExpiration(authorizationServer.getClientCredentialsTokenExpiration());
-        return AuthorizationServerMapper.from(authorizationServerRepository.save(_authorizationServer));
+        authorizationServerRepository.persist(_authorizationServer);
+        return AuthorizationServerMapper.from(_authorizationServer);
     }
 
     @Override
     public List<AuthorizationServer> getAuthorizationServers() {
-        return StreamSupport
-                .stream(authorizationServerRepository.findAll().spliterator(), false)
+        return authorizationServerRepository
+                .listAll()
+                .stream()
                 .map(AuthorizationServerMapper::from)
                 .toList();
     }
@@ -201,7 +209,7 @@ public class AuthorizationServerService implements com.cartobucket.auth.data.ser
     public void deleteAuthorizationServer(final UUID authorizationServerId) throws AuthorizationServerNotFound {
         authorizationServerRepository.delete(
                 authorizationServerRepository
-                        .findById(authorizationServerId)
+                        .findByIdOptional(authorizationServerId)
                         .orElseThrow(AuthorizationServerNotFound::new)
         );
         // TODO: this should cascade. Probably easier when we have streams from the WAL.
@@ -224,7 +232,7 @@ public class AuthorizationServerService implements com.cartobucket.auth.data.ser
     @Override
     public Map<String, Object> validateJwtForAuthorizationServer(UUID authorizationServerId, String Jwt) throws NotAuthorized {
         final var authorizationServer = authorizationServerRepository
-                .findById(authorizationServerId)
+                .findByIdOptional(authorizationServerId)
                 .orElseThrow();
         final var jwks = getJwksForAuthorizationServer(authorizationServer.getId());
 

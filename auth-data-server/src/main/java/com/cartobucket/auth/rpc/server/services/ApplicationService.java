@@ -20,21 +20,21 @@
 package com.cartobucket.auth.rpc.server.services;
 
 import com.cartobucket.auth.data.collections.Pair;
-import com.cartobucket.auth.rpc.server.entities.mappers.ApplicationMapper;
-import com.cartobucket.auth.rpc.server.entities.mappers.ApplicationSecretMapper;
-import com.cartobucket.auth.rpc.server.entities.mappers.ProfileMapper;
-import com.cartobucket.auth.data.exceptions.badrequests.ApplicationSecretNoApplicationBadData;
-import com.cartobucket.auth.data.exceptions.notfound.ApplicationNotFound;
-import com.cartobucket.auth.data.exceptions.notfound.ApplicationSecretNotFound;
-import com.cartobucket.auth.data.exceptions.notfound.ProfileNotFound;
 import com.cartobucket.auth.data.domain.Application;
 import com.cartobucket.auth.data.domain.ApplicationSecret;
 import com.cartobucket.auth.data.domain.Profile;
 import com.cartobucket.auth.data.domain.ProfileType;
+import com.cartobucket.auth.data.exceptions.badrequests.ApplicationSecretNoApplicationBadData;
+import com.cartobucket.auth.data.exceptions.notfound.ApplicationNotFound;
+import com.cartobucket.auth.data.exceptions.notfound.ApplicationSecretNotFound;
+import com.cartobucket.auth.data.exceptions.notfound.ProfileNotFound;
+import com.cartobucket.auth.data.services.ScopeService;
+import com.cartobucket.auth.rpc.server.entities.mappers.ApplicationMapper;
+import com.cartobucket.auth.rpc.server.entities.mappers.ApplicationSecretMapper;
+import com.cartobucket.auth.rpc.server.entities.mappers.ProfileMapper;
 import com.cartobucket.auth.rpc.server.repositories.ApplicationRepository;
 import com.cartobucket.auth.rpc.server.repositories.ApplicationSecretRepository;
 import com.cartobucket.auth.rpc.server.repositories.ProfileRepository;
-import com.cartobucket.auth.data.services.ScopeService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 
@@ -45,7 +45,6 @@ import java.security.SecureRandom;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.StreamSupport;
 
 @ApplicationScoped
 public class ApplicationService implements com.cartobucket.auth.data.services.ApplicationService {
@@ -54,7 +53,11 @@ public class ApplicationService implements com.cartobucket.auth.data.services.Ap
     final ProfileRepository profileRepository;
     final ScopeService scopeService;
 
-    public ApplicationService(ApplicationRepository applicationRepository, ApplicationSecretRepository applicationSecretRepository, ProfileRepository profileRepository, ScopeService scopeService) {
+    public ApplicationService(
+            ApplicationRepository applicationRepository,
+            ApplicationSecretRepository applicationSecretRepository,
+            ProfileRepository profileRepository, ScopeService scopeService
+    ) {
         this.applicationRepository = applicationRepository;
         this.applicationSecretRepository = applicationSecretRepository;
         this.profileRepository = profileRepository;
@@ -66,7 +69,7 @@ public class ApplicationService implements com.cartobucket.auth.data.services.Ap
     public void deleteApplication(final UUID applicationId) throws ApplicationNotFound {
         applicationRepository.delete(
                 applicationRepository
-                        .findById(applicationId)
+                        .findByIdOptional(applicationId)
                         .orElseThrow(ApplicationNotFound::new)
         );
     }
@@ -75,7 +78,7 @@ public class ApplicationService implements com.cartobucket.auth.data.services.Ap
     public Pair<Application, Profile> getApplication(final UUID applicationId)
             throws ApplicationNotFound, ProfileNotFound {
         final var application = applicationRepository
-                .findById(applicationId)
+                .findByIdOptional(applicationId)
                 .map(ApplicationMapper::from)
                 .orElseThrow(ApplicationNotFound::new);
         final var profile = profileRepository
@@ -93,16 +96,18 @@ public class ApplicationService implements com.cartobucket.auth.data.services.Ap
     public Pair<Application, Profile> createApplication(final Application application, final Profile profile) {
         application.setCreatedOn(OffsetDateTime.now());
         application.setUpdatedOn(OffsetDateTime.now());
-        var _application = ApplicationMapper.from(applicationRepository.save(ApplicationMapper.to(application)));
+        var _application = ApplicationMapper.to(application);
+        applicationRepository.persist(_application);
 
         profile.setResource(_application.getId());
         profile.setProfileType(ProfileType.Application);
         profile.setAuthorizationServerId(_application.getAuthorizationServerId());
         profile.setCreatedOn(OffsetDateTime.now());
         profile.setUpdatedOn(OffsetDateTime.now());
-        var _profile = ProfileMapper.from(profileRepository.save(ProfileMapper.to(profile)));
+        var _profile = ProfileMapper.to(profile);
+        profileRepository.persist(_profile);
 
-        return Pair.create(_application, _profile);
+        return Pair.create(ApplicationMapper.from(_application), ProfileMapper.from(_profile));
     }
 
     @Override
@@ -118,7 +123,7 @@ public class ApplicationService implements com.cartobucket.auth.data.services.Ap
     public ApplicationSecret createApplicationSecret(
             final ApplicationSecret applicationSecret) throws ApplicationNotFound {
         final var application = applicationRepository
-                .findById(applicationSecret.getApplicationId())
+                .findByIdOptional(applicationSecret.getApplicationId())
                 .orElseThrow(ApplicationNotFound::new);
 
         var scopes = scopeService.filterScopesForAuthorizationServerId(
@@ -139,11 +144,10 @@ public class ApplicationService implements com.cartobucket.auth.data.services.Ap
             applicationSecret.setScopes(scopes);
             applicationSecret.setUpdatedOn(OffsetDateTime.now());
             applicationSecret.setCreatedOn(OffsetDateTime.now());
-            return ApplicationSecretMapper.from(
-                    applicationSecretRepository.save(
-                            ApplicationSecretMapper.to(applicationSecret)
-                    )
+            applicationSecretRepository.persist(
+                    ApplicationSecretMapper.to(applicationSecret)
             );
+            return applicationSecret;
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         }
@@ -156,7 +160,7 @@ public class ApplicationService implements com.cartobucket.auth.data.services.Ap
             ApplicationSecretNotFound
     {
         final var secret = applicationSecretRepository
-                .findById(secretId)
+                .findByIdOptional(secretId)
                 .orElseThrow(ApplicationSecretNotFound::new);
         applicationSecretRepository.delete(secret);
     }
@@ -164,8 +168,9 @@ public class ApplicationService implements com.cartobucket.auth.data.services.Ap
     @Override
     public List<Application> getApplications(final List<UUID> authorizationServerIds) {
         if (authorizationServerIds.isEmpty()) {
-            return StreamSupport
-                    .stream(applicationRepository.findAll().spliterator(), false)
+            return applicationRepository
+                    .listAll()
+                    .stream()
                     .map(ApplicationMapper::from)
                     .toList();
         } else {

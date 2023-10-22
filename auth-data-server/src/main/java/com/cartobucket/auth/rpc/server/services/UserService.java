@@ -20,16 +20,15 @@
 package com.cartobucket.auth.rpc.server.services;
 
 import com.cartobucket.auth.data.collections.Pair;
-import com.cartobucket.auth.rpc.server.entities.mappers.ProfileMapper;
-import com.cartobucket.auth.rpc.server.entities.mappers.UserMapper;
-import com.cartobucket.auth.data.exceptions.notfound.ProfileNotFound;
-import com.cartobucket.auth.data.exceptions.notfound.UserNotFound;
 import com.cartobucket.auth.data.domain.Profile;
 import com.cartobucket.auth.data.domain.ProfileType;
 import com.cartobucket.auth.data.domain.User;
+import com.cartobucket.auth.data.exceptions.notfound.ProfileNotFound;
+import com.cartobucket.auth.data.exceptions.notfound.UserNotFound;
+import com.cartobucket.auth.rpc.server.entities.mappers.ProfileMapper;
+import com.cartobucket.auth.rpc.server.entities.mappers.UserMapper;
 import com.cartobucket.auth.rpc.server.repositories.ProfileRepository;
 import com.cartobucket.auth.rpc.server.repositories.UserRepository;
-import com.cartobucket.auth.data.services.AuthorizationServerService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -37,39 +36,30 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.StreamSupport;
 
 @ApplicationScoped
 public class UserService implements com.cartobucket.auth.data.services.UserService {
     final UserRepository userRepository;
     final ProfileRepository profileRepository;
-    final AuthorizationServerService authorizationServerService;
     public UserService(
             UserRepository userRepository,
-            ProfileRepository profileRepository,
-            AuthorizationServerService authorizationServerService
+            ProfileRepository profileRepository
     ) {
         this.userRepository = userRepository;
         this.profileRepository = profileRepository;
-        this.authorizationServerService = authorizationServerService;
     }
 
     @Override
     public List<User> getUsers(final List<UUID> authorizationServerIds) {
         if (!authorizationServerIds.isEmpty()) {
-            return StreamSupport
-                    .stream(
-                            userRepository
-                                    .findAllByAuthorizationServerIdIn(authorizationServerIds)
-                                    .stream()
-                                    .spliterator(),
-                            false
-                    )
+            return userRepository
+                    .findAllByAuthorizationServerIdIn(authorizationServerIds)
+                    .stream()
                     .map(UserMapper::from)
                     .toList();
         } else {
-            return StreamSupport
-                    .stream(userRepository.findAll().spliterator(), false)
+            return userRepository.findAll()
+                    .stream()
                     .map(UserMapper::from)
                     .toList();
         }
@@ -82,15 +72,17 @@ public class UserService implements com.cartobucket.auth.data.services.UserServi
         final var profile = userProfilePair.getRight();
         user.setCreatedOn(OffsetDateTime.now());
         user.setUpdatedOn(OffsetDateTime.now());
-        var _user = UserMapper.from(userRepository.save(UserMapper.to(user)));
+        var _user = UserMapper.to(user);
+        userRepository.persist(_user);
 
         profile.setCreatedOn(OffsetDateTime.now());
         profile.setUpdatedOn(OffsetDateTime.now());
         profile.setProfileType(ProfileType.User);
         profile.setResource(_user.getId());
         profile.setAuthorizationServerId(user.getAuthorizationServerId());
-        var _profile = ProfileMapper.from(profileRepository.save(ProfileMapper.to(profile)));
-        return Pair.create(_user, _profile);
+        var _profile = ProfileMapper.to(profile);
+        profileRepository.persist(_profile);
+        return Pair.create(UserMapper.from(_user), ProfileMapper.from(_profile));
     }
 
     @Override
@@ -103,7 +95,7 @@ public class UserService implements com.cartobucket.auth.data.services.UserServi
     @Override
     public Pair<User, Profile> getUser(final UUID userId) throws UserNotFound, ProfileNotFound {
         final var user = userRepository
-                .findById(userId)
+                .findByIdOptional(userId)
                 .map(UserMapper::from)
                 .orElseThrow(UserNotFound::new);
         final var profile = profileRepository
@@ -133,20 +125,20 @@ public class UserService implements com.cartobucket.auth.data.services.UserServi
         final var profile = userProfilePair.getRight();
 
         var _user = userRepository
-                .findById(userId)
+                .findByIdOptional(userId)
                 .orElseThrow(UserNotFound::new);
 
         _user.setEmail(user.getEmail());
         _user.setUsername(user.getUsername());
         _user.setUpdatedOn(OffsetDateTime.now());
-        _user = userRepository.save(_user);
+        userRepository.persist(_user);
 
         var _profile = profileRepository
                 .findByResourceAndProfileType(user.getId(), ProfileType.User)
                 .orElseThrow(ProfileNotFound::new);
         _profile.setUpdatedOn(OffsetDateTime.now());
         _profile.setProfile(profile.getProfile());
-        _profile = profileRepository.save(_profile);
+        profileRepository.persist(_profile);
 
         return Pair.create(UserMapper.from(_user), ProfileMapper.from(_profile));
     }
@@ -158,13 +150,13 @@ public class UserService implements com.cartobucket.auth.data.services.UserServi
         final var passwordHash = encoder.encode(password);
         user.setPassword(passwordHash);
         user.setUpdatedOn(OffsetDateTime.now());
-        userRepository.save(UserMapper.to(user));
+        userRepository.persist(UserMapper.to(user));
     }
 
     @Override
     public boolean validatePassword(UUID userId, String password) {
         final var user = userRepository
-                .findById(userId)
+                .findByIdOptional(userId)
                 .orElseThrow();
         return new BCryptPasswordEncoder().matches(password, user.getPasswordHash());
     }

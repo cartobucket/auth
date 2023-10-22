@@ -20,19 +20,15 @@
 package com.cartobucket.auth.rpc.server.repositories;
 
 import com.cartobucket.auth.rpc.server.entities.Template;
-import com.cartobucket.auth.data.domain.TemplateTypeEnum;
-import org.springframework.data.repository.CrudRepository;
+import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
+import jakarta.enterprise.context.ApplicationScoped;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
-public interface TemplateRepository extends CrudRepository<Template, UUID> {
-    List<Template> findAllByAuthorizationServerId(UUID authorizationServer);
-
-    List<Template> findAllByAuthorizationServerIdAndTemplateType(UUID authorizationServer, TemplateTypeEnum templateType);
-
-    Optional<Template> findByAuthorizationServerIdAndTemplateType(UUID authorizationServer, TemplateTypeEnum templateType);
-
-    List<Template> findAllByAuthorizationServerIdIn(List<UUID> authorizationServerIds);
+@ApplicationScoped
+public class TemplateRepository implements PanacheRepositoryBase<Template, UUID> {
+    public List<Template> findAllByAuthorizationServerIdIn(List<UUID> authorizationServerIds) {
+        return list("authorizationServerId in ?1", authorizationServerIds);
+    }
 }

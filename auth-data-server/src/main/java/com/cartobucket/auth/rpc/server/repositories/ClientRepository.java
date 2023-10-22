@@ -20,14 +20,20 @@
 package com.cartobucket.auth.rpc.server.repositories;
 
 import com.cartobucket.auth.rpc.server.entities.Client;
-import org.springframework.data.repository.CrudRepository;
+import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
+import jakarta.enterprise.context.ApplicationScoped;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public interface ClientRepository extends CrudRepository<Client, UUID> {
-    List<Client> findAllByAuthorizationServerIdIn(List<UUID> authorizationServerIds);
+@ApplicationScoped
+public class ClientRepository implements PanacheRepositoryBase<Client, UUID> {
+    public List<Client> findAllByAuthorizationServerIdIn(List<UUID> authorizationServerIds) {
+        return list("authorizationServerId in ?1", authorizationServerIds);
+    }
 
-    Optional<Client> findByClientId(String clientId);
+    public Optional<Client> findByClientId(String clientId) {
+        return find("clientId = ?1", clientId).singleResultOptional();
+    }
 }

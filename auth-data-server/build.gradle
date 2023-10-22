@@ -9,25 +9,25 @@ repositories {
 }
 
 dependencies {
+    implementation enforcedPlatform("${quarkusPlatformGroupId}:quarkus-camel-bom:${quarkusPlatformVersion}")
+    implementation enforcedPlatform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}")
+
     implementation project(path: ':auth-data')
 
     implementation 'org.apache.camel.quarkus:camel-quarkus-json-validator'
-    implementation enforcedPlatform("${quarkusPlatformGroupId}:quarkus-camel-bom:${quarkusPlatformVersion}")
-    implementation enforcedPlatform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}")
 
     implementation 'io.quarkus:quarkus-grpc'
     implementation 'io.quarkus:quarkus-arc'
     testImplementation 'io.quarkus:quarkus-junit5'
 
-    implementation 'io.quarkus:quarkus-hibernate-orm'
+    implementation 'io.quarkus:quarkus-hibernate-orm-panache'
     implementation 'io.quarkus:quarkus-jdbc-postgresql'
-    implementation 'io.quarkus:quarkus-spring-data-jpa'
 
     // JOSE
     implementation 'io.quarkus:quarkus-smallrye-jwt-build'
 
     // Security (password hashing)
-    implementation group: 'org.springframework.security', name: 'spring-security-core', version: '6.0.3'
+    implementation group: 'org.springframework.security', name: 'spring-security-core', version: '6.1.5'
 
 }
 
@@ -42,6 +42,7 @@ java {
 test {
     systemProperty "java.util.logging.manager", "org.jboss.logmanager.LogManager"
 }
+
 compileJava {
     options.encoding = 'UTF-8'
     options.compilerArgs << '-parameters'

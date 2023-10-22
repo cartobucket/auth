@@ -68,13 +68,15 @@ public class SchemaService implements com.cartobucket.auth.data.services.SchemaS
     public Schema createSchema(final Schema schema) {
         schema.setCreatedOn(OffsetDateTime.now());
         schema.setUpdatedOn(OffsetDateTime.now());
-        return SchemaMapper.from(schemaRepository.save(SchemaMapper.to(schema)));
+        var _schema = SchemaMapper.to(schema);
+        schemaRepository.persist(_schema);
+        return SchemaMapper.from(_schema);
     }
 
     @Override
     public void deleteSchema(final UUID schemaId) throws SchemaNotFound {
         var schema = schemaRepository
-                .findById(schemaId)
+                .findByIdOptional(schemaId)
                 .orElseThrow(SchemaNotFound::new);
         schemaRepository.delete(schema);
     }
@@ -82,7 +84,7 @@ public class SchemaService implements com.cartobucket.auth.data.services.SchemaS
     @Override
     public Schema getSchema(final UUID schemaId) throws SchemaNotFound {
         return schemaRepository
-                .findById(schemaId)
+                .findByIdOptional(schemaId)
                 .map(SchemaMapper::from)
                 .orElseThrow(SchemaNotFound::new);
     }
@@ -96,8 +98,8 @@ public class SchemaService implements com.cartobucket.auth.data.services.SchemaS
                     .map(SchemaMapper::from)
                     .toList();
         } else {
-            return StreamSupport
-                    .stream(schemaRepository.findAll().spliterator(), false)
+            return schemaRepository.findAll()
+                    .stream()
                     .map(SchemaMapper::from)
                     .toList();
         }
@@ -106,12 +108,13 @@ public class SchemaService implements com.cartobucket.auth.data.services.SchemaS
     @Override
     public Schema updateSchema(final UUID schemaId, Schema schema) throws SchemaNotFound {
         var _schema = schemaRepository
-                .findById(schemaId)
+                .findByIdOptional(schemaId)
                 .orElseThrow(SchemaNotFound::new);
         _schema.setJsonSchemaVersion(schema.getJsonSchemaVersion());
         _schema.setName(schema.getName());
         _schema.setSchema(schema.getSchema());
         _schema.setUpdatedOn(OffsetDateTime.now());
-        return SchemaMapper.from(schemaRepository.save(_schema));
+        schemaRepository.persist(_schema);
+        return SchemaMapper.from(_schema);
     }
 }

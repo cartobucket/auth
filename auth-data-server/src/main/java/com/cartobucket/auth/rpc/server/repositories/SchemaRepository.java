@@ -21,12 +21,16 @@ package com.cartobucket.auth.rpc.server.repositories;
 
 
 import com.cartobucket.auth.rpc.server.entities.Schema;
-import org.springframework.data.repository.CrudRepository;
+import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
+import jakarta.enterprise.context.ApplicationScoped;
 
 import java.util.List;
 import java.util.UUID;
 
-public interface SchemaRepository extends CrudRepository<Schema, UUID> {
-    List<Schema> findAllByAuthorizationServerIdIn(List<UUID> authorizationServerIds);
+@ApplicationScoped
+public class SchemaRepository implements PanacheRepositoryBase<Schema, UUID> {
+    public List<Schema> findAllByAuthorizationServerIdIn(List<UUID> authorizationServerIds) {
+        return find("authorizationServerId in ?1", authorizationServerIds).list();
+    }
 
 }

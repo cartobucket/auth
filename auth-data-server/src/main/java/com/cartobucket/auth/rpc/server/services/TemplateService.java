@@ -48,8 +48,8 @@ public class TemplateService implements com.cartobucket.auth.data.services.Templ
                     .map(TemplateMapper::from)
                     .toList();
         } else {
-            return StreamSupport
-                    .stream(templateRepository.findAll().spliterator(), false)
+            return templateRepository.findAll()
+                    .stream()
                     .map(TemplateMapper::from)
                     .toList();
         }
@@ -61,7 +61,9 @@ public class TemplateService implements com.cartobucket.auth.data.services.Templ
         template.setCreatedOn(OffsetDateTime.now());
         template.setUpdatedOn(OffsetDateTime.now());
         // TODO: This does not catch the authorizationServerId & templateType constraint.
-        return TemplateMapper.from(templateRepository.save(TemplateMapper.to(template)));
+        var _template = TemplateMapper.to(template);
+        templateRepository.persist(_template);
+        return TemplateMapper.from(_template);
     }
 
     @Override
@@ -69,7 +71,7 @@ public class TemplateService implements com.cartobucket.auth.data.services.Templ
     public void deleteTemplate(final UUID templateId) throws TemplateNotFound {
         templateRepository.delete(
                 templateRepository
-                        .findById(templateId)
+                        .findByIdOptional(templateId)
                         .orElseThrow(TemplateNotFound::new)
         );
     }
@@ -77,28 +79,21 @@ public class TemplateService implements com.cartobucket.auth.data.services.Templ
     @Override
     public Template getTemplate(final UUID templateId) throws TemplateNotFound {
         return templateRepository
-                .findById(templateId)
+                .findByIdOptional(templateId)
                 .map(TemplateMapper::from)
                 .orElseThrow(TemplateNotFound::new);
     }
-
-//    @Override
-//    public Template getTemplateForAuthorizationServer(final UUID authorizationServer, final TemplateTypeEnum templateType) {
-//        return templateRepository
-//                .findByAuthorizationServerIdAndTemplateType(authorizationServer, templateType)
-//                .orElseThrow(TemplateNotFound::new);
-//    }
 
     @Override
     @Transactional
     public Template updateTemplate(final UUID templateId, final Template template) throws TemplateNotFound {
         var _template = templateRepository
-                .findById(templateId)
+                .findByIdOptional(templateId)
                 .orElseThrow(TemplateNotFound::new);
 
         _template.setUpdatedOn(OffsetDateTime.now());
         _template.setTemplate(template.getTemplate());
-        _template = templateRepository.save(_template);
+        templateRepository.persist(_template);
 
         return TemplateMapper.from(_template);
     }

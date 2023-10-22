@@ -20,14 +20,19 @@
 package com.cartobucket.auth.rpc.server.repositories;
 
 import com.cartobucket.auth.rpc.server.entities.SigningKey;
-import org.springframework.data.repository.CrudRepository;
+import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
+import jakarta.enterprise.context.ApplicationScoped;
 
 import java.util.List;
 import java.util.UUID;
 
-public interface SingingKeyRepository extends CrudRepository<SigningKey, UUID> {
-    SigningKey findByAuthorizationServerId(UUID authorizationServerId);
-    List<SigningKey> findAllByAuthorizationServerId(UUID authorizationServerId);
+@ApplicationScoped
+public class SingingKeyRepository implements PanacheRepositoryBase<SigningKey, UUID> {
+    public List<SigningKey> findAllByAuthorizationServerId(UUID authorizationServerId) {
+        return list("authorizationServerId in ?1", authorizationServerId);
+    }
 
-    SigningKey findByIdAndAuthorizationServerId(UUID kid, UUID id);
+    public SigningKey findByIdAndAuthorizationServerId(UUID kid, UUID id) {
+        return find("id = ?1 and authorizationServerId = ?2", kid, id).firstResult();
+    }
 }

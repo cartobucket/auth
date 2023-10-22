@@ -20,15 +20,17 @@
 package com.cartobucket.auth.rpc.server.repositories;
 
 import com.cartobucket.auth.rpc.server.entities.Scope;
-import org.springframework.data.repository.CrudRepository;
+import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
+import jakarta.enterprise.context.ApplicationScoped;
 
 import java.util.List;
 import java.util.UUID;
 
-public interface ScopeRepository extends CrudRepository<Scope, UUID> {
-    Scope findByAuthorizationServerIdAndName(UUID authorizationServerId, String name);
-    List<Scope> findAllByAuthorizationServerId(UUID authorizationServerId);
+@ApplicationScoped
+public class ScopeRepository implements PanacheRepositoryBase<Scope, UUID> {
 
-    List<Scope> findAllByAuthorizationServerIdIn(List<UUID> authorizationServerIds);
+    public List<Scope> findAllByAuthorizationServerIdIn(List<UUID> authorizationServerIds) {
+        return find("authorizationServerId in ?1", authorizationServerIds).list();
+    }
 
 }

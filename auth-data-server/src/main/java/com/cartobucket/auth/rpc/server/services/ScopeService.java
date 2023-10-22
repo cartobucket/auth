@@ -51,8 +51,8 @@ public class ScopeService implements com.cartobucket.auth.data.services.ScopeSer
                     .map(ScopeMapper::from)
                     .toList();
         } else {
-            return StreamSupport
-                    .stream(scopeRepository.findAll().spliterator(), false)
+            return scopeRepository.findAll()
+                    .stream()
                     .map(ScopeMapper::from)
                     .toList();
         }
@@ -63,18 +63,16 @@ public class ScopeService implements com.cartobucket.auth.data.services.ScopeSer
     public Scope createScope(final Scope scope) {
         scope.setCreatedOn(OffsetDateTime.now());
         scope.setUpdatedOn(OffsetDateTime.now());
-        return ScopeMapper.from(
-                scopeRepository.save(
-                        ScopeMapper.to(scope)
-                )
-        );
+        var _scope = ScopeMapper.to(scope);
+        scopeRepository.persist(_scope);
+        return ScopeMapper.from(_scope);
     }
 
     @Override
     @Transactional
     public void deleteScope(UUID scopeId) throws ScopeNotFound {
         final var scope = scopeRepository
-                .findById(scopeId)
+                .findByIdOptional(scopeId)
                 .orElseThrow(ScopeNotFound::new);
         scopeRepository.delete(scope);
     }
@@ -82,7 +80,7 @@ public class ScopeService implements com.cartobucket.auth.data.services.ScopeSer
     @Override
     public Scope getScope(UUID scopeId) throws ScopeNotFound {
         return scopeRepository
-                .findById(scopeId)
+                .findByIdOptional(scopeId)
                 .map(ScopeMapper::from)
                 .orElseThrow(ScopeNotFound::new);
     }
@@ -90,7 +88,7 @@ public class ScopeService implements com.cartobucket.auth.data.services.ScopeSer
     @Override
     public List<String> filterScopesForAuthorizationServerId(UUID authorizationServerId, String scopes) {
         final var authorizationServerScopes = scopeRepository
-                .findAllByAuthorizationServerId(authorizationServerId);
+                .findAllByAuthorizationServerIdIn(List.of(authorizationServerId));
 
         return com.cartobucket.auth.data.services.ScopeService.filterScopesByList(
                 scopes,

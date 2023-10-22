@@ -19,17 +19,25 @@
 
 package com.cartobucket.auth.rpc.server.repositories;
 
-import com.cartobucket.auth.rpc.server.entities.Profile;
 import com.cartobucket.auth.data.domain.ProfileType;
-import org.springframework.data.repository.CrudRepository;
+import com.cartobucket.auth.rpc.server.entities.Profile;
+import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
+import jakarta.enterprise.context.ApplicationScoped;
 
 import java.util.Optional;
 import java.util.UUID;
 
-public interface ProfileRepository extends CrudRepository<Profile, UUID> {
-    Optional<Profile> findByResourceAndProfileType(UUID resource, ProfileType profileType);
+@ApplicationScoped
+public class ProfileRepository implements PanacheRepositoryBase<Profile, UUID> {
+    public Optional<Profile> findByResourceAndProfileType(UUID resource, ProfileType profileType) {
+        return find("resourceId = ?1 and profileType = ?2", resource, profileType).singleResultOptional();
+    }
 
-    Optional<Profile> findByResourceId(UUID resourceId);
+    public Optional<Profile> findByResourceId(UUID resourceId) {
+        return find("resourceId = ?1", resourceId).singleResultOptional();
+    }
 
-    void deleteByResourceAndProfileType(UUID resource, ProfileType profileType);
+    public void deleteByResourceAndProfileType(UUID resource, ProfileType profileType) {
+        delete("resourceId = ?1 and profileType = ?2", resource, profileType);
+    }
 }

@@ -36,17 +36,17 @@ import jakarta.transaction.Transactional;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.StreamSupport;
 
 @ApplicationScoped
 public class ClientService implements com.cartobucket.auth.data.services.ClientService {
-    final UserRepository userRepository;
     final ClientRepository clientRepository;
     final ClientCodeRepository clientCodeRepository;
     final ScopeService scopeService;
 
-    public ClientService(UserRepository userRepository, ClientRepository clientRepository, ClientCodeRepository clientCodeRepository, ScopeService scopeService) {
-        this.userRepository = userRepository;
+    public ClientService(
+            ClientRepository clientRepository,
+            ClientCodeRepository clientCodeRepository,
+            ScopeService scopeService) {
         this.clientRepository = clientRepository;
         this.clientCodeRepository = clientCodeRepository;
         this.scopeService = scopeService;
@@ -69,8 +69,9 @@ public class ClientService implements com.cartobucket.auth.data.services.ClientS
                 ScopeService.scopeListToScopeString(clientCode.getScopes())
         );
         clientCode.setScopes(_scopes);
+        var _clientCode = ClientCodeMapper.to(clientCode);
+        clientCodeRepository.persist(_clientCode);
 
-        var _clientCode = clientCodeRepository.save(new com.cartobucket.auth.rpc.server.entities.ClientCode());
         return ClientCodeMapper.from(_clientCode);
     }
 
@@ -99,14 +100,14 @@ public class ClientService implements com.cartobucket.auth.data.services.ClientS
     @Transactional
     public Client updateClient(final UUID clientId, final Client client) throws ClientNotFound {
         var _client = clientRepository
-                .findById(clientId)
+                .findByIdOptional(clientId)
                 .orElseThrow(ClientNotFound::new);
 
         _client.setUpdatedOn(OffsetDateTime.now());
         _client.setScopes(client.getScopes());
         _client.setName(client.getName());
         _client.setRedirectUris(client.getRedirectUris());
-        _client = clientRepository.save(_client);
+        clientRepository.persist(_client);
         return ClientMapper.from(_client);
     }
 
@@ -120,8 +121,9 @@ public class ClientService implements com.cartobucket.auth.data.services.ClientS
                     .toList();
 
         } else {
-            return StreamSupport
-                    .stream(clientRepository.findAll().spliterator(), false)
+            return clientRepository
+                    .listAll()
+                    .stream()
                     .map(ClientMapper::from)
                     .toList();
         }
@@ -132,6 +134,8 @@ public class ClientService implements com.cartobucket.auth.data.services.ClientS
     public Client createClient(final Client client) {
         client.setCreatedOn(OffsetDateTime.now());
         client.setUpdatedOn(OffsetDateTime.now());
-        return ClientMapper.from(clientRepository.save(ClientMapper.to(client)));
+        var _client = ClientMapper.to(client);
+        clientRepository.persist(_client);
+        return ClientMapper.from(_client);
     }
 }

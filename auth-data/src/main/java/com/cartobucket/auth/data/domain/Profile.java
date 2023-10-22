@@ -147,7 +147,7 @@ public class Profile {
         } else if (value instanceof Integer) {
             return Value.newBuilder().setNumberValue(((Integer) value).doubleValue()).build();
         } else if (value instanceof Double) {
-            return Value.newBuilder().setNumberValue(((Double) value).doubleValue()).build();
+            return Value.newBuilder().setNumberValue((Double) value).build();
         } else if (value instanceof Boolean) {
             return Value.newBuilder().setBoolValue((Boolean) value).build();
         } else if (value instanceof HashMap) {

@@ -20,9 +20,11 @@
 package com.cartobucket.auth.rpc.server.repositories;
 
 import com.cartobucket.auth.rpc.server.entities.AuthorizationServer;
-import org.springframework.data.repository.CrudRepository;
+import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
+import jakarta.enterprise.context.ApplicationScoped;
 
 import java.util.UUID;
 
-public interface AuthorizationServerRepository extends CrudRepository<AuthorizationServer, UUID> {
+@ApplicationScoped
+public class AuthorizationServerRepository implements PanacheRepositoryBase<AuthorizationServer, UUID> {
 }
