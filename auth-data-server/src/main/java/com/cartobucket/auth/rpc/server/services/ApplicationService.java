@@ -29,20 +29,26 @@ import com.cartobucket.auth.data.exceptions.notfound.ApplicationNotFound;
 import com.cartobucket.auth.data.exceptions.notfound.ApplicationSecretNotFound;
 import com.cartobucket.auth.data.exceptions.notfound.ProfileNotFound;
 import com.cartobucket.auth.data.services.ScopeService;
+import com.cartobucket.auth.rpc.server.entities.Event;
+import com.cartobucket.auth.rpc.server.entities.EventType;
 import com.cartobucket.auth.rpc.server.entities.mappers.ApplicationMapper;
 import com.cartobucket.auth.rpc.server.entities.mappers.ApplicationSecretMapper;
 import com.cartobucket.auth.rpc.server.entities.mappers.ProfileMapper;
 import com.cartobucket.auth.rpc.server.repositories.ApplicationRepository;
 import com.cartobucket.auth.rpc.server.repositories.ApplicationSecretRepository;
+import com.cartobucket.auth.rpc.server.repositories.EventRepository;
 import com.cartobucket.auth.rpc.server.repositories.ProfileRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
+import org.springframework.security.core.parameters.P;
 
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.time.OffsetDateTime;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -50,16 +56,20 @@ import java.util.UUID;
 public class ApplicationService implements com.cartobucket.auth.data.services.ApplicationService {
     final ApplicationRepository applicationRepository;
     final ApplicationSecretRepository applicationSecretRepository;
+    final EventRepository eventRepository;
     final ProfileRepository profileRepository;
     final ScopeService scopeService;
 
     public ApplicationService(
             ApplicationRepository applicationRepository,
             ApplicationSecretRepository applicationSecretRepository,
-            ProfileRepository profileRepository, ScopeService scopeService
+            EventRepository eventRepository,
+            ProfileRepository profileRepository,
+            ScopeService scopeService
     ) {
         this.applicationRepository = applicationRepository;
         this.applicationSecretRepository = applicationSecretRepository;
+        this.eventRepository = eventRepository;
         this.profileRepository = profileRepository;
         this.scopeService = scopeService;
     }
@@ -67,10 +77,13 @@ public class ApplicationService implements com.cartobucket.auth.data.services.Ap
     @Override
     @Transactional
     public void deleteApplication(final UUID applicationId) throws ApplicationNotFound {
-        applicationRepository.delete(
-                applicationRepository
-                        .findByIdOptional(applicationId)
-                        .orElseThrow(ApplicationNotFound::new)
+        final var application = applicationRepository
+                .findByIdOptional(applicationId)
+                .orElseThrow(ApplicationNotFound::new);
+        applicationRepository.delete(application);
+        eventRepository.createApplicationProfileEvent(
+                Pair.create(ApplicationMapper.from(application), new Profile()),
+                EventType.DELETE
         );
     }
 
@@ -107,7 +120,9 @@ public class ApplicationService implements com.cartobucket.auth.data.services.Ap
         var _profile = ProfileMapper.to(profile);
         profileRepository.persist(_profile);
 
-        return Pair.create(ApplicationMapper.from(_application), ProfileMapper.from(_profile));
+        var applicationProfilePair = Pair.create(ApplicationMapper.from(_application), ProfileMapper.from(_profile));
+        eventRepository.createApplicationProfileEvent(applicationProfilePair, EventType.CREATE);
+        return applicationProfilePair;
     }
 
     @Override

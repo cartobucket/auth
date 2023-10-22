@@ -30,7 +30,8 @@ import java.util.UUID;
 @ApplicationScoped
 public class ProfileRepository implements PanacheRepositoryBase<Profile, UUID> {
     public Optional<Profile> findByResourceAndProfileType(UUID resource, ProfileType profileType) {
-        return find("resourceId = ?1 and profileType = ?2", resource, profileType).singleResultOptional();
+        // TODO: there is a bug here.
+        return find("resourceId = ?1 and profileType = ?2", resource, profileType.ordinal()).singleResultOptional();
     }
 
     public Optional<Profile> findByResourceId(UUID resourceId) {
