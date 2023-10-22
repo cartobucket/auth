@@ -21,7 +21,9 @@ package com.cartobucket.auth.rpc.server.services;
 
 import com.cartobucket.auth.data.domain.Scope;
 import com.cartobucket.auth.data.exceptions.notfound.ScopeNotFound;
+import com.cartobucket.auth.rpc.server.entities.EventType;
 import com.cartobucket.auth.rpc.server.entities.mappers.ScopeMapper;
+import com.cartobucket.auth.rpc.server.repositories.EventRepository;
 import com.cartobucket.auth.rpc.server.repositories.ScopeRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
@@ -33,9 +35,14 @@ import java.util.stream.StreamSupport;
 
 @ApplicationScoped
 public class ScopeService implements com.cartobucket.auth.data.services.ScopeService {
+    final EventRepository eventRepository;
     final ScopeRepository scopeRepository;
 
-    public ScopeService(ScopeRepository scopeRepository) {
+    public ScopeService(
+            EventRepository eventRepository,
+            ScopeRepository scopeRepository
+    ) {
+        this.eventRepository = eventRepository;
         this.scopeRepository = scopeRepository;
     }
 
@@ -65,6 +72,7 @@ public class ScopeService implements com.cartobucket.auth.data.services.ScopeSer
         scope.setUpdatedOn(OffsetDateTime.now());
         var _scope = ScopeMapper.to(scope);
         scopeRepository.persist(_scope);
+        eventRepository.createScopeEvent(ScopeMapper.from(_scope), EventType.CREATE);
         return ScopeMapper.from(_scope);
     }
 
@@ -75,6 +83,7 @@ public class ScopeService implements com.cartobucket.auth.data.services.ScopeSer
                 .findByIdOptional(scopeId)
                 .orElseThrow(ScopeNotFound::new);
         scopeRepository.delete(scope);
+        eventRepository.createScopeEvent(ScopeMapper.from(scope), EventType.DELETE);
     }
 
     @Override

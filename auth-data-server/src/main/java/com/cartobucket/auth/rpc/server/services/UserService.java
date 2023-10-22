@@ -25,8 +25,10 @@ import com.cartobucket.auth.data.domain.ProfileType;
 import com.cartobucket.auth.data.domain.User;
 import com.cartobucket.auth.data.exceptions.notfound.ProfileNotFound;
 import com.cartobucket.auth.data.exceptions.notfound.UserNotFound;
+import com.cartobucket.auth.rpc.server.entities.EventType;
 import com.cartobucket.auth.rpc.server.entities.mappers.ProfileMapper;
 import com.cartobucket.auth.rpc.server.entities.mappers.UserMapper;
+import com.cartobucket.auth.rpc.server.repositories.EventRepository;
 import com.cartobucket.auth.rpc.server.repositories.ProfileRepository;
 import com.cartobucket.auth.rpc.server.repositories.UserRepository;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -39,12 +41,15 @@ import java.util.UUID;
 
 @ApplicationScoped
 public class UserService implements com.cartobucket.auth.data.services.UserService {
+    final EventRepository eventRepository;
     final UserRepository userRepository;
     final ProfileRepository profileRepository;
     public UserService(
+            EventRepository eventRepository,
             UserRepository userRepository,
             ProfileRepository profileRepository
     ) {
+        this.eventRepository = eventRepository;
         this.userRepository = userRepository;
         this.profileRepository = profileRepository;
     }
@@ -82,14 +87,26 @@ public class UserService implements com.cartobucket.auth.data.services.UserServi
         profile.setAuthorizationServerId(user.getAuthorizationServerId());
         var _profile = ProfileMapper.to(profile);
         profileRepository.persist(_profile);
-        return Pair.create(UserMapper.from(_user), ProfileMapper.from(_profile));
+        var pair = Pair.create(UserMapper.from(_user), ProfileMapper.from(_profile));
+        eventRepository.createUserProfileEvent(pair, EventType.CREATE);
+        return pair;
     }
 
     @Override
     @Transactional
     public void deleteUser(final UUID userId) {
-        profileRepository.deleteByResourceAndProfileType(userId, ProfileType.User);
-        userRepository.deleteById(userId);
+        final var user = userRepository
+                .findByIdOptional(userId)
+                .orElseThrow(UserNotFound::new);
+        final var profile = profileRepository
+                .findByResourceAndProfileType(userId, ProfileType.User)
+                .orElseThrow(ProfileNotFound::new);
+        userRepository.delete(user);
+        profileRepository.delete(profile);
+        eventRepository.createUserProfileEvent(
+                Pair.create(UserMapper.from(user), ProfileMapper.from(profile)),
+                EventType.DELETE
+        );
     }
 
     @Override
@@ -140,7 +157,9 @@ public class UserService implements com.cartobucket.auth.data.services.UserServi
         _profile.setProfile(profile.getProfile());
         profileRepository.persist(_profile);
 
-        return Pair.create(UserMapper.from(_user), ProfileMapper.from(_profile));
+        final var pair = Pair.create(UserMapper.from(_user), ProfileMapper.from(_profile));
+        eventRepository.createUserProfileEvent(pair, EventType.UPDATE);
+        return pair;
     }
 
     @Override

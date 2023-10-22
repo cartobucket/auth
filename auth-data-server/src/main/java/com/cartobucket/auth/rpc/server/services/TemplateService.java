@@ -19,9 +19,11 @@
 
 package com.cartobucket.auth.rpc.server.services;
 
-import com.cartobucket.auth.rpc.server.entities.mappers.TemplateMapper;
-import com.cartobucket.auth.data.exceptions.notfound.TemplateNotFound;
 import com.cartobucket.auth.data.domain.Template;
+import com.cartobucket.auth.data.exceptions.notfound.TemplateNotFound;
+import com.cartobucket.auth.rpc.server.entities.EventType;
+import com.cartobucket.auth.rpc.server.entities.mappers.TemplateMapper;
+import com.cartobucket.auth.rpc.server.repositories.EventRepository;
 import com.cartobucket.auth.rpc.server.repositories.TemplateRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
@@ -29,13 +31,17 @@ import jakarta.transaction.Transactional;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.StreamSupport;
 
 @ApplicationScoped
 public class TemplateService implements com.cartobucket.auth.data.services.TemplateService {
+    final EventRepository eventRepository;
     final TemplateRepository templateRepository;
 
-    public TemplateService(TemplateRepository templateRepository) {
+    public TemplateService(
+            EventRepository eventRepository,
+            TemplateRepository templateRepository
+    ) {
+        this.eventRepository = eventRepository;
         this.templateRepository = templateRepository;
     }
 
@@ -63,17 +69,18 @@ public class TemplateService implements com.cartobucket.auth.data.services.Templ
         // TODO: This does not catch the authorizationServerId & templateType constraint.
         var _template = TemplateMapper.to(template);
         templateRepository.persist(_template);
+        eventRepository.createTemplateEvent(TemplateMapper.from(_template), EventType.CREATE);
         return TemplateMapper.from(_template);
     }
 
     @Override
     @Transactional
     public void deleteTemplate(final UUID templateId) throws TemplateNotFound {
-        templateRepository.delete(
-                templateRepository
-                        .findByIdOptional(templateId)
-                        .orElseThrow(TemplateNotFound::new)
-        );
+        final var template = templateRepository
+                .findByIdOptional(templateId)
+                .orElseThrow(TemplateNotFound::new);
+        templateRepository.delete(template);
+        eventRepository.createTemplateEvent(TemplateMapper.from(template), EventType.DELETE);
     }
 
     @Override
@@ -94,6 +101,7 @@ public class TemplateService implements com.cartobucket.auth.data.services.Templ
         _template.setUpdatedOn(OffsetDateTime.now());
         _template.setTemplate(template.getTemplate());
         templateRepository.persist(_template);
+        eventRepository.createTemplateEvent(TemplateMapper.from(_template), EventType.UPDATE);
 
         return TemplateMapper.from(_template);
     }

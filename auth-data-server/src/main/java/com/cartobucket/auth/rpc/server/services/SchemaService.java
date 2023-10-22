@@ -19,10 +19,12 @@
 
 package com.cartobucket.auth.rpc.server.services;
 
-import com.cartobucket.auth.rpc.server.entities.mappers.SchemaMapper;
-import com.cartobucket.auth.data.exceptions.notfound.SchemaNotFound;
 import com.cartobucket.auth.data.domain.Profile;
 import com.cartobucket.auth.data.domain.Schema;
+import com.cartobucket.auth.data.exceptions.notfound.SchemaNotFound;
+import com.cartobucket.auth.rpc.server.entities.EventType;
+import com.cartobucket.auth.rpc.server.entities.mappers.SchemaMapper;
+import com.cartobucket.auth.rpc.server.repositories.EventRepository;
 import com.cartobucket.auth.rpc.server.repositories.SchemaRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -37,14 +39,18 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 @ApplicationScoped
 public class SchemaService implements com.cartobucket.auth.data.services.SchemaService {
+    final EventRepository eventRepository;
     final SchemaRepository schemaRepository;
     final ObjectMapper objectMapper = new ObjectMapper();
 
-    public SchemaService(SchemaRepository schemaRepository) {
+    public SchemaService(
+            EventRepository eventRepository,
+            SchemaRepository schemaRepository
+    ) {
+        this.eventRepository = eventRepository;
         this.schemaRepository = schemaRepository;
     }
 
@@ -70,6 +76,7 @@ public class SchemaService implements com.cartobucket.auth.data.services.SchemaS
         schema.setUpdatedOn(OffsetDateTime.now());
         var _schema = SchemaMapper.to(schema);
         schemaRepository.persist(_schema);
+        eventRepository.createSchemaEvent(SchemaMapper.from(_schema), EventType.CREATE);
         return SchemaMapper.from(_schema);
     }
 
@@ -79,6 +86,7 @@ public class SchemaService implements com.cartobucket.auth.data.services.SchemaS
                 .findByIdOptional(schemaId)
                 .orElseThrow(SchemaNotFound::new);
         schemaRepository.delete(schema);
+        eventRepository.createSchemaEvent(SchemaMapper.from(schema), EventType.DELETE);
     }
 
     @Override
@@ -115,6 +123,7 @@ public class SchemaService implements com.cartobucket.auth.data.services.SchemaS
         _schema.setSchema(schema.getSchema());
         _schema.setUpdatedOn(OffsetDateTime.now());
         schemaRepository.persist(_schema);
+        eventRepository.createSchemaEvent(SchemaMapper.from(_schema), EventType.UPDATE);
         return SchemaMapper.from(_schema);
     }
 }

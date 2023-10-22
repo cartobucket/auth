@@ -25,11 +25,12 @@ import com.cartobucket.auth.data.exceptions.badrequests.CodeChallengeBadData;
 import com.cartobucket.auth.data.exceptions.notfound.ClientCodeNotFound;
 import com.cartobucket.auth.data.exceptions.notfound.ClientNotFound;
 import com.cartobucket.auth.data.services.ScopeService;
+import com.cartobucket.auth.rpc.server.entities.EventType;
 import com.cartobucket.auth.rpc.server.entities.mappers.ClientCodeMapper;
 import com.cartobucket.auth.rpc.server.entities.mappers.ClientMapper;
 import com.cartobucket.auth.rpc.server.repositories.ClientCodeRepository;
 import com.cartobucket.auth.rpc.server.repositories.ClientRepository;
-import com.cartobucket.auth.rpc.server.repositories.UserRepository;
+import com.cartobucket.auth.rpc.server.repositories.EventRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 
@@ -41,14 +42,17 @@ import java.util.UUID;
 public class ClientService implements com.cartobucket.auth.data.services.ClientService {
     final ClientRepository clientRepository;
     final ClientCodeRepository clientCodeRepository;
+    final EventRepository eventRepository;
     final ScopeService scopeService;
 
     public ClientService(
             ClientRepository clientRepository,
             ClientCodeRepository clientCodeRepository,
+            EventRepository eventRepository,
             ScopeService scopeService) {
         this.clientRepository = clientRepository;
         this.clientCodeRepository = clientCodeRepository;
+        this.eventRepository = eventRepository;
         this.scopeService = scopeService;
     }
 
@@ -71,6 +75,7 @@ public class ClientService implements com.cartobucket.auth.data.services.ClientS
         clientCode.setScopes(_scopes);
         var _clientCode = ClientCodeMapper.to(clientCode);
         clientCodeRepository.persist(_clientCode);
+        eventRepository.createClientCodeEvent(ClientCodeMapper.from(_clientCode), EventType.CREATE);
 
         return ClientCodeMapper.from(_clientCode);
     }
@@ -78,7 +83,11 @@ public class ClientService implements com.cartobucket.auth.data.services.ClientS
     @Override
     @Transactional
     public void deleteClient(final UUID clientId) {
-        clientRepository.deleteById(clientId);
+        final var client = clientRepository
+                .findByIdOptional(clientId)
+                .orElseThrow(ClientNotFound::new);
+        clientRepository.delete(client);
+        eventRepository.createClientEvent(ClientMapper.from(client), EventType.DELETE);
     }
 
     @Override
@@ -108,6 +117,7 @@ public class ClientService implements com.cartobucket.auth.data.services.ClientS
         _client.setName(client.getName());
         _client.setRedirectUris(client.getRedirectUris());
         clientRepository.persist(_client);
+        eventRepository.createClientEvent(ClientMapper.from(_client), EventType.UPDATE);
         return ClientMapper.from(_client);
     }
 
@@ -136,6 +146,7 @@ public class ClientService implements com.cartobucket.auth.data.services.ClientS
         client.setUpdatedOn(OffsetDateTime.now());
         var _client = ClientMapper.to(client);
         clientRepository.persist(_client);
+        eventRepository.createClientEvent(ClientMapper.from(_client), EventType.CREATE);
         return ClientMapper.from(_client);
     }
 }
