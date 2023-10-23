@@ -31,6 +31,8 @@ public class Template {
 
     private byte[] template;
 
+    private Metadata metadata;
+
     private OffsetDateTime createdOn;
 
     private OffsetDateTime updatedOn;
@@ -81,5 +83,13 @@ public class Template {
 
     public void setUpdatedOn(OffsetDateTime updatedOn) {
         this.updatedOn = updatedOn;
+    }
+
+    public Metadata getMetadata() {
+        return metadata;
+    }
+
+    public void setMetadata(Metadata metadata) {
+        this.metadata = metadata;
     }
 }

@@ -32,6 +32,8 @@ public class Scope {
 
     private String name;
 
+    private Metadata metadata;
+
     private OffsetDateTime createdOn;
 
     private OffsetDateTime updatedOn;
@@ -82,5 +84,13 @@ public class Scope {
         if (o == null || getClass() != o.getClass()) return false;
         Scope scope = (Scope) o;
         return Objects.equals(name, scope.name);
+    }
+
+    public Metadata getMetadata() {
+        return metadata;
+    }
+
+    public void setMetadata(Metadata metadata) {
+        this.metadata = metadata;
     }
 }

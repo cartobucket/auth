@@ -30,6 +30,7 @@ public class Schema {
     private String name;
     private String jsonSchemaVersion;
     private Map<String, Object> schema;
+    private Metadata metadata;
     private OffsetDateTime createdOn;
     private OffsetDateTime updatedOn;
     public Map<String, Object> getSchema() {
@@ -86,5 +87,13 @@ public class Schema {
 
     public void setJsonSchemaVersion(String jsonSchemaVersion) {
         this.jsonSchemaVersion = jsonSchemaVersion;
+    }
+
+    public Metadata getMetadata() {
+        return metadata;
+    }
+
+    public void setMetadata(Metadata metadata) {
+        this.metadata = metadata;
     }
 }

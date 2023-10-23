@@ -34,6 +34,8 @@ public class User {
 
     private String email;
 
+    private Metadata metadata;
+
     private OffsetDateTime createdOn;
 
     private OffsetDateTime updatedOn;
@@ -96,5 +98,13 @@ public class User {
 
     public Object getProfile() {
         return null;
+    }
+
+    public Metadata getMetadata() {
+        return metadata;
+    }
+
+    public void setMetadata(Metadata metadata) {
+        this.metadata = metadata;
     }
 }

@@ -31,6 +31,8 @@ public class Application {
 
     private UUID authorizationServerId;
 
+    private Metadata metadata;
+
     private OffsetDateTime createdOn;
 
     private OffsetDateTime updatedOn;
@@ -81,5 +83,13 @@ public class Application {
 
     public void setUpdatedOn(OffsetDateTime updatedOn) {
         this.updatedOn = updatedOn;
+    }
+
+    public Metadata getMetadata() {
+        return metadata;
+    }
+
+    public void setMetadata(Metadata metadata) {
+        this.metadata = metadata;
     }
 }
