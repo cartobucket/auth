@@ -19,22 +19,18 @@
 
 package com.cartobucket.auth.data.services.impls.mappers;
 
-import com.cartobucket.auth.data.collections.Pair;
+import com.cartobucket.auth.data.domain.Pair;
 import com.cartobucket.auth.data.domain.Application;
 import com.cartobucket.auth.data.domain.ApplicationSecret;
 import com.cartobucket.auth.data.domain.Profile;
 import com.cartobucket.auth.data.domain.ProfileType;
-import com.cartobucket.auth.data.rpc.ScopeResponse;
 import com.cartobucket.auth.rpc.*;
-import io.smallrye.mutiny.Uni;
 
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.util.Collections;
-import java.util.List;
 import java.util.UUID;
-import java.util.stream.Stream;
 
 public class ApplicationMapper {
     public static Application toApplication(ApplicationResponse applicationResponse) {

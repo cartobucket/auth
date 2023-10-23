@@ -1,6 +1,6 @@
 package com.cartobucket.auth.rpc.server.repositories;
 
-import com.cartobucket.auth.data.collections.Pair;
+import com.cartobucket.auth.data.domain.Pair;
 import com.cartobucket.auth.data.domain.Application;
 import com.cartobucket.auth.data.domain.AuthorizationServer;
 import com.cartobucket.auth.data.domain.Client;

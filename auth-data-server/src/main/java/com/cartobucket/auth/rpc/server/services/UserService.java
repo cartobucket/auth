@@ -19,7 +19,7 @@
 
 package com.cartobucket.auth.rpc.server.services;
 
-import com.cartobucket.auth.data.collections.Pair;
+import com.cartobucket.auth.data.domain.Pair;
 import com.cartobucket.auth.data.domain.Profile;
 import com.cartobucket.auth.data.domain.ProfileType;
 import com.cartobucket.auth.data.domain.User;

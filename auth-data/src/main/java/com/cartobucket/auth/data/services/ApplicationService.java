@@ -19,7 +19,7 @@
 
 package com.cartobucket.auth.data.services;
 
-import com.cartobucket.auth.data.collections.Pair;
+import com.cartobucket.auth.data.domain.Pair;
 import com.cartobucket.auth.data.exceptions.badrequests.ApplicationSecretNoApplicationBadData;
 import com.cartobucket.auth.data.exceptions.notfound.ApplicationNotFound;
 import com.cartobucket.auth.data.exceptions.notfound.ApplicationSecretNotFound;

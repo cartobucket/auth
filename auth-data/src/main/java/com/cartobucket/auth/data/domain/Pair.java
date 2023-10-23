@@ -38,7 +38,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.cartobucket.auth.data.collections;
+package com.cartobucket.auth.data.domain;
 
 import java.util.Objects;
 

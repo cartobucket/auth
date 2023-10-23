@@ -19,7 +19,7 @@
 
 package com.cartobucket.auth.data.services.impls;
 
-import com.cartobucket.auth.data.collections.Pair;
+import com.cartobucket.auth.data.domain.Pair;
 import com.cartobucket.auth.data.domain.Application;
 import com.cartobucket.auth.data.domain.ApplicationSecret;
 import com.cartobucket.auth.data.domain.Profile;
@@ -42,7 +42,6 @@ import com.cartobucket.auth.rpc.MutinyApplicationSecretsGrpc;
 import com.cartobucket.auth.rpc.MutinyApplicationsGrpc;
 import io.quarkus.arc.DefaultBean;
 import io.quarkus.grpc.GrpcClient;
-import io.smallrye.mutiny.Uni;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 

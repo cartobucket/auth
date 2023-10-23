@@ -19,7 +19,7 @@
 
 package com.cartobucket.auth.api.server.routes;
 
-import com.cartobucket.auth.data.collections.Pair;
+import com.cartobucket.auth.data.domain.Pair;
 import com.cartobucket.auth.generated.UsersApi;
 import com.cartobucket.auth.model.generated.UserRequest;
 import com.cartobucket.auth.model.generated.UsersResponse;
