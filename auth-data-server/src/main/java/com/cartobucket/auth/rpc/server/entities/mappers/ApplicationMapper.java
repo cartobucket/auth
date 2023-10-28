@@ -20,6 +20,7 @@
 package com.cartobucket.auth.rpc.server.entities.mappers;
 
 import com.cartobucket.auth.data.domain.Application;
+import com.cartobucket.auth.data.domain.Metadata;
 
 public class ApplicationMapper {
     public static Application from(com.cartobucket.auth.rpc.server.entities.Application application) {
@@ -28,6 +29,7 @@ public class ApplicationMapper {
         _application.setAuthorizationServerId(application.getAuthorizationServerId());
         _application.setName(application.getName());
         _application.setClientId(application.getClientId());
+        _application.setMetadata(application.getMetadata());
         _application.setUpdatedOn(application.getUpdatedOn());
         _application.setCreatedOn(application.getCreatedOn());
         return _application;
@@ -41,6 +43,7 @@ public class ApplicationMapper {
         _application.setClientId(application.getClientId());
         _application.setUpdatedOn(application.getUpdatedOn());
         _application.setCreatedOn(application.getCreatedOn());
+        _application.setMetadata(application.getMetadata());
         return _application;
     }
 

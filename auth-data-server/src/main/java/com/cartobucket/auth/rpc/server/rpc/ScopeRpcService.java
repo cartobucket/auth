@@ -29,6 +29,7 @@ import com.cartobucket.auth.data.rpc.ScopeResponse;
 import com.cartobucket.auth.data.rpc.Scopes;
 import com.cartobucket.auth.data.rpc.ScopesListResponse;
 import com.cartobucket.auth.data.services.ScopeService;
+import com.cartobucket.auth.data.services.impls.mappers.MetadataMapper;
 import com.google.protobuf.Timestamp;
 import io.quarkus.grpc.GrpcService;
 import io.smallrye.common.annotation.Blocking;
@@ -50,6 +51,7 @@ public class ScopeRpcService implements Scopes {
         var scope = new Scope();
         scope.setName(request.getName());
         scope.setAuthorizationServerId(UUID.fromString(request.getAuthorizationServerId()));
+        scope.setMetadata(MetadataMapper.from(request.getMetadata()));
         scope = scopeService.createScope(scope);
 
         var response = ScopeResponse
@@ -57,6 +59,7 @@ public class ScopeRpcService implements Scopes {
                 .setId(String.valueOf(scope.getId()))
                 .setName(scope.getName())
                 .setAuthorizationServerId(String.valueOf(scope.getAuthorizationServerId()))
+                .setMetadata(MetadataMapper.to(scope.getMetadata()))
                 .setCreatedOn(Timestamp.newBuilder().setSeconds(scope.getCreatedOn().toEpochSecond()).build())
                 .setUpdatedOn(Timestamp.newBuilder().setSeconds(scope.getUpdatedOn().toEpochSecond()).build())
                 .build();
@@ -86,6 +89,7 @@ public class ScopeRpcService implements Scopes {
                     .setId(String.valueOf(scope.getId()))
                     .setName(scope.getName())
                     .setAuthorizationServerId(String.valueOf(scope.getAuthorizationServerId()))
+                    .setMetadata(MetadataMapper.to(scope.getMetadata()))
                     .setCreatedOn(Timestamp.newBuilder().setSeconds(scope.getCreatedOn().toEpochSecond()).build())
                     .setUpdatedOn(Timestamp.newBuilder().setSeconds(scope.getUpdatedOn().toEpochSecond()).build())
             );
@@ -119,6 +123,7 @@ public class ScopeRpcService implements Scopes {
                         .setId(String.valueOf(scope.getId()))
                         .setName(scope.getName())
                         .setAuthorizationServerId(String.valueOf(scope.getAuthorizationServerId()))
+                        .setMetadata(MetadataMapper.to(scope.getMetadata()))
                         .setCreatedOn(Timestamp.newBuilder().setSeconds(scope.getCreatedOn().toEpochSecond()).build())
                         .setUpdatedOn(Timestamp.newBuilder().setSeconds(scope.getUpdatedOn().toEpochSecond()).build())
                         .build());

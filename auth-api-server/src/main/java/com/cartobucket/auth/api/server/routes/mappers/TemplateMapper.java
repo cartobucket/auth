@@ -29,6 +29,7 @@ public class TemplateMapper {
         var template = new Template();
         template.setAuthorizationServerId(templateRequest.getAuthorizationServerId());
         template.setTemplate(templateRequest.getTemplate().getBytes());
+        template.setMetadata(MetadataMapper.from(templateRequest.getMetadata()));
         switch (templateRequest.getTemplateType()) {
             case LOGIN -> {
                 template.setTemplateType(TemplateTypeEnum.LOGIN);
@@ -43,6 +44,7 @@ public class TemplateMapper {
         templateResponse.setId(String.valueOf(template.getId()));
         templateResponse.setAuthorizationServerId(template.getAuthorizationServerId());
         templateResponse.setTemplate(new String(template.getTemplate()));
+        templateResponse.setMetadata(MetadataMapper.to(template.getMetadata()));
         templateResponse.setTemplateType(template.getTemplateType().toString());
         templateResponse.setCreatedOn(template.getCreatedOn());
         templateResponse.setUpdatedOn(template.getUpdatedOn());

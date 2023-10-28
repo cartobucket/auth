@@ -33,6 +33,7 @@ public class ClientMapper {
         client.setAuthorizationServerId(clientRequest.getAuthorizationServerId());
         client.setRedirectUris(clientRequest.getRedirectUris().stream().map(URI::create).toList());
         client.setScopes(ScopeService.scopeStringToScopeList(clientRequest.getScopes()));
+        client.setMetadata(MetadataMapper.from(clientRequest.getMetadata()));
         return client;
     }
 
@@ -43,6 +44,7 @@ public class ClientMapper {
         clientResponse.setAuthorizationServerId(String.valueOf(client.getAuthorizationServerId()));
         clientResponse.setRedirectUris(client.getRedirectUris().stream().map(String::valueOf).toList());
         clientResponse.setScopes(ScopeService.scopeListToScopeString(client.getScopes()));
+        clientResponse.setMetadata(MetadataMapper.to(client.getMetadata()));
         clientResponse.setCreatedOn(client.getCreatedOn());
         clientResponse.setUpdatedOn(client.getUpdatedOn());
         return clientResponse;

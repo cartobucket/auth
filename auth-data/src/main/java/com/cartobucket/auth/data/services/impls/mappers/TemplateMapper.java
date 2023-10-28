@@ -36,6 +36,7 @@ public class TemplateMapper {
         template.setId(UUID.fromString(templateResponse.getId()));
         template.setTemplateType(TemplateTypeEnum.valueOf(templateResponse.getTemplateType().toString()));
         template.setAuthorizationServerId(UUID.fromString(templateResponse.getAuthorizationServerId()));
+        template.setMetadata(MetadataMapper.from(templateResponse.getMetadata()));
         template.setCreatedOn(OffsetDateTime.ofInstant(Instant.ofEpochSecond(templateResponse.getCreatedOn().getSeconds()), ZoneId.of("UTC")));
         template.setUpdatedOn(OffsetDateTime.ofInstant(Instant.ofEpochSecond(templateResponse.getUpdatedOn().getSeconds()), ZoneId.of("UTC")));
         return template;
@@ -47,6 +48,7 @@ public class TemplateMapper {
         template.setId(UUID.fromString(templateCreateResponse.getId()));
         template.setTemplateType(TemplateTypeEnum.valueOf(templateCreateResponse.getTemplateType().toString()));
         template.setAuthorizationServerId(UUID.fromString(templateCreateResponse.getAuthorizationServerId()));
+        template.setMetadata(MetadataMapper.from(templateCreateResponse.getMetadata()));
         template.setCreatedOn(OffsetDateTime.ofInstant(Instant.ofEpochSecond(templateCreateResponse.getCreatedOn().getSeconds()), ZoneId.of("UTC")));
         template.setUpdatedOn(OffsetDateTime.ofInstant(Instant.ofEpochSecond(templateCreateResponse.getUpdatedOn().getSeconds()), ZoneId.of("UTC")));
         return template;

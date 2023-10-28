@@ -24,6 +24,7 @@ import com.cartobucket.auth.data.domain.Profile;
 import com.cartobucket.auth.data.domain.User;
 import com.cartobucket.auth.data.exceptions.notfound.ProfileNotFound;
 import com.cartobucket.auth.data.exceptions.notfound.UserNotFound;
+import com.cartobucket.auth.data.services.impls.mappers.MetadataMapper;
 import com.cartobucket.auth.data.services.impls.mappers.UserMapper;
 import com.cartobucket.auth.rpc.MutinyUsersGrpc;
 import com.cartobucket.auth.rpc.UserCreateRequest;
@@ -77,6 +78,7 @@ public class UserService implements com.cartobucket.auth.data.services.UserServi
                                 .newBuilder()
                                 .setUsername(userProfilePair.getLeft().getUsername())
                                 .setPassword(userProfilePair.getLeft().getPassword())
+                                .setMetadata(MetadataMapper.to(userProfilePair.getLeft().getMetadata()))
                                 .setProfile(Profile.toProtoMap(userProfilePair.getRight().getProfile()))
                                 .setAuthorizationServerId(String.valueOf(userProfilePair.getLeft().getAuthorizationServerId()))
                                 .setEmail(userProfilePair.getLeft().getEmail())
@@ -141,6 +143,7 @@ public class UserService implements com.cartobucket.auth.data.services.UserServi
                                         .newBuilder()
                                         .setId(String.valueOf(userId))
                                         .setUsername(userProfilePair.getLeft().getUsername())
+                                        .setMetadata(MetadataMapper.to(userProfilePair.getLeft().getMetadata()))
                                         .setProfile(Profile.toProtoMap(userProfilePair.getRight().getProfile()))
                                         .setEmail(userProfilePair.getLeft().getEmail())
                                         .build()

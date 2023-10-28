@@ -19,7 +19,10 @@
 
 package com.cartobucket.auth.rpc.server.entities;
 
+import com.cartobucket.auth.data.domain.Metadata;
 import jakarta.persistence.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.time.OffsetDateTime;
 import java.util.Objects;
@@ -36,6 +39,9 @@ public class Scope {
     private UUID authorizationServerId;
 
     private String name;
+
+    @JdbcTypeCode(SqlTypes.JSON)
+    private Metadata metadata;
 
     private OffsetDateTime createdOn;
 
@@ -87,5 +93,13 @@ public class Scope {
         if (o == null || getClass() != o.getClass()) return false;
         Scope scope = (Scope) o;
         return Objects.equals(name, scope.name);
+    }
+
+    public Metadata getMetadata() {
+        return metadata;
+    }
+
+    public void setMetadata(Metadata metadata) {
+        this.metadata = metadata;
     }
 }

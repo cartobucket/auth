@@ -20,6 +20,8 @@
 package com.cartobucket.auth.data.domain;
 
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.protobuf.ListValue;
 import com.google.protobuf.Struct;
 import com.google.protobuf.Value;
@@ -151,7 +153,10 @@ public class Profile {
         } else if (value instanceof Boolean) {
             return Value.newBuilder().setBoolValue((Boolean) value).build();
         } else if (value instanceof HashMap) {
-            return Value.newBuilder().setStructValue(toProtoMap((HashMap) value)).build();
+            return Value.newBuilder().setStructValue(
+                    toProtoMap(
+                            new ObjectMapper().convertValue(value, new TypeReference<>() {})
+                    )).build();
         } else if (value instanceof List) {
             // TODO: There is a bug in here.
             return Value
@@ -160,7 +165,7 @@ public class Profile {
                             ListValue
                                     .newBuilder()
                                     .addAllValues(
-                                            ((List<Value>) value)
+                                            ((List)value)
                                                     .stream()
                                                     .map(Profile::fromNative)
                                                     .toList()

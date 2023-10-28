@@ -13,6 +13,7 @@ dependencies {
 
     implementation 'io.quarkus:quarkus-grpc'
     implementation 'io.quarkus:quarkus-arc'
+    implementation 'io.quarkus:quarkus-jackson'
     testImplementation 'io.quarkus:quarkus-junit5'
 }
 

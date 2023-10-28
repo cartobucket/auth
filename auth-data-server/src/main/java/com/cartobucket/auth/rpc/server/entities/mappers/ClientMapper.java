@@ -29,6 +29,7 @@ public class ClientMapper {
         _client.setId(client.getId());
         _client.setRedirectUris(client.getRedirectUris());
         _client.setAuthorizationServerId(client.getAuthorizationServerId());
+        _client.setMetadata(client.getMetadata());
         _client.setUpdatedOn(client.getUpdatedOn());
         _client.setCreatedOn(client.getCreatedOn());
         return _client;
@@ -39,8 +40,11 @@ public class ClientMapper {
         _client.setName(client.getName());
         _client.setScopes(client.getScopes());
         _client.setId(client.getId());
+        // TODO: This should come from the client, this is just an oversight, please fix.
+        _client.setClientId(String.valueOf(client.getId()));
         _client.setRedirectUris(client.getRedirectUris());
         _client.setAuthorizationServerId(client.getAuthorizationServerId());
+        _client.setMetadata(client.getMetadata());
         _client.setUpdatedOn(client.getUpdatedOn());
         _client.setCreatedOn(client.getCreatedOn());
         return _client;

@@ -37,6 +37,7 @@ public class ClientsMapper {
         client.setName(clientResponse.getName());
         client.setScopes(clientResponse.getScopesList());
         client.setRedirectUris(clientResponse.getRedirectUrisList().stream().map(URI::create).toList());
+        client.setMetadata(MetadataMapper.from(clientResponse.getMetadata()));
         client.setCreatedOn(OffsetDateTime.ofInstant(Instant.ofEpochSecond(clientResponse.getCreatedOn().getSeconds()), ZoneId.of("UTC")));
         client.setUpdatedOn(OffsetDateTime.ofInstant(Instant.ofEpochSecond(clientResponse.getUpdatedOn().getSeconds()), ZoneId.of("UTC")));
         return client;
@@ -49,6 +50,7 @@ public class ClientsMapper {
         client.setName(clientCreateResponse.getName());
         client.setScopes(clientCreateResponse.getScopesList());
         client.setRedirectUris(clientCreateResponse.getRedirectUrisList().stream().map(URI::create).toList());
+        client.setMetadata(MetadataMapper.from(clientCreateResponse.getMetadata()));
         client.setCreatedOn(OffsetDateTime.ofInstant(Instant.ofEpochSecond(clientCreateResponse.getCreatedOn().getSeconds()), ZoneId.of("UTC")));
         client.setUpdatedOn(OffsetDateTime.ofInstant(Instant.ofEpochSecond(clientCreateResponse.getUpdatedOn().getSeconds()), ZoneId.of("UTC")));
         return client;

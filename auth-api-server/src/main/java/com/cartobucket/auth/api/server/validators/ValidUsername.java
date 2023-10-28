@@ -71,7 +71,7 @@ public @interface ValidUsername {
             if (value == null) {
                 return false;
             }
-            return userService.getUser(value) != null;
+            return userService.getUser(value) == null;
         }
     }
 }

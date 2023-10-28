@@ -33,6 +33,7 @@ import com.networknt.schema.JsonSchemaFactory;
 import com.networknt.schema.SpecVersion;
 import com.networknt.schema.ValidationMessage;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.transaction.Transactional;
 
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -71,6 +72,7 @@ public class SchemaService implements com.cartobucket.auth.data.services.SchemaS
     }
 
     @Override
+    @Transactional
     public Schema createSchema(final Schema schema) {
         schema.setCreatedOn(OffsetDateTime.now());
         schema.setUpdatedOn(OffsetDateTime.now());
@@ -114,6 +116,7 @@ public class SchemaService implements com.cartobucket.auth.data.services.SchemaS
     }
 
     @Override
+    @Transactional
     public Schema updateSchema(final UUID schemaId, Schema schema) throws SchemaNotFound {
         var _schema = schemaRepository
                 .findByIdOptional(schemaId)

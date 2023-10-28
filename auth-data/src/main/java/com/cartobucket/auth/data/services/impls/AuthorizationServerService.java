@@ -27,6 +27,7 @@ import com.cartobucket.auth.data.domain.SigningKey;
 import com.cartobucket.auth.data.exceptions.NotAuthorized;
 import com.cartobucket.auth.data.exceptions.notfound.AuthorizationServerNotFound;
 import com.cartobucket.auth.data.services.impls.mappers.AuthorizationServerMapper;
+import com.cartobucket.auth.data.services.impls.mappers.MetadataMapper;
 import com.cartobucket.auth.rpc.AuthorizationServerCreateRequest;
 import com.cartobucket.auth.rpc.AuthorizationServerDeleteRequest;
 import com.cartobucket.auth.rpc.AuthorizationServerGetRequest;
@@ -87,6 +88,7 @@ public class AuthorizationServerService implements com.cartobucket.auth.data.ser
                                 .setServerUrl(String.valueOf(authorizationServer.getServerUrl()))
                                 .setAuthorizationCodeTokenExpiration(authorizationServer.getAuthorizationCodeTokenExpiration())
                                 .setClientCredentialsTokenExpiration(authorizationServer.getClientCredentialsTokenExpiration())
+                                .setMetadata(MetadataMapper.to(authorizationServer.getMetadata()))
                                 .build()
                         )
                         .await()
@@ -105,6 +107,7 @@ public class AuthorizationServerService implements com.cartobucket.auth.data.ser
                                         .setServerUrl(String.valueOf(authorizationServer.getServerUrl()))
                                         .setAuthorizationCodeTokenExpiration(authorizationServer.getAuthorizationCodeTokenExpiration())
                                         .setClientCredentialsTokenExpiration(authorizationServer.getClientCredentialsTokenExpiration())
+                                        .setMetadata(MetadataMapper.to(authorizationServer.getMetadata()))
                                         .build()
 
                         )

@@ -5,6 +5,7 @@ option java_package = "com.cartobucket.auth.rpc";
 option java_outer_classname = "ClientProto";
 
 import "google/protobuf/timestamp.proto";
+import "metadata.proto";
 
 
 service Clients {
@@ -13,7 +14,6 @@ service Clients {
   rpc DeleteClient (ClientDeleteRequest) returns (ClientResponse) {};
   rpc UpdateClient (ClientUpdateRequest) returns (ClientResponse) {};
   rpc GetClient (ClientGetRequest) returns (ClientResponse) {};
-
 }
 
 message ClientCreateRequest {
@@ -21,6 +21,7 @@ message ClientCreateRequest {
   string authorizationServerId = 2;
   repeated string redirectUris = 3;
   repeated string scopes = 4;
+  Metadata metadata = 5;
 }
 
 message ClientListRequest {
@@ -38,6 +39,7 @@ message ClientUpdateRequest {
   string name = 2;
   repeated string redirectUris = 3;
   repeated string scopes = 4;
+  Metadata metadata = 5;
 }
 
 message ClientGetRequest {
@@ -50,8 +52,9 @@ message ClientCreateResponse {
   string authorizationServerId = 3;
   repeated string redirectUris = 4;
   repeated string scopes = 5;
-  google.protobuf.Timestamp createdOn = 6;
-  google.protobuf.Timestamp updatedOn = 7;
+  Metadata metadata = 6;
+  google.protobuf.Timestamp createdOn = 7;
+  google.protobuf.Timestamp updatedOn = 8;
 }
 
 message ClientResponse {
@@ -60,8 +63,9 @@ message ClientResponse {
   string authorizationServerId = 3;
   repeated string redirectUris = 4;
   repeated string scopes = 5;
-  google.protobuf.Timestamp createdOn = 6;
-  google.protobuf.Timestamp updatedOn = 7;
+  Metadata metadata = 6;
+  google.protobuf.Timestamp createdOn = 7;
+  google.protobuf.Timestamp updatedOn = 8;
 }
 
 message ClientListResponse {

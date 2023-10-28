@@ -19,7 +19,9 @@
 
 package com.cartobucket.auth.rpc.server.entities.mappers;
 
+import com.cartobucket.auth.data.domain.Metadata;
 import com.cartobucket.auth.data.domain.Template;
+import com.cartobucket.auth.data.services.impls.mappers.MetadataMapper;
 
 public class TemplateMapper {
     public static Template from(com.cartobucket.auth.rpc.server.entities.Template template) {
@@ -28,6 +30,7 @@ public class TemplateMapper {
         _template.setId(template.getId());
         _template.setTemplateType(template.getTemplateType());
         _template.setAuthorizationServerId(template.getAuthorizationServerId());
+        _template.setMetadata(template.getMetadata());
         _template.setUpdatedOn(template.getUpdatedOn());
         _template.setCreatedOn(template.getCreatedOn());
         return _template;
@@ -39,6 +42,7 @@ public class TemplateMapper {
         _template.setId(template.getId());
         _template.setTemplateType(template.getTemplateType());
         _template.setAuthorizationServerId(template.getAuthorizationServerId());
+        _template.setMetadata(template.getMetadata());
         _template.setUpdatedOn(template.getUpdatedOn());
         _template.setCreatedOn(template.getCreatedOn());
         return _template;

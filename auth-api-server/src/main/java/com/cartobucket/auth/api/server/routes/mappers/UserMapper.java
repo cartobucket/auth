@@ -19,12 +19,9 @@
 
 package com.cartobucket.auth.api.server.routes.mappers;
 
-import com.cartobucket.auth.data.domain.Pair;
+import com.cartobucket.auth.data.domain.*;
 import com.cartobucket.auth.model.generated.UserRequest;
 import com.cartobucket.auth.model.generated.UserResponse;
-import com.cartobucket.auth.data.domain.Profile;
-import com.cartobucket.auth.data.domain.ProfileType;
-import com.cartobucket.auth.data.domain.User;
 
 import java.util.Collections;
 import java.util.Map;
@@ -33,6 +30,7 @@ public class UserMapper {
     public static Pair<User, Profile> from(UserRequest userRequest) {
         var user = new User();
         user.setAuthorizationServerId(userRequest.getAuthorizationServerId());
+        user.setMetadata(MetadataMapper.from(userRequest.getMetadata()));
         user.setUsername(userRequest.getUsername());
         user.setEmail(userRequest.getEmail());
         user.setPassword(userRequest.getPassword());
@@ -51,6 +49,7 @@ public class UserMapper {
         userResponse.setAuthorizationServerId(String.valueOf(user.getAuthorizationServerId()));
         userResponse.setUsername(user.getUsername());
         userResponse.setEmail(user.getEmail());
+        userResponse.setMetadata(MetadataMapper.to(user.getMetadata()));
         userResponse.setCreatedOn(user.getCreatedOn());
         userResponse.setUpdatedOn(user.getUpdatedOn());
         if (profile.getProfile() != null) {

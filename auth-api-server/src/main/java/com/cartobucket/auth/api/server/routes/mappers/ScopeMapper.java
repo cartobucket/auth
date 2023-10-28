@@ -28,6 +28,7 @@ public class ScopeMapper {
         var scope = new Scope();
         scope.setName(scopeRequest.getName());
         scope.setAuthorizationServerId(scopeRequest.getAuthorizationServerId());
+        scope.setMetadata(MetadataMapper.from(scopeRequest.getMetadata()));
         return scope;
     }
 
@@ -36,6 +37,7 @@ public class ScopeMapper {
         response.setId(String.valueOf(scope.getId()));
         response.setAuthorizationServerId(scope.getAuthorizationServerId());
         response.setName(scope.getName());
+        response.setMetadata(MetadataMapper.to(scope.getMetadata()));
         response.setCreatedOn(scope.getCreatedOn());
         response.setUpdatedOn(scope.getUpdatedOn());
         return response;

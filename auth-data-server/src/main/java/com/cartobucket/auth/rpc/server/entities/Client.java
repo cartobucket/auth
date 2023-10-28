@@ -19,6 +19,7 @@
 
 package com.cartobucket.auth.rpc.server.entities;
 
+import com.cartobucket.auth.data.domain.Metadata;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -33,7 +34,6 @@ import java.util.UUID;
 @Entity
 public class Client {
     @Id
-    @GeneratedValue
     private UUID id;
 
     private String name;
@@ -47,6 +47,9 @@ public class Client {
 
     @JdbcTypeCode(SqlTypes.JSON)
     private List<String> scopes;
+
+    @JdbcTypeCode(SqlTypes.JSON)
+    private Metadata metadata;
 
     private OffsetDateTime createdOn;
 
@@ -114,5 +117,13 @@ public class Client {
 
     public void setClientId(String clientId) {
         this.clientId = clientId;
+    }
+
+    public Metadata getMetadata() {
+        return metadata;
+    }
+
+    public void setMetadata(Metadata metadata) {
+        this.metadata = metadata;
     }
 }

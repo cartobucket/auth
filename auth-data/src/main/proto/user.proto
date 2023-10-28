@@ -6,6 +6,7 @@ option java_outer_classname = "UserProto";
 
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/struct.proto";
+import "metadata.proto";
 
 
 service Users {
@@ -24,6 +25,7 @@ message UserCreateRequest {
   string email = 3;
   string password = 4;
   google.protobuf.Struct profile = 5;
+  Metadata metadata = 6;
 }
 
 message UserListRequest {
@@ -41,6 +43,7 @@ message UserUpdateRequest {
   string username = 2;
   string email = 3;
   google.protobuf.Struct profile = 4;
+  Metadata metadata = 5;
 }
 
 message UserGetRequest {
@@ -65,6 +68,7 @@ message UserCreateResponse {
   google.protobuf.Struct profile = 5;
   google.protobuf.Timestamp createdOn = 6;
   google.protobuf.Timestamp updatedOn = 7;
+  Metadata metadata = 8;
 }
 
 message UserResponse {
@@ -75,6 +79,7 @@ message UserResponse {
   google.protobuf.Struct profile = 5;
   google.protobuf.Timestamp createdOn = 6;
   google.protobuf.Timestamp updatedOn = 7;
+  Metadata metadata = 8;
 }
 
 message UserListResponse {

@@ -35,6 +35,7 @@ public class ScopeMapper {
         scope.setId(UUID.fromString(scopeResponse.getId()));
         scope.setName(scopeResponse.getName());
         scope.setAuthorizationServerId(UUID.fromString(scopeResponse.getAuthorizationServerId()));
+        scope.setMetadata(MetadataMapper.from(scopeResponse.getMetadata()));
         scope.setCreatedOn(OffsetDateTime.ofInstant(Instant.ofEpochSecond(scopeResponse.getCreatedOn().getSeconds()), ZoneId.of("UTC")));
         scope.setUpdatedOn(OffsetDateTime.ofInstant(Instant.ofEpochSecond(scopeResponse.getUpdatedOn().getSeconds()), ZoneId.of("UTC")));
         return scope;

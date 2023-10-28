@@ -19,10 +19,13 @@
 
 package com.cartobucket.auth.rpc.server.entities;
 
+import com.cartobucket.auth.data.domain.Metadata;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.time.OffsetDateTime;
 import java.util.UUID;
@@ -41,6 +44,9 @@ public class User {
     private String username;
 
     private String email;
+
+    @JdbcTypeCode(SqlTypes.JSON)
+    private Metadata metadata;
 
     private OffsetDateTime createdOn;
 
@@ -104,5 +110,13 @@ public class User {
 
     public Object getProfile() {
         return null;
+    }
+
+    public Metadata getMetadata() {
+        return metadata;
+    }
+
+    public void setMetadata(Metadata metadata) {
+        this.metadata = metadata;
     }
 }

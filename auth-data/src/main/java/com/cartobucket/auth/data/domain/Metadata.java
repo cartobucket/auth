@@ -8,8 +8,8 @@ public class Metadata {
     private List<Identifier> identifiers;
     private List<SchemaValidation> schemaValidations;
     private Map<String, Object> properties;
-    private OffsetDateTime createdOn;
-    private List<OffsetDateTime> updateDates;
+//    private OffsetDateTime createdOn;
+//    private List<OffsetDateTime> updateDates;
 
     public List<Identifier> getIdentifiers() {
         return identifiers;
@@ -35,19 +35,19 @@ public class Metadata {
         this.properties = properties;
     }
 
-    public OffsetDateTime getCreatedOn() {
-        return createdOn;
-    }
-
-    public void setCreatedOn(OffsetDateTime createdOn) {
-        this.createdOn = createdOn;
-    }
-
-    public List<OffsetDateTime> getUpdateDates() {
-        return updateDates;
-    }
-
-    public void setUpdateDates(List<OffsetDateTime> updateDates) {
-        this.updateDates = updateDates;
-    }
+//    public OffsetDateTime getCreatedOn() {
+//        return createdOn;
+//    }
+//
+//    public void setCreatedOn(OffsetDateTime createdOn) {
+//        this.createdOn = createdOn;
+//    }
+//
+//    public List<OffsetDateTime> getUpdateDates() {
+//        return updateDates;
+//    }
+//
+//    public void setUpdateDates(List<OffsetDateTime> updateDates) {
+//        this.updateDates = updateDates;
+//    }
 }

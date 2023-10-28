@@ -5,6 +5,7 @@ option java_package = "com.cartobucket.auth.data.rpc";
 option java_outer_classname = "ScopeProto";
 
 import "google/protobuf/timestamp.proto";
+import "metadata.proto";
 
 
 service Scopes {
@@ -12,12 +13,12 @@ service Scopes {
   rpc ListScopes (ScopeListRequest) returns (ScopesListResponse) {};
   rpc DeleteScope (ScopeDeleteRequest) returns (ScopeResponse) {};
   rpc GetScope (ScopeGetRequest) returns (ScopeResponse) {};
-
 }
 
 message ScopeCreateRequest {
   string authorizationServerId = 1;
   string name = 2;
+  Metadata metadata = 3;
 }
 
 message ScopeListRequest {
@@ -34,8 +35,9 @@ message ScopeResponse {
   string id = 1;
   string authorizationServerId = 2;
   string name = 3;
-  google.protobuf.Timestamp createdOn = 4;
-  google.protobuf.Timestamp updatedOn = 5;
+  Metadata metadata = 4;
+  google.protobuf.Timestamp createdOn = 5;
+  google.protobuf.Timestamp updatedOn = 6;
 }
 
 message ScopesListResponse {

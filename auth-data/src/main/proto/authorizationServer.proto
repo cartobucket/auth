@@ -6,6 +6,7 @@ option java_outer_classname = "AuthorizationServerProto";
 
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/struct.proto";
+import "metadata.proto";
 
 
 service AuthorizationServers {
@@ -36,6 +37,7 @@ message AuthorizationServerCreateRequest {
   string audience = 3;
   int64 clientCredentialsTokenExpiration = 4;
   int64 authorizationCodeTokenExpiration = 5;
+  Metadata metadata = 6;
 }
 
 message AuthorizationServerListRequest {
@@ -54,6 +56,7 @@ message AuthorizationServerUpdateRequest {
   string audience = 4;
   int64 clientCredentialsTokenExpiration = 5;
   int64 authorizationCodeTokenExpiration = 6;
+  Metadata metadata = 7;
 }
 
 message AuthorizationServerGetRequest {
@@ -67,8 +70,9 @@ message AuthorizationServerCreateResponse {
   string audience = 4;
   int64 clientCredentialsTokenExpiration = 5;
   int64 authorizationCodeTokenExpiration = 6;
-  google.protobuf.Timestamp createdOn = 7;
-  google.protobuf.Timestamp updatedOn = 8;
+  Metadata metadata = 7;
+  google.protobuf.Timestamp createdOn = 8;
+  google.protobuf.Timestamp updatedOn = 9;
 }
 
 message AuthorizationServerResponse {
@@ -78,8 +82,9 @@ message AuthorizationServerResponse {
   string audience = 4;
   int64 clientCredentialsTokenExpiration = 5;
   int64 authorizationCodeTokenExpiration = 6;
-  google.protobuf.Timestamp createdOn = 7;
-  google.protobuf.Timestamp updatedOn = 8;
+  Metadata metadata = 7;
+  google.protobuf.Timestamp createdOn = 8;
+  google.protobuf.Timestamp updatedOn = 9;
 }
 
 message AuthorizationServersListResponse {

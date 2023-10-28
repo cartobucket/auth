@@ -18,6 +18,7 @@ public class UserMapper {
         user.setAuthorizationServerId(java.util.UUID.fromString(userResponse.getAuthorizationServerId()));
         user.setEmail(userResponse.getEmail());
         user.setUsername(userResponse.getUsername());
+        user.setMetadata(MetadataMapper.from(userResponse.getMetadata()));
         user.setCreatedOn(OffsetDateTime.ofInstant(Instant.ofEpochSecond(userResponse.getCreatedOn().getSeconds()), ZoneId.of("UTC")));
         user.setUpdatedOn(OffsetDateTime.ofInstant(Instant.ofEpochSecond(userResponse.getUpdatedOn().getSeconds()), ZoneId.of("UTC")));
 
@@ -30,6 +31,7 @@ public class UserMapper {
         user.setAuthorizationServerId(java.util.UUID.fromString(userCreateResponse.getAuthorizationServerId()));
         user.setEmail(userCreateResponse.getEmail());
         user.setUsername(userCreateResponse.getUsername());
+        user.setMetadata(MetadataMapper.from(userCreateResponse.getMetadata()));
         user.setCreatedOn(OffsetDateTime.ofInstant(Instant.ofEpochSecond(userCreateResponse.getCreatedOn().getSeconds()), ZoneId.of("UTC")));
         user.setUpdatedOn(OffsetDateTime.ofInstant(Instant.ofEpochSecond(userCreateResponse.getUpdatedOn().getSeconds()), ZoneId.of("UTC")));
 
@@ -50,6 +52,7 @@ public class UserMapper {
         user.setAuthorizationServerId(java.util.UUID.fromString(userResponse.getAuthorizationServerId()));
         user.setEmail(userResponse.getEmail());
         user.setUsername(userResponse.getUsername());
+        user.setMetadata(MetadataMapper.from(userResponse.getMetadata()));
         user.setCreatedOn(OffsetDateTime.ofInstant(Instant.ofEpochSecond(userResponse.getCreatedOn().getSeconds()), ZoneId.of("UTC")));
         user.setUpdatedOn(OffsetDateTime.ofInstant(Instant.ofEpochSecond(userResponse.getUpdatedOn().getSeconds()), ZoneId.of("UTC")));
 

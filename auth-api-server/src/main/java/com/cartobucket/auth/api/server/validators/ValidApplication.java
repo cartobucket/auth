@@ -73,8 +73,6 @@ public @interface ValidApplication {
             try {
                  applicationService.getApplication(value);
             } catch (Exception e) {
-                context
-                        .buildConstraintViolationWithTemplate("");
                 return false;
             }
             return true;

@@ -48,6 +48,7 @@ public class AuthorizationServerMapper {
         authorizationServer.setName(authorizationServerResponse.getName());
         authorizationServer.setAuthorizationCodeTokenExpiration(authorizationServerResponse.getAuthorizationCodeTokenExpiration());
         authorizationServer.setClientCredentialsTokenExpiration(authorizationServerResponse .getClientCredentialsTokenExpiration());
+        authorizationServer.setMetadata(MetadataMapper.from(authorizationServerResponse.getMetadata()));
         authorizationServer.setCreatedOn(OffsetDateTime.ofInstant(Instant.ofEpochSecond(authorizationServerResponse.getCreatedOn().getSeconds()), ZoneId.of("UTC")));
         authorizationServer.setUpdatedOn(OffsetDateTime.ofInstant(Instant.ofEpochSecond(authorizationServerResponse.getUpdatedOn().getSeconds()), ZoneId.of("UTC")));
 
@@ -66,6 +67,7 @@ public class AuthorizationServerMapper {
         authorizationServer.setName(authorizationServerCreateResponse.getName());
         authorizationServer.setAuthorizationCodeTokenExpiration(authorizationServerCreateResponse.getAuthorizationCodeTokenExpiration());
         authorizationServer.setClientCredentialsTokenExpiration(authorizationServerCreateResponse.getClientCredentialsTokenExpiration());
+        authorizationServer.setMetadata(MetadataMapper.from(authorizationServerCreateResponse.getMetadata()));
         authorizationServer.setCreatedOn(OffsetDateTime.ofInstant(Instant.ofEpochSecond(authorizationServerCreateResponse.getCreatedOn().getSeconds()), ZoneId.of("UTC")));
         authorizationServer.setUpdatedOn(OffsetDateTime.ofInstant(Instant.ofEpochSecond(authorizationServerCreateResponse.getUpdatedOn().getSeconds()), ZoneId.of("UTC")));
         return authorizationServer;

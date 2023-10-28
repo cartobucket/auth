@@ -22,6 +22,7 @@ package com.cartobucket.auth.rpc.server.rpc;
 
 import com.cartobucket.auth.data.domain.Client;
 import com.cartobucket.auth.data.services.ClientService;
+import com.cartobucket.auth.data.services.impls.mappers.MetadataMapper;
 import com.cartobucket.auth.rpc.ClientCreateRequest;
 import com.cartobucket.auth.rpc.ClientCreateResponse;
 import com.cartobucket.auth.rpc.ClientDeleteRequest;
@@ -64,6 +65,7 @@ public class ClientRpcService implements Clients {
             client.setRedirectUris(
                     list
             );
+            client.setMetadata(MetadataMapper.from(request.getMetadata()));
             client.setAuthorizationServerId(UUID.fromString(request.getAuthorizationServerId()));
             client = clientService.createClient(client);
             return Uni
@@ -81,6 +83,7 @@ public class ClientRpcService implements Clients {
                                             .map(String::valueOf)
                                             .toList()
                                     )
+                                    .setMetadata(MetadataMapper.to(client.getMetadata()))
                                     .setCreatedOn(Timestamp.newBuilder().setSeconds(client.getCreatedOn().toEpochSecond()).build())
                                     .setUpdatedOn(Timestamp.newBuilder().setSeconds(client.getUpdatedOn().toEpochSecond()).build())
                                     .build()
@@ -122,6 +125,7 @@ public class ClientRpcService implements Clients {
                                                                         .map(String::valueOf)
                                                                         .toList()
                                                                 )
+                                                                .setMetadata(MetadataMapper.to(client.getMetadata()))
                                                                 .setCreatedOn(Timestamp.newBuilder().setSeconds(client.getCreatedOn().toEpochSecond()).build())
                                                                 .setUpdatedOn(Timestamp.newBuilder().setSeconds(client.getUpdatedOn().toEpochSecond()).build())
                                                                 .build())
@@ -175,6 +179,7 @@ public class ClientRpcService implements Clients {
                                             .map(String::valueOf)
                                             .toList()
                                     )
+                                    .setMetadata(MetadataMapper.to(client.getMetadata()))
                                     .setCreatedOn(Timestamp.newBuilder().setSeconds(client.getCreatedOn().toEpochSecond()).build())
                                     .setUpdatedOn(Timestamp.newBuilder().setSeconds(client.getUpdatedOn().toEpochSecond()).build())
                                     .build()
@@ -204,6 +209,7 @@ public class ClientRpcService implements Clients {
                                         .map(String::valueOf)
                                         .toList()
                                 )
+                                .setMetadata(MetadataMapper.to(client.getMetadata()))
                                 .setCreatedOn(Timestamp.newBuilder().setSeconds(client.getCreatedOn().toEpochSecond()).build())
                                 .setUpdatedOn(Timestamp.newBuilder().setSeconds(client.getUpdatedOn().toEpochSecond()).build())
                                 .build()

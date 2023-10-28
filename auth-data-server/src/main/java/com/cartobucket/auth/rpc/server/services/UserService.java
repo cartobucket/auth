@@ -163,13 +163,17 @@ public class UserService implements com.cartobucket.auth.data.services.UserServi
     }
 
     @Override
+    @Transactional
     public void setPassword(User user, String password) {
         // TODO: This config should be pulled from the Authorization Server
         final var encoder = new BCryptPasswordEncoder();
         final var passwordHash = encoder.encode(password);
-        user.setPassword(passwordHash);
-        user.setUpdatedOn(OffsetDateTime.now());
-        userRepository.persist(UserMapper.to(user));
+        var _user = userRepository
+                .findByIdOptional(user.getId())
+                .orElseThrow(UserNotFound::new);
+        _user.setPasswordHash(passwordHash);
+        _user.setUpdatedOn(OffsetDateTime.now());
+        userRepository.persist(_user);
     }
 
     @Override

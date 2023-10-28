@@ -21,6 +21,7 @@ package com.cartobucket.auth.data.services.impls;
 
 import com.cartobucket.auth.data.domain.Template;
 import com.cartobucket.auth.data.exceptions.notfound.TemplateNotFound;
+import com.cartobucket.auth.data.services.impls.mappers.MetadataMapper;
 import com.cartobucket.auth.data.services.impls.mappers.TemplateMapper;
 import com.cartobucket.auth.rpc.MutinyTemplatesGrpc;
 import com.cartobucket.auth.rpc.TemplateCreateRequest;
@@ -72,6 +73,7 @@ public class TemplateService implements com.cartobucket.auth.data.services.Templ
                                 TemplateCreateRequest
                                         .newBuilder()
                                         .setTemplate(ByteString.copyFrom(template.getTemplate()))
+                                        .setMetadata(MetadataMapper.to(template.getMetadata()))
                                         .setTemplateType(
                                                 switch (template.getTemplateType()) {
                                                     default -> TemplateCreateRequest.TEMPLATE_TYPE.LOGIN;

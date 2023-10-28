@@ -30,6 +30,7 @@ public class AuthorizationServerMapper {
         _authorizationServer.setName(authorizationServer.getName());
         _authorizationServer.setAuthorizationCodeTokenExpiration(authorizationServer.getAuthorizationCodeTokenExpiration());
         _authorizationServer.setClientCredentialsTokenExpiration(authorizationServer.getClientCredentialsTokenExpiration());
+        _authorizationServer.setMetadata(authorizationServer.getMetadata());
         _authorizationServer.setCreatedOn(authorizationServer.getCreatedOn());
         _authorizationServer.setUpdatedOn(authorizationServer.getUpdatedOn());
         return _authorizationServer;
@@ -43,6 +44,7 @@ public class AuthorizationServerMapper {
         _authorizationServer.setName(authorizationServer.getName());
         _authorizationServer.setAuthorizationCodeTokenExpiration(authorizationServer.getAuthorizationCodeTokenExpiration());
         _authorizationServer.setClientCredentialsTokenExpiration(authorizationServer.getClientCredentialsTokenExpiration());
+        _authorizationServer.setMetadata(authorizationServer.getMetadata());
         _authorizationServer.setCreatedOn(authorizationServer.getCreatedOn());
         _authorizationServer.setUpdatedOn(authorizationServer.getUpdatedOn());
         return _authorizationServer;

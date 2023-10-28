@@ -39,6 +39,7 @@ public class ApplicationMapper {
         application.setName(applicationResponse.getName());
         application.setClientId(applicationResponse.getClientId());
         application.setAuthorizationServerId(UUID.fromString(applicationResponse.getAuthorizationServerId()));
+        application.setMetadata(MetadataMapper.from(applicationResponse.getMetadata()));
         application.setCreatedOn(OffsetDateTime.ofInstant(Instant.ofEpochSecond(applicationResponse.getCreatedOn().getSeconds()), ZoneId.of("UTC")));
         application.setUpdatedOn(OffsetDateTime.ofInstant(Instant.ofEpochSecond(applicationResponse.getUpdatedOn().getSeconds()), ZoneId.of("UTC")));
         return application;
@@ -50,6 +51,7 @@ public class ApplicationMapper {
         application.setName(applicationCreateResponse.getName());
         application.setClientId(applicationCreateResponse.getClientId());
         application.setAuthorizationServerId(UUID.fromString(applicationCreateResponse.getAuthorizationServerId()));
+        application.setMetadata(MetadataMapper.from(applicationCreateResponse.getMetadata()));
         application.setCreatedOn(OffsetDateTime.ofInstant(Instant.ofEpochSecond(applicationCreateResponse.getCreatedOn().getSeconds()), ZoneId.of("UTC")));
         application.setUpdatedOn(OffsetDateTime.ofInstant(Instant.ofEpochSecond(applicationCreateResponse.getUpdatedOn().getSeconds()), ZoneId.of("UTC")));
 

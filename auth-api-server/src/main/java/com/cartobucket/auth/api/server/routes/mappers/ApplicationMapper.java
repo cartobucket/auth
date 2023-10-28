@@ -19,17 +19,14 @@
 
 package com.cartobucket.auth.api.server.routes.mappers;
 
+import com.cartobucket.auth.data.domain.Application;
+import com.cartobucket.auth.data.domain.ApplicationSecret;
 import com.cartobucket.auth.data.domain.Profile;
+import com.cartobucket.auth.data.services.ScopeService;
 import com.cartobucket.auth.model.generated.ApplicationRequest;
 import com.cartobucket.auth.model.generated.ApplicationResponse;
 import com.cartobucket.auth.model.generated.ApplicationSecretRequest;
 import com.cartobucket.auth.model.generated.ApplicationSecretResponse;
-import com.cartobucket.auth.data.domain.Application;
-import com.cartobucket.auth.data.domain.ApplicationSecret;
-import com.cartobucket.auth.data.domain.Scope;
-import com.cartobucket.auth.data.services.ScopeService;
-
-import java.util.UUID;
 
 public class ApplicationMapper {
     public static Application from(ApplicationRequest applicationRequest) {
@@ -39,14 +36,17 @@ public class ApplicationMapper {
         if (applicationRequest.getClientId() != null) {
             application.setClientId(applicationRequest.getClientId());
         }
+        application.setMetadata(MetadataMapper.from(applicationRequest.getMetadata()));
         return application;
     }
+
     public static ApplicationResponse toResponse(Application application) {
         var applicationResponse = new ApplicationResponse();
         applicationResponse.setId(String.valueOf(application.getId()));
         applicationResponse.setName(application.getName());
         applicationResponse.setClientId(application.getClientId());
         applicationResponse.setAuthorizationServerId(application.getAuthorizationServerId());
+        applicationResponse.setMetadata(MetadataMapper.to(application.getMetadata()));
         applicationResponse.setCreatedOn(application.getCreatedOn());
         applicationResponse.setUpdatedOn(application.getUpdatedOn());
         return applicationResponse;
@@ -58,6 +58,7 @@ public class ApplicationMapper {
         applicationResponse.setName(application.getName());
         applicationResponse.setClientId(application.getClientId());
         applicationResponse.setAuthorizationServerId(application.getAuthorizationServerId());
+        applicationResponse.setMetadata(MetadataMapper.to(application.getMetadata()));
         applicationResponse.setCreatedOn(application.getCreatedOn());
         applicationResponse.setUpdatedOn(application.getUpdatedOn());
         applicationResponse.setProfile(profile.getProfile());
@@ -72,13 +73,6 @@ public class ApplicationMapper {
         if (applicationSecretRequest.getScopes() != null)
             secret.setScopes(ScopeService.scopeStringToScopeList(applicationSecretRequest.getScopes()));
         return secret;
-    }
-
-    // TODO: This is temporary as we don't have the scope in the db yet.
-    public static Scope fromName(String name) {
-        var scope = new Scope();
-        scope.setName(name);
-        return scope;
     }
 
     public static ApplicationSecretResponse toSecretResponse(ApplicationSecret applicationSecret) {

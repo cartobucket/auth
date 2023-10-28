@@ -34,6 +34,6 @@ public class ClientRepository implements PanacheRepositoryBase<Client, UUID> {
     }
 
     public Optional<Client> findByClientId(String clientId) {
-        return find("clientId = ?1", clientId).singleResultOptional();
+        return find("clientId", clientId).singleResultOptional();
     }
 }

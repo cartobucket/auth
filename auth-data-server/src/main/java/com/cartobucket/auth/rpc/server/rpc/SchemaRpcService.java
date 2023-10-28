@@ -21,13 +21,8 @@ package com.cartobucket.auth.rpc.server.rpc;
 
 import com.cartobucket.auth.data.domain.Profile;
 import com.cartobucket.auth.data.domain.Schema;
-import com.cartobucket.auth.data.rpc.SchemaCreateRequest;
-import com.cartobucket.auth.data.rpc.SchemaDeleteRequest;
-import com.cartobucket.auth.data.rpc.SchemaGetRequest;
-import com.cartobucket.auth.data.rpc.SchemaListRequest;
-import com.cartobucket.auth.data.rpc.SchemaResponse;
-import com.cartobucket.auth.data.rpc.Schemas;
-import com.cartobucket.auth.data.rpc.SchemasListResponse;
+import com.cartobucket.auth.data.rpc.*;
+import com.cartobucket.auth.data.services.impls.mappers.MetadataMapper;
 import com.cartobucket.auth.rpc.server.services.SchemaService;
 import com.google.protobuf.Timestamp;
 import com.networknt.schema.SpecVersion;
@@ -53,6 +48,7 @@ public class SchemaRpcService implements Schemas {
         schema.setSchema(Profile.fromProtoMap(request.getSchema().getFieldsMap()));
         schema.setAuthorizationServerId(UUID.fromString(request.getAuthorizationServerId()));
         schema.setJsonSchemaVersion(String.valueOf(SpecVersion.VersionFlag.V202012));
+        schema.setMetadata(MetadataMapper.from(request.getMetadata()));
         schema = schemaService.createSchema(schema);
         return Uni.createFrom().item(
                 SchemaResponse.newBuilder()
@@ -60,6 +56,7 @@ public class SchemaRpcService implements Schemas {
                         .setName(schema.getName())
                         .setSchema(Profile.toProtoMap(schema.getSchema()))
                         .setAuthorizationServerId(String.valueOf(schema.getAuthorizationServerId()))
+                        .setMetadata(request.getMetadata())
                         .setCreatedOn(Timestamp.newBuilder().setSeconds(schema.getCreatedOn().toEpochSecond()).build())
                         .setUpdatedOn(Timestamp.newBuilder().setSeconds(schema.getUpdatedOn().toEpochSecond()).build())
                         .build()
@@ -89,6 +86,7 @@ public class SchemaRpcService implements Schemas {
                                                 .setName(schema.getName())
                                                 .setSchema(Profile.toProtoMap(schema.getSchema()))
                                                 .setAuthorizationServerId(String.valueOf(schema.getAuthorizationServerId()))
+                                                .setMetadata(MetadataMapper.to(schema.getMetadata()))
                                                 .setCreatedOn(Timestamp.newBuilder().setSeconds(schema.getCreatedOn().toEpochSecond()).build())
                                                 .setUpdatedOn(Timestamp.newBuilder().setSeconds(schema.getUpdatedOn().toEpochSecond()).build())
                                                 .build()
@@ -115,6 +113,7 @@ public class SchemaRpcService implements Schemas {
                         .setName(schema.getName())
                         .setSchema(Profile.toProtoMap(schema.getSchema()))
                         .setAuthorizationServerId(String.valueOf(schema.getAuthorizationServerId()))
+                        .setMetadata(MetadataMapper.to(schema.getMetadata()))
                         .setCreatedOn(Timestamp.newBuilder().setSeconds(schema.getCreatedOn().toEpochSecond()).build())
                         .setUpdatedOn(Timestamp.newBuilder().setSeconds(schema.getUpdatedOn().toEpochSecond()).build())
                         .build());

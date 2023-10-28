@@ -29,6 +29,7 @@ public class SchemaMapper {
         _schema.setName(schema.getName());
         _schema.setAuthorizationServerId(schema.getAuthorizationServerId());
         _schema.setJsonSchemaVersion(schema.getJsonSchemaVersion());
+        _schema.setMetadata(schema.getMetadata());
         _schema.setCreatedOn(schema.getCreatedOn());
         _schema.setUpdatedOn(schema.getUpdatedOn());
         return _schema;
@@ -41,6 +42,7 @@ public class SchemaMapper {
         _schema.setName(schema.getName());
         _schema.setAuthorizationServerId(schema.getAuthorizationServerId());
         _schema.setJsonSchemaVersion(schema.getJsonSchemaVersion());
+        _schema.setMetadata(schema.getMetadata());
         _schema.setCreatedOn(schema.getCreatedOn());
         _schema.setUpdatedOn(schema.getUpdatedOn());
         return _schema;

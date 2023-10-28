@@ -29,6 +29,7 @@ public class ScopeMapper {
         _scope.setUpdatedOn(scope.getUpdatedOn());
         _scope.setName(scope.getName());
         _scope.setAuthorizationServerId(scope.getAuthorizationServerId());
+        _scope.setMetadata(scope.getMetadata());
         return _scope;
     }
 
@@ -39,6 +40,7 @@ public class ScopeMapper {
         _scope.setUpdatedOn(scope.getUpdatedOn());
         _scope.setName(scope.getName());
         _scope.setAuthorizationServerId(scope.getAuthorizationServerId());
+        _scope.setMetadata(scope.getMetadata());
         return _scope;
     }
 

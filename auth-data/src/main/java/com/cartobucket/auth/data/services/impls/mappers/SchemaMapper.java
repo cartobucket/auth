@@ -35,6 +35,7 @@ public class SchemaMapper {
         schema.setName(schemaResponse.getName());
         schema.setSchema(Profile.fromProtoMap(schemaResponse.getSchema().getFieldsMap()));
         schema.setAuthorizationServerId(UUID.fromString(schemaResponse.getAuthorizationServerId()));
+        schema.setMetadata(MetadataMapper.from(schemaResponse.getMetadata()));
         schema.setCreatedOn(OffsetDateTime.ofInstant(Instant.ofEpochSecond(schemaResponse.getCreatedOn().getSeconds()), ZoneId.of("UTC")));
         schema.setUpdatedOn(OffsetDateTime.ofInstant(Instant.ofEpochSecond(schemaResponse.getUpdatedOn().getSeconds()), ZoneId.of("UTC")));
         return schema;

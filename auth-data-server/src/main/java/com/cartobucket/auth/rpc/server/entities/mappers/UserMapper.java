@@ -28,6 +28,7 @@ public class UserMapper {
         _user.setUpdatedOn(user.getUpdatedOn());
         _user.setCreatedOn(user.getCreatedOn());
         _user.setAuthorizationServerId(user.getAuthorizationServerId());
+        _user.setMetadata(user.getMetadata());
         _user.setEmail(user.getEmail());
         _user.setUsername(user.getUsername());
         _user.setPassword(user.getPasswordHash());
@@ -39,6 +40,7 @@ public class UserMapper {
         _user.setId(user.getId());
         _user.setUpdatedOn(user.getUpdatedOn());
         _user.setCreatedOn(user.getCreatedOn());
+        _user.setMetadata(user.getMetadata());
         _user.setAuthorizationServerId(user.getAuthorizationServerId());
         _user.setEmail(user.getEmail());
         _user.setUsername(user.getUsername());

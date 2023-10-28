@@ -31,14 +31,14 @@ import java.util.UUID;
 public class ProfileRepository implements PanacheRepositoryBase<Profile, UUID> {
     public Optional<Profile> findByResourceAndProfileType(UUID resource, ProfileType profileType) {
         // TODO: there is a bug here.
-        return find("resourceId = ?1 and profileType = ?2", resource, profileType.ordinal()).singleResultOptional();
+        return find("resource", resource).singleResultOptional();
     }
 
     public Optional<Profile> findByResourceId(UUID resourceId) {
-        return find("resourceId = ?1", resourceId).singleResultOptional();
+        return find("resource", resourceId).singleResultOptional();
     }
 
     public void deleteByResourceAndProfileType(UUID resource, ProfileType profileType) {
-        delete("resourceId = ?1 and profileType = ?2", resource, profileType);
+        delete("resource = ?1 and profiletype = ?2", resource, profileType.ordinal());
     }
 }

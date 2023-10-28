@@ -25,6 +25,7 @@ import com.cartobucket.auth.data.exceptions.notfound.SchemaNotFound;
 import com.cartobucket.auth.data.rpc.MutinySchemasGrpc;
 import com.cartobucket.auth.data.rpc.SchemaCreateRequest;
 import com.cartobucket.auth.data.rpc.SchemaDeleteRequest;
+import com.cartobucket.auth.data.services.impls.mappers.MetadataMapper;
 import com.cartobucket.auth.data.services.impls.mappers.SchemaMapper;
 import io.quarkus.arc.DefaultBean;
 import io.quarkus.grpc.GrpcClient;
@@ -36,8 +37,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
-
-import static io.smallrye.mutiny.operators.uni.UniBlockingAwait.await;
 
 @DefaultBean
 @ApplicationScoped
@@ -62,6 +61,7 @@ public class SchemaService implements com.cartobucket.auth.data.services.SchemaS
                                         .setSchema(Profile.toProtoMap(schema.getSchema()))
                                         .setName(schema.getName())
                                         .setAuthorizationServerId(schema.getAuthorizationServerId().toString())
+                                        .setMetadata(MetadataMapper.to(schema.getMetadata()))
                                         .build()
                         )
                         .await()

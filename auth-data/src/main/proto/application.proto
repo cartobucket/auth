@@ -6,6 +6,7 @@ option java_outer_classname = "ApplicationProto";
 
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/struct.proto";
+import "metadata.proto";
 
 
 service Applications {
@@ -21,6 +22,7 @@ message ApplicationCreateRequest {
   string name = 2;
   string authorizationServerId = 3;
   google.protobuf.Struct profile = 4;
+  Metadata metadata = 5;
 }
 
 message ApplicationListRequest {
@@ -37,6 +39,7 @@ message ApplicationUpdateRequest {
   string id = 1;
   string name = 2;
   google.protobuf.Struct profile = 3;
+  Metadata metadata = 4;
 }
 
 message ApplicationGetRequest {
@@ -49,6 +52,7 @@ message ApplicationCreateResponse {
   string name = 3;
   string authorizationServerId = 4;
   google.protobuf.Struct profile = 5;
+  Metadata metadata = 6;
   google.protobuf.Timestamp createdOn = 7;
   google.protobuf.Timestamp updatedOn = 8;
 }
@@ -59,8 +63,9 @@ message ApplicationResponse {
   string name = 3;
   string authorizationServerId = 4;
   google.protobuf.Struct profile = 5;
-  google.protobuf.Timestamp createdOn = 6;
-  google.protobuf.Timestamp updatedOn = 7;
+  Metadata metadata = 6;
+  google.protobuf.Timestamp createdOn = 7;
+  google.protobuf.Timestamp updatedOn = 8;
 }
 
 message ApplicationListResponse {

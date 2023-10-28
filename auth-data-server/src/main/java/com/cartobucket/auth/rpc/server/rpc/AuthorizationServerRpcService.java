@@ -39,6 +39,7 @@ import com.cartobucket.auth.rpc.Jwk;
 import com.cartobucket.auth.rpc.JwksResponse;
 import com.cartobucket.auth.rpc.ValidateJwtForAuthorizationServerRequest;
 import com.cartobucket.auth.rpc.ValidateJwtForAuthorizationServerResponse;
+import com.cartobucket.auth.rpc.server.rpc.mappers.MetadataMapper;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.Timestamp;
 import io.grpc.Status;
@@ -70,6 +71,7 @@ public class AuthorizationServerRpcService implements AuthorizationServers {
             authorizationServer.setServerUrl(URI.create((request.getServerUrl())).toURL());
             authorizationServer.setAuthorizationCodeTokenExpiration(request.getAuthorizationCodeTokenExpiration());
             authorizationServer.setClientCredentialsTokenExpiration(request.getClientCredentialsTokenExpiration());
+            authorizationServer.setMetadata(MetadataMapper.toMetadata(request.getMetadata()));
             authorizationServer = authorizationServerService.createAuthorizationServer(authorizationServer);
 
             return Uni
@@ -83,6 +85,7 @@ public class AuthorizationServerRpcService implements AuthorizationServers {
                                     .setServerUrl(String.valueOf(authorizationServer.getServerUrl()))
                                     .setAuthorizationCodeTokenExpiration(authorizationServer.getAuthorizationCodeTokenExpiration())
                                     .setClientCredentialsTokenExpiration(authorizationServer.getClientCredentialsTokenExpiration())
+                                    .setMetadata(MetadataMapper.from(authorizationServer.getMetadata()))
                                     .setCreatedOn(Timestamp.newBuilder().setSeconds(authorizationServer.getCreatedOn().toEpochSecond()).build())
                                     .setUpdatedOn(Timestamp.newBuilder().setSeconds(authorizationServer.getUpdatedOn().toEpochSecond()).build())
                                     .build()
@@ -108,6 +111,7 @@ public class AuthorizationServerRpcService implements AuthorizationServers {
                                 .setServerUrl(String.valueOf(authorizationServer.getServerUrl()))
                                 .setAuthorizationCodeTokenExpiration(authorizationServer.getAuthorizationCodeTokenExpiration())
                                 .setClientCredentialsTokenExpiration(authorizationServer.getClientCredentialsTokenExpiration())
+                                .setMetadata(MetadataMapper.from(authorizationServer.getMetadata()))
                                 .setCreatedOn(Timestamp.newBuilder().setSeconds(authorizationServer.getCreatedOn().toEpochSecond()).build())
                                 .setUpdatedOn(Timestamp.newBuilder().setSeconds(authorizationServer.getUpdatedOn().toEpochSecond()).build())
                                 .build())
@@ -134,6 +138,7 @@ public class AuthorizationServerRpcService implements AuthorizationServers {
             authorizationServer.setServerUrl(URI.create(request.getServerUrl()).toURL());
             authorizationServer.setAuthorizationCodeTokenExpiration(request.getAuthorizationCodeTokenExpiration());
             authorizationServer.setClientCredentialsTokenExpiration(request.getClientCredentialsTokenExpiration());
+            authorizationServer.setMetadata(MetadataMapper.toMetadata(request.getMetadata()));
             authorizationServer = authorizationServerService.updateAuthorizationServer(UUID.fromString(request.getId()), authorizationServer);
 
             return Uni
@@ -147,6 +152,7 @@ public class AuthorizationServerRpcService implements AuthorizationServers {
                                     .setServerUrl(String.valueOf(authorizationServer.getServerUrl()))
                                     .setAuthorizationCodeTokenExpiration(authorizationServer.getAuthorizationCodeTokenExpiration())
                                     .setClientCredentialsTokenExpiration(authorizationServer.getClientCredentialsTokenExpiration())
+                                    .setMetadata(MetadataMapper.from(authorizationServer.getMetadata()))
                                     .setCreatedOn(Timestamp.newBuilder().setSeconds(authorizationServer.getCreatedOn().toEpochSecond()).build())
                                     .setUpdatedOn(Timestamp.newBuilder().setSeconds(authorizationServer.getUpdatedOn().toEpochSecond()).build())
                                     .build()
@@ -172,6 +178,7 @@ public class AuthorizationServerRpcService implements AuthorizationServers {
                                     .setServerUrl(String.valueOf(authorizationServer.getServerUrl()))
                                     .setAuthorizationCodeTokenExpiration(authorizationServer.getAuthorizationCodeTokenExpiration())
                                     .setClientCredentialsTokenExpiration(authorizationServer.getClientCredentialsTokenExpiration())
+                                    .setMetadata(MetadataMapper.from(authorizationServer.getMetadata()))
                                     .setCreatedOn(Timestamp.newBuilder().setSeconds(authorizationServer.getCreatedOn().toEpochSecond()).build())
                                     .setUpdatedOn(Timestamp.newBuilder().setSeconds(authorizationServer.getUpdatedOn().toEpochSecond()).build())
                                     .build()

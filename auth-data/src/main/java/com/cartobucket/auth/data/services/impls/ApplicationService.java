@@ -29,17 +29,9 @@ import com.cartobucket.auth.data.exceptions.notfound.ApplicationNotFound;
 import com.cartobucket.auth.data.exceptions.notfound.ApplicationSecretNotFound;
 import com.cartobucket.auth.data.exceptions.notfound.ProfileNotFound;
 import com.cartobucket.auth.data.services.impls.mappers.ApplicationMapper;
+import com.cartobucket.auth.data.services.impls.mappers.MetadataMapper;
 import com.cartobucket.auth.data.services.impls.mappers.ProfileMapper;
-import com.cartobucket.auth.rpc.ApplicationCreateRequest;
-import com.cartobucket.auth.rpc.ApplicationDeleteRequest;
-import com.cartobucket.auth.rpc.ApplicationGetRequest;
-import com.cartobucket.auth.rpc.ApplicationListRequest;
-import com.cartobucket.auth.rpc.ApplicationSecretCreateRequest;
-import com.cartobucket.auth.rpc.ApplicationSecretDeleteRequest;
-import com.cartobucket.auth.rpc.ApplicationSecretListRequest;
-import com.cartobucket.auth.rpc.IsApplicationSecretValidRequest;
-import com.cartobucket.auth.rpc.MutinyApplicationSecretsGrpc;
-import com.cartobucket.auth.rpc.MutinyApplicationsGrpc;
+import com.cartobucket.auth.rpc.*;
 import io.quarkus.arc.DefaultBean;
 import io.quarkus.grpc.GrpcClient;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -93,6 +85,7 @@ public class ApplicationService implements com.cartobucket.auth.data.services.Ap
                 .newBuilder()
                 .setName(application.getName())
                 .setProfile(Profile.toProtoMap(profile.getProfile()))
+                .setMetadata(MetadataMapper.to(application.getMetadata()))
                 .setAuthorizationServerId(String.valueOf(application.getAuthorizationServerId()));
 
         if (application.getClientId() != null) {

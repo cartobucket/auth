@@ -38,6 +38,7 @@ public class AuthorizationServerMapper {
         authorizationServer.setAudience(request.getAudience());
         authorizationServer.setAuthorizationCodeTokenExpiration(Long.valueOf(request.getAuthorizationCodeTokenExpiration()));
         authorizationServer.setClientCredentialsTokenExpiration(Long.valueOf(request.getClientCredentialsTokenExpiration()));
+        authorizationServer.setMetadata(MetadataMapper.from(request.getMetadata()));
         return authorizationServer;
     }
 
@@ -49,6 +50,7 @@ public class AuthorizationServerMapper {
         response.setAudience(authorizationServer.getAudience());
         response.setAuthorizationCodeTokenExpiration(authorizationServer.getAuthorizationCodeTokenExpiration().intValue());
         response.setClientCredentialsTokenExpiration(authorizationServer.getClientCredentialsTokenExpiration().intValue());
+        response.setMetadata(MetadataMapper.to(authorizationServer.getMetadata()));
         return response;
     }
 }

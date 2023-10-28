@@ -57,14 +57,14 @@ public @interface ValidTemplate {
     Class<? extends Payload>[] payload() default {};
 
     Class<?>[] groups() default {};
-    public class Validator implements ConstraintValidator<ValidTemplate, byte[]> {
+    public class Validator implements ConstraintValidator<ValidTemplate, String> {
         @Override
         public void initialize(ValidTemplate constraintAnnotation) {
             ConstraintValidator.super.initialize(constraintAnnotation);
         }
 
         @Override
-        public boolean isValid(byte[] value, ConstraintValidatorContext context) {
+        public boolean isValid(String value, ConstraintValidatorContext context) {
             if (value == null) {
                 return false;
             }

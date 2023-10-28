@@ -24,6 +24,7 @@ import com.cartobucket.auth.data.domain.Pair;
 import com.cartobucket.auth.data.domain.Profile;
 import com.cartobucket.auth.data.domain.User;
 import com.cartobucket.auth.data.services.UserService;
+import com.cartobucket.auth.data.services.impls.mappers.MetadataMapper;
 import com.cartobucket.auth.rpc.UserCreateRequest;
 import com.cartobucket.auth.rpc.UserCreateResponse;
 import com.cartobucket.auth.rpc.UserDeleteRequest;
@@ -59,6 +60,7 @@ public class UserRpcService implements Users {
         user.setAuthorizationServerId(UUID.fromString(request.getAuthorizationServerId()));
         user.setEmail(request.getEmail());
         user.setUsername(request.getUsername());
+        user.setMetadata(MetadataMapper.from(request.getMetadata()));
 
         var profile = new Profile();
         profile.setProfile(Profile.fromProtoMap(request.getProfile().getFieldsMap()));
@@ -81,6 +83,7 @@ public class UserRpcService implements Users {
                                 .setEmail(user.getEmail())
                                 .setUsername(user.getUsername())
                                 .setAuthorizationServerId(String.valueOf(user.getAuthorizationServerId()))
+                                .setMetadata(MetadataMapper.to(user.getMetadata()))
                                 .setProfile(Profile.toProtoMap(profile.getProfile()))
                                 .setCreatedOn(Timestamp.newBuilder().setSeconds(user.getCreatedOn().toEpochSecond()).build())
                                 .setUpdatedOn(Timestamp.newBuilder().setSeconds(user.getUpdatedOn().toEpochSecond()).build())
@@ -112,6 +115,7 @@ public class UserRpcService implements Users {
                                                                 .setEmail(user.getEmail())
                                                                 .setUsername(user.getUsername())
                                                                 .setAuthorizationServerId(String.valueOf(user.getAuthorizationServerId()))
+                                                                .setMetadata(MetadataMapper.to(user.getMetadata()))
                                                                 .setCreatedOn(Timestamp.newBuilder().setSeconds(user.getCreatedOn().toEpochSecond()).build())
                                                                 .setUpdatedOn(Timestamp.newBuilder().setSeconds(user.getUpdatedOn().toEpochSecond()).build())
                                                                 .build()
@@ -136,6 +140,7 @@ public class UserRpcService implements Users {
         user.setId(UUID.fromString(request.getId()));
         user.setUsername(request.getUsername());
         user.setEmail(request.getEmail());
+        user.setMetadata(MetadataMapper.from(request.getMetadata()));
 
         var profile = new Profile();
         profile.setResource(user.getId());
@@ -154,6 +159,7 @@ public class UserRpcService implements Users {
                                 .setEmail(user.getEmail())
                                 .setUsername(user.getUsername())
                                 .setAuthorizationServerId(String.valueOf(user.getAuthorizationServerId()))
+                                .setMetadata(MetadataMapper.to(user.getMetadata()))
                                 .setProfile(Profile.toProtoMap(profile.getProfile()))
                                 .setCreatedOn(Timestamp.newBuilder().setSeconds(user.getCreatedOn().toEpochSecond()).build())
                                 .setUpdatedOn(Timestamp.newBuilder().setSeconds(user.getUpdatedOn().toEpochSecond()).build())
@@ -178,6 +184,7 @@ public class UserRpcService implements Users {
                                 .setUsername(user.getUsername())
                                 .setAuthorizationServerId(String.valueOf(user.getAuthorizationServerId()))
                                 .setProfile(Profile.toProtoMap(profile.getProfile()))
+                                .setMetadata(MetadataMapper.to(user.getMetadata()))
                                 .setCreatedOn(Timestamp.newBuilder().setSeconds(user.getCreatedOn().toEpochSecond()).build())
                                 .setUpdatedOn(Timestamp.newBuilder().setSeconds(user.getUpdatedOn().toEpochSecond()).build())
                                 .build()

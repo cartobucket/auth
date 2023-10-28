@@ -6,19 +6,20 @@ option java_outer_classname = "SchemaProto";
 
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/struct.proto";
+import "metadata.proto";
 
 service Schemas {
   rpc CreateSchema (SchemaCreateRequest) returns (SchemaResponse) {};
   rpc ListSchemas (SchemaListRequest) returns (SchemasListResponse) {};
   rpc DeleteSchema (SchemaDeleteRequest) returns (SchemaResponse) {};
   rpc GetSchema (SchemaGetRequest) returns (SchemaResponse) {};
-
 }
 
 message SchemaCreateRequest {
   string authorizationServerId = 1;
   string name = 2;
   google.protobuf.Struct schema = 3;
+  Metadata metadata = 4;
 }
 
 message SchemaListRequest {
@@ -36,8 +37,9 @@ message SchemaResponse {
   string authorizationServerId = 2;
   string name = 3;
   google.protobuf.Struct schema = 4;
-  google.protobuf.Timestamp createdOn = 5;
-  google.protobuf.Timestamp updatedOn = 6;
+  Metadata metadata = 5;
+  google.protobuf.Timestamp createdOn = 6;
+  google.protobuf.Timestamp updatedOn = 7;
 }
 
 message SchemasListResponse {

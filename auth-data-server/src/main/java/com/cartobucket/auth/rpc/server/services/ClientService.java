@@ -144,6 +144,7 @@ public class ClientService implements com.cartobucket.auth.data.services.ClientS
     public Client createClient(final Client client) {
         client.setCreatedOn(OffsetDateTime.now());
         client.setUpdatedOn(OffsetDateTime.now());
+        client.setId(UUID.randomUUID());
         var _client = ClientMapper.to(client);
         clientRepository.persist(_client);
         eventRepository.createClientEvent(ClientMapper.from(_client), EventType.CREATE);

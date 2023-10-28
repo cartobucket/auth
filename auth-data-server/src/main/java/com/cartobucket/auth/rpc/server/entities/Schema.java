@@ -19,6 +19,7 @@
 
 package com.cartobucket.auth.rpc.server.entities;
 
+import com.cartobucket.auth.data.domain.Metadata;
 import com.networknt.schema.SpecVersion;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -41,6 +42,8 @@ public class Schema {
     private SpecVersion.VersionFlag jsonSchemaVersion;
     @JdbcTypeCode(SqlTypes.JSON)
     private Map<String, Object> schema;
+    @JdbcTypeCode(SqlTypes.JSON)
+    Metadata metadata;
     private OffsetDateTime createdOn;
     private OffsetDateTime updatedOn;
     public Map<String, Object> getSchema() {
@@ -97,5 +100,13 @@ public class Schema {
 
     public void setJsonSchemaVersion(String jsonSchemaVersion) {
         this.jsonSchemaVersion = SpecVersion.VersionFlag.valueOf(jsonSchemaVersion);
+    }
+
+    public Metadata getMetadata() {
+        return metadata;
+    }
+
+    public void setMetadata(Metadata metadata) {
+        this.metadata = metadata;
     }
 }

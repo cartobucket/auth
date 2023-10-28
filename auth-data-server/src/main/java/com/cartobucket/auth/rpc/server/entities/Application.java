@@ -19,8 +19,11 @@
 
 package com.cartobucket.auth.rpc.server.entities;
 
+import com.cartobucket.auth.data.domain.Metadata;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.time.OffsetDateTime;
 import java.util.UUID;
@@ -35,6 +38,9 @@ public class Application {
     private String name;
 
     private UUID authorizationServerId;
+
+    @JdbcTypeCode(SqlTypes.JSON)
+    private Metadata metadata;
 
     private OffsetDateTime createdOn;
 
@@ -86,5 +92,13 @@ public class Application {
 
     public void setUpdatedOn(OffsetDateTime updatedOn) {
         this.updatedOn = updatedOn;
+    }
+
+    public Metadata getMetadata() {
+        return metadata;
+    }
+
+    public void setMetadata(Metadata metadata) {
+        this.metadata = metadata;
     }
 }

@@ -1043,6 +1043,10 @@
           "updatedOn": {
             "description": "",
             "type": "string"
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/Metadata",
+            "description": ""
           }
         },
         "example": {
@@ -1107,6 +1111,10 @@
           "scopes": {
             "description": "",
             "type": "string"
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/Metadata",
+            "description": ""
           }
         },
         "example": {
@@ -1204,6 +1212,10 @@
           "updatedOn": {
             "format": "date-time",
             "type": "string"
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/Metadata",
+            "description": ""
           }
         },
         "example": {
@@ -1262,6 +1274,10 @@
           "updatedOn": {
             "format": "date-time",
             "type": "string"
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/Metadata",
+            "description": ""
           }
         },
         "example": {
@@ -1427,6 +1443,10 @@
           "updatedOn": {
             "format": "date-time",
             "type": "string"
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/Metadata",
+            "description": ""
           }
         },
         "example": {
@@ -1460,6 +1480,10 @@
           },
           "name": {
             "type": "string"
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/Metadata",
+            "description": ""
           }
         },
         "example": {
@@ -1543,6 +1567,10 @@
             "format": "UUID",
             "description": "",
             "type": "string"
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/Metadata",
+            "description": ""
           }
         },
         "example": {
@@ -1844,6 +1872,10 @@
           },
           "schema": {
             "type": "object"
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/Metadata",
+            "description": ""
           }
         },
         "example": {
@@ -1993,6 +2025,10 @@
             "description": "",
             "type": "string",
             "x-field-extra-annotation": "@ValidAuthorizationServerName"
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/Metadata",
+            "description": ""
           }
         },
         "example": {
@@ -2029,6 +2065,10 @@
             "description": "",
             "type": "string",
             "x-field-extra-annotation": "@ValidAuthorizationServer"
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/Metadata",
+            "description": ""
           }
         },
         "example": {
@@ -2146,6 +2186,10 @@
           "scopes": {
             "description": "",
             "type": "string"
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/Metadata",
+            "description": ""
           }
         },
         "example": {
@@ -2175,6 +2219,10 @@
             "format": "UUID",
             "type": "string",
             "x-field-extra-annotation": "@ValidAuthorizationServer"
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/Metadata",
+            "description": ""
           }
         },
         "example": {
@@ -2205,6 +2253,10 @@
             "description": "",
             "type": "string",
             "x-field-extra-annotation": "@ValidAuthorizationServer"
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/Metadata",
+            "description": ""
           }
         },
         "example": {
@@ -2240,6 +2292,10 @@
           "password": {
             "description": "The password for a user when creating or updating the user.",
             "type": "string"
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/Metadata",
+            "description": ""
           }
         },
         "example": {
@@ -2250,6 +2306,67 @@
             "firstName": "Test",
             "lastName": "Person"
           }
+        }
+      },
+      "Metadata": {
+        "title": "Root Type for Metadata",
+        "description": "",
+        "type": "object",
+        "properties": {
+          "properties": {
+            "type": "object"
+          },
+          "identifiers": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "system": {
+                  "type": "string"
+                },
+                "value": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "schemaValidations": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "schemaId": {
+                  "format": "UUID",
+                  "type": "string"
+                },
+                "isValid": {
+                  "type": "boolean"
+                },
+                "validatedOn": {
+                  "format": "date-time",
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "example": {
+          "properties": {
+
+          },
+          "identifiers": [
+            {
+              "system": "https://company.example/schemas/foo",
+              "value": "bar"
+            }
+          ],
+          "schemaValidations": [
+            {
+              "schemaId": "4e8fb14d-359d-4b85-a183-3f52016055a4",
+              "isValid": true,
+              "validatedOn": "2023-10-25T00:51:50+0000"
+            }
+          ]
         }
       }
     }
