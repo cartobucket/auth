@@ -22,6 +22,7 @@ package com.cartobucket.auth.rpc.server.services;
 import com.cartobucket.auth.data.domain.AccessToken;
 import com.cartobucket.auth.data.domain.AuthorizationServer;
 import com.cartobucket.auth.data.domain.JWK;
+import com.cartobucket.auth.data.domain.Page;
 import com.cartobucket.auth.data.domain.Profile;
 import com.cartobucket.auth.data.domain.SigningKey;
 import com.cartobucket.auth.data.domain.Template;
@@ -38,6 +39,7 @@ import com.cartobucket.auth.rpc.server.repositories.AuthorizationServerRepositor
 import com.cartobucket.auth.rpc.server.repositories.EventRepository;
 import com.cartobucket.auth.rpc.server.repositories.ProfileRepository;
 import com.cartobucket.auth.rpc.server.repositories.SingingKeyRepository;
+import io.quarkus.panache.common.Sort;
 import io.smallrye.jwt.algorithm.SignatureAlgorithm;
 import io.smallrye.jwt.build.Jwt;
 import io.smallrye.jwt.util.KeyUtils;
@@ -219,9 +221,10 @@ public class AuthorizationServerService implements com.cartobucket.auth.data.ser
     }
 
     @Override
-    public List<AuthorizationServer> getAuthorizationServers() {
+    public List<AuthorizationServer> getAuthorizationServers(Page page) {
         return authorizationServerRepository
-                .listAll()
+                .findAll(Sort.descending("createdOn"))
+                .range(page.offset(), page.getNextRowsCount())
                 .stream()
                 .map(AuthorizationServerMapper::from)
                 .toList();

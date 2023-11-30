@@ -19,6 +19,7 @@
 
 package com.cartobucket.auth.api.server.routes;
 
+import com.cartobucket.auth.data.domain.Page;
 import com.cartobucket.auth.generated.TemplatesApi;
 import com.cartobucket.auth.model.generated.TemplateRequest;
 import com.cartobucket.auth.model.generated.TemplatesResponse;
@@ -28,6 +29,8 @@ import jakarta.ws.rs.core.Response;
 
 import java.util.List;
 import java.util.UUID;
+
+import static com.cartobucket.auth.api.server.routes.Pagination.getPage;
 
 public class Templates implements TemplatesApi {
     final TemplateService templateService;
@@ -67,14 +70,15 @@ public class Templates implements TemplatesApi {
     }
 
     @Override
-    public Response listTemplates(List<UUID> authorizationServerIds) {
+    public Response listTemplates(List<UUID> authorizationServerIds, Integer limit, Integer offset) {
         final var templatesResponse = new TemplatesResponse();
         templatesResponse.setTemplates(
-                templateService.getTemplates(authorizationServerIds)
+                templateService.getTemplates(authorizationServerIds, new Page(limit, offset))
                         .stream()
                         .map(TemplateMapper::toResponse)
                         .toList()
         );
+        templatesResponse.setPage(getPage("templates", authorizationServerIds, limit, offset));
         return Response
                 .ok()
                 .entity(templatesResponse)

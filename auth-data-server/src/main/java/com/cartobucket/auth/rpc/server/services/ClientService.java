@@ -21,6 +21,7 @@ package com.cartobucket.auth.rpc.server.services;
 
 import com.cartobucket.auth.data.domain.Client;
 import com.cartobucket.auth.data.domain.ClientCode;
+import com.cartobucket.auth.data.domain.Page;
 import com.cartobucket.auth.data.exceptions.badrequests.CodeChallengeBadData;
 import com.cartobucket.auth.data.exceptions.notfound.ClientCodeNotFound;
 import com.cartobucket.auth.data.exceptions.notfound.ClientNotFound;
@@ -31,6 +32,7 @@ import com.cartobucket.auth.rpc.server.entities.mappers.ClientMapper;
 import com.cartobucket.auth.rpc.server.repositories.ClientCodeRepository;
 import com.cartobucket.auth.rpc.server.repositories.ClientRepository;
 import com.cartobucket.auth.rpc.server.repositories.EventRepository;
+import io.quarkus.panache.common.Sort;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 
@@ -122,17 +124,19 @@ public class ClientService implements com.cartobucket.auth.data.services.ClientS
     }
 
     @Override
-    public List<Client> getClients(final List<UUID> authorizationServerIds) {
+    public List<Client> getClients(final List<UUID> authorizationServerIds, Page page) {
         if (!authorizationServerIds.isEmpty()) {
             return clientRepository
-                    .findAllByAuthorizationServerIdIn(authorizationServerIds)
+                    .find("authorizationServerId in ?1", Sort.descending("createdOn"), authorizationServerIds)
+                    .range(page.offset(), page.getNextRowsCount())
                     .stream()
                     .map(ClientMapper::from)
                     .toList();
 
         } else {
             return clientRepository
-                    .listAll()
+                    .findAll(Sort.descending("createdOn"))
+                    .range(page.offset(), page.getNextRowsCount())
                     .stream()
                     .map(ClientMapper::from)
                     .toList();

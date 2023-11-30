@@ -20,6 +20,7 @@
 package com.cartobucket.auth.api.server.routes;
 
 import com.cartobucket.auth.api.server.routes.mappers.ScopeMapper;
+import com.cartobucket.auth.data.domain.Page;
 import com.cartobucket.auth.generated.ScopesApi;
 import com.cartobucket.auth.model.generated.ScopeRequest;
 import com.cartobucket.auth.model.generated.ScopesResponse;
@@ -28,6 +29,8 @@ import jakarta.ws.rs.core.Response;
 
 import java.util.List;
 import java.util.UUID;
+
+import static com.cartobucket.auth.api.server.routes.Pagination.getPage;
 
 public class Scopes implements ScopesApi {
     final ScopeService scopeService;
@@ -67,14 +70,15 @@ public class Scopes implements ScopesApi {
     }
 
     @Override
-    public Response listScopes(List<UUID> authorizationServerIds) {
+    public Response listScopes(List<UUID> authorizationServerIds, Integer limit, Integer offset) {
         final var scopesResponse = new ScopesResponse();
         scopesResponse.setScopes(
-                scopeService.getScopes(authorizationServerIds)
+                scopeService.getScopes(authorizationServerIds, new Page(limit, offset))
                         .stream()
                         .map(ScopeMapper::toResponse)
                         .toList()
         );
+        scopesResponse.setPage(getPage("scopes", authorizationServerIds, limit, offset));
         return Response
                 .ok()
                 .entity(scopesResponse)

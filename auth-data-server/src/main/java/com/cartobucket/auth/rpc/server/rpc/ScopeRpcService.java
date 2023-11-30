@@ -19,8 +19,8 @@
 
 package com.cartobucket.auth.rpc.server.rpc;
 
+import com.cartobucket.auth.data.domain.Page;
 import com.cartobucket.auth.data.domain.Scope;
-import com.cartobucket.auth.data.exceptions.notfound.ScopeNotFound;
 import com.cartobucket.auth.data.rpc.ScopeCreateRequest;
 import com.cartobucket.auth.data.rpc.ScopeDeleteRequest;
 import com.cartobucket.auth.data.rpc.ScopeGetRequest;
@@ -76,7 +76,11 @@ public class ScopeRpcService implements Scopes {
                 request.getAuthorizationServerIdsList()
                         .stream()
                         .map(UUID::fromString)
-                        .toList()
+                        .toList(),
+                new Page(
+                        Long.valueOf(request.getLimit()).intValue(),
+                        Long.valueOf(request.getOffset()).intValue()
+                )
         );
 
         var response = ScopesListResponse

@@ -22,6 +22,7 @@ package com.cartobucket.auth.data.services.impls;
 import com.cartobucket.auth.data.domain.AccessToken;
 import com.cartobucket.auth.data.domain.AuthorizationServer;
 import com.cartobucket.auth.data.domain.JWK;
+import com.cartobucket.auth.data.domain.Page;
 import com.cartobucket.auth.data.domain.Profile;
 import com.cartobucket.auth.data.domain.SigningKey;
 import com.cartobucket.auth.data.exceptions.NotAuthorized;
@@ -117,10 +118,12 @@ public class AuthorizationServerService implements com.cartobucket.auth.data.ser
     }
 
     @Override
-    public List<AuthorizationServer> getAuthorizationServers() {
+    public List<AuthorizationServer> getAuthorizationServers(Page page) {
         return authorizationServerClient.listAuthorizationServers(
                 AuthorizationServerListRequest
                         .newBuilder()
+                        .setLimit(page.limit())
+                        .setOffset(page.offset())
                         .build()
                 )
                 .await()

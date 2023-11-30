@@ -19,6 +19,7 @@
 
 package com.cartobucket.auth.data.services;
 
+import com.cartobucket.auth.data.domain.Page;
 import com.cartobucket.auth.data.exceptions.notfound.ScopeNotFound;
 import com.cartobucket.auth.data.domain.Scope;
 
@@ -29,7 +30,7 @@ import java.util.UUID;
 import static java.util.Arrays.stream;
 
 public interface ScopeService {
-    List<Scope> getScopes(List<UUID> authorizationServerIds);
+    List<Scope> getScopes(List<UUID> authorizationServerIds, Page page);
 
     Scope createScope(Scope scope);
 

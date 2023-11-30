@@ -19,6 +19,7 @@
 
 package com.cartobucket.auth.rpc.server.services;
 
+import com.cartobucket.auth.data.domain.Page;
 import com.cartobucket.auth.data.domain.Profile;
 import com.cartobucket.auth.data.domain.Schema;
 import com.cartobucket.auth.data.exceptions.notfound.SchemaNotFound;
@@ -32,6 +33,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.networknt.schema.JsonSchemaFactory;
 import com.networknt.schema.SpecVersion;
 import com.networknt.schema.ValidationMessage;
+import io.quarkus.panache.common.Sort;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 
@@ -100,15 +102,17 @@ public class SchemaService implements com.cartobucket.auth.data.services.SchemaS
     }
 
     @Override
-    public List<Schema> getSchemas(final List<UUID> authorizationServerIds) {
+    public List<Schema> getSchemas(final List<UUID> authorizationServerIds, Page page) {
         if (!authorizationServerIds.isEmpty()) {
             return schemaRepository
-                    .findAllByAuthorizationServerIdIn(authorizationServerIds)
+                    .find("authorizationServerId in ?1", Sort.descending("createdOn"), authorizationServerIds)
+                    .range(page.offset(), page.getNextRowsCount())
                     .stream()
                     .map(SchemaMapper::from)
                     .toList();
         } else {
-            return schemaRepository.findAll()
+            return schemaRepository.findAll(Sort.descending("createdOn"))
+                    .range(page.offset(), page.getNextRowsCount())
                     .stream()
                     .map(SchemaMapper::from)
                     .toList();

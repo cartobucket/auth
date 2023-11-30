@@ -31,6 +31,8 @@ import com.cartobucket.auth.rpc.server.entities.mappers.UserMapper;
 import com.cartobucket.auth.rpc.server.repositories.EventRepository;
 import com.cartobucket.auth.rpc.server.repositories.ProfileRepository;
 import com.cartobucket.auth.rpc.server.repositories.UserRepository;
+import io.quarkus.panache.common.Parameters;
+import io.quarkus.panache.common.Sort;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -55,15 +57,53 @@ public class UserService implements com.cartobucket.auth.data.services.UserServi
     }
 
     @Override
-    public List<User> getUsers(final List<UUID> authorizationServerIds) {
+    public List<User> query(UserQuery query) {
+        var queryParameters = new Parameters();
+
+        // Next, filter by user ids
+        if (!query.userIds().isEmpty()) {
+            queryParameters.and("userIds", query.userIds());
+        }
+        // Next, filter by emails
+        if (!query.emails().isEmpty()) {
+            queryParameters.and("emails", query.emails());
+        }
+        // Next, filter by identifiers
+        if (!query.identifiers().isEmpty()) {
+            query.identifiers()
+                    // TODO: This is probably wrong becuase it needs to be grouped
+                    .forEach(identifier -> {
+                        queryParameters.and("metadata.identifiers.system", identifier.getSystem());
+                        queryParameters.and("metadata.identifiers.system", identifier.getValue());
+                    });
+            queryParameters.and("identifiers", query.identifiers());
+        }
+        // Next, filter by validations
+        if (!query.validations().isEmpty()) {
+            queryParameters.and("validations", query.validations());
+        }
+        final var _map = queryParameters.map();
+
+        return userRepository
+                .find("authorizationServerIds in ?1", query.authorizationServerIds(), queryParameters)
+                .range(query.page().offset(), query.page().limit())
+                .stream()
+                .map(UserMapper::from)
+                .toList();
+    }
+
+    @Override
+    public List<User> getUsers(final List<UUID> authorizationServerIds, com.cartobucket.auth.data.domain.Page page) {
         if (!authorizationServerIds.isEmpty()) {
             return userRepository
-                    .findAllByAuthorizationServerIdIn(authorizationServerIds)
+                    .find("authorizationServerId in ?1", Sort.descending("createdOn"), authorizationServerIds)
+                    .range(page.offset(), page.getNextRowsCount())
                     .stream()
                     .map(UserMapper::from)
                     .toList();
         } else {
-            return userRepository.findAll()
+            return userRepository.findAll(Sort.descending("createdOn"))
+                    .range(page.offset(), page.getNextRowsCount())
                     .stream()
                     .map(UserMapper::from)
                     .toList();

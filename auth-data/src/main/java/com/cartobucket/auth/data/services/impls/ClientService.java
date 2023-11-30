@@ -21,6 +21,7 @@ package com.cartobucket.auth.data.services.impls;
 
 import com.cartobucket.auth.data.domain.Client;
 import com.cartobucket.auth.data.domain.ClientCode;
+import com.cartobucket.auth.data.domain.Page;
 import com.cartobucket.auth.data.exceptions.badrequests.CodeChallengeBadData;
 import com.cartobucket.auth.data.exceptions.notfound.ClientCodeNotFound;
 import com.cartobucket.auth.data.exceptions.notfound.ClientNotFound;
@@ -114,7 +115,7 @@ public class ClientService implements com.cartobucket.auth.data.services.ClientS
     }
 
     @Override
-    public List<Client> getClients(List<UUID> authorizationServerIds) {
+    public List<Client> getClients(List<UUID> authorizationServerIds, Page page) {
         return clientsClient.listClients(
                 ClientListRequest
                         .newBuilder()
@@ -124,6 +125,8 @@ public class ClientService implements com.cartobucket.auth.data.services.ClientS
                                         .map(String::valueOf)
                                         .toList()
                         )
+                        .setLimit(page.limit())
+                        .setOffset(page.offset())
                         .build()
                 )
                 .await()

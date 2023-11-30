@@ -19,12 +19,14 @@
 
 package com.cartobucket.auth.rpc.server.services;
 
+import com.cartobucket.auth.data.domain.Page;
 import com.cartobucket.auth.data.domain.Template;
 import com.cartobucket.auth.data.exceptions.notfound.TemplateNotFound;
 import com.cartobucket.auth.rpc.server.entities.EventType;
 import com.cartobucket.auth.rpc.server.entities.mappers.TemplateMapper;
 import com.cartobucket.auth.rpc.server.repositories.EventRepository;
 import com.cartobucket.auth.rpc.server.repositories.TemplateRepository;
+import io.quarkus.panache.common.Sort;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 
@@ -46,15 +48,17 @@ public class TemplateService implements com.cartobucket.auth.data.services.Templ
     }
 
     @Override
-    public List<Template> getTemplates(final List<UUID> authorizationServerIds) {
+    public List<Template> getTemplates(final List<UUID> authorizationServerIds, Page page) {
         if (!authorizationServerIds.isEmpty()) {
             return templateRepository
-                    .findAllByAuthorizationServerIdIn(authorizationServerIds)
+                    .find("authorizationServerId in ?1", Sort.descending("createdOn"), authorizationServerIds)
+                    .range(page.offset(), page.getNextRowsCount())
                     .stream()
                     .map(TemplateMapper::from)
                     .toList();
         } else {
-            return templateRepository.findAll()
+            return templateRepository.findAll(Sort.descending("createdOn"))
+                    .range(page.offset(), page.getNextRowsCount())
                     .stream()
                     .map(TemplateMapper::from)
                     .toList();

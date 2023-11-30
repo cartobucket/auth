@@ -19,6 +19,7 @@
 
 package com.cartobucket.auth.data.services.impls;
 
+import com.cartobucket.auth.data.domain.Page;
 import com.cartobucket.auth.data.domain.Template;
 import com.cartobucket.auth.data.exceptions.notfound.TemplateNotFound;
 import com.cartobucket.auth.data.services.impls.mappers.MetadataMapper;
@@ -49,12 +50,14 @@ public class TemplateService implements com.cartobucket.auth.data.services.Templ
     MutinyTemplatesGrpc.MutinyTemplatesStub templatesClient;
 
     @Override
-    public List<Template> getTemplates(List<UUID> authorizationServerIds) {
+    public List<Template> getTemplates(List<UUID> authorizationServerIds, Page page) {
         return templatesClient
                 .listTemplates(
                         TemplateListRequest
                                 .newBuilder()
                                 .addAllAuthorizationServerIds(authorizationServerIds.stream().map(UUID::toString).toList())
+                                .setLimit(page.limit())
+                                .setOffset(page.offset())
                                 .build()
                 )
                 .await()

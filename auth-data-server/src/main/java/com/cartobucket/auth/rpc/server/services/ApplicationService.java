@@ -19,6 +19,7 @@
 
 package com.cartobucket.auth.rpc.server.services;
 
+import com.cartobucket.auth.data.domain.Page;
 import com.cartobucket.auth.data.domain.Pair;
 import com.cartobucket.auth.data.domain.Application;
 import com.cartobucket.auth.data.domain.ApplicationSecret;
@@ -37,6 +38,7 @@ import com.cartobucket.auth.rpc.server.repositories.ApplicationRepository;
 import com.cartobucket.auth.rpc.server.repositories.ApplicationSecretRepository;
 import com.cartobucket.auth.rpc.server.repositories.EventRepository;
 import com.cartobucket.auth.rpc.server.repositories.ProfileRepository;
+import io.quarkus.panache.common.Sort;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 
@@ -184,16 +186,18 @@ public class ApplicationService implements com.cartobucket.auth.data.services.Ap
     }
 
     @Override
-    public List<Application> getApplications(final List<UUID> authorizationServerIds) {
+    public List<Application> getApplications(final List<UUID> authorizationServerIds, Page page) {
         if (authorizationServerIds.isEmpty()) {
             return applicationRepository
-                    .listAll()
+                    .findAll(Sort.descending("createdOn"))
+                    .range(page.offset(), page.getNextRowsCount())
                     .stream()
                     .map(ApplicationMapper::from)
                     .toList();
         } else {
             return applicationRepository
-                    .findAllByAuthorizationServerIdIn(authorizationServerIds)
+                    .find("authorizationServerId in ?1", Sort.descending("createdOn"), authorizationServerIds)
+                    .range(page.offset(), page.getNextRowsCount())
                     .stream()
                     .map(ApplicationMapper::from)
                     .toList();

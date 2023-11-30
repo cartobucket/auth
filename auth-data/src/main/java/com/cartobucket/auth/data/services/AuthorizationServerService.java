@@ -20,6 +20,7 @@
 package com.cartobucket.auth.data.services;
 
 import com.cartobucket.auth.data.domain.AccessToken;
+import com.cartobucket.auth.data.domain.Page;
 import com.cartobucket.auth.data.exceptions.NotAuthorized;
 import com.cartobucket.auth.data.exceptions.notfound.AuthorizationServerNotFound;
 import com.cartobucket.auth.data.domain.AuthorizationServer;
@@ -36,7 +37,7 @@ public interface AuthorizationServerService {
     AuthorizationServer getAuthorizationServer(final UUID authorizationServerId) throws AuthorizationServerNotFound;
     AuthorizationServer createAuthorizationServer(final AuthorizationServer authorizationServer);
     AuthorizationServer updateAuthorizationServer(final UUID authorizationServerId, final AuthorizationServer authorizationServer) throws AuthorizationServerNotFound;
-    List<AuthorizationServer> getAuthorizationServers();
+    List<AuthorizationServer> getAuthorizationServers(Page page);
     void deleteAuthorizationServer(final UUID authorizationServerId) throws AuthorizationServerNotFound;
     SigningKey getSigningKeysForAuthorizationServer(final UUID authorizationServerId);
     Map<String, Object> validateJwtForAuthorizationServer(final UUID authorizationServerId, final String Jwt) throws NotAuthorized;

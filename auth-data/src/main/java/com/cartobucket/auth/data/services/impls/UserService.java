@@ -50,7 +50,12 @@ public class UserService implements com.cartobucket.auth.data.services.UserServi
     MutinyUsersGrpc.MutinyUsersStub usersClient;
 
     @Override
-    public List<User> getUsers(List<UUID> authorizationServerIds) {
+    public List<User> query(UserQuery query) {
+        return null;
+    }
+
+    @Override
+    public List<User> getUsers(List<UUID> authorizationServerIds, com.cartobucket.auth.data.domain.Page page) {
         return usersClient.listUsers(
                         com.cartobucket.auth.rpc.UserListRequest
                                 .newBuilder()
@@ -60,6 +65,8 @@ public class UserService implements com.cartobucket.auth.data.services.UserServi
                                                 .map(String::valueOf)
                                                 .toList()
                                 )
+                                .setLimit(page.limit())
+                                .setOffset(page.offset())
                                 .build()
                 )
                 .await()

@@ -19,6 +19,7 @@
 
 package com.cartobucket.auth.data.services;
 
+import com.cartobucket.auth.data.domain.Page;
 import com.cartobucket.auth.data.exceptions.notfound.SchemaNotFound;
 import com.cartobucket.auth.data.domain.Profile;
 import com.cartobucket.auth.data.domain.Schema;
@@ -36,7 +37,7 @@ public interface SchemaService {
 
     Schema getSchema(final UUID schemaId) throws SchemaNotFound;
 
-    List<Schema> getSchemas(final List<UUID> authorizationServerIds);
+    List<Schema> getSchemas(final List<UUID> authorizationServerIds, Page page);
 
     Schema updateSchema(final UUID schemaId, final Schema schema) throws SchemaNotFound;
 

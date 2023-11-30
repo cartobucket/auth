@@ -19,6 +19,7 @@
 
 package com.cartobucket.auth.data.services.impls;
 
+import com.cartobucket.auth.data.domain.Page;
 import com.cartobucket.auth.data.rpc.MutinyScopesGrpc;
 import com.cartobucket.auth.data.rpc.ScopeCreateRequest;
 import com.cartobucket.auth.data.rpc.ScopeDeleteRequest;
@@ -47,7 +48,7 @@ public class ScopeService implements com.cartobucket.auth.data.services.ScopeSer
     MutinyScopesGrpc.MutinyScopesStub scopesClient;
 
     @Override
-    public List<Scope> getScopes(List<UUID> authorizationServerIds) {
+    public List<Scope> getScopes(List<UUID> authorizationServerIds, Page page) {
         var scopesRequest = ScopeListRequest
                 .newBuilder()
                 .addAllAuthorizationServerIds(
@@ -56,6 +57,8 @@ public class ScopeService implements com.cartobucket.auth.data.services.ScopeSer
                                 .map(String::valueOf)
                                 .toList()
                 )
+                .setLimit(page.limit())
+                .setOffset(page.offset())
                 .build();
 
         return scopesClient

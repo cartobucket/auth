@@ -22,6 +22,7 @@ package com.cartobucket.auth.api.server.routes;
 import com.cartobucket.auth.api.server.routes.mappers.ApplicationMapper;
 import com.cartobucket.auth.api.server.routes.mappers.ProfileMapper;
 import com.cartobucket.auth.data.domain.ApplicationSecret;
+import com.cartobucket.auth.data.domain.Page;
 import com.cartobucket.auth.generated.ApplicationsApi;
 import com.cartobucket.auth.model.generated.ApplicationRequest;
 import com.cartobucket.auth.model.generated.ApplicationSecretRequest;
@@ -36,6 +37,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
+
+import static com.cartobucket.auth.api.server.routes.Pagination.getPage;
 
 public class Applications implements ApplicationsApi {
     final ApplicationService applicationService;
@@ -128,16 +131,20 @@ public class Applications implements ApplicationsApi {
     }
 
     @Override
-    public Response listApplications(List<UUID> authorizationServerIds) {
+    public Response listApplications(List<UUID> authorizationServerIds, Integer limit, Integer offset) {
         final var applicationsResponse = new ApplicationsResponse();
         applicationsResponse.setApplications(
                 applicationService
                         .getApplications(
-                                authorizationServerIds
+                                authorizationServerIds,
+                                new Page(limit, offset)
                         )
                         .stream()
                         .map(ApplicationMapper::toResponse)
                         .collect(Collectors.toList())
+        );
+        applicationsResponse.setPage(
+                getPage("applications", authorizationServerIds, limit, offset)
         );
         return Response
                 .ok()

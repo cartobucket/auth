@@ -20,6 +20,7 @@
 package com.cartobucket.auth.rpc.server.rpc;
 
 
+import com.cartobucket.auth.data.domain.Page;
 import com.cartobucket.auth.data.domain.Template;
 import com.cartobucket.auth.data.domain.TemplateTypeEnum;
 import com.cartobucket.auth.data.services.TemplateService;
@@ -82,7 +83,11 @@ public class TemplateRpcService implements Templates {
                         .getAuthorizationServerIdsList()
                         .stream()
                         .map(UUID::fromString)
-                        .toList()
+                        .toList(),
+                new Page(
+                        Long.valueOf(request.getLimit()).intValue(),
+                        Long.valueOf(request.getOffset()).intValue()
+                )
         );
         return Uni
                 .createFrom()

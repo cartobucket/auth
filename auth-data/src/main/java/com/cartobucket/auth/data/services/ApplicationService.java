@@ -19,6 +19,7 @@
 
 package com.cartobucket.auth.data.services;
 
+import com.cartobucket.auth.data.domain.Page;
 import com.cartobucket.auth.data.domain.Pair;
 import com.cartobucket.auth.data.exceptions.badrequests.ApplicationSecretNoApplicationBadData;
 import com.cartobucket.auth.data.exceptions.notfound.ApplicationNotFound;
@@ -45,7 +46,7 @@ public interface ApplicationService {
 
     void deleteApplicationSecret(final UUID secretId) throws ApplicationSecretNoApplicationBadData, ApplicationSecretNotFound;
 
-    List<Application> getApplications(final List<UUID> authorizationServerIds);
+    List<Application> getApplications(final List<UUID> authorizationServerIds, Page page);
 
     boolean isApplicationSecretValid(UUID authorizationServerId, UUID applicationId, String applicationSecret);
 }

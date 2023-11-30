@@ -19,6 +19,7 @@
 
 package com.cartobucket.auth.api.server.routes;
 
+import com.cartobucket.auth.data.domain.Page;
 import com.cartobucket.auth.generated.SchemasApi;
 import com.cartobucket.auth.model.generated.SchemaRequest;
 import com.cartobucket.auth.model.generated.SchemasResponse;
@@ -28,6 +29,8 @@ import jakarta.ws.rs.core.Response;
 
 import java.util.List;
 import java.util.UUID;
+
+import static com.cartobucket.auth.api.server.routes.Pagination.getPage;
 
 public class Schemas implements SchemasApi {
     final SchemaService schemaService;
@@ -65,13 +68,16 @@ public class Schemas implements SchemasApi {
     }
 
     @Override
-    public Response getSchemaRequests(List<UUID> authorizationServers) {
+    public Response getSchemaRequests(List<UUID> authorizationServerIds, Integer limit, Integer offset) {
         final var schemasResponse = new SchemasResponse();
         schemasResponse.setSchemas(
-                schemaService.getSchemas(authorizationServers)
+                schemaService.getSchemas(authorizationServerIds, new Page(limit, offset))
                         .stream()
                         .map(SchemaMapper::toResponse)
                         .toList()
+        );
+        schemasResponse.setPage(
+                getPage("schemas", authorizationServerIds, limit, offset)
         );
         return Response
                 .ok()

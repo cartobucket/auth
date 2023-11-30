@@ -19,7 +19,9 @@
 
 package com.cartobucket.auth.data.services;
 
+import com.cartobucket.auth.data.domain.Identifier;
 import com.cartobucket.auth.data.domain.Pair;
+import com.cartobucket.auth.data.domain.SchemaValidation;
 import com.cartobucket.auth.data.exceptions.notfound.ProfileNotFound;
 import com.cartobucket.auth.data.exceptions.notfound.UserNotFound;
 import com.cartobucket.auth.data.domain.Profile;
@@ -29,7 +31,22 @@ import java.util.List;
 import java.util.UUID;
 
 public interface UserService {
-    List<User> getUsers(final List<UUID> authorizationServerIds);
+    record Page (
+            int limit,
+            int offset
+    ) {}
+    record UserQuery(
+            List<UUID> authorizationServerIds,
+            List<UUID> userIds,
+            List<String> emails,
+            List<Identifier> identifiers,
+            List<SchemaValidation> validations,
+            Page page
+    ) {}
+
+    List<User> query(UserQuery query);
+
+    List<User> getUsers(final List<UUID> authorizationServerIds, com.cartobucket.auth.data.domain.Page page);
 
     Pair<User, Profile> createUser(final Pair<User, Profile> userProfilePair);
 

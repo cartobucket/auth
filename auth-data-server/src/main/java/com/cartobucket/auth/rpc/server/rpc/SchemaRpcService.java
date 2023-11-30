@@ -19,6 +19,7 @@
 
 package com.cartobucket.auth.rpc.server.rpc;
 
+import com.cartobucket.auth.data.domain.Page;
 import com.cartobucket.auth.data.domain.Profile;
 import com.cartobucket.auth.data.domain.Schema;
 import com.cartobucket.auth.data.rpc.*;
@@ -77,7 +78,11 @@ public class SchemaRpcService implements Schemas {
                                                         .getAuthorizationServerIdsList()
                                                         .stream()
                                                         .map(UUID::fromString)
-                                                        .toList()
+                                                        .toList(),
+                                                new Page(
+                                                        Long.valueOf(request.getLimit()).intValue(),
+                                                        Long.valueOf(request.getOffset()).intValue()
+                                                )
                                         )
                                         .stream()
                                         .map(schema -> SchemaResponse

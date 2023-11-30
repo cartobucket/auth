@@ -19,6 +19,7 @@
 
 package com.cartobucket.auth.data.services.impls;
 
+import com.cartobucket.auth.data.domain.Page;
 import com.cartobucket.auth.data.domain.Profile;
 import com.cartobucket.auth.data.domain.Schema;
 import com.cartobucket.auth.data.exceptions.notfound.SchemaNotFound;
@@ -97,7 +98,7 @@ public class SchemaService implements com.cartobucket.auth.data.services.SchemaS
     }
 
     @Override
-    public List<Schema> getSchemas(List<UUID> authorizationServerIds) {
+    public List<Schema> getSchemas(List<UUID> authorizationServerIds, Page page) {
         return schemasClient.listSchemas(
                 com.cartobucket.auth.data.rpc.SchemaListRequest
                         .newBuilder()
@@ -107,6 +108,8 @@ public class SchemaService implements com.cartobucket.auth.data.services.SchemaS
                                         .map(String::valueOf)
                                         .toList()
                         )
+                        .setLimit(page.limit())
+                        .setOffset(page.offset())
                         .build()
         )
                 .await()

@@ -19,6 +19,7 @@
 
 package com.cartobucket.auth.data.services;
 
+import com.cartobucket.auth.data.domain.Page;
 import com.cartobucket.auth.data.domain.Template;
 import com.cartobucket.auth.data.exceptions.notfound.TemplateNotFound;
 
@@ -26,7 +27,7 @@ import java.util.List;
 import java.util.UUID;
 
 public interface TemplateService {
-    List<Template> getTemplates(final List<UUID> authorizationServerIds);
+    List<Template> getTemplates(final List<UUID> authorizationServerIds, Page page);
 
     Template createTemplate(final Template template);
 

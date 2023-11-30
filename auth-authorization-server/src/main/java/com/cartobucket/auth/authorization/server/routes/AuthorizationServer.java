@@ -20,6 +20,7 @@
 package com.cartobucket.auth.authorization.server.routes;
 
 import com.cartobucket.auth.data.domain.ClientCode;
+import com.cartobucket.auth.data.domain.Page;
 import com.cartobucket.auth.data.exceptions.notfound.TemplateNotFound;
 import com.cartobucket.auth.data.services.ApplicationService;
 import com.cartobucket.auth.data.services.ScopeService;
@@ -262,7 +263,7 @@ public class AuthorizationServer implements AuthorizationServerApi {
 
     private Response renderLoginScreen(UUID authorizationServerId) {
         final var template = templateService
-                .getTemplates(Collections.singletonList(authorizationServerId))
+                .getTemplates(Collections.singletonList(authorizationServerId), new Page(1, 0))
                 .stream()
                 .filter(t -> t.getTemplateType() == TemplateTypeEnum.LOGIN)
                 .findFirst()

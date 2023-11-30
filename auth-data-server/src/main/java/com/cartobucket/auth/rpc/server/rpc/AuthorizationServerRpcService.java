@@ -20,6 +20,7 @@
 package com.cartobucket.auth.rpc.server.rpc;
 
 import com.cartobucket.auth.data.domain.AuthorizationServer;
+import com.cartobucket.auth.data.domain.Page;
 import com.cartobucket.auth.data.domain.Profile;
 import com.cartobucket.auth.data.exceptions.notfound.AuthorizationServerNotFound;
 import com.cartobucket.auth.data.services.AuthorizationServerService;
@@ -49,7 +50,6 @@ import io.smallrye.mutiny.Uni;
 
 import java.net.MalformedURLException;
 import java.net.URI;
-import java.net.URL;
 import java.util.UUID;
 
 @GrpcService
@@ -98,7 +98,11 @@ public class AuthorizationServerRpcService implements AuthorizationServers {
     @Override
     @Blocking
     public Uni<AuthorizationServersListResponse> listAuthorizationServers(AuthorizationServerListRequest request) {
-        final var authorizationServers = authorizationServerService.getAuthorizationServers();
+        final var page = new Page(
+                Long.valueOf(request.getLimit()).intValue(),
+                Long.valueOf(request.getOffset()).intValue()
+        );
+        final var authorizationServers = authorizationServerService.getAuthorizationServers(page);
         var response = AuthorizationServersListResponse.newBuilder();
         response.addAllAuthorizationServers(
                 authorizationServers

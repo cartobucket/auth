@@ -21,10 +21,10 @@ package com.cartobucket.auth.rpc.server.rpc;
 
 
 import com.cartobucket.auth.data.domain.Application;
+import com.cartobucket.auth.data.domain.Page;
 import com.cartobucket.auth.data.domain.Profile;
 import com.cartobucket.auth.data.services.ApplicationService;
 import com.cartobucket.auth.rpc.*;
-import com.cartobucket.auth.rpc.server.entities.mappers.ProfileMapper;
 import com.cartobucket.auth.rpc.server.rpc.mappers.MetadataMapper;
 import com.google.protobuf.Timestamp;
 import io.quarkus.grpc.GrpcService;
@@ -83,7 +83,11 @@ public class ApplicationRpcService implements Applications {
                         .getAuthorizationServerIdsList()
                         .stream()
                         .map(UUID::fromString)
-                        .toList()
+                        .toList(),
+                new Page(
+                        Long.valueOf(request.getLimit()).intValue(),
+                        Long.valueOf(request.getOffset()).intValue()
+                )
         );
         return Uni
                 .createFrom()

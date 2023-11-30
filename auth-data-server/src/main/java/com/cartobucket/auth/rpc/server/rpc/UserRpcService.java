@@ -20,6 +20,7 @@
 package com.cartobucket.auth.rpc.server.rpc;
 
 
+import com.cartobucket.auth.data.domain.Page;
 import com.cartobucket.auth.data.domain.Pair;
 import com.cartobucket.auth.data.domain.Profile;
 import com.cartobucket.auth.data.domain.User;
@@ -99,7 +100,11 @@ public class UserRpcService implements Users {
                         .getAuthorizationServerIdsList()
                         .stream()
                         .map(UUID::fromString)
-                        .toList()
+                        .toList(),
+                new Page(
+                        Long.valueOf(request.getLimit()).intValue(),
+                        Long.valueOf(request.getOffset()).intValue()
+                )
         );
 
         return Uni

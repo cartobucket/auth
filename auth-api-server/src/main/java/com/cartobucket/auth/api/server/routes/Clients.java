@@ -19,6 +19,7 @@
 
 package com.cartobucket.auth.api.server.routes;
 
+import com.cartobucket.auth.data.domain.Page;
 import com.cartobucket.auth.generated.ClientsApi;
 import com.cartobucket.auth.model.generated.ClientRequest;
 import com.cartobucket.auth.model.generated.ClientsResponse;
@@ -28,6 +29,8 @@ import jakarta.ws.rs.core.Response;
 
 import java.util.List;
 import java.util.UUID;
+
+import static com.cartobucket.auth.api.server.routes.Pagination.getPage;
 
 public class Clients implements ClientsApi {
     final ClientService clientService;
@@ -66,13 +69,16 @@ public class Clients implements ClientsApi {
     }
 
     @Override
-    public Response listClients(List<UUID> authorizationServerIds) {
+    public Response listClients(List<UUID> authorizationServerIds, Integer limit, Integer offset) {
         final var clientsResponse = new ClientsResponse();
         clientsResponse.setClients(
-                clientService.getClients(authorizationServerIds)
+                clientService.getClients(authorizationServerIds, new Page(limit, offset))
                         .stream()
                         .map(ClientMapper::toResponse)
                         .toList()
+        );
+        clientsResponse.setPage(
+                getPage("clients", authorizationServerIds, limit, offset)
         );
         return Response
                 .ok()

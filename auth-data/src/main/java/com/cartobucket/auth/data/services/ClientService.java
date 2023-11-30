@@ -19,6 +19,7 @@
 
 package com.cartobucket.auth.data.services;
 
+import com.cartobucket.auth.data.domain.Page;
 import com.cartobucket.auth.data.exceptions.badrequests.CodeChallengeBadData;
 import com.cartobucket.auth.data.exceptions.notfound.ClientCodeNotFound;
 import com.cartobucket.auth.data.exceptions.notfound.ClientNotFound;
@@ -42,7 +43,7 @@ public interface ClientService {
 
     Client updateClient(UUID clientId, Client client) throws ClientNotFound;
 
-    List<Client> getClients(List<UUID> authorizationServerIds);
+    List<Client> getClients(List<UUID> authorizationServerIds, Page page);
 
     Client createClient(Client client);
 }

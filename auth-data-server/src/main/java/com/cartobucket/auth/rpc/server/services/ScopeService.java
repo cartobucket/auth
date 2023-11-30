@@ -19,12 +19,14 @@
 
 package com.cartobucket.auth.rpc.server.services;
 
+import com.cartobucket.auth.data.domain.Page;
 import com.cartobucket.auth.data.domain.Scope;
 import com.cartobucket.auth.data.exceptions.notfound.ScopeNotFound;
 import com.cartobucket.auth.rpc.server.entities.EventType;
 import com.cartobucket.auth.rpc.server.entities.mappers.ScopeMapper;
 import com.cartobucket.auth.rpc.server.repositories.EventRepository;
 import com.cartobucket.auth.rpc.server.repositories.ScopeRepository;
+import io.quarkus.panache.common.Sort;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 
@@ -47,18 +49,17 @@ public class ScopeService implements com.cartobucket.auth.data.services.ScopeSer
     }
 
     @Override
-    public List<Scope> getScopes(List<UUID> authorizationServerIds) {
+    public List<Scope> getScopes(List<UUID> authorizationServerIds, Page page) {
         if (!authorizationServerIds.isEmpty()) {
-            return StreamSupport
-                    .stream(
-                            scopeRepository
-                                    .findAllByAuthorizationServerIdIn(authorizationServerIds)
-                                    .spliterator(), false
-                    )
+            return scopeRepository
+                    .find("authorizationServerId in ?1", Sort.descending("createdOn"), authorizationServerIds)
+                    .range(page.offset(), page.getNextRowsCount())
+                    .stream()
                     .map(ScopeMapper::from)
                     .toList();
         } else {
-            return scopeRepository.findAll()
+            return scopeRepository.findAll(Sort.descending("createdOn"))
+                    .range(page.offset(), page.getNextRowsCount())
                     .stream()
                     .map(ScopeMapper::from)
                     .toList();

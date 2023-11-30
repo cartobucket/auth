@@ -19,6 +19,7 @@
 
 package com.cartobucket.auth.data.services.impls;
 
+import com.cartobucket.auth.data.domain.Page;
 import com.cartobucket.auth.data.domain.Pair;
 import com.cartobucket.auth.data.domain.Application;
 import com.cartobucket.auth.data.domain.ApplicationSecret;
@@ -153,7 +154,7 @@ public class ApplicationService implements com.cartobucket.auth.data.services.Ap
     }
 
     @Override
-    public List<Application> getApplications(List<UUID> authorizationServerIds) {
+    public List<Application> getApplications(List<UUID> authorizationServerIds, Page page) {
         var applicationListRequest = ApplicationListRequest
                 .newBuilder()
                 .addAllAuthorizationServerIds(
@@ -162,6 +163,8 @@ public class ApplicationService implements com.cartobucket.auth.data.services.Ap
                                 .map(String::valueOf)
                                 .toList()
                 )
+                .setLimit(page.limit())
+                .setOffset(page.offset())
                 .build();
 
         return applicationClient

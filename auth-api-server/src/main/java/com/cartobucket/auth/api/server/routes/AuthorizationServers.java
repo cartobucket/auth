@@ -19,6 +19,7 @@
 
 package com.cartobucket.auth.api.server.routes;
 
+import com.cartobucket.auth.data.domain.Page;
 import com.cartobucket.auth.generated.AuthorizationServersApi;
 import com.cartobucket.auth.model.generated.AuthorizationServerRequest;
 import com.cartobucket.auth.model.generated.AuthorizationServersResponse;
@@ -26,7 +27,10 @@ import com.cartobucket.auth.api.server.routes.mappers.AuthorizationServerMapper;
 import com.cartobucket.auth.data.services.AuthorizationServerService;
 import jakarta.ws.rs.core.Response;
 
+import java.util.Collections;
 import java.util.UUID;
+
+import static com.cartobucket.auth.api.server.routes.Pagination.getPage;
 
 public class AuthorizationServers implements AuthorizationServersApi {
     public final AuthorizationServerService authorizationServerService;
@@ -67,13 +71,16 @@ public class AuthorizationServers implements AuthorizationServersApi {
     }
 
     @Override
-    public Response listAuthorizationServers() {
+    public Response listAuthorizationServers(Integer limit, Integer offset) {
         final var authorizationServersResponse = new AuthorizationServersResponse();
         authorizationServersResponse.setAuthorizationServers(
-                authorizationServerService.getAuthorizationServers()
+                authorizationServerService.getAuthorizationServers(new Page(limit, offset))
                         .stream()
                         .map(AuthorizationServerMapper::toResponse)
                         .toList()
+        );
+        authorizationServersResponse.setPage(
+                getPage("authorizationServers", Collections.emptyList(), limit, offset)
         );
         return Response
                 .ok()

@@ -26,6 +26,24 @@
         "tags": [
           "AuthorizationServers"
         ],
+        "parameters": [
+          {
+            "name": "limit",
+            "description": "",
+            "schema": {
+              "type": "integer"
+            },
+            "in": "query"
+          },
+          {
+            "name": "offset",
+            "description": "",
+            "schema": {
+              "type": "integer"
+            },
+            "in": "query"
+          }
+        ],
         "responses": {
           "200": {
             "content": {
@@ -162,6 +180,22 @@
               }
             },
             "in": "query"
+          },
+          {
+            "name": "limit",
+            "description": "",
+            "schema": {
+              "type": "integer"
+            },
+            "in": "query"
+          },
+          {
+            "name": "offset",
+            "description": "",
+            "schema": {
+              "type": "integer"
+            },
+            "in": "query"
           }
         ],
         "responses": {
@@ -222,6 +256,22 @@
                 "format": "UUID",
                 "type": "string"
               }
+            },
+            "in": "query"
+          },
+          {
+            "name": "limit",
+            "description": "",
+            "schema": {
+              "type": "integer"
+            },
+            "in": "query"
+          },
+          {
+            "name": "offset",
+            "description": "",
+            "schema": {
+              "type": "integer"
             },
             "in": "query"
           }
@@ -286,6 +336,22 @@
               }
             },
             "in": "query"
+          },
+          {
+            "name": "limit",
+            "description": "",
+            "schema": {
+              "type": "integer"
+            },
+            "in": "query"
+          },
+          {
+            "name": "offset",
+            "description": "",
+            "schema": {
+              "type": "integer"
+            },
+            "in": "query"
           }
         ],
         "responses": {
@@ -348,6 +414,22 @@
               }
             },
             "in": "query"
+          },
+          {
+            "name": "limit",
+            "description": "",
+            "schema": {
+              "type": "integer"
+            },
+            "in": "query"
+          },
+          {
+            "name": "offset",
+            "description": "",
+            "schema": {
+              "type": "integer"
+            },
+            "in": "query"
           }
         ],
         "responses": {
@@ -408,6 +490,22 @@
                 "format": "UUID",
                 "type": "string"
               }
+            },
+            "in": "query"
+          },
+          {
+            "name": "limit",
+            "description": "",
+            "schema": {
+              "type": "integer"
+            },
+            "in": "query"
+          },
+          {
+            "name": "offset",
+            "description": "",
+            "schema": {
+              "type": "integer"
             },
             "in": "query"
           }
@@ -820,6 +918,22 @@
               }
             },
             "in": "query"
+          },
+          {
+            "name": "limit",
+            "description": "",
+            "schema": {
+              "type": "integer"
+            },
+            "in": "query"
+          },
+          {
+            "name": "offset",
+            "description": "",
+            "schema": {
+              "type": "integer"
+            },
+            "in": "query"
           }
         ],
         "responses": {
@@ -1063,6 +1177,9 @@
       "AuthorizationServersResponse": {
         "title": "Root Type for AuthorizationServersResponse",
         "description": "",
+        "required": [
+          "page"
+        ],
         "type": "object",
         "properties": {
           "authorizationServers": {
@@ -1070,6 +1187,10 @@
             "items": {
               "$ref": "#/components/schemas/AuthorizationServerResponse"
             }
+          },
+          "page": {
+            "$ref": "#/components/schemas/Page",
+            "description": ""
           }
         },
         "example": {
@@ -1132,6 +1253,9 @@
       "ClientsResponse": {
         "title": "Root Type for ClientsResponse",
         "description": "",
+        "required": [
+          "page"
+        ],
         "type": "object",
         "properties": {
           "clients": {
@@ -1139,6 +1263,10 @@
             "items": {
               "$ref": "#/components/schemas/ClientResponse"
             }
+          },
+          "page": {
+            "$ref": "#/components/schemas/Page",
+            "description": ""
           }
         },
         "example": {
@@ -1152,6 +1280,9 @@
       "ApplicationsResponse": {
         "title": "Root Type for ApplicationsResponse",
         "description": "",
+        "required": [
+          "page"
+        ],
         "type": "object",
         "properties": {
           "applications": {
@@ -1159,6 +1290,10 @@
             "items": {
               "$ref": "#/components/schemas/ApplicationResponse"
             }
+          },
+          "page": {
+            "$ref": "#/components/schemas/Page",
+            "description": ""
           }
         },
         "example": {
@@ -1233,6 +1368,9 @@
       "UsersResponse": {
         "title": "Root Type for UsersResponse",
         "description": "",
+        "required": [
+          "page"
+        ],
         "type": "object",
         "properties": {
           "users": {
@@ -1240,6 +1378,10 @@
             "items": {
               "$ref": "#/components/schemas/UserResponse"
             }
+          },
+          "page": {
+            "$ref": "#/components/schemas/Page",
+            "description": ""
           }
         },
         "example": {
@@ -1376,6 +1518,9 @@
       "TemplatesResponse": {
         "title": "Root Type for TemplatesResponse",
         "description": "",
+        "required": [
+          "page"
+        ],
         "type": "object",
         "properties": {
           "templates": {
@@ -1383,6 +1528,10 @@
             "items": {
               "$ref": "#/components/schemas/TemplateResponse"
             }
+          },
+          "page": {
+            "$ref": "#/components/schemas/Page",
+            "description": ""
           }
         },
         "example": {
@@ -1497,7 +1646,8 @@
         "title": "Root Type for TemplatesResponse",
         "description": "",
         "required": [
-          "scopes"
+          "scopes",
+          "page"
         ],
         "type": "object",
         "properties": {
@@ -1506,6 +1656,10 @@
             "items": {
               "$ref": "#/components/schemas/ScopeResponse"
             }
+          },
+          "page": {
+            "$ref": "#/components/schemas/Page",
+            "description": ""
           }
         },
         "example": {
@@ -1715,7 +1869,8 @@
         "title": "Root Type for SchemasResponse",
         "description": "",
         "required": [
-          "schemas"
+          "schemas",
+          "page"
         ],
         "type": "object",
         "properties": {
@@ -1724,6 +1879,10 @@
             "items": {
               "$ref": "#/components/schemas/SchemaResponse"
             }
+          },
+          "page": {
+            "$ref": "#/components/schemas/Page",
+            "description": ""
           }
         },
         "example": {
@@ -2367,6 +2526,23 @@
               "validatedOn": "2023-10-25T00:51:50+0000"
             }
           ]
+        }
+      },
+      "Page": {
+        "title": "Root Type for Page",
+        "description": "",
+        "type": "object",
+        "properties": {
+          "next": {
+            "type": "string"
+          },
+          "previous": {
+            "type": "string"
+          }
+        },
+        "example": {
+          "next": "https://test.company.example/application?limit=10&offset=10",
+          "previous": "https://test.company.example/application?limit=10&offset=0"
         }
       }
     }
