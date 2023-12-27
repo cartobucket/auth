@@ -206,7 +206,9 @@
         "responses": {
           "200": {
             "content": {
-              "text/html": {}
+              "text/html": {
+
+              }
             },
             "description": "Rerender the form when the user does not provide valid credentials."
           },

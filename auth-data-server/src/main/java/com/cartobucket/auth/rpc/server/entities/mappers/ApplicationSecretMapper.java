@@ -20,6 +20,7 @@
 package com.cartobucket.auth.rpc.server.entities.mappers;
 
 import com.cartobucket.auth.data.domain.ApplicationSecret;
+import com.cartobucket.auth.data.domain.Scope;
 
 public class ApplicationSecretMapper {
     public static ApplicationSecret from(com.cartobucket.auth.rpc.server.entities.ApplicationSecret applicationSecret) {
@@ -28,7 +29,7 @@ public class ApplicationSecretMapper {
         _applicationSecret.setApplicationSecret(applicationSecret.getApplicationSecret());
         _applicationSecret.setApplicationSecretHash(applicationSecret.getApplicationSecretHash());
         _applicationSecret.setId(applicationSecret.getId());
-        _applicationSecret.setScopes(applicationSecret.getScopes());
+        _applicationSecret.setScopes(applicationSecret.getScopes().stream().map(ScopeMapper::toScope).toList());
         _applicationSecret.setAuthorizationServerId(applicationSecret.getAuthorizationServerId());
         _applicationSecret.setName(applicationSecret.getName());
         _applicationSecret.setUpdatedOn(applicationSecret.getUpdatedOn());
@@ -42,7 +43,7 @@ public class ApplicationSecretMapper {
         _applicationSecret.setApplicationSecret(applicationSecret.getApplicationSecret());
         _applicationSecret.setApplicationSecretHash(applicationSecret.getApplicationSecretHash());
         _applicationSecret.setId(applicationSecret.getId());
-        _applicationSecret.setScopes(applicationSecret.getScopes());
+        _applicationSecret.setScopes(applicationSecret.getScopes().stream().map(Scope::getName).toList());
         _applicationSecret.setAuthorizationServerId(applicationSecret.getAuthorizationServerId());
         _applicationSecret.setName(applicationSecret.getName());
         _applicationSecret.setUpdatedOn(applicationSecret.getUpdatedOn());

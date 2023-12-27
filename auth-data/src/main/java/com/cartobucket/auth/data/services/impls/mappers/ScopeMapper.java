@@ -22,6 +22,7 @@ package com.cartobucket.auth.data.services.impls.mappers;
 import com.cartobucket.auth.data.domain.Scope;
 import com.cartobucket.auth.data.rpc.ScopeResponse;
 import com.cartobucket.auth.data.rpc.ScopeResponse;
+import com.cartobucket.auth.rpc.Metadata;
 import io.smallrye.mutiny.Uni;
 
 import java.time.Instant;
@@ -32,12 +33,30 @@ import java.util.UUID;
 public class ScopeMapper {
     public static Scope toScope(ScopeResponse scopeResponse) {
         var scope = new Scope();
-        scope.setId(UUID.fromString(scopeResponse.getId()));
+        // TODO: This is obviously not right
+        scope.setId(!scopeResponse.getId().equals("null") ? UUID.fromString(scopeResponse.getId()) : UUID.randomUUID());
         scope.setName(scopeResponse.getName());
-        scope.setAuthorizationServerId(UUID.fromString(scopeResponse.getAuthorizationServerId()));
+        // TODO: This too is not correct.
+        scope.setAuthorizationServerId(!scopeResponse.getAuthorizationServerId().equals("null") ? UUID.fromString(scopeResponse.getAuthorizationServerId()) : UUID.randomUUID());
         scope.setMetadata(MetadataMapper.from(scopeResponse.getMetadata()));
         scope.setCreatedOn(OffsetDateTime.ofInstant(Instant.ofEpochSecond(scopeResponse.getCreatedOn().getSeconds()), ZoneId.of("UTC")));
         scope.setUpdatedOn(OffsetDateTime.ofInstant(Instant.ofEpochSecond(scopeResponse.getUpdatedOn().getSeconds()), ZoneId.of("UTC")));
         return scope;
+    }
+
+    public static Scope to(String scope) {
+        var scopeObj = new Scope();
+        scopeObj.setName(scope);
+        return scopeObj;
+    }
+
+    public static ScopeResponse toResponse(Scope scope) {
+        // TODO: Fix this too.
+        return ScopeResponse.newBuilder()
+                .setId(scope.getId() != null ? scope.getId().toString() : String.valueOf(UUID.randomUUID()))
+                .setName(scope.getName())
+                .setAuthorizationServerId(scope.getAuthorizationServerId() != null ? scope.getAuthorizationServerId().toString() : String.valueOf(UUID.randomUUID()))
+                .setMetadata(scope.getMetadata() != null ? MetadataMapper.to(scope.getMetadata()) : Metadata.newBuilder().build())
+                .build();
     }
 }

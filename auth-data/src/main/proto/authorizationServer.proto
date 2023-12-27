@@ -7,6 +7,7 @@ option java_outer_classname = "AuthorizationServerProto";
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/struct.proto";
 import "metadata.proto";
+import "scope.proto";
 
 
 service AuthorizationServers {
@@ -121,9 +122,9 @@ message Jwk {
 
 message GenerateAccessTokenRequest {
   string authorizationServerId = 1;
-  string profileId = 2;
+  string userId = 2;
   string subject = 3;
-  string scopes = 4;
+  repeated ScopeResponse scopes = 4;
   int64 expireInSeconds = 5;
   optional string nonce = 6;
 }

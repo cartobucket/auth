@@ -114,7 +114,7 @@ public class ScopeService implements com.cartobucket.auth.data.services.ScopeSer
     }
 
     @Override
-    public List<String> filterScopesForAuthorizationServerId(UUID authorizationServerId, String scopes) {
+    public List<Scope> filterScopesForAuthorizationServerId(UUID authorizationServerId, String scopes) {
         return null;
     }
 }

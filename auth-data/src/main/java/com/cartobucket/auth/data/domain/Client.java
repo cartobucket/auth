@@ -33,7 +33,7 @@ public class Client {
 
     private List<URI> redirectUris;
 
-    private List<String> scopes;
+    private List<Scope> scopes;
 
     private Metadata metadata;
 
@@ -73,11 +73,11 @@ public class Client {
         this.redirectUris = redirectUris;
     }
 
-    public List<String> getScopes() {
+    public List<Scope> getScopes() {
         return scopes;
     }
 
-    public void setScopes(List<String> scopes) {
+    public void setScopes(List<Scope> scopes) {
         this.scopes = scopes;
     }
 

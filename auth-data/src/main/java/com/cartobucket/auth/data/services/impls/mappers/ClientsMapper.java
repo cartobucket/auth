@@ -35,7 +35,7 @@ public class ClientsMapper {
         client.setId(UUID.fromString(clientResponse.getId()));
         client.setAuthorizationServerId(UUID.fromString(clientResponse.getAuthorizationServerId()));
         client.setName(clientResponse.getName());
-        client.setScopes(clientResponse.getScopesList());
+        client.setScopes(clientResponse.getScopesList().stream().map(ScopeMapper::toScope).toList());
         client.setRedirectUris(clientResponse.getRedirectUrisList().stream().map(URI::create).toList());
         client.setMetadata(MetadataMapper.from(clientResponse.getMetadata()));
         client.setCreatedOn(OffsetDateTime.ofInstant(Instant.ofEpochSecond(clientResponse.getCreatedOn().getSeconds()), ZoneId.of("UTC")));
@@ -48,7 +48,7 @@ public class ClientsMapper {
         client.setId(UUID.fromString(clientCreateResponse.getId()));
         client.setAuthorizationServerId(UUID.fromString(clientCreateResponse.getAuthorizationServerId()));
         client.setName(clientCreateResponse.getName());
-        client.setScopes(clientCreateResponse.getScopesList());
+        client.setScopes(clientCreateResponse.getScopesList().stream().map(ScopeMapper::toScope).toList());
         client.setRedirectUris(clientCreateResponse.getRedirectUrisList().stream().map(URI::create).toList());
         client.setMetadata(MetadataMapper.from(clientCreateResponse.getMetadata()));
         client.setCreatedOn(OffsetDateTime.ofInstant(Instant.ofEpochSecond(clientCreateResponse.getCreatedOn().getSeconds()), ZoneId.of("UTC")));

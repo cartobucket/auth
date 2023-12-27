@@ -19,6 +19,7 @@
 
 package com.cartobucket.auth.api.server.routes.mappers;
 
+import com.cartobucket.auth.data.domain.Scope;
 import com.cartobucket.auth.model.generated.ClientRequest;
 import com.cartobucket.auth.model.generated.ClientResponse;
 import com.cartobucket.auth.data.domain.Client;
@@ -43,7 +44,15 @@ public class ClientMapper {
         clientResponse.setName(client.getName());
         clientResponse.setAuthorizationServerId(String.valueOf(client.getAuthorizationServerId()));
         clientResponse.setRedirectUris(client.getRedirectUris().stream().map(String::valueOf).toList());
-        clientResponse.setScopes(ScopeService.scopeListToScopeString(client.getScopes()));
+        clientResponse.setScopes(
+                ScopeService.scopeListToScopeString(
+                        client
+                                .getScopes()
+                                .stream()
+                                .map(Scope::getName)
+                                .toList()
+                )
+        );
         clientResponse.setMetadata(MetadataMapper.to(client.getMetadata()));
         clientResponse.setCreatedOn(client.getCreatedOn());
         clientResponse.setUpdatedOn(client.getUpdatedOn());

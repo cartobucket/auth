@@ -22,11 +22,16 @@ package com.cartobucket.auth.data.services.impls;
 import com.cartobucket.auth.data.domain.Client;
 import com.cartobucket.auth.data.domain.ClientCode;
 import com.cartobucket.auth.data.domain.Page;
+import com.cartobucket.auth.data.domain.Scope;
 import com.cartobucket.auth.data.exceptions.badrequests.CodeChallengeBadData;
 import com.cartobucket.auth.data.exceptions.notfound.ClientCodeNotFound;
 import com.cartobucket.auth.data.exceptions.notfound.ClientNotFound;
+import com.cartobucket.auth.data.services.impls.mappers.ClientCodeMapper;
 import com.cartobucket.auth.data.services.impls.mappers.ClientsMapper;
 import com.cartobucket.auth.data.services.impls.mappers.MetadataMapper;
+import com.cartobucket.auth.data.services.impls.mappers.ScopeMapper;
+import com.cartobucket.auth.rpc.ClientCodeGetRequest;
+import com.cartobucket.auth.rpc.ClientCreateClientCodeRequest;
 import com.cartobucket.auth.rpc.ClientDeleteRequest;
 import com.cartobucket.auth.rpc.ClientGetRequest;
 import com.cartobucket.auth.rpc.ClientListRequest;
@@ -60,7 +65,26 @@ public class ClientService implements com.cartobucket.auth.data.services.ClientS
             UUID authorizationServerId,
             ClientCode clientCode
     ) throws CodeChallengeBadData {
-        return new ClientCode();
+        var request = ClientCreateClientCodeRequest
+                .newBuilder()
+                .setAuthorizationServerId(String.valueOf(authorizationServerId))
+                .setClientId(clientCode.getClientId())
+                .setRedirectUri(clientCode.getRedirectUri())
+                .addAllScopes(clientCode.getScopes().stream().map(ScopeMapper::toResponse).toList())
+                .setState(clientCode.getState())
+                .setNonce(clientCode.getNonce() == null ? "" : clientCode.getNonce())
+                .setUserId(String.valueOf(clientCode.getUserId()));
+        if (clientCode.getCodeChallenge() != null && clientCode.getCodeChallengeMethod() != null) {
+            request.setCodeChallenge(clientCode.getCodeChallenge());
+            request.setCodeChallengeMethod(clientCode.getCodeChallengeMethod());
+        }
+        return ClientCodeMapper.to(clientsClient.createClientCode(
+                request.build()
+        )
+                .await()
+                .atMost(Duration.of(3, ChronoUnit.SECONDS))
+        );
+
     }
 
     @Override
@@ -92,7 +116,17 @@ public class ClientService implements com.cartobucket.auth.data.services.ClientS
 
     @Override
     public ClientCode getClientCode(String clientCode) throws ClientCodeNotFound {
-        return null;
+        return ClientCodeMapper.to(
+                clientsClient
+                        .getClientCode(
+                                ClientCodeGetRequest
+                                        .newBuilder()
+                                        .setCode(clientCode)
+                                        .build()
+                        )
+                        .await()
+                        .atMost(Duration.of(3, ChronoUnit.SECONDS))
+        );
     }
 
     @Override
@@ -104,7 +138,7 @@ public class ClientService implements com.cartobucket.auth.data.services.ClientS
                                         .newBuilder()
                                         .setId(String.valueOf(clientId))
                                         .setName(client.getName())
-                                        .addAllScopes(client.getScopes())
+                                        .addAllScopes(client.getScopes().stream().map(ScopeMapper::toResponse).toList())
                                         .addAllRedirectUris(client.getRedirectUris().stream().map(String::valueOf).toList())
                                         .setMetadata(MetadataMapper.to(client.getMetadata()))
                                         .build()
@@ -145,7 +179,7 @@ public class ClientService implements com.cartobucket.auth.data.services.ClientS
                                 com.cartobucket.auth.rpc.ClientCreateRequest
                                         .newBuilder()
                                         .setName(client.getName())
-                                        .addAllScopes(client.getScopes())
+                                        .addAllScopes(client.getScopes().stream().map(ScopeMapper::toResponse).toList())
                                         .addAllRedirectUris(client.getRedirectUris().stream().map(String::valueOf).toList())
                                         .setAuthorizationServerId(String.valueOf(client.getAuthorizationServerId()))
                                         .setMetadata(MetadataMapper.to(client.getMetadata()))

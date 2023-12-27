@@ -40,6 +40,7 @@ import com.cartobucket.auth.rpc.Jwk;
 import com.cartobucket.auth.rpc.JwksResponse;
 import com.cartobucket.auth.rpc.ValidateJwtForAuthorizationServerRequest;
 import com.cartobucket.auth.rpc.ValidateJwtForAuthorizationServerResponse;
+import com.cartobucket.auth.rpc.server.entities.mappers.ScopeMapper;
 import com.cartobucket.auth.rpc.server.rpc.mappers.MetadataMapper;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.Timestamp;
@@ -246,6 +247,7 @@ public class AuthorizationServerRpcService implements AuthorizationServers {
     }
 
     @Override
+    @Blocking
     public Uni<ValidateJwtForAuthorizationServerResponse> validateJwtForAuthorizationServer(ValidateJwtForAuthorizationServerRequest request) {
         final var claims = authorizationServerService
                 .validateJwtForAuthorizationServer(
@@ -263,12 +265,13 @@ public class AuthorizationServerRpcService implements AuthorizationServers {
     }
 
     @Override
+    @Blocking
     public Uni<GenerateAccessTokenResponse> generateAccessToken(GenerateAccessTokenRequest request) {
         final var accessToken = authorizationServerService.generateAccessToken(
                 UUID.fromString(request.getAuthorizationServerId()),
-                UUID.fromString(request.getProfileId()),
+                UUID.fromString(request.getUserId()),
                 request.getSubject(),
-                request.getScopes(),
+                request.getScopesList().stream().map(ScopeMapper::fromResponse).toList(),
                 request.getExpireInSeconds(),
                 request.getNonce()
         );
@@ -282,7 +285,7 @@ public class AuthorizationServerRpcService implements AuthorizationServers {
                                 .setIdToken(accessToken.getIdToken())
                                 .setExpireInSeconds(accessToken.getExpiresIn())
                                 .setScope(accessToken.getScope())
-                                .setRefreshToken(accessToken.getRefreshToken())
+                                .setRefreshToken(accessToken.getRefreshToken() != null ? accessToken.getAccessToken() : "")
                                 .build()
                 );
     }

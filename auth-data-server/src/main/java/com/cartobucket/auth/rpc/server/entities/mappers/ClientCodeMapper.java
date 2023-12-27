@@ -20,6 +20,7 @@
 package com.cartobucket.auth.rpc.server.entities.mappers;
 
 import com.cartobucket.auth.data.domain.ClientCode;
+import com.cartobucket.auth.data.domain.Scope;
 
 import java.util.UUID;
 
@@ -31,10 +32,9 @@ public class ClientCodeMapper {
         _clientCode.setCodeChallenge(clientCode.getCodeChallenge());
         _clientCode.setCodeChallengeMethod(clientCode.getCodeChallengeMethod());
         _clientCode.setId(clientCode.getId());
-        _clientCode.setScopes(clientCode.getScopes());
+        _clientCode.setScopes(clientCode.getScopes().stream().map(ScopeMapper::toScope).toList());
         _clientCode.setNonce(clientCode.getNonce());
         _clientCode.setState(clientCode.getState());
-        _clientCode.setScopes(clientCode.getScopes());
         _clientCode.setAuthorizationServerId(clientCode.getAuthorizationServerId());
         _clientCode.setRedirectUri(clientCode.getRedirectUri());
         _clientCode.setUserId(clientCode.getUserId());
@@ -49,10 +49,9 @@ public class ClientCodeMapper {
         _clientCode.setCodeChallenge(clientCode.getCodeChallenge());
         _clientCode.setCodeChallengeMethod(clientCode.getCodeChallengeMethod());
         _clientCode.setId(clientCode.getId());
-        _clientCode.setScopes(clientCode.getScopes());
+        _clientCode.setScopes(clientCode.getScopes().stream().map(Scope::getName).toList());
         _clientCode.setNonce(clientCode.getNonce());
         _clientCode.setState(clientCode.getState());
-        _clientCode.setScopes(clientCode.getScopes());
         _clientCode.setAuthorizationServerId(clientCode.getAuthorizationServerId());
         _clientCode.setRedirectUri(clientCode.getRedirectUri());
         _clientCode.setUserId(clientCode.getUserId());

@@ -129,14 +129,15 @@ AUTHENTICATION_BACKENDS = [
     'mozilla_django_oidc.auth.OIDCAuthenticationBackend',
 ]
 
-OIDC_OP_AUTHORIZATION_ENDPOINT = "http://localhost:8080/becb7180-4b1e-4f2b-812e-f1b86455725c/authorization/"
-OIDC_OP_TOKEN_ENDPOINT = "http://localhost:8080/becb7180-4b1e-4f2b-812e-f1b86455725c/token/"
-OIDC_OP_USER_ENDPOINT = "http://localhost:8080/becb7180-4b1e-4f2b-812e-f1b86455725c/userinfo/"
-OIDC_OP_JWKS_ENDPOINT = "http://localhost:8080/becb7180-4b1e-4f2b-812e-f1b86455725c/jwks/"
+OIDC_OP_AUTHORIZATION_ENDPOINT = "https://localhost:9090/2146c7f5-72cf-4d6b-a9cf-724c640c5d46/authorization/"
+OIDC_OP_TOKEN_ENDPOINT = "https://localhost:9090/2146c7f5-72cf-4d6b-a9cf-724c640c5d46/token/"
+OIDC_OP_USER_ENDPOINT = "https://localhost:9090/2146c7f5-72cf-4d6b-a9cf-724c640c5d46/userinfo/"
+OIDC_OP_JWKS_ENDPOINT = "https://localhost:9090/2146c7f5-72cf-4d6b-a9cf-724c640c5d46/jwks/"
 OIDC_RP_SIGN_ALGO = "RS256"
 
-OIDC_RP_CLIENT_ID = "0ccaa7a7-0cb5-4edf-9ec3-a3458bdce09e"
+OIDC_RP_CLIENT_ID = "1735f0df-b661-4b30-ad9d-5c7f415e2d1c"
 OIDC_RP_CLIENT_SECRET = "6wQFVgsU49hUXyRRzzowmQsPTfpyYC6l"
 OIDC_CREATE_USER = True
 LOGIN_URL = '/oidc/authenticate/'
 LOGOUT_REDIRECT_URL = "/go_to_login"
+OIDC_VERIFY_SSL=False

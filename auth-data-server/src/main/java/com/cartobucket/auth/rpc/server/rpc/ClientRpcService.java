@@ -21,9 +21,14 @@ package com.cartobucket.auth.rpc.server.rpc;
 
 
 import com.cartobucket.auth.data.domain.Client;
+import com.cartobucket.auth.data.domain.ClientCode;
 import com.cartobucket.auth.data.domain.Page;
 import com.cartobucket.auth.data.services.ClientService;
 import com.cartobucket.auth.data.services.impls.mappers.MetadataMapper;
+import com.cartobucket.auth.rpc.ClientCodeGetRequest;
+import com.cartobucket.auth.rpc.ClientCodeResponse;
+import com.cartobucket.auth.rpc.ClientCreateClientCodeRequest;
+import com.cartobucket.auth.rpc.ClientCreateClientCodeResponse;
 import com.cartobucket.auth.rpc.ClientCreateRequest;
 import com.cartobucket.auth.rpc.ClientCreateResponse;
 import com.cartobucket.auth.rpc.ClientDeleteRequest;
@@ -33,6 +38,7 @@ import com.cartobucket.auth.rpc.ClientListResponse;
 import com.cartobucket.auth.rpc.ClientResponse;
 import com.cartobucket.auth.rpc.ClientUpdateRequest;
 import com.cartobucket.auth.rpc.Clients;
+import com.cartobucket.auth.rpc.server.entities.mappers.ScopeMapper;
 import com.google.protobuf.Timestamp;
 import io.quarkus.grpc.GrpcService;
 import io.smallrye.common.annotation.Blocking;
@@ -58,7 +64,7 @@ public class ClientRpcService implements Clients {
         try {
             var client = new Client();
             client.setName(request.getName());
-            client.setScopes(request.getScopesList());
+            client.setScopes(request.getScopesList().stream().map(ScopeMapper::fromResponse).toList());
             List<URI> list = new ArrayList<>();
             for (String s : request.getRedirectUrisList()) {
                 list.add(new URI(s));
@@ -77,7 +83,7 @@ public class ClientRpcService implements Clients {
                                     .setId(String.valueOf(client.getId()))
                                     .setAuthorizationServerId(String.valueOf(client.getAuthorizationServerId()))
                                     .setName(client.getName())
-                                    .addAllScopes(client.getScopes())
+                                    .addAllScopes(client.getScopes().stream().map(ScopeMapper::toResponse).toList())
                                     .addAllRedirectUris(client
                                             .getRedirectUris()
                                             .stream()
@@ -93,6 +99,40 @@ public class ClientRpcService implements Clients {
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    @Blocking
+    public Uni<ClientCreateClientCodeResponse> createClientCode(ClientCreateClientCodeRequest request) {
+        final var clientCode = new ClientCode();
+        clientCode.setClientId(request.getClientId());
+        clientCode.setAuthorizationServerId(UUID.fromString(request.getAuthorizationServerId()));
+        clientCode.setRedirectUri(request.getRedirectUri());
+        clientCode.setScopes(request.getScopesList().stream().map(ScopeMapper::fromResponse).toList());
+        clientCode.setState(request.getState());
+        clientCode.setCodeChallenge(request.getCodeChallenge());
+        clientCode.setCodeChallengeMethod(request.getCodeChallengeMethod());
+        clientCode.setNonce(request.getNonce());
+        clientCode.setUserId(UUID.fromString(request.getUserId()));
+        final var _code = clientService.createClientCode(clientCode.getAuthorizationServerId(), clientCode);
+        return Uni
+                .createFrom()
+                .item(
+                        ClientCreateClientCodeResponse
+                                .newBuilder()
+                                .setId(_code.getId().toString())
+                                .setClientId(_code.getClientId())
+                                .setAuthorizationServerId(_code.getAuthorizationServerId().toString())
+                                .setRedirectUri(_code.getRedirectUri())
+                                .addAllScopes(_code.getScopes().stream().map(ScopeMapper::toResponse).toList())
+                                .setState(_code.getState())
+                                .setCodeChallenge(_code.getCodeChallenge())
+                                .setCodeChallengeMethod(_code.getCodeChallengeMethod())
+                                .setNonce(_code.getNonce())
+                                .setUserId(String.valueOf(_code.getUserId()))
+                                .setCode(_code.getCode())
+                                .build()
+                );
     }
 
     @Override
@@ -123,7 +163,7 @@ public class ClientRpcService implements Clients {
                                                                 .setId(String.valueOf(client.getId()))
                                                                 .setAuthorizationServerId(String.valueOf(client.getAuthorizationServerId()))
                                                                 .setName(client.getName())
-                                                                .addAllScopes(client.getScopes())
+                                                                .addAllScopes(client.getScopes().stream().map(ScopeMapper::toResponse).toList())
                                                                 .addAllRedirectUris(client
                                                                         .getRedirectUris()
                                                                         .stream()
@@ -160,7 +200,7 @@ public class ClientRpcService implements Clients {
         try {
             var client = new Client();
             client.setName(request.getName());
-            client.setScopes(request.getScopesList());
+            client.setScopes(request.getScopesList().stream().map(ScopeMapper::fromResponse).toList());
             List<URI> list = new ArrayList<>();
             for (String s : request.getRedirectUrisList()) {
                 list.add(new URI(s));
@@ -177,7 +217,7 @@ public class ClientRpcService implements Clients {
                                     .setId(String.valueOf(client.getId()))
                                     .setAuthorizationServerId(String.valueOf(client.getAuthorizationServerId()))
                                     .setName(client.getName())
-                                    .addAllScopes(client.getScopes())
+                                    .addAllScopes(client.getScopes().stream().map(ScopeMapper::toResponse).toList())
                                     .addAllRedirectUris(client
                                             .getRedirectUris()
                                             .stream()
@@ -207,7 +247,7 @@ public class ClientRpcService implements Clients {
                                 .setId(String.valueOf(client.getId()))
                                 .setAuthorizationServerId(String.valueOf(client.getAuthorizationServerId()))
                                 .setName(client.getName())
-                                .addAllScopes(client.getScopes())
+                                .addAllScopes(client.getScopes().stream().map(ScopeMapper::toResponse).toList())
                                 .addAllRedirectUris(client
                                         .getRedirectUris()
                                         .stream()
@@ -217,6 +257,31 @@ public class ClientRpcService implements Clients {
                                 .setMetadata(MetadataMapper.to(client.getMetadata()))
                                 .setCreatedOn(Timestamp.newBuilder().setSeconds(client.getCreatedOn().toEpochSecond()).build())
                                 .setUpdatedOn(Timestamp.newBuilder().setSeconds(client.getUpdatedOn().toEpochSecond()).build())
+                                .build()
+                );
+    }
+
+    @Override
+    @Blocking
+    public Uni<ClientCodeResponse> getClientCode(ClientCodeGetRequest request) {
+        final var clientCode = clientService.getClientCode(request.getCode());
+        return Uni
+                .createFrom()
+                .item(
+                        ClientCodeResponse
+                                .newBuilder()
+                                .setId(clientCode.getId().toString())
+                                .setClientId(clientCode.getClientId())
+                                .setAuthorizationServerId(clientCode.getAuthorizationServerId().toString())
+                                .setRedirectUri(clientCode.getRedirectUri())
+                                .addAllScopes(clientCode.getScopes().stream().map(ScopeMapper::toResponse).toList())
+                                .setState(clientCode.getState())
+                                .setCodeChallenge(clientCode.getCodeChallenge())
+                                .setCodeChallengeMethod(clientCode.getCodeChallengeMethod())
+                                .setNonce(clientCode.getNonce())
+                                .setCode(clientCode.getCode())
+                                .setCreatedOn(Timestamp.newBuilder().setSeconds(clientCode.getCreatedOn().toEpochSecond()).build())
+                                .setUserId(clientCode.getUserId().toString())
                                 .build()
                 );
     }

@@ -20,6 +20,10 @@
 package com.cartobucket.auth.rpc.server.entities.mappers;
 
 import com.cartobucket.auth.data.domain.Scope;
+import com.cartobucket.auth.data.rpc.ScopeResponse;
+import com.cartobucket.auth.rpc.server.rpc.mappers.MetadataMapper;
+
+import java.util.UUID;
 
 public class ScopeMapper {
     public static Scope from(com.cartobucket.auth.rpc.server.entities.Scope scope) {
@@ -44,4 +48,33 @@ public class ScopeMapper {
         return _scope;
     }
 
+    public static Scope toScope(String scopeString) {
+        var scope = new Scope();
+        scope.setName(scopeString);
+        return scope;
+    }
+
+    public static Scope fromResponse(ScopeResponse scope) {
+        var _scope = new Scope();
+        _scope.setId(UUID.fromString(scope.getId()));
+//        _scope.setCreatedOn(scope.getCreatedOn());
+//        _scope.setUpdatedOn(scope.getUpdatedOn());
+        _scope.setName(scope.getName());
+        _scope.setAuthorizationServerId(UUID.fromString(scope.getAuthorizationServerId()));
+        _scope.setMetadata(MetadataMapper.toMetadata(scope.getMetadata()));
+        return _scope;
+    }
+
+    public static ScopeResponse toResponse(Scope scope) {
+        var _scope = ScopeResponse
+                .newBuilder()
+                .setId(String.valueOf(scope.getId()))
+//                .setCreatedOn(scope.getCreatedOn())
+//                .setUpdatedOn(scope.getUpdatedOn())
+                .setName(scope.getName())
+                .setAuthorizationServerId(String.valueOf(scope.getAuthorizationServerId()))
+                .setMetadata(MetadataMapper.from(scope.getMetadata()))
+                .build();
+        return _scope;
+    }
 }

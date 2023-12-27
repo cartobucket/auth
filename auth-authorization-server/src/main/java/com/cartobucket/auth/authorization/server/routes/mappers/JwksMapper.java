@@ -23,6 +23,8 @@ package com.cartobucket.auth.authorization.server.routes.mappers;
 import com.cartobucket.auth.model.generated.JWK;
 import com.cartobucket.auth.model.generated.JWKS;
 
+import java.util.List;
+
 public class JwksMapper {
     public static JWK to(com.cartobucket.auth.data.domain.JWK jwk) {
         var jwkModel = new JWK();
@@ -33,5 +35,11 @@ public class JwksMapper {
         jwkModel.setN(jwk.getN());
         jwkModel.setUse(jwk.getUse());
         return jwkModel;
+    }
+
+    public static JWKS toJwksResponse(List<com.cartobucket.auth.data.domain.JWK> jwksForAuthorizationServer) {
+        var jwks = new JWKS();
+        jwks.setKeys(jwksForAuthorizationServer.stream().map(JwksMapper::to).toList());
+        return jwks;
     }
 }

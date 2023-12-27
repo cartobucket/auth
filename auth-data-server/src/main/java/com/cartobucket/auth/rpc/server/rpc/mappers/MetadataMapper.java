@@ -51,6 +51,9 @@ public class MetadataMapper {
     }
 
     public static com.cartobucket.auth.rpc.Metadata from(Metadata metadata) {
+        if (metadata == null) {
+            return com.cartobucket.auth.rpc.Metadata.newBuilder().build();
+        }
         var _metadata = com.cartobucket.auth.rpc.Metadata.newBuilder();
         _metadata.addAllIdentifiers(metadata
                 .getIdentifiers()

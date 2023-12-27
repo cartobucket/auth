@@ -19,8 +19,11 @@
 
 package com.cartobucket.auth.authorization.server.routes;
 
+import com.cartobucket.auth.authorization.server.routes.mappers.AccessTokenResponseMapper;
+import com.cartobucket.auth.authorization.server.routes.mappers.JwksMapper;
 import com.cartobucket.auth.data.domain.ClientCode;
 import com.cartobucket.auth.data.domain.Page;
+import com.cartobucket.auth.data.domain.Scope;
 import com.cartobucket.auth.data.exceptions.notfound.TemplateNotFound;
 import com.cartobucket.auth.data.services.ApplicationService;
 import com.cartobucket.auth.data.services.ScopeService;
@@ -31,9 +34,17 @@ import com.cartobucket.auth.data.services.AuthorizationServerService;
 import com.cartobucket.auth.data.services.ClientService;
 import com.cartobucket.auth.data.services.TemplateService;
 import com.cartobucket.auth.data.services.UserService;
+import com.cartobucket.auth.model.generated.AccessTokenResponse;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
 import io.quarkus.qute.Qute;
+import jakarta.validation.Valid;
 import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.FormParam;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
 import jakarta.ws.rs.core.Response;
 
 import java.net.URI;
@@ -52,17 +63,19 @@ public class AuthorizationServer implements AuthorizationServerApi {
     final UserService userService;
     final TemplateService templateService;
     final ApplicationService applicationService;
+    final ScopeService scopeService;
 
     public AuthorizationServer(
             AuthorizationServerService authorizationServerService,
             ClientService clientService,
             UserService userService, TemplateService templateService,
-            ApplicationService applicationService) {
+            ApplicationService applicationService, ScopeService scopeService) {
         this.authorizationServerService = authorizationServerService;
         this.clientService = clientService;
         this.userService = userService;
         this.templateService = templateService;
         this.applicationService = applicationService;
+        this.scopeService = scopeService;
     }
 
     @Override
@@ -85,7 +98,7 @@ public class AuthorizationServer implements AuthorizationServerApi {
         if (user == null) {
             return renderLoginScreen(authorizationServerId);
         }
-        if (user.getAuthorizationServerId() != authorizationServerId) {
+        if (!user.getAuthorizationServerId().equals(authorizationServerId)) {
             return renderLoginScreen(authorizationServerId);
         }
         if (!userService.validatePassword(user.getId(), password)) {
@@ -95,7 +108,7 @@ public class AuthorizationServer implements AuthorizationServerApi {
         if (client == null) {
             return renderLoginScreen(authorizationServerId);
         }
-        if (client.getAuthorizationServerId() != authorizationServerId) {
+        if (!client.getAuthorizationServerId().equals(authorizationServerId)) {
             return renderLoginScreen(authorizationServerId);
         }
         if (client.getRedirectUris().contains(redirectUri)) {
@@ -115,6 +128,7 @@ public class AuthorizationServer implements AuthorizationServerApi {
         clientCode.setCodeChallenge(codeChallenge);
         clientCode.setCodeChallengeMethod(codeChallengeMethod);
         clientCode.setScopes(ScopeService.scopeStringToScopeList(scope));
+        clientCode.setUserId(user.getId());
 
         final var code = clientService.createClientCode(
                 authorizationServerId,
@@ -123,7 +137,19 @@ public class AuthorizationServer implements AuthorizationServerApi {
 
         return Response.status(302).location(
                 URI.create(
-                        redirectUri + "?code=" + URLEncoder.encode(code.getCode(), StandardCharsets.UTF_8) + "&state=" + URLEncoder.encode(state, StandardCharsets.UTF_8) + "&nonce=" + URLEncoder.encode(nonce, StandardCharsets.UTF_8) + "&scope" + URLEncoder.encode(scope, StandardCharsets.UTF_8)
+                        redirectUri +
+                                "?code=" +
+                                URLEncoder.encode(code.getCode(), StandardCharsets.UTF_8) +
+                                "&state=" + URLEncoder.encode(code.getState(), StandardCharsets.UTF_8) +
+                                "&nonce=" + URLEncoder.encode(code.getNonce(), StandardCharsets.UTF_8) +
+                                "&scope" + URLEncoder.encode(
+                                        ScopeService.scopeListToScopeString(
+                                                code
+                                                        .getScopes()
+                                                        .stream()
+                                                        .map(Scope::getName)
+                                                        .toList()
+                                        ), StandardCharsets.UTF_8)
                 )
         ).build();
     }
@@ -133,26 +159,35 @@ public class AuthorizationServer implements AuthorizationServerApi {
         return Response
                 .ok()
                 .entity(
-                        authorizationServerService.getJwksForAuthorizationServer(authorizationServerId)
+                        JwksMapper.toJwksResponse(
+                                authorizationServerService.getJwksForAuthorizationServer(authorizationServerId)
+                        )
                 )
                 .build();
+    }
+
+    @Path(".well-known/openid-configuration")
+    @GET
+    @Consumes({"*/*"})
+    public Response getOpenIdConfiguration(UUID authorizationServerId) {
+        return getOpenIdConnectionWellKnown(authorizationServerId);
     }
 
     @Override
     public Response getOpenIdConnectionWellKnown(UUID authorizationServerId) {
         final var authorizationServer = authorizationServerService.getAuthorizationServer(authorizationServerId);
         var wellKnown = new com.cartobucket.auth.model.generated.WellKnown();
-        wellKnown.setIssuer(String.valueOf(authorizationServer.getServerUrl()));
+        wellKnown.setIssuer(String.valueOf(authorizationServer.getServerUrl()) + authorizationServer.getId() + "/");
         wellKnown.setAuthorizationEndpoint(
-                authorizationServer.getServerUrl() + "/" + authorizationServer.getId() + "/authorization/");
+                authorizationServer.getServerUrl().toString() + authorizationServer.getId() + "/authorization/");
         wellKnown.setTokenEndpoint(
-                authorizationServer.getServerUrl() + "/" + authorizationServer.getId() + "token/");
+                authorizationServer.getServerUrl().toString() + authorizationServer.getId() + "/token/");
         wellKnown.setJwksUri(
-                authorizationServer.getServerUrl() + "/" + authorizationServer.getId() + "/jwks/");
+                authorizationServer.getServerUrl().toString() + authorizationServer.getId() + "/jwks/");
         wellKnown.setRevocationEndpoint(
-                authorizationServer.getServerUrl() + "/" + authorizationServer.getId() + "/revocation/");
+                authorizationServer.getServerUrl().toString() + authorizationServer.getId() + "/revocation/");
         wellKnown.setUserinfoEndpoint(
-                authorizationServer.getServerUrl() + "/" + authorizationServer.getId() + "/userinfo/");
+                authorizationServer.getServerUrl().toString() + authorizationServer.getId() + "/userinfo/");
         wellKnown.setTokenEndpointAuthMethodsSupported(
                 List.of(
                         com.cartobucket.auth.model.generated.WellKnown.TokenEndpointAuthMethodsSupportedEnum.POST
@@ -198,6 +233,29 @@ public class AuthorizationServer implements AuthorizationServerApi {
         return renderLoginScreen(authorizationServerId);
     }
 
+    @POST
+    @Path("/token/")
+    @Consumes({"application/x-www-form-urlencoded"})
+    public Response issueToken(
+            UUID authorizationServerId,
+            @FormParam("client_id") String clientId,
+            @FormParam("client_secret") String clientSecret,
+            @FormParam("grant_type") String grantType,
+            @FormParam("code") String code,
+            @FormParam("redirect_uri") String redirectUri,
+            @FormParam("code_verifier") String codeVerifier,
+            @FormParam("scope") String scope) {
+        final var accessTokenRequest = new AccessTokenRequest();
+        accessTokenRequest.setClientId(clientId);
+        accessTokenRequest.setClientSecret(clientSecret);
+        accessTokenRequest.setGrantType(AccessTokenRequest.GrantTypeEnum.fromValue(grantType));
+        accessTokenRequest.setCode(code);
+        accessTokenRequest.setRedirectUri(redirectUri);
+        accessTokenRequest.setCodeVerifier(codeVerifier);
+        accessTokenRequest.setScope(scope != null ? scope : "");
+        return issueToken(authorizationServerId, accessTokenRequest);
+    }
+
     @Override
     public Response issueToken(UUID authorizationServerId, AccessTokenRequest accessTokenRequest) {
         final var authorizationServer = authorizationServerService.getAuthorizationServer(authorizationServerId);
@@ -212,6 +270,11 @@ public class AuthorizationServer implements AuthorizationServerApi {
                     throw new BadRequestException();
                 }
 
+                final var scopes = scopeService.filterScopesForAuthorizationServerId(
+                        authorizationServerId,
+                        accessTokenRequest.getScope()
+                );
+
                 return Response
                         .ok()
                         .entity(
@@ -220,7 +283,7 @@ public class AuthorizationServer implements AuthorizationServerApi {
                                                 authorizationServerId,
                                                 UUID.fromString(accessTokenRequest.getClientId()),
                                                 accessTokenRequest.getClientId(),
-                                                accessTokenRequest.getScope(),
+                                                scopes,
                                                 authorizationServer.getClientCredentialsTokenExpiration(),
                                                 null
                                         )
@@ -233,27 +296,24 @@ public class AuthorizationServer implements AuthorizationServerApi {
                     throw new BadRequestException();
                 }
 
-                if (clientCode.getRedirectUri().equals(accessTokenRequest.getRedirectUri())) {
-                    throw new BadRequestException();
-                }
-                final var scopes = ScopeService.scopeStringToScopeList(accessTokenRequest.getScope());
-                // TODO: IntelliJ gave me this hint, not convinced, but gotta think about it more.
-                if (!new HashSet<>(clientCode.getScopes()).containsAll(scopes)) {
+                if (!clientCode.getRedirectUri().equals(accessTokenRequest.getRedirectUri())) {
                     throw new BadRequestException();
                 }
 
                 return Response
                         .ok()
                         .entity(
-                                authorizationServerService
-                                        .generateAccessToken(
-                                                authorizationServerId,
-                                                clientCode.getUserId(),
-                                                String.valueOf(clientCode.getUserId()),
-                                                accessTokenRequest.getScope(),
-                                                authorizationServer.getAuthorizationCodeTokenExpiration(),
-                                                clientCode.getNonce()
-                                        )
+                                AccessTokenResponseMapper.toAccessTokenResponse(
+                                        authorizationServerService
+                                                .generateAccessToken(
+                                                        authorizationServerId,
+                                                        clientCode.getUserId(),
+                                                        String.valueOf(clientCode.getUserId()),
+                                                        clientCode.getScopes(),
+                                                        authorizationServer.getAuthorizationCodeTokenExpiration(),
+                                                        clientCode.getNonce()
+                                                )
+                                )
                         )
                         .build();
             }

@@ -24,11 +24,13 @@ import com.cartobucket.auth.data.domain.AuthorizationServer;
 import com.cartobucket.auth.data.domain.JWK;
 import com.cartobucket.auth.data.domain.Page;
 import com.cartobucket.auth.data.domain.Profile;
+import com.cartobucket.auth.data.domain.Scope;
 import com.cartobucket.auth.data.domain.SigningKey;
 import com.cartobucket.auth.data.exceptions.NotAuthorized;
 import com.cartobucket.auth.data.exceptions.notfound.AuthorizationServerNotFound;
 import com.cartobucket.auth.data.services.impls.mappers.AuthorizationServerMapper;
 import com.cartobucket.auth.data.services.impls.mappers.MetadataMapper;
+import com.cartobucket.auth.data.services.impls.mappers.ScopeMapper;
 import com.cartobucket.auth.rpc.AuthorizationServerCreateRequest;
 import com.cartobucket.auth.rpc.AuthorizationServerDeleteRequest;
 import com.cartobucket.auth.rpc.AuthorizationServerGetRequest;
@@ -189,9 +191,9 @@ public class AuthorizationServerService implements com.cartobucket.auth.data.ser
     @Override
     public AccessToken generateAccessToken(
             UUID authorizationServerId,
-            UUID profileId,
+            UUID userId,
             String subject,
-            String scopes,
+            List<Scope> scopes,
             long expireInSeconds,
             String nonce
             ) {
@@ -200,9 +202,9 @@ public class AuthorizationServerService implements com.cartobucket.auth.data.ser
                         com.cartobucket.auth.rpc.GenerateAccessTokenRequest
                                 .newBuilder()
                                 .setAuthorizationServerId(String.valueOf(authorizationServerId))
-                                .setProfileId(String.valueOf(profileId))
+                                .setUserId(String.valueOf(userId))
                                 .setSubject(subject)
-                                .setScopes(scopes)
+                                .addAllScopes(scopes.stream().map(ScopeMapper::toResponse).toList())
                                 .setExpireInSeconds(expireInSeconds)
                                 .setNonce(nonce)
                                 .build()

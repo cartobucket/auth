@@ -42,7 +42,7 @@ public class ApplicationSecret {
 
     private OffsetDateTime updatedOn;
 
-    private List<String> scopes;
+    private List<Scope> scopes;
 
     public UUID getApplicationId() {
         return applicationId;
@@ -75,11 +75,11 @@ public class ApplicationSecret {
         return id;
     }
 
-    public List<String> getScopes() {
+    public List<Scope> getScopes() {
         return scopes;
     }
 
-    public void setScopes(List<String> scopes) {
+    public void setScopes(List<Scope> scopes) {
         this.scopes = scopes;
     }
 

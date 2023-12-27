@@ -24,12 +24,14 @@ import com.cartobucket.auth.data.domain.AuthorizationServer;
 import com.cartobucket.auth.data.domain.JWK;
 import com.cartobucket.auth.data.domain.Page;
 import com.cartobucket.auth.data.domain.Profile;
+import com.cartobucket.auth.data.domain.Scope;
 import com.cartobucket.auth.data.domain.SigningKey;
 import com.cartobucket.auth.data.domain.Template;
 import com.cartobucket.auth.data.domain.TemplateTypeEnum;
 import com.cartobucket.auth.data.exceptions.NotAuthorized;
 import com.cartobucket.auth.data.exceptions.notfound.AuthorizationServerNotFound;
 import com.cartobucket.auth.data.exceptions.notfound.ProfileNotFound;
+import com.cartobucket.auth.data.services.ScopeService;
 import com.cartobucket.auth.data.services.TemplateService;
 import com.cartobucket.auth.rpc.server.entities.EventType;
 import com.cartobucket.auth.rpc.server.entities.mappers.AuthorizationServerMapper;
@@ -40,6 +42,7 @@ import com.cartobucket.auth.rpc.server.repositories.EventRepository;
 import com.cartobucket.auth.rpc.server.repositories.ProfileRepository;
 import com.cartobucket.auth.rpc.server.repositories.SingingKeyRepository;
 import io.quarkus.panache.common.Sort;
+import io.smallrye.common.annotation.Blocking;
 import io.smallrye.jwt.algorithm.SignatureAlgorithm;
 import io.smallrye.jwt.build.Jwt;
 import io.smallrye.jwt.util.KeyUtils;
@@ -137,9 +140,9 @@ public class AuthorizationServerService implements com.cartobucket.auth.data.ser
     @Override
     public AccessToken generateAccessToken(
             UUID authorizationServerId,
-            UUID profileId,
+            UUID userId,
             String subject,
-            String scopes,
+            List<Scope> scopes,
             long expiresInSeconds,
             String nonce) {
         final var authorizationServer = authorizationServerRepository
@@ -147,7 +150,7 @@ public class AuthorizationServerService implements com.cartobucket.auth.data.ser
                 .orElseThrow();
 
         final var profile = profileRepository.findByResourceId(
-                        profileId
+                        userId
                 )
                 .map(ProfileMapper::from)
                 .orElseThrow(ProfileNotFound::new);
@@ -156,7 +159,8 @@ public class AuthorizationServerService implements com.cartobucket.auth.data.ser
         if (nonce != null) {
             additionalClaims.put("nonce", nonce);
         }
-        additionalClaims.put("scope", scopes);
+        additionalClaims.put("sub", subject);
+        additionalClaims.put("scope", ScopeService.scopeListToScopeString(scopes.stream().map(Scope::getName).toList()));
         additionalClaims.put("exp", OffsetDateTime.now().plusSeconds(expiresInSeconds).toEpochSecond());
 
         return buildAccessTokenResponse(authorizationServer, profile, additionalClaims);
@@ -258,6 +262,7 @@ public class AuthorizationServerService implements com.cartobucket.auth.data.ser
     }
 
     @Override
+    @Blocking
     public Map<String, Object> validateJwtForAuthorizationServer(UUID authorizationServerId, String Jwt) throws NotAuthorized {
         final var authorizationServer = authorizationServerRepository
                 .findByIdOptional(authorizationServerId)
@@ -269,13 +274,13 @@ public class AuthorizationServerService implements com.cartobucket.auth.data.ser
                     .setRequireExpirationTime()
                     .setRequireSubject()
                     .setSkipDefaultAudienceValidation()
-                    .setExpectedIssuer(String.valueOf(authorizationServer.getServerUrl()))
+                    .setExpectedIssuer(authorizationServer.getServerUrl().toString() + authorizationServer.getId() + "/")
                     .setExpectedAudience(authorizationServer.getAudience())
                     .setJwsAlgorithmConstraints(
                             new org.jose4j.jwa.AlgorithmConstraints(AlgorithmConstraints.ConstraintType.PERMIT,
                                     AlgorithmIdentifiers.RSA_USING_SHA256));
 
-            JwtClaims jwtClaims = null;
+            JwtClaims jwtClaims;
             for (final var jwk : jwks) {
                 var singingKey = singingKeyRepository.findByIdAndAuthorizationServerId(
                         UUID.fromString(jwk.getKid()),
@@ -301,8 +306,9 @@ public class AuthorizationServerService implements com.cartobucket.auth.data.ser
 
         try {
             var publicKey = KeyUtils.decodePublicKey(key.getPublicKey());
-            jwk.setN(Base64.getUrlEncoder().encodeToString(((RSAPublicKey)publicKey).getModulus().toByteArray()));
-            jwk.setE(Base64.getUrlEncoder().encodeToString(((RSAPublicKey)publicKey).getPublicExponent().toByteArray()));
+            // Some clients will not accept padding in the base64 encoded string.
+            jwk.setN(Base64.getUrlEncoder().withoutPadding().encodeToString(((RSAPublicKey)publicKey).getModulus().toByteArray()));
+            jwk.setE(Base64.getUrlEncoder().withoutPadding().encodeToString(((RSAPublicKey)publicKey).getPublicExponent().toByteArray()));
         } catch (GeneralSecurityException e) {
             throw new RuntimeException(e);
         }
@@ -311,7 +317,7 @@ public class AuthorizationServerService implements com.cartobucket.auth.data.ser
         jwk.setUse("sig");
         jwk.setAlg(
             switch (key.getKeyType()) {
-                default -> "RSA256";
+                default -> "RS256";
             }
         );
         jwk.setE("AQAB");
@@ -348,7 +354,7 @@ public class AuthorizationServerService implements com.cartobucket.auth.data.ser
         final var signingKey = getSigningKeysForAuthorizationServer(authorizationServer.getId());
         try {
             var jwt = Jwt
-                    .issuer(authorizationServer.getServerUrl().toExternalForm())
+                    .issuer(authorizationServer.getServerUrl().toExternalForm() + authorizationServer.getId() + "/")
                     .audience(authorizationServer.getAudience())
                     .expiresIn(authorizationServer.getClientCredentialsTokenExpiration());
 

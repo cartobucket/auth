@@ -175,7 +175,13 @@ public class UserRpcService implements Users {
     @Override
     @Blocking
     public Uni<UserResponse> getUser(UserGetRequest request) {
-        final var userAndProfile = userService.getUser(UUID.fromString(request.getId()));
+        Pair<User, Profile> userAndProfile;
+        try {
+            final var userId = UUID.fromString(request.getId());
+            userAndProfile = userService.getUser(userId);
+        } catch (IllegalArgumentException e) {
+            userAndProfile = userService.getUser(request.getId());
+        }
         final var user = userAndProfile.getLeft();
         final var profile = userAndProfile.getRight();
 

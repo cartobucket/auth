@@ -92,6 +92,7 @@ public class AuthorizationServerMapper {
         accessToken.setTokenType(AccessToken.TokenTypeEnum.BEARER);
         accessToken.setScope(generateAccessTokenResponse.getScope());
         accessToken.setRefreshToken(generateAccessTokenResponse.getRefreshToken());
+        accessToken.setIdToken(generateAccessTokenResponse.getIdToken());
         return accessToken;
     }
 }

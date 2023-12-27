@@ -24,6 +24,7 @@ import com.cartobucket.auth.data.domain.Application;
 import com.cartobucket.auth.data.domain.ApplicationSecret;
 import com.cartobucket.auth.data.domain.Profile;
 import com.cartobucket.auth.data.domain.ProfileType;
+import com.cartobucket.auth.data.services.ScopeService;
 import com.cartobucket.auth.rpc.*;
 
 import java.time.Instant;
@@ -72,7 +73,7 @@ public class ApplicationMapper {
         _applicationSecret.setApplicationId(UUID.fromString(applicationSecret.getApplicationId()));
         _applicationSecret.setAuthorizationServerId(UUID.fromString(applicationSecret.getAuthorizationServerId()));
         _applicationSecret.setName(applicationSecret.getName());
-        _applicationSecret.setScopes(Collections.singletonList(applicationSecret.getScopes()));
+        _applicationSecret.setScopes(applicationSecret.getScopesList().stream().map(ScopeMapper::toScope).toList());
         _applicationSecret.setApplicationSecret(applicationSecret.getApplicationSecret());
         return _applicationSecret;
     }
@@ -82,7 +83,7 @@ public class ApplicationMapper {
         _applicationSecret.setId(UUID.fromString(applicationSecretResponse.getId()));
         _applicationSecret.setApplicationId(UUID.fromString(applicationSecretResponse.getApplicationId()));
         _applicationSecret.setName(applicationSecretResponse.getName());
-        _applicationSecret.setScopes(Collections.singletonList(applicationSecretResponse.getScopes()));
+        _applicationSecret.setScopes(applicationSecretResponse.getScopesList().stream().map(ScopeMapper::toScope).toList());
         return _applicationSecret;
     }
 }

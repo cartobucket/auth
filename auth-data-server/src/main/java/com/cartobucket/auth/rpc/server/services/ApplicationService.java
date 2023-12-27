@@ -25,6 +25,7 @@ import com.cartobucket.auth.data.domain.Application;
 import com.cartobucket.auth.data.domain.ApplicationSecret;
 import com.cartobucket.auth.data.domain.Profile;
 import com.cartobucket.auth.data.domain.ProfileType;
+import com.cartobucket.auth.data.domain.Scope;
 import com.cartobucket.auth.data.exceptions.badrequests.ApplicationSecretNoApplicationBadData;
 import com.cartobucket.auth.data.exceptions.notfound.ApplicationNotFound;
 import com.cartobucket.auth.data.exceptions.notfound.ApplicationSecretNotFound;
@@ -148,7 +149,8 @@ public class ApplicationService implements com.cartobucket.auth.data.services.Ap
 
         var scopes = scopeService.filterScopesForAuthorizationServerId(
                 application.getAuthorizationServerId(),
-                ScopeService.scopeListToScopeString(applicationSecret.getScopes()));
+                ScopeService.scopeListToScopeString(applicationSecret.getScopes().stream().map(Scope::getName).toList())
+        );
 
         final MessageDigest messageDigest;
         try {

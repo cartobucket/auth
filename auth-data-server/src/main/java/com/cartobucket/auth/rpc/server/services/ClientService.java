@@ -36,6 +36,10 @@ import io.quarkus.panache.common.Sort;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -72,9 +76,24 @@ public class ClientService implements com.cartobucket.auth.data.services.ClientS
         // Filter down to the scopes that are associated with the authorization server.
         var _scopes = scopeService.filterScopesForAuthorizationServerId(
                 authorizationServerId,
-                ScopeService.scopeListToScopeString(clientCode.getScopes())
+                ScopeService.scopeListToScopeString(clientCode.getScopes().stream().map(com.cartobucket.auth.data.domain.Scope::getName).toList())
         );
+
+        final MessageDigest messageDigest;
+        try {
+            messageDigest = MessageDigest.getInstance("SHA-256");
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
+
+        String code = new BigInteger(1, messageDigest
+                .digest(new SecureRandom()
+                        .generateSeed(120)))
+                .toString(16);
+        clientCode.setCode(code);
+
         clientCode.setScopes(_scopes);
+        clientCode.setCreatedOn(OffsetDateTime.now());
         var _clientCode = ClientCodeMapper.to(clientCode);
         clientCodeRepository.persist(_clientCode);
         eventRepository.createClientCodeEvent(ClientCodeMapper.from(_clientCode), EventType.CREATE);
@@ -115,7 +134,7 @@ public class ClientService implements com.cartobucket.auth.data.services.ClientS
                 .orElseThrow(ClientNotFound::new);
 
         _client.setUpdatedOn(OffsetDateTime.now());
-        _client.setScopes(client.getScopes());
+        _client.setScopes(client.getScopes().stream().map(com.cartobucket.auth.data.domain.Scope::getName).toList());
         _client.setName(client.getName());
         _client.setRedirectUris(client.getRedirectUris());
         clientRepository.persist(_client);

@@ -126,7 +126,17 @@ public class UserService implements com.cartobucket.auth.data.services.UserServi
 
     @Override
     public Pair<User, Profile> getUser(String username) throws UserNotFound, ProfileNotFound {
-        return null;
+        return UserMapper.toUserAndProfile(
+                usersClient
+                        .getUser(
+                                com.cartobucket.auth.rpc.UserGetRequest
+                                        .newBuilder()
+                                        .setId(username)
+                                        .build()
+                        )
+                        .await()
+                        .atMost(Duration.of(3, ChronoUnit.SECONDS))
+        );
     }
 
     @Override

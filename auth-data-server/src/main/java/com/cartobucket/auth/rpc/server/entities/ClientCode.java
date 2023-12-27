@@ -19,6 +19,7 @@
 
 package com.cartobucket.auth.rpc.server.entities;
 
+import jakarta.annotation.Nullable;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -46,16 +47,20 @@ public class ClientCode {
     @JdbcTypeCode(SqlTypes.JSON)
     private List<String> scopes;
 
+    @Nullable
     private String state;
 
     private String code;
 
+    @Nullable
     private String codeChallenge;
 
+    @Nullable
     private String codeChallengeMethod;
 
     private UUID userId;
 
+    @Nullable
     private String nonce;
 
     public void setId(UUID id) {

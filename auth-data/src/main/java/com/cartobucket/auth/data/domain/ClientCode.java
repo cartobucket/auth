@@ -34,7 +34,7 @@ public class ClientCode {
 
     private String redirectUri;
 
-    private List<String> scopes;
+    private List<Scope> scopes;
 
     private String state;
 
@@ -88,11 +88,11 @@ public class ClientCode {
         this.redirectUri = redirectUri;
     }
 
-    public List<String> getScopes() {
+    public List<Scope> getScopes() {
         return scopes;
     }
 
-    public void setScopes(List<String> scope) {
+    public void setScopes(List<Scope> scope) {
         this.scopes = scope;
     }
 

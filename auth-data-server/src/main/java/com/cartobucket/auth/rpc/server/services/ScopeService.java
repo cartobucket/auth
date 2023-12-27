@@ -96,17 +96,17 @@ public class ScopeService implements com.cartobucket.auth.data.services.ScopeSer
     }
 
     @Override
-    public List<String> filterScopesForAuthorizationServerId(UUID authorizationServerId, String scopes) {
+    public List<Scope> filterScopesForAuthorizationServerId(UUID authorizationServerId, String scopes) {
         final var authorizationServerScopes = scopeRepository
                 .findAllByAuthorizationServerIdIn(List.of(authorizationServerId));
 
+        final var scopesList =                 authorizationServerScopes
+                .stream()
+                .map(com.cartobucket.auth.rpc.server.entities.Scope::getName)
+                .toList();
         return com.cartobucket.auth.data.services.ScopeService.filterScopesByList(
                 scopes,
-                authorizationServerScopes
-                        .stream()
-                        .map(ScopeMapper::from)
-                        .map(Scope::getName)
-                        .toList()
+                scopesList
         );
     }
 }

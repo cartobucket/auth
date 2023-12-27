@@ -32,6 +32,7 @@ import com.cartobucket.auth.rpc.ApplicationSecretResponse;
 import com.cartobucket.auth.rpc.ApplicationSecrets;
 import com.cartobucket.auth.rpc.IsApplicationSecretValidRequest;
 import com.cartobucket.auth.rpc.IsApplicationSecretValidResponse;
+import com.cartobucket.auth.rpc.server.entities.mappers.ScopeMapper;
 import com.google.protobuf.Timestamp;
 import io.quarkus.grpc.GrpcService;
 import io.smallrye.common.annotation.Blocking;
@@ -53,7 +54,7 @@ public class ApplicationSecretRpcService implements ApplicationSecrets {
     public Uni<ApplicationSecretCreateResponse> createApplicationSecret(ApplicationSecretCreateRequest request) {
         var applicationSecret = new ApplicationSecret();
         applicationSecret.setApplicationId(UUID.fromString(request.getApplicationId()));
-        applicationSecret.setScopes(ScopeService.scopeStringToScopeList(request.getScopes()));
+        applicationSecret.setScopes(request.getScopesList().stream().map(scope -> ScopeMapper.fromResponse(scope)).toList());
         applicationSecret.setAuthorizationServerId(UUID.fromString(request.getAuthorizationServerId()));
         applicationSecret.setName(request.getName());
         applicationSecret = applicationService.createApplicationSecret(
@@ -68,7 +69,7 @@ public class ApplicationSecretRpcService implements ApplicationSecrets {
                                 .setApplicationId(String.valueOf(applicationSecret.getApplicationId()))
                                 .setApplicationSecret(applicationSecret.getApplicationSecret())
                                 .setName(applicationSecret.getName())
-                                .setScopes(ScopeService.scopeListToScopeString(applicationSecret.getScopes()))
+                                .addAllScopes(applicationSecret.getScopes().stream().map(ScopeMapper::toResponse).toList())
                                 .setAuthorizationServerId(String.valueOf(applicationSecret.getAuthorizationServerId()))
                                 .setCreatedOn(Timestamp.newBuilder().setSeconds(applicationSecret.getCreatedOn().toEpochSecond()).build())
                                 .build()
@@ -99,7 +100,7 @@ public class ApplicationSecretRpcService implements ApplicationSecrets {
                                                                 .setId(String.valueOf(applicationSecret.getId()))
                                                                 .setApplicationId(String.valueOf(applicationSecret.getApplicationId()))
                                                                 .setName(applicationSecret.getName())
-                                                                .setScopes(ScopeService.scopeListToScopeString(applicationSecret.getScopes()))
+                                                                .addAllScopes(applicationSecret.getScopes().stream().map(ScopeMapper::toResponse).toList())
                                                                 .setAuthorizationServerId(String.valueOf(applicationSecret.getAuthorizationServerId()))
                                                                 .setCreatedOn(Timestamp.newBuilder().setSeconds(applicationSecret.getCreatedOn().toEpochSecond()).build())
                                                                 .build()

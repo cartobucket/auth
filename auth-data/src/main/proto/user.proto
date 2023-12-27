@@ -50,6 +50,10 @@ message UserGetRequest {
   string id = 1;
 }
 
+message UserGetByRequest {
+  string id = 1;
+}
+
 message UserSetPasswordRequest {
   string id = 1;
   string password = 2;

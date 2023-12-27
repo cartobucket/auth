@@ -30,6 +30,8 @@ import java.util.UUID;
 import static java.util.Arrays.stream;
 
 public interface ScopeService {
+
+
     List<Scope> getScopes(List<UUID> authorizationServerIds, Page page);
 
     Scope createScope(Scope scope);
@@ -39,26 +41,42 @@ public interface ScopeService {
     Scope getScope(UUID scopeId) throws ScopeNotFound;
 
     // Takes in a list of scopes and filters those scopes based on what scopes are associated with the AS.
-    List<String> filterScopesForAuthorizationServerId(UUID authorizationServerId, String scopes);
+    List<Scope> filterScopesForAuthorizationServerId(UUID authorizationServerId, String scopes);
 
-    static List<String> scopeStringToScopeList(String scopes) {
+    static List<Scope> scopeStringToScopeList(String scopes) {
         if (scopes == null) {
             return Collections.emptyList();
         }
-        return stream(scopes.split("\\p{Zs}+"))
+
+        final var splitScopes = stream(scopes.split("\\p{Zs}+"))
                 .toList();
+
+        return splitScopes.stream().map(scope -> {
+            var _scope = new Scope();
+            _scope.setName(scope);
+            return _scope;
+        }).toList();
     }
 
     static String scopeListToScopeString(List<String> scopes) {
         return String.join(" ", scopes);
     }
-    static List<String> filterScopesByList(String scopes, List<String> authorizationServerScopes) {
+
+    static List<Scope> filterScopesByList(String scopes, List<String> authorizationServerScopes) {
         if (scopes == null || authorizationServerScopes == null) {
             return Collections.emptyList();
         }
         return ScopeService.scopeStringToScopeList(scopes)
                 .stream()
+                .map(Scope::getName)
                 .filter(authorizationServerScopes::contains)
-                .toList();
+                .toList()
+                .stream()
+                .map(scope -> {
+                    var _scope = new Scope();
+                    _scope.setName(scope);
+                    return _scope;
+                }).toList();
+
     }
 }
