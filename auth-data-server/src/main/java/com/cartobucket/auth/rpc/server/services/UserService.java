@@ -57,6 +57,7 @@ public class UserService implements com.cartobucket.auth.data.services.UserServi
     }
 
     @Override
+    @Transactional
     public List<User> query(UserQuery query) {
         var queryParameters = new Parameters();
 
@@ -93,17 +94,20 @@ public class UserService implements com.cartobucket.auth.data.services.UserServi
     }
 
     @Override
+    @Transactional
     public List<User> getUsers(final List<UUID> authorizationServerIds, com.cartobucket.auth.data.domain.Page page) {
         if (!authorizationServerIds.isEmpty()) {
             return userRepository
                     .find("authorizationServerId in ?1", Sort.descending("createdOn"), authorizationServerIds)
                     .range(page.offset(), page.getNextRowsCount())
+                    .list()
                     .stream()
                     .map(UserMapper::from)
                     .toList();
         } else {
             return userRepository.findAll(Sort.descending("createdOn"))
                     .range(page.offset(), page.getNextRowsCount())
+                    .list()
                     .stream()
                     .map(UserMapper::from)
                     .toList();
@@ -150,6 +154,7 @@ public class UserService implements com.cartobucket.auth.data.services.UserServi
     }
 
     @Override
+    @Transactional
     public Pair<User, Profile> getUser(final UUID userId) throws UserNotFound, ProfileNotFound {
         final var user = userRepository
                 .findByIdOptional(userId)
@@ -163,6 +168,7 @@ public class UserService implements com.cartobucket.auth.data.services.UserServi
     }
 
     @Override
+    @Transactional
     public Pair<User, Profile> getUser(String username) throws UserNotFound, ProfileNotFound {
         final var user = userRepository
                 .findByUsername(username)
@@ -217,6 +223,7 @@ public class UserService implements com.cartobucket.auth.data.services.UserServi
     }
 
     @Override
+    @Transactional
     public boolean validatePassword(UUID userId, String password) {
         final var user = userRepository
                 .findByIdOptional(userId)

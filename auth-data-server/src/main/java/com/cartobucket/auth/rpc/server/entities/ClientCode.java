@@ -20,11 +20,16 @@
 package com.cartobucket.auth.rpc.server.entities;
 
 import jakarta.annotation.Nullable;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.ConstraintMode;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.ForeignKey;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.OneToMany;
 
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -44,8 +49,17 @@ public class ClientCode {
 
     private String redirectUri;
 
-    @JdbcTypeCode(SqlTypes.JSON)
-    private List<String> scopes;
+    @JoinTable(
+            name = "scopereference",
+            joinColumns = { @JoinColumn(
+                    name = "resourceId",
+                    referencedColumnName = "id",
+                    foreignKey = @ForeignKey(name = "none", value = ConstraintMode.NO_CONSTRAINT)
+            ) },
+            inverseJoinColumns = { @JoinColumn(name = "scopeId") }
+    )
+    @OneToMany(cascade = CascadeType.DETACH, orphanRemoval = true, fetch = FetchType.EAGER)
+    private List<Scope> scopes;
 
     @Nullable
     private String state;
@@ -103,14 +117,6 @@ public class ClientCode {
         this.redirectUri = redirectUri;
     }
 
-    public List<String> getScopes() {
-        return scopes;
-    }
-
-    public void setScopes(List<String> scope) {
-        this.scopes = scope;
-    }
-
     public String getState() {
         return state;
     }
@@ -157,5 +163,13 @@ public class ClientCode {
 
     public void setNonce(String nonce) {
         this.nonce = nonce;
+    }
+
+    public List<Scope> getScopes() {
+        return scopes;
+    }
+
+    public void setScopes(List<Scope> scopes) {
+        this.scopes = scopes;
     }
 }

@@ -49,17 +49,20 @@ public class ScopeService implements com.cartobucket.auth.data.services.ScopeSer
     }
 
     @Override
+    @Transactional
     public List<Scope> getScopes(List<UUID> authorizationServerIds, Page page) {
         if (!authorizationServerIds.isEmpty()) {
             return scopeRepository
-                    .find("authorizationServerId in ?1", Sort.descending("createdOn"), authorizationServerIds)
+                    .find("authorizationServer.id in ?1", Sort.descending("createdOn"), authorizationServerIds)
                     .range(page.offset(), page.getNextRowsCount())
+                    .list()
                     .stream()
                     .map(ScopeMapper::from)
                     .toList();
         } else {
             return scopeRepository.findAll(Sort.descending("createdOn"))
                     .range(page.offset(), page.getNextRowsCount())
+                    .list()
                     .stream()
                     .map(ScopeMapper::from)
                     .toList();
@@ -88,6 +91,7 @@ public class ScopeService implements com.cartobucket.auth.data.services.ScopeSer
     }
 
     @Override
+    @Transactional
     public Scope getScope(UUID scopeId) throws ScopeNotFound {
         return scopeRepository
                 .findByIdOptional(scopeId)
@@ -96,11 +100,12 @@ public class ScopeService implements com.cartobucket.auth.data.services.ScopeSer
     }
 
     @Override
+    @Transactional
     public List<Scope> filterScopesForAuthorizationServerId(UUID authorizationServerId, String scopes) {
         final var authorizationServerScopes = scopeRepository
                 .findAllByAuthorizationServerIdIn(List.of(authorizationServerId));
 
-        final var scopesList =                 authorizationServerScopes
+        final var scopesList = authorizationServerScopes
                 .stream()
                 .map(com.cartobucket.auth.rpc.server.entities.Scope::getName)
                 .toList();
@@ -108,5 +113,11 @@ public class ScopeService implements com.cartobucket.auth.data.services.ScopeSer
                 scopes,
                 scopesList
         );
+    }
+
+    @Override
+    @Transactional
+    public List<Scope> getScopesForResourceId(UUID id) {
+        return null;
     }
 }

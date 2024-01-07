@@ -48,17 +48,20 @@ public class TemplateService implements com.cartobucket.auth.data.services.Templ
     }
 
     @Override
+    @Transactional
     public List<Template> getTemplates(final List<UUID> authorizationServerIds, Page page) {
         if (!authorizationServerIds.isEmpty()) {
             return templateRepository
                     .find("authorizationServerId in ?1", Sort.descending("createdOn"), authorizationServerIds)
                     .range(page.offset(), page.getNextRowsCount())
+                    .list()
                     .stream()
                     .map(TemplateMapper::from)
                     .toList();
         } else {
             return templateRepository.findAll(Sort.descending("createdOn"))
                     .range(page.offset(), page.getNextRowsCount())
+                    .list()
                     .stream()
                     .map(TemplateMapper::from)
                     .toList();
@@ -88,6 +91,7 @@ public class TemplateService implements com.cartobucket.auth.data.services.Templ
     }
 
     @Override
+    @Transactional
     public Template getTemplate(final UUID templateId) throws TemplateNotFound {
         return templateRepository
                 .findByIdOptional(templateId)

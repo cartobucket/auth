@@ -127,6 +127,7 @@ public class AuthorizationServerService implements com.cartobucket.auth.data.ser
     }
 
     @Override
+    @Transactional
     public List<JWK> getJwksForAuthorizationServer(UUID authorizationServerId) {
         return singingKeyRepository
                 .findAllByAuthorizationServerId(
@@ -138,6 +139,7 @@ public class AuthorizationServerService implements com.cartobucket.auth.data.ser
     }
 
     @Override
+    @Transactional
     public AccessToken generateAccessToken(
             UUID authorizationServerId,
             UUID userId,
@@ -195,6 +197,7 @@ public class AuthorizationServerService implements com.cartobucket.auth.data.ser
     }
 
     @Override
+    @Transactional
     public AuthorizationServer getAuthorizationServer(UUID authorizationServerId) throws AuthorizationServerNotFound {
         return authorizationServerRepository
                 .findByIdOptional(authorizationServerId)
@@ -225,10 +228,12 @@ public class AuthorizationServerService implements com.cartobucket.auth.data.ser
     }
 
     @Override
+    @Transactional
     public List<AuthorizationServer> getAuthorizationServers(Page page) {
         return authorizationServerRepository
                 .findAll(Sort.descending("createdOn"))
                 .range(page.offset(), page.getNextRowsCount())
+                .list()
                 .stream()
                 .map(AuthorizationServerMapper::from)
                 .toList();

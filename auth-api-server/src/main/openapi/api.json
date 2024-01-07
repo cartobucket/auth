@@ -572,34 +572,6 @@
         },
         "operationId": "getClient"
       },
-      "put": {
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ClientRequest"
-              }
-            }
-          },
-          "required": true
-        },
-        "tags": [
-          "Clients"
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ClientResponse"
-                }
-              }
-            },
-            "description": "Update the whole client."
-          }
-        },
-        "operationId": "updateClient"
-      },
       "delete": {
         "tags": [
           "Clients"
@@ -1161,6 +1133,13 @@
           "metadata": {
             "$ref": "#/components/schemas/Metadata",
             "description": ""
+          },
+          "scopes": {
+            "description": "",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ScopeResponse"
+            }
           }
         },
         "example": {

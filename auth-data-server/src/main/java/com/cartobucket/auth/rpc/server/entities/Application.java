@@ -20,12 +20,20 @@
 package com.cartobucket.auth.rpc.server.entities;
 
 import com.cartobucket.auth.data.domain.Metadata;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.ConstraintMode;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.ForeignKey;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.OneToMany;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -41,6 +49,17 @@ public class Application {
 
     @JdbcTypeCode(SqlTypes.JSON)
     private Metadata metadata;
+
+    @JoinTable(
+            name = "scopereference",
+            joinColumns = { @JoinColumn(
+                    name = "resourceId",
+                    foreignKey = @ForeignKey(name = "none", value = ConstraintMode.NO_CONSTRAINT)
+            ) },
+            inverseJoinColumns = { @JoinColumn(name = "scopeId") }
+    )
+    @OneToMany(cascade = CascadeType.DETACH, orphanRemoval = true, fetch = FetchType.EAGER)
+    private List<Scope> scopes;
 
     private OffsetDateTime createdOn;
 

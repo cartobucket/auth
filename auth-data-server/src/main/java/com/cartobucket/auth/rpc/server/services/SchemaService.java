@@ -85,6 +85,7 @@ public class SchemaService implements com.cartobucket.auth.data.services.SchemaS
     }
 
     @Override
+    @Transactional
     public void deleteSchema(final UUID schemaId) throws SchemaNotFound {
         var schema = schemaRepository
                 .findByIdOptional(schemaId)
@@ -94,6 +95,7 @@ public class SchemaService implements com.cartobucket.auth.data.services.SchemaS
     }
 
     @Override
+    @Transactional
     public Schema getSchema(final UUID schemaId) throws SchemaNotFound {
         return schemaRepository
                 .findByIdOptional(schemaId)
@@ -102,17 +104,20 @@ public class SchemaService implements com.cartobucket.auth.data.services.SchemaS
     }
 
     @Override
+    @Transactional
     public List<Schema> getSchemas(final List<UUID> authorizationServerIds, Page page) {
         if (!authorizationServerIds.isEmpty()) {
             return schemaRepository
                     .find("authorizationServerId in ?1", Sort.descending("createdOn"), authorizationServerIds)
                     .range(page.offset(), page.getNextRowsCount())
+                    .list()
                     .stream()
                     .map(SchemaMapper::from)
                     .toList();
         } else {
             return schemaRepository.findAll(Sort.descending("createdOn"))
                     .range(page.offset(), page.getNextRowsCount())
+                    .list()
                     .stream()
                     .map(SchemaMapper::from)
                     .toList();

@@ -94,6 +94,7 @@ public class ApplicationService implements com.cartobucket.auth.data.services.Ap
     }
 
     @Override
+    @Transactional
     public Pair<Application, Profile> getApplication(final UUID applicationId)
             throws ApplicationNotFound, ProfileNotFound {
         final var application = applicationRepository
@@ -132,6 +133,7 @@ public class ApplicationService implements com.cartobucket.auth.data.services.Ap
     }
 
     @Override
+    @Transactional
     public List<ApplicationSecret> getApplicationSecrets(final List<UUID> applicationIds) throws ApplicationNotFound {
         return applicationSecretRepository.findByApplicationIdIn(applicationIds)
                 .stream()
@@ -188,6 +190,7 @@ public class ApplicationService implements com.cartobucket.auth.data.services.Ap
     }
 
     @Override
+    @Transactional
     public List<Application> getApplications(final List<UUID> authorizationServerIds, Page page) {
         if (authorizationServerIds.isEmpty()) {
             return applicationRepository
@@ -207,6 +210,7 @@ public class ApplicationService implements com.cartobucket.auth.data.services.Ap
     }
 
     @Override
+    @Transactional
     public boolean isApplicationSecretValid(UUID authorizationServerId, UUID applicationId, String applicationSecret) {
         try {
             final var messageDigest = MessageDigest.getInstance("SHA-256");

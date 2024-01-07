@@ -33,6 +33,7 @@ public class AuthorizationServerMapper {
         _authorizationServer.setMetadata(authorizationServer.getMetadata());
         _authorizationServer.setCreatedOn(authorizationServer.getCreatedOn());
         _authorizationServer.setUpdatedOn(authorizationServer.getUpdatedOn());
+        _authorizationServer.setScopes(authorizationServer.getScopes().stream().map(ScopeMapper::fromNoAuthorizationServer).toList());
         return _authorizationServer;
     }
 
@@ -47,6 +48,7 @@ public class AuthorizationServerMapper {
         _authorizationServer.setMetadata(authorizationServer.getMetadata());
         _authorizationServer.setCreatedOn(authorizationServer.getCreatedOn());
         _authorizationServer.setUpdatedOn(authorizationServer.getUpdatedOn());
+        _authorizationServer.setScopes(authorizationServer.getScopes().stream().map(ScopeMapper::to).toList());
         return _authorizationServer;
     }
 }

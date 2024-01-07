@@ -32,12 +32,12 @@ public class ClientCodeMapper {
         _clientCode.setCodeChallenge(clientCode.getCodeChallenge());
         _clientCode.setCodeChallengeMethod(clientCode.getCodeChallengeMethod());
         _clientCode.setId(clientCode.getId());
-        _clientCode.setScopes(clientCode.getScopes().stream().map(ScopeMapper::toScope).toList());
         _clientCode.setNonce(clientCode.getNonce());
         _clientCode.setState(clientCode.getState());
         _clientCode.setAuthorizationServerId(clientCode.getAuthorizationServerId());
         _clientCode.setRedirectUri(clientCode.getRedirectUri());
         _clientCode.setUserId(clientCode.getUserId());
+        _clientCode.setScopes(clientCode.getScopes().stream().map(ScopeMapper::from).toList());
         _clientCode.setCreatedOn(clientCode.getCreatedOn());
         return _clientCode;
     }
@@ -49,12 +49,12 @@ public class ClientCodeMapper {
         _clientCode.setCodeChallenge(clientCode.getCodeChallenge());
         _clientCode.setCodeChallengeMethod(clientCode.getCodeChallengeMethod());
         _clientCode.setId(clientCode.getId());
-        _clientCode.setScopes(clientCode.getScopes().stream().map(Scope::getName).toList());
         _clientCode.setNonce(clientCode.getNonce());
         _clientCode.setState(clientCode.getState());
         _clientCode.setAuthorizationServerId(clientCode.getAuthorizationServerId());
         _clientCode.setRedirectUri(clientCode.getRedirectUri());
         _clientCode.setUserId(clientCode.getUserId());
+        _clientCode.setScopes(clientCode.getScopes().stream().map(ScopeMapper::to).toList());
         _clientCode.setCreatedOn(clientCode.getCreatedOn());
         return _clientCode;
     }

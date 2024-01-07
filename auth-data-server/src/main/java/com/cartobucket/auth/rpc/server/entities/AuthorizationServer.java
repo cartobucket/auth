@@ -20,14 +20,19 @@
 package com.cartobucket.auth.rpc.server.entities;
 
 import com.cartobucket.auth.data.domain.Metadata;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToMany;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 import java.net.URL;
 import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -48,6 +53,9 @@ public class AuthorizationServer {
 
     @JdbcTypeCode(SqlTypes.JSON)
     private Metadata metadata;
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "authorizationServer")
+    private List<Scope> scopes;
 
     private OffsetDateTime createdOn;
 
@@ -123,5 +131,13 @@ public class AuthorizationServer {
 
     public void setMetadata(Metadata metadata) {
         this.metadata = metadata;
+    }
+
+    public List<Scope> getScopes() {
+        return scopes;
+    }
+
+    public void setScopes(List<Scope> scopes) {
+        this.scopes = scopes;
     }
 }

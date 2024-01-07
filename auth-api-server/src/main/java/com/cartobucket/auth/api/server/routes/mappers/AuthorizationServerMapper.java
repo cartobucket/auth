@@ -51,6 +51,7 @@ public class AuthorizationServerMapper {
         response.setAuthorizationCodeTokenExpiration(authorizationServer.getAuthorizationCodeTokenExpiration().intValue());
         response.setClientCredentialsTokenExpiration(authorizationServer.getClientCredentialsTokenExpiration().intValue());
         response.setMetadata(MetadataMapper.to(authorizationServer.getMetadata()));
+        response.setScopes(authorizationServer.getScopes().stream().map(ScopeMapper::toSummaryResponse).toList());
         return response;
     }
 }

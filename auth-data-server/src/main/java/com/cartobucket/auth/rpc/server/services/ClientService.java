@@ -29,6 +29,7 @@ import com.cartobucket.auth.data.services.ScopeService;
 import com.cartobucket.auth.rpc.server.entities.EventType;
 import com.cartobucket.auth.rpc.server.entities.mappers.ClientCodeMapper;
 import com.cartobucket.auth.rpc.server.entities.mappers.ClientMapper;
+import com.cartobucket.auth.rpc.server.entities.mappers.ScopeMapper;
 import com.cartobucket.auth.rpc.server.repositories.ClientCodeRepository;
 import com.cartobucket.auth.rpc.server.repositories.ClientRepository;
 import com.cartobucket.auth.rpc.server.repositories.EventRepository;
@@ -81,7 +82,7 @@ public class ClientService implements com.cartobucket.auth.data.services.ClientS
 
         final MessageDigest messageDigest;
         try {
-            messageDigest = MessageDigest.getInstance("SHA-256");
+            messageDigest = MessageDigest.getInstance("SHA256");
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         }
@@ -96,9 +97,12 @@ public class ClientService implements com.cartobucket.auth.data.services.ClientS
         clientCode.setCreatedOn(OffsetDateTime.now());
         var _clientCode = ClientCodeMapper.to(clientCode);
         clientCodeRepository.persist(_clientCode);
-        eventRepository.createClientCodeEvent(ClientCodeMapper.from(_clientCode), EventType.CREATE);
+        clientCode = ClientCodeMapper.from(_clientCode);
+        clientCode.setScopes(scopeService.getScopesForResourceId(clientCode.getId()));
 
-        return ClientCodeMapper.from(_clientCode);
+        eventRepository.createClientCodeEvent(clientCode, EventType.CREATE);
+
+        return clientCode;
     }
 
     @Override
@@ -112,21 +116,6 @@ public class ClientService implements com.cartobucket.auth.data.services.ClientS
     }
 
     @Override
-    public Client getClient(final String clientId) throws ClientNotFound {
-        return clientRepository
-                .findByClientId(clientId)
-                .map(ClientMapper::from)
-                .orElseThrow(ClientNotFound::new);
-    }
-
-    @Override
-    public ClientCode getClientCode(String clientCode) throws ClientCodeNotFound {
-        return clientCodeRepository.findByCode(clientCode)
-                .map(ClientCodeMapper::from)
-                .orElseThrow(ClientCodeNotFound::new);
-    }
-
-    @Override
     @Transactional
     public Client updateClient(final UUID clientId, final Client client) throws ClientNotFound {
         var _client = clientRepository
@@ -134,7 +123,7 @@ public class ClientService implements com.cartobucket.auth.data.services.ClientS
                 .orElseThrow(ClientNotFound::new);
 
         _client.setUpdatedOn(OffsetDateTime.now());
-        _client.setScopes(client.getScopes().stream().map(com.cartobucket.auth.data.domain.Scope::getName).toList());
+        _client.setScopes(client.getScopes().stream().map(ScopeMapper::to).toList());
         _client.setName(client.getName());
         _client.setRedirectUris(client.getRedirectUris());
         clientRepository.persist(_client);
@@ -143,11 +132,31 @@ public class ClientService implements com.cartobucket.auth.data.services.ClientS
     }
 
     @Override
+    @Transactional
+    public Client getClient(final String clientId) throws ClientNotFound {
+        return clientRepository
+                .findByClientId(clientId)
+                .map(ClientMapper::from)
+                .orElseThrow(ClientNotFound::new);
+    }
+
+    @Override
+    @Transactional
+    public ClientCode getClientCode(String clientCode) throws ClientCodeNotFound {
+        final var code = clientCodeRepository.findByCode(clientCode);
+        return code
+                .map(ClientCodeMapper::from)
+                .orElseThrow(ClientCodeNotFound::new);
+    }
+
+    @Override
+    @Transactional
     public List<Client> getClients(final List<UUID> authorizationServerIds, Page page) {
         if (!authorizationServerIds.isEmpty()) {
             return clientRepository
                     .find("authorizationServerId in ?1", Sort.descending("createdOn"), authorizationServerIds)
                     .range(page.offset(), page.getNextRowsCount())
+                    .list()
                     .stream()
                     .map(ClientMapper::from)
                     .toList();
@@ -156,6 +165,7 @@ public class ClientService implements com.cartobucket.auth.data.services.ClientS
             return clientRepository
                     .findAll(Sort.descending("createdOn"))
                     .range(page.offset(), page.getNextRowsCount())
+                    .list()
                     .stream()
                     .map(ClientMapper::from)
                     .toList();

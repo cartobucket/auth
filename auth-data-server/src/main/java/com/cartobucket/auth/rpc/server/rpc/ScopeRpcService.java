@@ -25,11 +25,12 @@ import com.cartobucket.auth.data.rpc.ScopeCreateRequest;
 import com.cartobucket.auth.data.rpc.ScopeDeleteRequest;
 import com.cartobucket.auth.data.rpc.ScopeGetRequest;
 import com.cartobucket.auth.data.rpc.ScopeListRequest;
-import com.cartobucket.auth.data.rpc.ScopeResponse;
 import com.cartobucket.auth.data.rpc.Scopes;
 import com.cartobucket.auth.data.rpc.ScopesListResponse;
 import com.cartobucket.auth.data.services.ScopeService;
+import com.cartobucket.auth.rpc.server.entities.mappers.AuthorizationServerMapper;
 import com.cartobucket.auth.data.services.impls.mappers.MetadataMapper;
+import com.cartobucket.auth.rpc.server.repositories.AuthorizationServerRepository;
 import com.google.protobuf.Timestamp;
 import io.quarkus.grpc.GrpcService;
 import io.smallrye.common.annotation.Blocking;
@@ -40,25 +41,35 @@ import java.util.UUID;
 @GrpcService
 public class ScopeRpcService implements Scopes {
     final ScopeService scopeService;
+    final AuthorizationServerRepository authorizationRepository;
 
-    public ScopeRpcService(ScopeService scopeService) {
+    public ScopeRpcService(ScopeService scopeService, AuthorizationServerRepository authorizationRepository) {
         this.scopeService = scopeService;
+        this.authorizationRepository = authorizationRepository;
     }
 
     @Override
     @Blocking
-    public Uni<ScopeResponse> createScope(ScopeCreateRequest request) {
+    public Uni<com.cartobucket.auth.data.rpc.Scope> createScope(ScopeCreateRequest request) {
         var scope = new Scope();
         scope.setName(request.getName());
-        scope.setAuthorizationServerId(UUID.fromString(request.getAuthorizationServerId()));
+        scope.setAuthorizationServer(
+                AuthorizationServerMapper.from(
+                        authorizationRepository.findById(
+                                UUID.fromString(
+                                        request.getAuthorizationServerId()
+                                )
+                        )
+                )
+        );
         scope.setMetadata(MetadataMapper.from(request.getMetadata()));
         scope = scopeService.createScope(scope);
 
-        var response = ScopeResponse
+        var response = com.cartobucket.auth.data.rpc.Scope
                 .newBuilder()
                 .setId(String.valueOf(scope.getId()))
                 .setName(scope.getName())
-                .setAuthorizationServerId(String.valueOf(scope.getAuthorizationServerId()))
+                .setAuthorizationServerId(String.valueOf(scope.getAuthorizationServer().getId()))
                 .setMetadata(MetadataMapper.to(scope.getMetadata()))
                 .setCreatedOn(Timestamp.newBuilder().setSeconds(scope.getCreatedOn().toEpochSecond()).build())
                 .setUpdatedOn(Timestamp.newBuilder().setSeconds(scope.getUpdatedOn().toEpochSecond()).build())
@@ -86,29 +97,32 @@ public class ScopeRpcService implements Scopes {
         var response = ScopesListResponse
                 .newBuilder()
                 .setLimit(0)
-                .setOffset(0);
-        for (var scope : scopes) {
-            response.addScopes(ScopeResponse
-                    .newBuilder()
-                    .setId(String.valueOf(scope.getId()))
-                    .setName(scope.getName())
-                    .setAuthorizationServerId(String.valueOf(scope.getAuthorizationServerId()))
-                    .setMetadata(MetadataMapper.to(scope.getMetadata()))
-                    .setCreatedOn(Timestamp.newBuilder().setSeconds(scope.getCreatedOn().toEpochSecond()).build())
-                    .setUpdatedOn(Timestamp.newBuilder().setSeconds(scope.getUpdatedOn().toEpochSecond()).build())
-            );
-        }
+                .setOffset(0)
+                .addAllScopes(
+                        scopes.stream()
+                                .map(scope -> com.cartobucket.auth.data.rpc.Scope
+                                        .newBuilder()
+                                        .setId(String.valueOf(scope.getId()))
+                                        .setName(scope.getName())
+                                        .setAuthorizationServerId(String.valueOf(scope.getAuthorizationServer().getId()))
+                                        .setMetadata(MetadataMapper.to(scope.getMetadata()))
+                                        .setCreatedOn(Timestamp.newBuilder().setSeconds(scope.getCreatedOn().toEpochSecond()).build())
+                                        .setUpdatedOn(Timestamp.newBuilder().setSeconds(scope.getUpdatedOn().toEpochSecond()).build())
+                                        .build()
+                                )
+                                .toList()
+                );
 
         return Uni.createFrom().item(response.build());
     }
 
     @Override
     @Blocking
-    public Uni<ScopeResponse> deleteScope(ScopeDeleteRequest request) {
+    public Uni<com.cartobucket.auth.data.rpc.Scope> deleteScope(ScopeDeleteRequest request) {
         final var scopeId = UUID.fromString(request.getId());
         scopeService.deleteScope(scopeId);
         return Uni.createFrom().item(
-                ScopeResponse
+                com.cartobucket.auth.data.rpc.Scope
                         .newBuilder()
                         .setId(String.valueOf(scopeId))
                         .build()
@@ -117,16 +131,16 @@ public class ScopeRpcService implements Scopes {
 
     @Override
     @Blocking
-    public Uni<ScopeResponse> getScope(ScopeGetRequest request) {
+    public Uni<com.cartobucket.auth.data.rpc.Scope> getScope(ScopeGetRequest request) {
         final var scope = scopeService.getScope(UUID.fromString(request.getId()));
 
         return Uni
                 .createFrom()
-                .item(ScopeResponse
+                .item(com.cartobucket.auth.data.rpc.Scope
                         .newBuilder()
                         .setId(String.valueOf(scope.getId()))
                         .setName(scope.getName())
-                        .setAuthorizationServerId(String.valueOf(scope.getAuthorizationServerId()))
+                        .setAuthorizationServerId(String.valueOf(scope.getAuthorizationServer()))
                         .setMetadata(MetadataMapper.to(scope.getMetadata()))
                         .setCreatedOn(Timestamp.newBuilder().setSeconds(scope.getCreatedOn().toEpochSecond()).build())
                         .setUpdatedOn(Timestamp.newBuilder().setSeconds(scope.getUpdatedOn().toEpochSecond()).build())

@@ -51,7 +51,7 @@ public class AuthorizationServerMapper {
         authorizationServer.setMetadata(MetadataMapper.from(authorizationServerResponse.getMetadata()));
         authorizationServer.setCreatedOn(OffsetDateTime.ofInstant(Instant.ofEpochSecond(authorizationServerResponse.getCreatedOn().getSeconds()), ZoneId.of("UTC")));
         authorizationServer.setUpdatedOn(OffsetDateTime.ofInstant(Instant.ofEpochSecond(authorizationServerResponse.getUpdatedOn().getSeconds()), ZoneId.of("UTC")));
-
+        authorizationServer.setScopes(authorizationServerResponse.getScopesList().stream().map(ScopeMapper::toScope).toList());
         return authorizationServer;
     }
 
@@ -70,6 +70,7 @@ public class AuthorizationServerMapper {
         authorizationServer.setMetadata(MetadataMapper.from(authorizationServerCreateResponse.getMetadata()));
         authorizationServer.setCreatedOn(OffsetDateTime.ofInstant(Instant.ofEpochSecond(authorizationServerCreateResponse.getCreatedOn().getSeconds()), ZoneId.of("UTC")));
         authorizationServer.setUpdatedOn(OffsetDateTime.ofInstant(Instant.ofEpochSecond(authorizationServerCreateResponse.getUpdatedOn().getSeconds()), ZoneId.of("UTC")));
+        authorizationServer.setScopes(authorizationServerCreateResponse.getScopesList().stream().map(ScopeMapper::toScope).toList());
         return authorizationServer;
     }
 

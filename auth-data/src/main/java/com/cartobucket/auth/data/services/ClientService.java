@@ -30,20 +30,20 @@ import java.util.List;
 import java.util.UUID;
 
 public interface ClientService {
-    ClientCode createClientCode(
-            UUID authorizationServerId,
-            ClientCode clientCode
-    ) throws CodeChallengeBadData;
-
-    void deleteClient(UUID clientId);
+    Client createClient(Client client);
 
     Client getClient(String clientId) throws ClientNotFound;
 
-    ClientCode getClientCode(String clientCode) throws ClientCodeNotFound;
+    List<Client> getClients(List<UUID> authorizationServerIds, Page page);
+
+    void deleteClient(UUID clientId) throws ClientNotFound;
 
     Client updateClient(UUID clientId, Client client) throws ClientNotFound;
 
-    List<Client> getClients(List<UUID> authorizationServerIds, Page page);
+    ClientCode createClientCode(
+            UUID authorizationServerId,
+            ClientCode clientCode
+    );
 
-    Client createClient(Client client);
+    ClientCode getClientCode(String clientCode) throws ClientCodeNotFound;
 }

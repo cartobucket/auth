@@ -20,9 +20,15 @@
 package com.cartobucket.auth.rpc.server.entities;
 
 import com.cartobucket.auth.data.domain.Metadata;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.ConstraintMode;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.ForeignKey;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.OneToMany;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
@@ -45,8 +51,17 @@ public class Client {
     @JdbcTypeCode(SqlTypes.JSON)
     private List<URI> redirectUris;
 
-    @JdbcTypeCode(SqlTypes.JSON)
-    private List<String> scopes;
+    @JoinTable(
+            name = "scopereference",
+            joinColumns = { @JoinColumn(
+                    name = "resourceId",
+                    referencedColumnName = "id",
+                    foreignKey = @ForeignKey(name = "none", value = ConstraintMode.NO_CONSTRAINT)
+            ) },
+            inverseJoinColumns = { @JoinColumn(name = "scopeId") }
+    )
+    @OneToMany(cascade = CascadeType.DETACH, orphanRemoval = true, fetch = FetchType.EAGER)
+    private List<Scope> scopes;
 
     @JdbcTypeCode(SqlTypes.JSON)
     private Metadata metadata;
@@ -87,11 +102,11 @@ public class Client {
         this.redirectUris = redirectUris;
     }
 
-    public List<String> getScopes() {
+    public List<Scope> getScopes() {
         return scopes;
     }
 
-    public void setScopes(List<String> scopes) {
+    public void setScopes(List<Scope> scopes) {
         this.scopes = scopes;
     }
 

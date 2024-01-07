@@ -28,7 +28,7 @@ public class Scope {
 
     private UUID id;
 
-    private UUID authorizationServerId;
+    private AuthorizationServer authorizationServer;
 
     private String name;
 
@@ -54,12 +54,12 @@ public class Scope {
         return id;
     }
 
-    public UUID getAuthorizationServerId() {
-        return authorizationServerId;
+    public AuthorizationServer getAuthorizationServer() {
+        return authorizationServer;
     }
 
-    public void setAuthorizationServerId(UUID authorizationServerId) {
-        this.authorizationServerId = authorizationServerId;
+    public void setAuthorizationServer(AuthorizationServer authorizationServer) {
+        this.authorizationServer = authorizationServer;
     }
 
     public OffsetDateTime getCreatedOn() {

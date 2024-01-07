@@ -20,7 +20,15 @@
 package com.cartobucket.auth.rpc.server.entities;
 
 import com.cartobucket.auth.data.domain.Metadata;
-import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
@@ -29,14 +37,18 @@ import java.util.Objects;
 import java.util.UUID;
 
 @Entity
-@Table(uniqueConstraints = { @UniqueConstraint(columnNames = { "authorizationServerId", "name" }) })
+@Table(
+        uniqueConstraints = { @UniqueConstraint(columnNames = { "authorizationserverid", "name" }) }
+)
 public class Scope {
 
     @Id
     @GeneratedValue
     private UUID id;
 
-    private UUID authorizationServerId;
+    @OneToOne(cascade = CascadeType.DETACH, fetch = FetchType.LAZY)
+    @JoinColumn(name = "authorizationserverid", referencedColumnName = "id")
+    private AuthorizationServer authorizationServer;
 
     private String name;
 
@@ -63,12 +75,12 @@ public class Scope {
         return id;
     }
 
-    public UUID getAuthorizationServerId() {
-        return authorizationServerId;
+    public AuthorizationServer getAuthorizationServer() {
+        return authorizationServer;
     }
 
-    public void setAuthorizationServerId(UUID authorizationServerId) {
-        this.authorizationServerId = authorizationServerId;
+    public void setAuthorizationServer(AuthorizationServer authorizationServer) {
+        this.authorizationServer = authorizationServer;
     }
 
     public OffsetDateTime getCreatedOn() {

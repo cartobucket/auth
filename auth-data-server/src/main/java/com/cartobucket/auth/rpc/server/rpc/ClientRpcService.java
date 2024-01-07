@@ -232,8 +232,8 @@ public class ClientRpcService implements Clients {
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }
-
     }
+
 
     @Override
     @Blocking

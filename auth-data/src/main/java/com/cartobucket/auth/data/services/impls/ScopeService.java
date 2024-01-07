@@ -79,7 +79,7 @@ public class ScopeService implements com.cartobucket.auth.data.services.ScopeSer
                                 .createScope(ScopeCreateRequest
                                         .newBuilder()
                                         .setName(scope.getName())
-                                        .setAuthorizationServerId(String.valueOf(scope.getAuthorizationServerId()))
+                                        .setAuthorizationServerId(String.valueOf(scope.getAuthorizationServer().getId()))
                                         .setMetadata(MetadataMapper.to(scope.getMetadata()))
                                         .build()
                                 )
@@ -115,6 +115,11 @@ public class ScopeService implements com.cartobucket.auth.data.services.ScopeSer
 
     @Override
     public List<Scope> filterScopesForAuthorizationServerId(UUID authorizationServerId, String scopes) {
+        return null;
+    }
+
+    @Override
+    public List<Scope> getScopesForResourceId(UUID id) {
         return null;
     }
 }
