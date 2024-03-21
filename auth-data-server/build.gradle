@@ -28,7 +28,7 @@ dependencies {
     implementation 'io.quarkus:quarkus-smallrye-jwt-build'
 
     // Security (password hashing)
-    implementation group: 'org.springframework.security', name: 'spring-security-core', version: '6.1.5'
+    implementation group: 'org.springframework.security', name: 'spring-security-core', version: '6.2.1'
 
 }
 

@@ -267,7 +267,7 @@ public class AuthorizationServerService implements com.cartobucket.auth.data.ser
     }
 
     @Override
-    @Blocking
+    @Transactional
     public Map<String, Object> validateJwtForAuthorizationServer(UUID authorizationServerId, String Jwt) throws NotAuthorized {
         final var authorizationServer = authorizationServerRepository
                 .findByIdOptional(authorizationServerId)
