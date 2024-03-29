@@ -32,13 +32,11 @@ import com.cartobucket.auth.data.exceptions.notfound.ApplicationSecretNotFound;
 import com.cartobucket.auth.data.exceptions.notfound.ProfileNotFound;
 import com.cartobucket.auth.data.services.ScopeService;
 import com.cartobucket.auth.rpc.server.entities.EventType;
+import com.cartobucket.auth.rpc.server.entities.ScopeReference;
 import com.cartobucket.auth.rpc.server.entities.mappers.ApplicationMapper;
 import com.cartobucket.auth.rpc.server.entities.mappers.ApplicationSecretMapper;
 import com.cartobucket.auth.rpc.server.entities.mappers.ProfileMapper;
-import com.cartobucket.auth.rpc.server.repositories.ApplicationRepository;
-import com.cartobucket.auth.rpc.server.repositories.ApplicationSecretRepository;
-import com.cartobucket.auth.rpc.server.repositories.EventRepository;
-import com.cartobucket.auth.rpc.server.repositories.ProfileRepository;
+import com.cartobucket.auth.rpc.server.repositories.*;
 import io.quarkus.panache.common.Sort;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
@@ -57,6 +55,7 @@ public class ApplicationService implements com.cartobucket.auth.data.services.Ap
     final ApplicationSecretRepository applicationSecretRepository;
     final EventRepository eventRepository;
     final ProfileRepository profileRepository;
+    final ScopeReferenceRepository scopeReferenceRepository;
     final ScopeService scopeService;
 
     public ApplicationService(
@@ -64,12 +63,13 @@ public class ApplicationService implements com.cartobucket.auth.data.services.Ap
             ApplicationSecretRepository applicationSecretRepository,
             EventRepository eventRepository,
             ProfileRepository profileRepository,
-            ScopeService scopeService
+            ScopeReferenceRepository scopeReferenceRepository, ScopeService scopeService
     ) {
         this.applicationRepository = applicationRepository;
         this.applicationSecretRepository = applicationSecretRepository;
         this.eventRepository = eventRepository;
         this.profileRepository = profileRepository;
+        this.scopeReferenceRepository = scopeReferenceRepository;
         this.scopeService = scopeService;
     }
 
@@ -126,6 +126,14 @@ public class ApplicationService implements com.cartobucket.auth.data.services.Ap
         profile.setUpdatedOn(OffsetDateTime.now());
         var _profile = ProfileMapper.to(profile);
         profileRepository.persist(_profile);
+
+        for (var scope : application.getScopes()) {
+            final var scopeReference = new ScopeReference();
+            scopeReference.setScopeId(scope.getId());
+            scopeReference.setResourceId(_application.getId());
+            scopeReference.setScopeReferenceType(ScopeReference.ScopeReferenceType.APPLICATION);
+            scopeReferenceRepository.persist(scopeReference);
+        }
 
         var applicationProfilePair = Pair.create(ApplicationMapper.from(_application), ProfileMapper.from(_profile));
         eventRepository.createApplicationProfileEvent(applicationProfilePair, EventType.CREATE);

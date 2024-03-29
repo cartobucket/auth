@@ -23,6 +23,7 @@ package com.cartobucket.auth.rpc.server.rpc;
 import com.cartobucket.auth.data.domain.Application;
 import com.cartobucket.auth.data.domain.Page;
 import com.cartobucket.auth.data.domain.Profile;
+import com.cartobucket.auth.data.domain.Scope;
 import com.cartobucket.auth.data.services.ApplicationService;
 import com.cartobucket.auth.rpc.*;
 import com.cartobucket.auth.rpc.server.rpc.mappers.MetadataMapper;
@@ -48,6 +49,17 @@ public class ApplicationRpcService implements Applications {
         application.setId(UUID.randomUUID());
         application.setClientId(!request.getClientId().isEmpty() ? request.getClientId() : application.getId().toString());
         application.setName(request.getName());
+        application.setScopes(
+                request
+                        .getScopeIdsList()
+                        .stream()
+                        .map(scopeId -> {
+                            var scope = new Scope();
+                            scope.setId(UUID.fromString(scopeId));
+                            return scope;
+                        })
+                        .toList()
+        );
         application.setAuthorizationServerId(UUID.fromString(request.getAuthorizationServerId()));
         application.setMetadata(MetadataMapper.toMetadata(request.getMetadata()));
 

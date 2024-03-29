@@ -163,84 +163,6 @@
         }
       ]
     },
-    "/applications/": {
-      "get": {
-        "tags": [
-          "Applications"
-        ],
-        "parameters": [
-          {
-            "name": "authorizationServerIds",
-            "description": "",
-            "schema": {
-              "type": "array",
-              "items": {
-                "format": "UUID",
-                "type": "string"
-              }
-            },
-            "in": "query"
-          },
-          {
-            "name": "limit",
-            "description": "",
-            "schema": {
-              "type": "integer"
-            },
-            "in": "query"
-          },
-          {
-            "name": "offset",
-            "description": "",
-            "schema": {
-              "type": "integer"
-            },
-            "in": "query"
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApplicationsResponse"
-                }
-              }
-            },
-            "description": "Get Applications"
-          }
-        },
-        "operationId": "listApplications"
-      },
-      "post": {
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ApplicationRequest"
-              }
-            }
-          },
-          "required": true
-        },
-        "tags": [
-          "Applications"
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApplicationResponse"
-                }
-              }
-            },
-            "description": "Create Application"
-          }
-        },
-        "operationId": "createApplication"
-      }
-    },
     "/users/": {
       "get": {
         "tags": [
@@ -1087,6 +1009,85 @@
           "required": true
         }
       ]
+    },
+    "/applications/": {
+      "get": {
+        "tags": [
+          "Applications"
+        ],
+        "parameters": [
+          {
+            "name": "authorizationServerIds",
+            "description": "",
+            "schema": {
+              "type": "array",
+              "items": {
+                "format": "UUID",
+                "type": "string"
+              }
+            },
+            "in": "query"
+          },
+          {
+            "name": "limit",
+            "description": "",
+            "schema": {
+              "type": "integer"
+            },
+            "in": "query"
+          },
+          {
+            "name": "offset",
+            "description": "",
+            "schema": {
+              "type": "integer"
+            },
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApplicationsResponse"
+                }
+              }
+            },
+            "description": "Get Applications"
+          }
+        },
+        "operationId": "listApplications"
+      },
+      "post": {
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApplicationRequest"
+              }
+            }
+          },
+          "required": true,
+          "x-validator": "@ValidApplicationRequest"
+        },
+        "tags": [
+          "Applications"
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApplicationResponse"
+                }
+              }
+            },
+            "description": "Create Application"
+          }
+        },
+        "operationId": "createApplication"
+      }
     }
   },
   "components": {
@@ -2177,48 +2178,6 @@
           "authorizationCodeTokenExpiration": 100
         }
       },
-      "ApplicationRequest": {
-        "title": "Root Type for ApplicationRequest",
-        "description": "",
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string",
-            "x-field-extra-annotation": "@ValidApplicationName"
-          },
-          "clientId": {
-            "type": "string",
-            "x-field-extra-annotation": "@ValidApplicationClientId"
-          },
-          "clientSecret": {
-            "type": "string",
-            "x-field-extra-annotation": "@ValidApplicationClientSecret"
-          },
-          "profile": {
-            "type": "object",
-            "x-field-extra-annotation": "@ValidApplicationProfile"
-          },
-          "authorizationServerId": {
-            "format": "UUID",
-            "description": "",
-            "type": "string",
-            "x-field-extra-annotation": "@ValidAuthorizationServer"
-          },
-          "metadata": {
-            "$ref": "#/components/schemas/Metadata",
-            "description": ""
-          }
-        },
-        "example": {
-          "name": "Example Application",
-          "client_id": "8743b52063cd84097a65d1633f5c74f5",
-          "client_secret": "f0fda58630310a6dd91a7d8f0a4ceda2",
-          "profile": {
-
-          },
-          "authorizationServerId": "52a10a2d-080c-4aaa-a184-ec3ba982a9bd"
-        }
-      },
       "ApplicationSecretRequest": {
         "title": "Root Type for ApplicationSecretRequest",
         "description": "",
@@ -2522,6 +2481,60 @@
         "example": {
           "next": "https://test.company.example/application?limit=10&offset=10",
           "previous": "https://test.company.example/application?limit=10&offset=0"
+        }
+      },
+      "ApplicationRequest": {
+        "title": "Root Type for ApplicationRequest",
+        "description": "",
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "x-field-extra-annotation": "@ValidApplicationName"
+          },
+          "clientId": {
+            "type": "string",
+            "x-field-extra-annotation": "@ValidApplicationClientId"
+          },
+          "clientSecret": {
+            "type": "string",
+            "x-field-extra-annotation": "@ValidApplicationClientSecret"
+          },
+          "profile": {
+            "type": "object",
+            "x-field-extra-annotation": "@ValidApplicationProfile"
+          },
+          "authorizationServerId": {
+            "format": "UUID",
+            "description": "",
+            "type": "string",
+            "x-field-extra-annotation": "@ValidAuthorizationServer"
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/Metadata",
+            "description": ""
+          },
+          "scopes": {
+            "description": "[\n  \"236834c9-a1ba-490c-a80f-e13ed904e188\",\n  \"1f9287f6-dd58-4519-baf0-3bc456f1650a\"\n]",
+            "type": "array",
+            "items": {
+              "format": "UUID",
+              "type": "string"
+            }
+          }
+        },
+        "example": {
+          "name": "Example Application",
+          "client_id": "8743b52063cd84097a65d1633f5c74f5",
+          "client_secret": "f0fda58630310a6dd91a7d8f0a4ceda2",
+          "profile": {
+
+          },
+          "authorizationServerId": "52a10a2d-080c-4aaa-a184-ec3ba982a9bd",
+          "scopes": [
+            "236834c9-a1ba-490c-a80f-e13ed904e188",
+            "1f9287f6-dd58-4519-baf0-3bc456f1650a"
+          ]
         }
       }
     }

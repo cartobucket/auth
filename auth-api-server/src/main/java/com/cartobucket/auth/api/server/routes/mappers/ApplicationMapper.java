@@ -22,6 +22,7 @@ package com.cartobucket.auth.api.server.routes.mappers;
 import com.cartobucket.auth.data.domain.Application;
 import com.cartobucket.auth.data.domain.ApplicationSecret;
 import com.cartobucket.auth.data.domain.Profile;
+import com.cartobucket.auth.data.domain.Scope;
 import com.cartobucket.auth.data.services.ScopeService;
 import com.cartobucket.auth.model.generated.ApplicationRequest;
 import com.cartobucket.auth.model.generated.ApplicationResponse;
@@ -36,6 +37,17 @@ public class ApplicationMapper {
         if (applicationRequest.getClientId() != null) {
             application.setClientId(applicationRequest.getClientId());
         }
+        application.setScopes(
+                applicationRequest
+                        .getScopes()
+                        .stream()
+                        .map(scopeId -> {
+                            var scope = new Scope();
+                            scope.setId(scopeId);
+                            return scope;
+                        })
+                        .toList()
+        );
         application.setMetadata(MetadataMapper.from(applicationRequest.getMetadata()));
         return application;
     }

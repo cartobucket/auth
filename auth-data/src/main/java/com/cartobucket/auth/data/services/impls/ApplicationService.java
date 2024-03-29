@@ -19,12 +19,7 @@
 
 package com.cartobucket.auth.data.services.impls;
 
-import com.cartobucket.auth.data.domain.Page;
-import com.cartobucket.auth.data.domain.Pair;
-import com.cartobucket.auth.data.domain.Application;
-import com.cartobucket.auth.data.domain.ApplicationSecret;
-import com.cartobucket.auth.data.domain.Profile;
-import com.cartobucket.auth.data.domain.ProfileType;
+import com.cartobucket.auth.data.domain.*;
 import com.cartobucket.auth.data.exceptions.badrequests.ApplicationSecretNoApplicationBadData;
 import com.cartobucket.auth.data.exceptions.notfound.ApplicationNotFound;
 import com.cartobucket.auth.data.exceptions.notfound.ApplicationSecretNotFound;
@@ -85,6 +80,7 @@ public class ApplicationService implements com.cartobucket.auth.data.services.Ap
         ApplicationCreateRequest.Builder createRequest = ApplicationCreateRequest
                 .newBuilder()
                 .setName(application.getName())
+                .addAllScopeIds(application.getScopes().stream().map(Scope::getId).map(UUID::toString).toList())
                 .setProfile(Profile.toProtoMap(profile.getProfile()))
                 .setMetadata(MetadataMapper.to(application.getMetadata()))
                 .setAuthorizationServerId(String.valueOf(application.getAuthorizationServerId()));
