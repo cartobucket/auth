@@ -27,12 +27,14 @@ import com.cartobucket.auth.data.exceptions.notfound.ClientCodeNotFound;
 import com.cartobucket.auth.data.exceptions.notfound.ClientNotFound;
 import com.cartobucket.auth.data.services.ScopeService;
 import com.cartobucket.auth.rpc.server.entities.EventType;
+import com.cartobucket.auth.rpc.server.entities.ScopeReference;
 import com.cartobucket.auth.rpc.server.entities.mappers.ClientCodeMapper;
 import com.cartobucket.auth.rpc.server.entities.mappers.ClientMapper;
 import com.cartobucket.auth.rpc.server.entities.mappers.ScopeMapper;
 import com.cartobucket.auth.rpc.server.repositories.ClientCodeRepository;
 import com.cartobucket.auth.rpc.server.repositories.ClientRepository;
 import com.cartobucket.auth.rpc.server.repositories.EventRepository;
+import com.cartobucket.auth.rpc.server.repositories.ScopeReferenceRepository;
 import io.quarkus.panache.common.Sort;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
@@ -49,16 +51,18 @@ import java.util.UUID;
 public class ClientService implements com.cartobucket.auth.data.services.ClientService {
     final ClientRepository clientRepository;
     final ClientCodeRepository clientCodeRepository;
+    final ScopeReferenceRepository scopeReferenceRepository;
     final EventRepository eventRepository;
     final ScopeService scopeService;
 
     public ClientService(
             ClientRepository clientRepository,
             ClientCodeRepository clientCodeRepository,
-            EventRepository eventRepository,
+            ScopeReferenceRepository scopeReferenceRepository, EventRepository eventRepository,
             ScopeService scopeService) {
         this.clientRepository = clientRepository;
         this.clientCodeRepository = clientCodeRepository;
+        this.scopeReferenceRepository = scopeReferenceRepository;
         this.eventRepository = eventRepository;
         this.scopeService = scopeService;
     }
@@ -180,6 +184,14 @@ public class ClientService implements com.cartobucket.auth.data.services.ClientS
         client.setId(UUID.randomUUID());
         var _client = ClientMapper.to(client);
         clientRepository.persist(_client);
+
+        for (var scope : client.getScopes()) {
+            var scopeReference = new ScopeReference();
+            scopeReference.setResourceId(_client.getId());
+            scopeReference.setScopeId(scope.getId());
+            scopeReference.setScopeReferenceType(ScopeReference.ScopeReferenceType.CLIENT);
+        }
+
         eventRepository.createClientEvent(ClientMapper.from(_client), EventType.CREATE);
         return ClientMapper.from(_client);
     }
