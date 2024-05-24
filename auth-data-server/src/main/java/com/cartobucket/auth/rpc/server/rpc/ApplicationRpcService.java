@@ -25,6 +25,7 @@ import com.cartobucket.auth.data.domain.Page;
 import com.cartobucket.auth.data.domain.Profile;
 import com.cartobucket.auth.data.domain.Scope;
 import com.cartobucket.auth.data.services.ApplicationService;
+import com.cartobucket.auth.data.services.impls.mappers.ScopeMapper;
 import com.cartobucket.auth.rpc.*;
 import com.cartobucket.auth.rpc.server.rpc.mappers.MetadataMapper;
 import com.google.protobuf.Timestamp;
@@ -53,11 +54,8 @@ public class ApplicationRpcService implements Applications {
                 request
                         .getScopeIdsList()
                         .stream()
-                        .map(scopeId -> {
-                            var scope = new Scope();
-                            scope.setId(UUID.fromString(scopeId));
-                            return scope;
-                        })
+                        .map(UUID::fromString)
+                        .map(Scope::new)
                         .toList()
         );
         application.setAuthorizationServerId(UUID.fromString(request.getAuthorizationServerId()));
@@ -115,6 +113,7 @@ public class ApplicationRpcService implements Applications {
                                                 .setName(application.getName())
                                                 .setClientId(application.getClientId())
                                                 .setMetadata(MetadataMapper.from(application.getMetadata()))
+                                                .addAllScopes(application.getScopes().stream().map(ScopeMapper::toResponse).toList())
                                                 .setCreatedOn(Timestamp.newBuilder().setSeconds(application.getCreatedOn().toEpochSecond()).build())
                                                 .setUpdatedOn(Timestamp.newBuilder().setSeconds(application.getUpdatedOn().toEpochSecond()).build())
                                                 .build()

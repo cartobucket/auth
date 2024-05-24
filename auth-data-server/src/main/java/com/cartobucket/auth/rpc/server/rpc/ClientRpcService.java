@@ -23,6 +23,7 @@ package com.cartobucket.auth.rpc.server.rpc;
 import com.cartobucket.auth.data.domain.Client;
 import com.cartobucket.auth.data.domain.ClientCode;
 import com.cartobucket.auth.data.domain.Page;
+import com.cartobucket.auth.data.domain.Scope;
 import com.cartobucket.auth.data.services.ClientService;
 import com.cartobucket.auth.data.services.impls.mappers.MetadataMapper;
 import com.cartobucket.auth.rpc.ClientCodeGetRequest;
@@ -64,7 +65,13 @@ public class ClientRpcService implements Clients {
         try {
             var client = new Client();
             client.setName(request.getName());
-            client.setScopes(request.getScopesList().stream().map(ScopeMapper::fromResponse).toList());
+            client.setScopes(request
+                    .getScopeIdsList()
+                    .stream()
+                    .map(UUID::fromString)
+                    .map(Scope::new)
+                    .toList()
+            );
             List<URI> list = new ArrayList<>();
             for (String s : request.getRedirectUrisList()) {
                 list.add(new URI(s));

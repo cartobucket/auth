@@ -23,7 +23,7 @@ message ClientCreateRequest {
   string name = 1;
   string authorizationServerId = 2;
   repeated string redirectUris = 3;
-  repeated Scope scopes = 4;
+  repeated string scopeIds = 4;
   Metadata metadata = 5;
 }
 

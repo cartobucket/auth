@@ -26,6 +26,13 @@ import java.util.UUID;
 
 public class Scope {
 
+    public Scope() {
+    }
+
+    public Scope(UUID id) {
+        this.id = id;
+    }
+
     private UUID id;
 
     private AuthorizationServer authorizationServer;
