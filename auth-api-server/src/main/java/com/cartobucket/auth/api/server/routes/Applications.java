@@ -117,6 +117,7 @@ public class Applications implements ApplicationsApi {
     @Override
     public Response listApplicationSecrets(List<UUID> applicationIds) {
         final var applicationSecretsResponse = new ApplicationSecretsResponse();
+        // TODO: This should be able to be blank, this should also take a list of authorization server ids
         applicationSecretsResponse.setApplicationSecrets(
                 applicationService.getApplicationSecrets(applicationIds)
                         .stream()

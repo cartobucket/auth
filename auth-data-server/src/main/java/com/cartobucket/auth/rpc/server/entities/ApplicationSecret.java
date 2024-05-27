@@ -19,6 +19,7 @@
 
 package com.cartobucket.auth.rpc.server.entities;
 
+import jakarta.annotation.Nullable;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.ConstraintMode;
 import jakarta.persistence.Entity;
@@ -54,7 +55,7 @@ public class ApplicationSecret {
 
     private OffsetDateTime createdOn;
 
-    private OffsetDateTime updatedOn;
+    private Integer expiresIn;
 
     @JoinTable(
             name = "scopereference",
@@ -132,11 +133,11 @@ public class ApplicationSecret {
         this.createdOn = createdOn;
     }
 
-    public OffsetDateTime getUpdatedOn() {
-        return updatedOn;
+    public Integer getExpiresIn() {
+        return expiresIn;
     }
 
-    public void setUpdatedOn(OffsetDateTime updatedOn) {
-        this.updatedOn = updatedOn;
+    public void setExpiresIn(Integer expiresIn) {
+        this.expiresIn = expiresIn;
     }
 }

@@ -53,10 +53,11 @@ message ApplicationCreateResponse {
   string clientId = 2;
   string name = 3;
   string authorizationServerId = 4;
-  google.protobuf.Struct profile = 5;
-  Metadata metadata = 6;
-  google.protobuf.Timestamp createdOn = 7;
-  google.protobuf.Timestamp updatedOn = 8;
+  repeated string scopeIds = 5;
+  google.protobuf.Struct profile = 6;
+  Metadata metadata = 7;
+  google.protobuf.Timestamp createdOn = 8;
+  google.protobuf.Timestamp updatedOn = 9;
 }
 
 message ApplicationResponse {
@@ -64,7 +65,7 @@ message ApplicationResponse {
   string clientId = 2;
   string name = 3;
   string authorizationServerId = 4;
-  repeated Scope scopes = 5;
+  repeated string scopeIds = 5;
   google.protobuf.Struct profile = 6;
   Metadata metadata = 7;
   google.protobuf.Timestamp createdOn = 8;

@@ -35,7 +35,9 @@ import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.util.HashSet;
 import java.util.List;
+import java.util.UUID;
 
 import static jakarta.validation.constraintvalidation.ValidationTarget.ANNOTATED_ELEMENT;
 import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
@@ -87,7 +89,7 @@ public @interface ValidApplicationSecretScopes {
                     .stream()
                     .map(Scope::getName)
                     .toList();
-            return scopes.containsAll(ScopeService.scopeStringToScopeList(value.getScopes()));
+            return new HashSet<>(scopes).containsAll(value.getScopes().stream().map(UUID::toString).toList());
         }
     }
 }

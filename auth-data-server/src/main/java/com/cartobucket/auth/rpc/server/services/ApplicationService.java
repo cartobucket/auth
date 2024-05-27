@@ -136,6 +136,7 @@ public class ApplicationService implements com.cartobucket.auth.data.services.Ap
         }
 
         var applicationProfilePair = Pair.create(ApplicationMapper.from(_application), ProfileMapper.from(_profile));
+        applicationProfilePair.getLeft().setScopes(application.getScopes());
         eventRepository.createApplicationProfileEvent(applicationProfilePair, EventType.CREATE);
         return applicationProfilePair;
     }
@@ -157,11 +158,6 @@ public class ApplicationService implements com.cartobucket.auth.data.services.Ap
                 .findByIdOptional(applicationSecret.getApplicationId())
                 .orElseThrow(ApplicationNotFound::new);
 
-        var scopes = scopeService.filterScopesForAuthorizationServerId(
-                application.getAuthorizationServerId(),
-                ScopeService.scopeListToScopeString(applicationSecret.getScopes().stream().map(Scope::getName).toList())
-        );
-
         final MessageDigest messageDigest;
         try {
             messageDigest = MessageDigest.getInstance("SHA-256");
@@ -173,13 +169,24 @@ public class ApplicationService implements com.cartobucket.auth.data.services.Ap
             applicationSecret.setApplicationSecret(secret);
             applicationSecret.setApplicationSecretHash(secretHash);
             applicationSecret.setAuthorizationServerId(application.getAuthorizationServerId());
-            applicationSecret.setScopes(scopes);
-            applicationSecret.setUpdatedOn(OffsetDateTime.now());
             applicationSecret.setCreatedOn(OffsetDateTime.now());
-            applicationSecretRepository.persist(
-                    ApplicationSecretMapper.to(applicationSecret)
-            );
-            return applicationSecret;
+            var _applicationSecret = ApplicationSecretMapper.to(applicationSecret);
+            applicationSecretRepository.persist(_applicationSecret);
+            var applicationSecretReferences = applicationSecret
+                    .getScopes()
+                    .stream()
+                    .map(
+                            scope -> {
+                                final var scopeReference = new ScopeReference();
+                                scopeReference.setScopeId(scope.getId());
+                                scopeReference.setResourceId(application.getId());
+                                scopeReference.setScopeReferenceType(ScopeReference.ScopeReferenceType.APPLICATION_SECRET);
+                                return scopeReference;
+                            }
+                            )
+                    .toList();
+            scopeReferenceRepository.persist(applicationSecretReferences);
+            return ApplicationSecretMapper.from(_applicationSecret);
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         }

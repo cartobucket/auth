@@ -22,7 +22,6 @@ package com.cartobucket.auth.rpc.server.rpc;
 
 import com.cartobucket.auth.data.domain.ApplicationSecret;
 import com.cartobucket.auth.data.services.ApplicationService;
-import com.cartobucket.auth.data.services.ScopeService;
 import com.cartobucket.auth.rpc.ApplicationSecretCreateRequest;
 import com.cartobucket.auth.rpc.ApplicationSecretCreateResponse;
 import com.cartobucket.auth.rpc.ApplicationSecretDeleteRequest;
@@ -38,7 +37,6 @@ import io.quarkus.grpc.GrpcService;
 import io.smallrye.common.annotation.Blocking;
 import io.smallrye.mutiny.Uni;
 
-import java.util.List;
 import java.util.UUID;
 
 @GrpcService
@@ -52,13 +50,14 @@ public class ApplicationSecretRpcService implements ApplicationSecrets {
     @Override
     @Blocking
     public Uni<ApplicationSecretCreateResponse> createApplicationSecret(ApplicationSecretCreateRequest request) {
-        var applicationSecret = new ApplicationSecret();
-        applicationSecret.setApplicationId(UUID.fromString(request.getApplicationId()));
-        applicationSecret.setScopes(request.getScopesList().stream().map(scope -> ScopeMapper.fromResponse(scope)).toList());
-        applicationSecret.setAuthorizationServerId(UUID.fromString(request.getAuthorizationServerId()));
-        applicationSecret.setName(request.getName());
-        applicationSecret = applicationService.createApplicationSecret(
-                applicationSecret
+        var applicationSecret = applicationService.createApplicationSecret(
+                new ApplicationSecret.Builder()
+                        .setApplicationId(UUID.fromString(request.getApplicationId()))
+                        .setScopes(request.getScopesList().stream().map(ScopeMapper::fromResponse).toList())
+                        .setAuthorizationServerId(UUID.fromString(request.getAuthorizationServerId()))
+                        .setName(request.getName())
+                        .setExpiresIn(request.getExpiresIn())
+                        .build()
         );
         return Uni
                 .createFrom()
@@ -72,6 +71,7 @@ public class ApplicationSecretRpcService implements ApplicationSecrets {
                                 .addAllScopes(applicationSecret.getScopes().stream().map(ScopeMapper::toResponse).toList())
                                 .setAuthorizationServerId(String.valueOf(applicationSecret.getAuthorizationServerId()))
                                 .setCreatedOn(Timestamp.newBuilder().setSeconds(applicationSecret.getCreatedOn().toEpochSecond()).build())
+                                .setExpiresIn(applicationSecret.getExpiresIn())
                                 .build()
                 );
     }
@@ -103,6 +103,7 @@ public class ApplicationSecretRpcService implements ApplicationSecrets {
                                                                 .addAllScopes(applicationSecret.getScopes().stream().map(ScopeMapper::toResponse).toList())
                                                                 .setAuthorizationServerId(String.valueOf(applicationSecret.getAuthorizationServerId()))
                                                                 .setCreatedOn(Timestamp.newBuilder().setSeconds(applicationSecret.getCreatedOn().toEpochSecond()).build())
+                                                                .setExpiresIn(applicationSecret.getExpiresIn())
                                                                 .build()
                                                 )
                                                 .toList())

@@ -27,6 +27,7 @@ import com.cartobucket.auth.data.exceptions.notfound.ProfileNotFound;
 import com.cartobucket.auth.data.services.impls.mappers.ApplicationMapper;
 import com.cartobucket.auth.data.services.impls.mappers.MetadataMapper;
 import com.cartobucket.auth.data.services.impls.mappers.ProfileMapper;
+import com.cartobucket.auth.data.services.impls.mappers.ScopeMapper;
 import com.cartobucket.auth.rpc.*;
 import io.quarkus.arc.DefaultBean;
 import io.quarkus.grpc.GrpcClient;
@@ -130,6 +131,8 @@ public class ApplicationService implements com.cartobucket.auth.data.services.Ap
                                 .setApplicationId(String.valueOf(applicationSecret.getApplicationId()))
                                 .setAuthorizationServerId(String.valueOf(applicationSecret.getAuthorizationServerId()))
                                 .setName(applicationSecret.getName())
+                                .addAllScopes(applicationSecret.getScopes().stream().map(ScopeMapper::toResponse).toList())
+                                .setExpiresIn(applicationSecret.getExpiresIn() != null ? applicationSecret.getExpiresIn() : 0)
                                 .build()
                 )
                         .await()
