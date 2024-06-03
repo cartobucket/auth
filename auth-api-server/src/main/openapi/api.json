@@ -2446,8 +2446,7 @@
             "description": "",
             "type": "array",
             "items": {
-              "format": "UUID",
-              "type": "string"
+              "$ref": "#/components/schemas/ScopeResponse"
             }
           },
           "createdOn": {
@@ -2535,12 +2534,6 @@
           "name": {
             "type": "string"
           },
-          "client_id": {
-            "type": "string"
-          },
-          "client_secret": {
-            "type": "string"
-          },
           "profile": {
             "type": "object"
           },
@@ -2560,9 +2553,11 @@
             "description": "",
             "type": "array",
             "items": {
-              "format": "UUID",
-              "type": "string"
+              "$ref": "#/components/schemas/ScopeResponse"
             }
+          },
+          "clientId": {
+            "type": "string"
           }
         },
         "example": {

@@ -25,18 +25,19 @@ import com.cartobucket.auth.data.domain.Application;
 import com.cartobucket.auth.data.domain.ApplicationSecret;
 import com.cartobucket.auth.data.domain.Profile;
 import com.cartobucket.auth.data.domain.ProfileType;
-import com.cartobucket.auth.data.domain.Scope;
 import com.cartobucket.auth.data.exceptions.badrequests.ApplicationSecretNoApplicationBadData;
 import com.cartobucket.auth.data.exceptions.notfound.ApplicationNotFound;
 import com.cartobucket.auth.data.exceptions.notfound.ApplicationSecretNotFound;
 import com.cartobucket.auth.data.exceptions.notfound.ProfileNotFound;
 import com.cartobucket.auth.data.services.ScopeService;
 import com.cartobucket.auth.rpc.server.entities.EventType;
+import com.cartobucket.auth.rpc.server.entities.Scope;
 import com.cartobucket.auth.rpc.server.entities.ScopeReference;
 import com.cartobucket.auth.rpc.server.entities.mappers.ApplicationMapper;
 import com.cartobucket.auth.rpc.server.entities.mappers.ApplicationSecretMapper;
 import com.cartobucket.auth.rpc.server.entities.mappers.ProfileMapper;
 import com.cartobucket.auth.rpc.server.repositories.*;
+import io.quarkus.narayana.jta.QuarkusTransaction;
 import io.quarkus.panache.common.Sort;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
@@ -112,8 +113,8 @@ public class ApplicationService implements com.cartobucket.auth.data.services.Ap
     }
 
     @Override
-    @Transactional
     public Pair<Application, Profile> createApplication(final Application application, final Profile profile) {
+        QuarkusTransaction.begin();
         application.setCreatedOn(OffsetDateTime.now());
         application.setUpdatedOn(OffsetDateTime.now());
         var _application = ApplicationMapper.to(application);
@@ -134,10 +135,17 @@ public class ApplicationService implements com.cartobucket.auth.data.services.Ap
             scopeReference.setScopeReferenceType(ScopeReference.ScopeReferenceType.APPLICATION);
             scopeReferenceRepository.persist(scopeReference);
         }
+        QuarkusTransaction.commit();
 
-        var applicationProfilePair = Pair.create(ApplicationMapper.from(_application), ProfileMapper.from(_profile));
-        applicationProfilePair.getLeft().setScopes(application.getScopes());
+        QuarkusTransaction.begin();
+        var applicationProfilePair = Pair.create(
+                ApplicationMapper.from(applicationRepository.findById(_application.getId())),
+                ProfileMapper.from(_profile)
+        );
+        // TODO: This second transaction is wrong and not really needed. Have to save for the scopes to get added,
+        //  but that should not be that important for the even.
         eventRepository.createApplicationProfileEvent(applicationProfilePair, EventType.CREATE);
+        QuarkusTransaction.commit();
         return applicationProfilePair;
     }
 
@@ -151,9 +159,9 @@ public class ApplicationService implements com.cartobucket.auth.data.services.Ap
     }
 
     @Override
-    @Transactional
     public ApplicationSecret createApplicationSecret(
             final ApplicationSecret applicationSecret) throws ApplicationNotFound {
+        QuarkusTransaction.begin();
         final var application = applicationRepository
                 .findByIdOptional(applicationSecret.getApplicationId())
                 .orElseThrow(ApplicationNotFound::new);
@@ -179,14 +187,19 @@ public class ApplicationService implements com.cartobucket.auth.data.services.Ap
                             scope -> {
                                 final var scopeReference = new ScopeReference();
                                 scopeReference.setScopeId(scope.getId());
-                                scopeReference.setResourceId(application.getId());
+                                scopeReference.setResourceId(_applicationSecret.getId());
                                 scopeReference.setScopeReferenceType(ScopeReference.ScopeReferenceType.APPLICATION_SECRET);
                                 return scopeReference;
                             }
                             )
                     .toList();
             scopeReferenceRepository.persist(applicationSecretReferences);
-            return ApplicationSecretMapper.from(_applicationSecret);
+            QuarkusTransaction.commit();
+
+            // Refresh the secret to get the new scopes and add the actual secret string back on.
+            final var refreshedSecret = applicationSecretRepository.findById(_applicationSecret.getId());
+            refreshedSecret.setApplicationSecret(secret);
+            return ApplicationSecretMapper.from(refreshedSecret);
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         }

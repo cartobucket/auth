@@ -87,9 +87,9 @@ public @interface ValidApplicationSecretScopes {
                             //  to be iterated over until no scopes are left.
                             new Page(100, 0))
                     .stream()
-                    .map(Scope::getName)
+                    .map(Scope::getId)
                     .toList();
-            return new HashSet<>(scopes).containsAll(value.getScopes().stream().map(UUID::toString).toList());
+            return new HashSet<>(scopes).containsAll(value.getScopes());
         }
     }
 }

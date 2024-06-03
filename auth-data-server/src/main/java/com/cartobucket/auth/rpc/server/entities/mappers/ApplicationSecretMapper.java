@@ -29,7 +29,7 @@ public class ApplicationSecretMapper {
                 .setApplicationSecret(applicationSecret.getApplicationSecret())
                 .setApplicationSecretHash(applicationSecret.getApplicationSecretHash())
                 .setId(applicationSecret.getId())
-                .setScopes(applicationSecret.getScopes().stream().map(ScopeMapper::from).toList())
+                .setScopes(applicationSecret.getScopes().stream().map(ScopeMapper::fromNoAuthorizationServer).toList())
                 .setAuthorizationServerId(applicationSecret.getAuthorizationServerId())
                 .setName(applicationSecret.getName())
                 .setExpiresIn(applicationSecret.getExpiresIn())
@@ -43,7 +43,6 @@ public class ApplicationSecretMapper {
         _applicationSecret.setApplicationSecret(applicationSecret.getApplicationSecret());
         _applicationSecret.setApplicationSecretHash(applicationSecret.getApplicationSecretHash());
         _applicationSecret.setId(applicationSecret.getId());
-        _applicationSecret.setScopes(applicationSecret.getScopes().stream().map(ScopeMapper::to).toList());
         _applicationSecret.setAuthorizationServerId(applicationSecret.getAuthorizationServerId());
         _applicationSecret.setName(applicationSecret.getName());
         _applicationSecret.setExpiresIn(applicationSecret.getExpiresIn());

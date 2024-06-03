@@ -61,12 +61,6 @@ public class ScopeMapper {
         return _scope;
     }
 
-    public static Scope toScope(String scopeString) {
-        var scope = new Scope();
-        scope.setName(scopeString);
-        return scope;
-    }
-
     public static Scope fromResponse(com.cartobucket.auth.data.rpc.Scope scope) {
         var _scope = new Scope();
         _scope.setId(UUID.fromString(scope.getId()));

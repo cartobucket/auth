@@ -46,7 +46,7 @@ public class Scope {
     @GeneratedValue
     private UUID id;
 
-    @OneToOne(cascade = CascadeType.DETACH, fetch = FetchType.LAZY)
+    @OneToOne(cascade = CascadeType.DETACH, fetch = FetchType.EAGER)
     @JoinColumn(name = "authorizationserverid", referencedColumnName = "id")
     private AuthorizationServer authorizationServer;
 

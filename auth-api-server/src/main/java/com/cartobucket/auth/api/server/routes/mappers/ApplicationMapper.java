@@ -57,6 +57,7 @@ public class ApplicationMapper {
         applicationResponse.setClientId(application.getClientId());
         applicationResponse.setAuthorizationServerId(application.getAuthorizationServerId());
         applicationResponse.setMetadata(MetadataMapper.to(application.getMetadata()));
+        applicationResponse.setScopes(application.getScopes().stream().map(ScopeMapper::toResponse).toList());
         applicationResponse.setCreatedOn(application.getCreatedOn());
         applicationResponse.setUpdatedOn(application.getUpdatedOn());
         return applicationResponse;
@@ -68,7 +69,7 @@ public class ApplicationMapper {
         applicationResponse.setName(application.getName());
         applicationResponse.setClientId(application.getClientId());
         applicationResponse.setAuthorizationServerId(application.getAuthorizationServerId());
-        applicationResponse.setScopes(application.getScopes().stream().map(Scope::getId).toList());
+        applicationResponse.setScopes(application.getScopes().stream().map(ScopeMapper::toResponse).toList());
         applicationResponse.setMetadata(MetadataMapper.to(application.getMetadata()));
         applicationResponse.setCreatedOn(application.getCreatedOn());
         applicationResponse.setUpdatedOn(application.getUpdatedOn());
@@ -93,6 +94,7 @@ public class ApplicationMapper {
         secretResponse.setName(applicationSecret.getName());
         secretResponse.setApplicationId(applicationSecret.getApplicationId());
         secretResponse.setAuthorizationServerId(applicationSecret.getAuthorizationServerId());
+        secretResponse.setScopes(applicationSecret.getScopes().stream().map(ScopeMapper::toResponse).toList());
         secretResponse.setCreatedOn(applicationSecret.getCreatedOn());
         secretResponse.setExpiresIn(applicationSecret.getExpiresIn());
         return secretResponse;

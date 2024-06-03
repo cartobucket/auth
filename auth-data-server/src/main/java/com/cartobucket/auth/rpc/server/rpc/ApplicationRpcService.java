@@ -26,7 +26,15 @@ import com.cartobucket.auth.data.domain.Profile;
 import com.cartobucket.auth.data.domain.Scope;
 import com.cartobucket.auth.data.services.ApplicationService;
 import com.cartobucket.auth.data.services.impls.mappers.ScopeMapper;
-import com.cartobucket.auth.rpc.*;
+import com.cartobucket.auth.rpc.ApplicationCreateRequest;
+import com.cartobucket.auth.rpc.ApplicationCreateResponse;
+import com.cartobucket.auth.rpc.ApplicationDeleteRequest;
+import com.cartobucket.auth.rpc.ApplicationGetRequest;
+import com.cartobucket.auth.rpc.ApplicationListRequest;
+import com.cartobucket.auth.rpc.ApplicationListResponse;
+import com.cartobucket.auth.rpc.ApplicationResponse;
+import com.cartobucket.auth.rpc.ApplicationUpdateRequest;
+import com.cartobucket.auth.rpc.Applications;
 import com.cartobucket.auth.rpc.server.rpc.mappers.MetadataMapper;
 import com.google.protobuf.Timestamp;
 import io.quarkus.grpc.GrpcService;
@@ -77,7 +85,7 @@ public class ApplicationRpcService implements Applications {
                                 .setAuthorizationServerId(String.valueOf(_application.getAuthorizationServerId()))
                                 .setName(_application.getName())
                                 .setClientId(_application.getClientId())
-                                .addAllScopeIds(_application.getScopes().stream().map(Scope::getId).map(UUID::toString).toList())
+                                .addAllScopes(_application.getScopes().stream().map(ScopeMapper::toResponse).toList())
                                 .setProfile(Profile.toProtoMap(_profile.getProfile()))
                                 .setMetadata(MetadataMapper.from(_application.getMetadata()))
                                 .setCreatedOn(Timestamp.newBuilder().setSeconds(_application.getCreatedOn().toEpochSecond()).build())
@@ -114,7 +122,7 @@ public class ApplicationRpcService implements Applications {
                                                 .setName(application.getName())
                                                 .setClientId(application.getClientId())
                                                 .setMetadata(MetadataMapper.from(application.getMetadata()))
-                                                .addAllScopeIds(application.getScopes().stream().map(Scope::getId).map(UUID::toString).toList())
+                                                .addAllScopes(application.getScopes().stream().map(ScopeMapper::toResponse).toList())
                                                 .setCreatedOn(Timestamp.newBuilder().setSeconds(application.getCreatedOn().toEpochSecond()).build())
                                                 .setUpdatedOn(Timestamp.newBuilder().setSeconds(application.getUpdatedOn().toEpochSecond()).build())
                                                 .build()

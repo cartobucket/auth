@@ -9,7 +9,9 @@ import jakarta.persistence.UniqueConstraint;
 import java.util.UUID;
 
 @Entity
-@Table(uniqueConstraints = { @UniqueConstraint(columnNames = { "scopeId", "resourceId" }) })
+@Table(
+//        uniqueConstraints = { @UniqueConstraint(columnNames = { "scopeId", "resourceId" }) }
+)
 public class ScopeReference {
     public enum ScopeReferenceType {
         AUTHORIZATION_SERVER,

@@ -120,4 +120,12 @@ public class Application {
     public void setMetadata(Metadata metadata) {
         this.metadata = metadata;
     }
+
+    public List<Scope> getScopes() {
+        return scopes;
+    }
+
+    public void setScopes(List<Scope> scopes) {
+        this.scopes = scopes;
+    }
 }

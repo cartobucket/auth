@@ -31,6 +31,7 @@ import com.cartobucket.auth.rpc.ApplicationSecretResponse;
 import com.cartobucket.auth.rpc.ApplicationSecrets;
 import com.cartobucket.auth.rpc.IsApplicationSecretValidRequest;
 import com.cartobucket.auth.rpc.IsApplicationSecretValidResponse;
+import com.cartobucket.auth.rpc.server.entities.Scope;
 import com.cartobucket.auth.rpc.server.entities.mappers.ScopeMapper;
 import com.google.protobuf.Timestamp;
 import io.quarkus.grpc.GrpcService;
@@ -53,7 +54,14 @@ public class ApplicationSecretRpcService implements ApplicationSecrets {
         var applicationSecret = applicationService.createApplicationSecret(
                 new ApplicationSecret.Builder()
                         .setApplicationId(UUID.fromString(request.getApplicationId()))
-                        .setScopes(request.getScopesList().stream().map(ScopeMapper::fromResponse).toList())
+                        .setScopes(
+                                request
+                                        .getScopesList()
+                                        .stream()
+                                        .map(
+                                                scope -> new com.cartobucket.auth.data.domain.Scope(UUID.fromString(scope.getId()))
+                                        ).toList()
+                        )
                         .setAuthorizationServerId(UUID.fromString(request.getAuthorizationServerId()))
                         .setName(request.getName())
                         .setExpiresIn(request.getExpiresIn())
@@ -68,7 +76,12 @@ public class ApplicationSecretRpcService implements ApplicationSecrets {
                                 .setApplicationId(String.valueOf(applicationSecret.getApplicationId()))
                                 .setApplicationSecret(applicationSecret.getApplicationSecret())
                                 .setName(applicationSecret.getName())
-                                .addAllScopes(applicationSecret.getScopes().stream().map(ScopeMapper::toResponse).toList())
+                                .addAllScopes(applicationSecret
+                                        .getScopes()
+                                        .stream()
+                                        .map(ScopeMapper::toResponse)
+                                        .toList()
+                                )
                                 .setAuthorizationServerId(String.valueOf(applicationSecret.getAuthorizationServerId()))
                                 .setCreatedOn(Timestamp.newBuilder().setSeconds(applicationSecret.getCreatedOn().toEpochSecond()).build())
                                 .setExpiresIn(applicationSecret.getExpiresIn())
@@ -100,7 +113,12 @@ public class ApplicationSecretRpcService implements ApplicationSecrets {
                                                                 .setId(String.valueOf(applicationSecret.getId()))
                                                                 .setApplicationId(String.valueOf(applicationSecret.getApplicationId()))
                                                                 .setName(applicationSecret.getName())
-                                                                .addAllScopes(applicationSecret.getScopes().stream().map(ScopeMapper::toResponse).toList())
+                                                                .addAllScopes(applicationSecret
+                                                                        .getScopes()
+                                                                        .stream()
+                                                                        .map(ScopeMapper::toResponse)
+                                                                        .toList()
+                                                                )
                                                                 .setAuthorizationServerId(String.valueOf(applicationSecret.getAuthorizationServerId()))
                                                                 .setCreatedOn(Timestamp.newBuilder().setSeconds(applicationSecret.getCreatedOn().toEpochSecond()).build())
                                                                 .setExpiresIn(applicationSecret.getExpiresIn())

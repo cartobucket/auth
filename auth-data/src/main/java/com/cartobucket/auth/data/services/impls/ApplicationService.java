@@ -131,7 +131,16 @@ public class ApplicationService implements com.cartobucket.auth.data.services.Ap
                                 .setApplicationId(String.valueOf(applicationSecret.getApplicationId()))
                                 .setAuthorizationServerId(String.valueOf(applicationSecret.getAuthorizationServerId()))
                                 .setName(applicationSecret.getName())
-                                .addAllScopes(applicationSecret.getScopes().stream().map(ScopeMapper::toResponse).toList())
+                                .addAllScopes(
+                                        applicationSecret
+                                                .getScopes()
+                                                .stream()
+                                                .map(scope ->
+                                                        com.cartobucket.auth.data.rpc.Scope.newBuilder()
+                                                                .setId(String.valueOf(scope.getId()))
+                                                                .build())
+                                                .toList()
+                                )
                                 .setExpiresIn(applicationSecret.getExpiresIn() != null ? applicationSecret.getExpiresIn() : 0)
                                 .build()
                 )

@@ -34,7 +34,7 @@ public class ApplicationMapper {
         application.setName(applicationResponse.getName());
         application.setClientId(applicationResponse.getClientId());
         application.setAuthorizationServerId(UUID.fromString(applicationResponse.getAuthorizationServerId()));
-        application.setScopes(applicationResponse.getScopeIdsList().stream().map(UUID::fromString).map(Scope::new).toList());
+        application.setScopes(applicationResponse.getScopesList().stream().map(ScopeMapper::toScope).toList());
         application.setMetadata(MetadataMapper.from(applicationResponse.getMetadata()));
         application.setCreatedOn(OffsetDateTime.ofInstant(Instant.ofEpochSecond(applicationResponse.getCreatedOn().getSeconds()), ZoneId.of("UTC")));
         application.setUpdatedOn(OffsetDateTime.ofInstant(Instant.ofEpochSecond(applicationResponse.getUpdatedOn().getSeconds()), ZoneId.of("UTC")));
@@ -48,7 +48,7 @@ public class ApplicationMapper {
         application.setClientId(applicationCreateResponse.getClientId());
         application.setAuthorizationServerId(UUID.fromString(applicationCreateResponse.getAuthorizationServerId()));
         application.setMetadata(MetadataMapper.from(applicationCreateResponse.getMetadata()));
-        application.setScopes(applicationCreateResponse.getScopeIdsList().stream().map(UUID::fromString).map(Scope::new).toList());
+        application.setScopes(applicationCreateResponse.getScopesList().stream().map(ScopeMapper::toScope).toList());
         application.setCreatedOn(OffsetDateTime.ofInstant(Instant.ofEpochSecond(applicationCreateResponse.getCreatedOn().getSeconds()), ZoneId.of("UTC")));
         application.setUpdatedOn(OffsetDateTime.ofInstant(Instant.ofEpochSecond(applicationCreateResponse.getUpdatedOn().getSeconds()), ZoneId.of("UTC")));
 
@@ -72,6 +72,7 @@ public class ApplicationMapper {
                 .setScopes(applicationSecret.getScopesList().stream().map(ScopeMapper::toScope).toList())
                 .setApplicationSecret(applicationSecret.getApplicationSecret())
                 .setExpiresIn(applicationSecret.getExpiresIn())
+                .setCreatedOn(OffsetDateTime.ofInstant(Instant.ofEpochSecond(applicationSecret.getCreatedOn().getSeconds()), ZoneId.of("UTC")))
                 .build();
     }
 
