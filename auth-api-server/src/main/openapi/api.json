@@ -2493,8 +2493,7 @@
             "description": "",
             "type": "array",
             "items": {
-              "format": "UUID",
-              "type": "string"
+              "$ref": "#/components/schemas/ScopeResponse"
             }
           },
           "metadata": {

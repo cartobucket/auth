@@ -35,6 +35,7 @@ import com.cartobucket.auth.rpc.server.repositories.ClientCodeRepository;
 import com.cartobucket.auth.rpc.server.repositories.ClientRepository;
 import com.cartobucket.auth.rpc.server.repositories.EventRepository;
 import com.cartobucket.auth.rpc.server.repositories.ScopeReferenceRepository;
+import io.quarkus.narayana.jta.QuarkusTransaction;
 import io.quarkus.panache.common.Sort;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
@@ -177,22 +178,32 @@ public class ClientService implements com.cartobucket.auth.data.services.ClientS
     }
 
     @Override
-    @Transactional
     public Client createClient(final Client client) {
+        QuarkusTransaction.begin();
         client.setCreatedOn(OffsetDateTime.now());
         client.setUpdatedOn(OffsetDateTime.now());
         client.setId(UUID.randomUUID());
         var _client = ClientMapper.to(client);
         clientRepository.persist(_client);
 
-        for (var scope : client.getScopes()) {
-            var scopeReference = new ScopeReference();
-            scopeReference.setResourceId(_client.getId());
-            scopeReference.setScopeId(scope.getId());
-            scopeReference.setScopeReferenceType(ScopeReference.ScopeReferenceType.CLIENT);
-        }
+        final var scopeReferences = client
+                .getScopes()
+                .stream()
+                .map(scope -> {
+                    final var scopeReference = new ScopeReference();
+                    scopeReference.setResourceId(_client.getId());
+                    scopeReference.setScopeId(scope.getId());
+                    scopeReference.setScopeReferenceType(ScopeReference.ScopeReferenceType.CLIENT);
+                    return scopeReference;
+                })
+                .toList();
+        scopeReferenceRepository.persist(scopeReferences);
+        QuarkusTransaction.commit();
 
-        eventRepository.createClientEvent(ClientMapper.from(_client), EventType.CREATE);
-        return ClientMapper.from(_client);
+        QuarkusTransaction.begin();
+        final var refreshedClient = ClientMapper.from(clientRepository.findById(_client.getId()));
+        eventRepository.createClientEvent(refreshedClient, EventType.CREATE);
+        QuarkusTransaction.commit();
+        return refreshedClient;
     }
 }

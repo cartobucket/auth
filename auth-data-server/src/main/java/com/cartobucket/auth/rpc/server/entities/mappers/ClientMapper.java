@@ -26,7 +26,7 @@ public class ClientMapper {
     public static Client from(com.cartobucket.auth.rpc.server.entities.Client client) {
         var _client = new Client();
         _client.setName(client.getName());
-        _client.setScopes(client.getScopes().stream().map(ScopeMapper::from).toList());
+        _client.setScopes(client.getScopes().stream().map(ScopeMapper::fromNoAuthorizationServer).toList());
         _client.setId(client.getId());
         _client.setRedirectUris(client.getRedirectUris());
         _client.setAuthorizationServerId(client.getAuthorizationServerId());
@@ -39,7 +39,7 @@ public class ClientMapper {
     public static com.cartobucket.auth.rpc.server.entities.Client to(Client client) {
         var _client = new com.cartobucket.auth.rpc.server.entities.Client();
         _client.setName(client.getName());
-        _client.setScopes(client.getScopes().stream().map(ScopeMapper::to).toList());
+//        _client.setScopes(client.getScopes().stream().map(ScopeMapper::to).toList());
         _client.setId(client.getId());
         // TODO: This should come from the client, this is just an oversight, please fix.
         _client.setClientId(String.valueOf(client.getId()));

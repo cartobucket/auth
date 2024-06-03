@@ -45,7 +45,7 @@ public class ClientMapper {
         clientResponse.setName(client.getName());
         clientResponse.setAuthorizationServerId(String.valueOf(client.getAuthorizationServerId()));
         clientResponse.setRedirectUris(client.getRedirectUris().stream().map(String::valueOf).toList());
-        clientResponse.setScopes(client.getScopes().stream().map(Scope::getId).toList());
+        clientResponse.setScopes(client.getScopes().stream().map(ScopeMapper::toResponse).toList());
         clientResponse.setMetadata(MetadataMapper.to(client.getMetadata()));
         clientResponse.setCreatedOn(client.getCreatedOn());
         clientResponse.setUpdatedOn(client.getUpdatedOn());

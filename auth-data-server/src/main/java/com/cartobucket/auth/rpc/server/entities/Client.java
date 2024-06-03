@@ -55,7 +55,6 @@ public class Client {
             name = "scopereference",
             joinColumns = { @JoinColumn(
                     name = "resourceId",
-                    referencedColumnName = "id",
                     foreignKey = @ForeignKey(name = "none", value = ConstraintMode.NO_CONSTRAINT)
             ) },
             inverseJoinColumns = { @JoinColumn(name = "scopeId") }
