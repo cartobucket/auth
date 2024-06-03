@@ -1,7 +1,7 @@
 plugins {
 	id 'java'
 	id 'io.quarkus'
-	id 'org.openapi.generator' version '6.6.0'
+	id 'org.openapi.generator' version '7.2.0'
 	id("com.diffplug.spotless") version "6.16.0"
 }
 

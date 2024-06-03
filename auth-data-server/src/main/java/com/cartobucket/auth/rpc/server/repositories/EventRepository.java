@@ -120,14 +120,14 @@ public class EventRepository implements PanacheRepositoryBase<Event, UUID> {
         persist(event);
         return event;
     }
-    public Event createClientEvent(Client from, EventType eventType) {
+    public Event createClientEvent(Client client, EventType eventType) {
         Event event = new Event();
         event.setEventType(eventType);
-        event.setAuthorizationServerId(from.getAuthorizationServerId());
+        event.setAuthorizationServerId(client.getAuthorizationServerId());
         event.setResourceType(ResourceType.CLIENT);
-        event.setResourceId(from.getId());
+        event.setResourceId(client.getId());
         event.setCreatedOn(OffsetDateTime.now());
-        Map<String, Object> resource = objectMapper.convertValue(from, new TypeReference<>() {
+        Map<String, Object> resource = objectMapper.convertValue(client, new TypeReference<>() {
         });
 
         event.setResource(
@@ -138,14 +138,14 @@ public class EventRepository implements PanacheRepositoryBase<Event, UUID> {
         return event;
     }
 
-    public Event createSchemaEvent(Schema from, EventType eventType) {
+    public Event createSchemaEvent(Schema schema, EventType eventType) {
         Event event = new Event();
         event.setEventType(eventType);
-        event.setAuthorizationServerId(from.getAuthorizationServerId());
+        event.setAuthorizationServerId(schema.getAuthorizationServerId());
         event.setResourceType(ResourceType.SCHEMA);
-        event.setResourceId(from.getId());
+        event.setResourceId(schema.getId());
         event.setCreatedOn(OffsetDateTime.now());
-        Map<String, Object> resource = objectMapper.convertValue(from, new TypeReference<>() {
+        Map<String, Object> resource = objectMapper.convertValue(schema, new TypeReference<>() {
         });
 
         event.setResource(
@@ -156,14 +156,14 @@ public class EventRepository implements PanacheRepositoryBase<Event, UUID> {
         return event;
     }
 
-    public Event createScopeEvent(Scope from, EventType eventType) {
+    public Event createScopeEvent(Scope scope, EventType eventType) {
         Event event = new Event();
         event.setEventType(eventType);
-        event.setAuthorizationServerId(from.getAuthorizationServerId());
+        event.setAuthorizationServerId(scope.getAuthorizationServer().getId());
         event.setResourceType(ResourceType.SCOPE);
-        event.setResourceId(from.getId());
+        event.setResourceId(scope.getId());
         event.setCreatedOn(OffsetDateTime.now());
-        Map<String, Object> resource = objectMapper.convertValue(from, new TypeReference<>() {
+        Map<String, Object> resource = objectMapper.convertValue(scope, new TypeReference<>() {
         });
 
         event.setResource(

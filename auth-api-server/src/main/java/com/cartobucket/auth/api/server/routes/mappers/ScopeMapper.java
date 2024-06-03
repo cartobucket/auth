@@ -19,6 +19,7 @@
 
 package com.cartobucket.auth.api.server.routes.mappers;
 
+import com.cartobucket.auth.data.domain.AuthorizationServer;
 import com.cartobucket.auth.model.generated.ScopeRequest;
 import com.cartobucket.auth.model.generated.ScopeResponse;
 import com.cartobucket.auth.data.domain.Scope;
@@ -27,7 +28,9 @@ public class ScopeMapper {
     public static Scope to(ScopeRequest scopeRequest) {
         var scope = new Scope();
         scope.setName(scopeRequest.getName());
-        scope.setAuthorizationServerId(scopeRequest.getAuthorizationServerId());
+        final var authorizationServer = new AuthorizationServer();
+        authorizationServer.setId(scopeRequest.getAuthorizationServerId());
+        scope.setAuthorizationServer(authorizationServer);
         scope.setMetadata(MetadataMapper.from(scopeRequest.getMetadata()));
         return scope;
     }
@@ -35,11 +38,18 @@ public class ScopeMapper {
     public static ScopeResponse toResponse(Scope scope) {
         var response = new ScopeResponse();
         response.setId(String.valueOf(scope.getId()));
-        response.setAuthorizationServerId(scope.getAuthorizationServerId());
+        response.setAuthorizationServerId(scope.getAuthorizationServer().getId());
         response.setName(scope.getName());
         response.setMetadata(MetadataMapper.to(scope.getMetadata()));
         response.setCreatedOn(scope.getCreatedOn());
         response.setUpdatedOn(scope.getUpdatedOn());
+        return response;
+    }
+
+    public static ScopeResponse toSummaryResponse(Scope scope) {
+        var response = new ScopeResponse();
+        response.setId(String.valueOf(scope.getId()));
+        response.setName(scope.getName());
         return response;
     }
 }

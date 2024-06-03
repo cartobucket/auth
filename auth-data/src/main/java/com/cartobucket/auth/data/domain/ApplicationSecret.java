@@ -23,7 +23,7 @@ import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
 
-public class ApplicationSecret {
+public final class ApplicationSecret {
     private UUID id;
 
     private UUID applicationId;
@@ -40,9 +40,22 @@ public class ApplicationSecret {
 
     private OffsetDateTime createdOn;
 
-    private OffsetDateTime updatedOn;
+    private  Integer expiresIn;
 
     private List<Scope> scopes;
+
+    public ApplicationSecret(UUID id, UUID applicationId, UUID authorizationServerId, String name, String applicationSecret, String applicationSecretHash, Metadata metadata, OffsetDateTime createdOn, Integer expiresIn, List<Scope> scopes) {
+        this.id = id;
+        this.applicationId = applicationId;
+        this.authorizationServerId = authorizationServerId;
+        this.name = name;
+        this.applicationSecret = applicationSecret;
+        this.applicationSecretHash = applicationSecretHash;
+        this.metadata = metadata;
+        this.createdOn = createdOn;
+        this.expiresIn = expiresIn;
+        this.scopes = scopes;
+    }
 
     public UUID getApplicationId() {
         return applicationId;
@@ -108,19 +121,89 @@ public class ApplicationSecret {
         this.createdOn = createdOn;
     }
 
-    public OffsetDateTime getUpdatedOn() {
-        return updatedOn;
-    }
-
-    public void setUpdatedOn(OffsetDateTime updatedOn) {
-        this.updatedOn = updatedOn;
-    }
-
     public Metadata getMetadata() {
         return metadata;
     }
 
     public void setMetadata(Metadata metadata) {
         this.metadata = metadata;
+    }
+
+    public Integer getExpiresIn() {
+        return expiresIn;
+    }
+
+    public void setExpiresIn(Integer expiresIn) {
+        this.expiresIn = expiresIn;
+    }
+
+    public static class Builder {
+        private UUID id;
+        private UUID applicationId;
+        private UUID authorizationServerId;
+        private String name;
+        private String applicationSecret;
+        private String applicationSecretHash;
+        private Metadata metadata;
+        private OffsetDateTime createdOn;
+        private Integer expiresIn;
+        private List<Scope> scopes;
+
+        public Builder setId(UUID id) {
+            this.id = id;
+            return this;
+        }
+
+        public Builder setApplicationId(UUID applicationId) {
+            this.applicationId = applicationId;
+            return this;
+        }
+
+        public Builder setAuthorizationServerId(UUID authorizationServerId) {
+            this.authorizationServerId = authorizationServerId;
+            return this;
+        }
+
+        public Builder setName(String name) {
+            this.name = name;
+            return this;
+        }
+
+        public Builder setApplicationSecret(String applicationSecret) {
+            this.applicationSecret = applicationSecret;
+            return this;
+        }
+
+        public Builder setApplicationSecretHash(String applicationSecretHash) {
+            this.applicationSecretHash = applicationSecretHash;
+            return this;
+        }
+
+        public Builder setMetadata(Metadata metadata) {
+            this.metadata = metadata;
+            return this;
+        }
+
+        public Builder setCreatedOn(OffsetDateTime createdOn) {
+            this.createdOn = createdOn;
+            return this;
+        }
+
+        public Builder setExpiresIn(Integer expiresIn) {
+            this.expiresIn = expiresIn;
+            return this;
+        }
+
+        public Builder setScopes(List<Scope> scopes) {
+            this.scopes = scopes;
+            return this;
+        }
+
+        public ApplicationSecret build() {
+            if (expiresIn == null) {
+                expiresIn = 0;
+            }
+            return new ApplicationSecret(id, applicationId, authorizationServerId, name, applicationSecret, applicationSecretHash, metadata, createdOn, expiresIn, scopes);
+        }
     }
 }

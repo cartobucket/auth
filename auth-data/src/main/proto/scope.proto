@@ -9,10 +9,10 @@ import "metadata.proto";
 
 
 service Scopes {
-  rpc CreateScope (ScopeCreateRequest) returns (ScopeResponse) {};
+  rpc CreateScope (ScopeCreateRequest) returns (Scope) {};
   rpc ListScopes (ScopeListRequest) returns (ScopesListResponse) {};
-  rpc DeleteScope (ScopeDeleteRequest) returns (ScopeResponse) {};
-  rpc GetScope (ScopeGetRequest) returns (ScopeResponse) {};
+  rpc DeleteScope (ScopeDeleteRequest) returns (Scope) {};
+  rpc GetScope (ScopeGetRequest) returns (Scope) {};
 }
 
 message ScopeCreateRequest {
@@ -31,7 +31,7 @@ message ScopeDeleteRequest {
   string id = 1;
 }
 
-message ScopeResponse {
+message Scope {
   string id = 1;
   string authorizationServerId = 2;
   string name = 3;
@@ -41,7 +41,7 @@ message ScopeResponse {
 }
 
 message ScopesListResponse {
-  repeated ScopeResponse scopes = 1;
+  repeated Scope scopes = 1;
   int64 limit = 2;
   int64 offset = 3;
 }

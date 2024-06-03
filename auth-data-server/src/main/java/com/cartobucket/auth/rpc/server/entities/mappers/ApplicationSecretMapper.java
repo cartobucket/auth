@@ -20,21 +20,21 @@
 package com.cartobucket.auth.rpc.server.entities.mappers;
 
 import com.cartobucket.auth.data.domain.ApplicationSecret;
-import com.cartobucket.auth.data.domain.Scope;
+
 
 public class ApplicationSecretMapper {
     public static ApplicationSecret from(com.cartobucket.auth.rpc.server.entities.ApplicationSecret applicationSecret) {
-        var _applicationSecret = new ApplicationSecret();
-        _applicationSecret.setApplicationId(applicationSecret.getApplicationId());
-        _applicationSecret.setApplicationSecret(applicationSecret.getApplicationSecret());
-        _applicationSecret.setApplicationSecretHash(applicationSecret.getApplicationSecretHash());
-        _applicationSecret.setId(applicationSecret.getId());
-        _applicationSecret.setScopes(applicationSecret.getScopes().stream().map(ScopeMapper::toScope).toList());
-        _applicationSecret.setAuthorizationServerId(applicationSecret.getAuthorizationServerId());
-        _applicationSecret.setName(applicationSecret.getName());
-        _applicationSecret.setUpdatedOn(applicationSecret.getUpdatedOn());
-        _applicationSecret.setCreatedOn(applicationSecret.getCreatedOn());
-        return _applicationSecret;
+        return new ApplicationSecret.Builder()
+                .setApplicationId(applicationSecret.getApplicationId())
+                .setApplicationSecret(applicationSecret.getApplicationSecret())
+                .setApplicationSecretHash(applicationSecret.getApplicationSecretHash())
+                .setId(applicationSecret.getId())
+                .setScopes(applicationSecret.getScopes().stream().map(ScopeMapper::fromNoAuthorizationServer).toList())
+                .setAuthorizationServerId(applicationSecret.getAuthorizationServerId())
+                .setName(applicationSecret.getName())
+                .setExpiresIn(applicationSecret.getExpiresIn())
+                .setCreatedOn(applicationSecret.getCreatedOn())
+                .build();
     }
 
     public static com.cartobucket.auth.rpc.server.entities.ApplicationSecret to(ApplicationSecret applicationSecret) {
@@ -43,10 +43,9 @@ public class ApplicationSecretMapper {
         _applicationSecret.setApplicationSecret(applicationSecret.getApplicationSecret());
         _applicationSecret.setApplicationSecretHash(applicationSecret.getApplicationSecretHash());
         _applicationSecret.setId(applicationSecret.getId());
-        _applicationSecret.setScopes(applicationSecret.getScopes().stream().map(Scope::getName).toList());
         _applicationSecret.setAuthorizationServerId(applicationSecret.getAuthorizationServerId());
         _applicationSecret.setName(applicationSecret.getName());
-        _applicationSecret.setUpdatedOn(applicationSecret.getUpdatedOn());
+        _applicationSecret.setExpiresIn(applicationSecret.getExpiresIn());
         _applicationSecret.setCreatedOn(applicationSecret.getCreatedOn());
         return _applicationSecret;
     }

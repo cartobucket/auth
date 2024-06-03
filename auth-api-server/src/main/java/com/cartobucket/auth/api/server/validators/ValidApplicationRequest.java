@@ -19,11 +19,10 @@
 
 package com.cartobucket.auth.api.server.validators;
 
-import com.cartobucket.auth.data.domain.Page;
 import com.cartobucket.auth.data.domain.Scope;
 import com.cartobucket.auth.data.services.ApplicationService;
-import com.cartobucket.auth.data.services.ScopeService;
-import com.cartobucket.auth.model.generated.ApplicationSecretRequest;
+import com.cartobucket.auth.data.services.AuthorizationServerService;
+import com.cartobucket.auth.model.generated.ApplicationRequest;
 import jakarta.inject.Inject;
 import jakarta.validation.Constraint;
 import jakarta.validation.ConstraintValidator;
@@ -35,20 +34,13 @@ import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.util.HashSet;
-import java.util.List;
 import java.util.UUID;
 
 import static jakarta.validation.constraintvalidation.ValidationTarget.ANNOTATED_ELEMENT;
-import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
-import static java.lang.annotation.ElementType.CONSTRUCTOR;
-import static java.lang.annotation.ElementType.FIELD;
-import static java.lang.annotation.ElementType.METHOD;
-import static java.lang.annotation.ElementType.PARAMETER;
-import static java.lang.annotation.ElementType.TYPE_USE;
+import static java.lang.annotation.ElementType.*;
 
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = { ValidApplicationSecretScopes.Validator.class })
+@Constraint(validatedBy = { ValidApplicationRequest.Validator.class })
 @Target(value = {
         METHOD,
         FIELD,
@@ -58,38 +50,38 @@ import static java.lang.annotation.ElementType.TYPE_USE;
         TYPE_USE})
 @SupportedValidationTarget(ANNOTATED_ELEMENT)
 @Documented
-public @interface ValidApplicationSecretScopes {
-    String message() default "scopes must exist on the Authorization Server";
+public @interface ValidApplicationRequest {
+    String message() default "The Application was not valid";
 
     Class<? extends Payload>[] payload() default {};
 
     Class<?>[] groups() default {};
-    public class Validator implements ConstraintValidator<ValidApplicationSecretScopes, ApplicationSecretRequest> {
-        @Inject
-        ScopeService scopeService;
+    public class Validator implements ConstraintValidator<ValidApplicationRequest, ApplicationRequest> {
         @Inject
         ApplicationService applicationService;
+        @Inject
+        AuthorizationServerService authorizationServerService;
 
         @Override
-        public void initialize(ValidApplicationSecretScopes constraintAnnotation) {
+        public void initialize(ValidApplicationRequest constraintAnnotation) {
             ConstraintValidator.super.initialize(constraintAnnotation);
         }
 
         @Override
-        public boolean isValid(ApplicationSecretRequest value, ConstraintValidatorContext context) {
-            final var application = applicationService.getApplication(value.getApplicationId());
-            final var scopes = scopeService
-                    .getScopes(
-                            List.of(
-                                    application.getLeft().getAuthorizationServerId()
-                            ),
-                            // TODO: This should probably get moved into the service, at the very least, this needs
-                            //  to be iterated over until no scopes are left.
-                            new Page(100, 0))
-                    .stream()
-                    .map(Scope::getId)
-                    .toList();
-            return new HashSet<>(scopes).containsAll(value.getScopes());
+        public boolean isValid(ApplicationRequest value, ConstraintValidatorContext context) {
+            try {
+                 final var authorizationServer = authorizationServerService.getAuthorizationServer(
+                         value.getAuthorizationServerId()
+                 );
+                 return authorizationServer
+                         .getScopes()
+                         .stream()
+                         .map(Scope::getId)
+                         .toList()
+                         .containsAll(value.getScopes());
+            } catch (Exception e) {
+                return false;
+            }
         }
     }
 }

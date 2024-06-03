@@ -19,12 +19,18 @@
 
 package com.cartobucket.auth.rpc.server.entities;
 
+import jakarta.annotation.Nullable;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.ConstraintMode;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.ForeignKey;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Transient;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
 
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -49,10 +55,18 @@ public class ApplicationSecret {
 
     private OffsetDateTime createdOn;
 
-    private OffsetDateTime updatedOn;
+    private Integer expiresIn;
 
-    @JdbcTypeCode(SqlTypes.JSON)
-    private List<String> scopes;
+    @JoinTable(
+            name = "scopereference",
+            joinColumns = { @JoinColumn(
+                    name = "resourceId",
+                    foreignKey = @ForeignKey(name = "none", value = ConstraintMode.NO_CONSTRAINT)
+            ) },
+            inverseJoinColumns = { @JoinColumn(name = "scopeId") }
+    )
+    @OneToMany(cascade = CascadeType.DETACH, orphanRemoval = true, fetch = FetchType.EAGER)
+    private List<Scope> scopes;
 
     public UUID getApplicationId() {
         return applicationId;
@@ -85,11 +99,11 @@ public class ApplicationSecret {
         return id;
     }
 
-    public List<String> getScopes() {
+    public List<Scope> getScopes() {
         return scopes;
     }
 
-    public void setScopes(List<String> scopes) {
+    public void setScopes(List<Scope> scopes) {
         this.scopes = scopes;
     }
 
@@ -118,11 +132,11 @@ public class ApplicationSecret {
         this.createdOn = createdOn;
     }
 
-    public OffsetDateTime getUpdatedOn() {
-        return updatedOn;
+    public Integer getExpiresIn() {
+        return expiresIn;
     }
 
-    public void setUpdatedOn(OffsetDateTime updatedOn) {
-        this.updatedOn = updatedOn;
+    public void setExpiresIn(Integer expiresIn) {
+        this.expiresIn = expiresIn;
     }
 }

@@ -163,84 +163,6 @@
         }
       ]
     },
-    "/applications/": {
-      "get": {
-        "tags": [
-          "Applications"
-        ],
-        "parameters": [
-          {
-            "name": "authorizationServerIds",
-            "description": "",
-            "schema": {
-              "type": "array",
-              "items": {
-                "format": "UUID",
-                "type": "string"
-              }
-            },
-            "in": "query"
-          },
-          {
-            "name": "limit",
-            "description": "",
-            "schema": {
-              "type": "integer"
-            },
-            "in": "query"
-          },
-          {
-            "name": "offset",
-            "description": "",
-            "schema": {
-              "type": "integer"
-            },
-            "in": "query"
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApplicationsResponse"
-                }
-              }
-            },
-            "description": "Get Applications"
-          }
-        },
-        "operationId": "listApplications"
-      },
-      "post": {
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ApplicationRequest"
-              }
-            }
-          },
-          "required": true
-        },
-        "tags": [
-          "Applications"
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApplicationResponse"
-                }
-              }
-            },
-            "description": "Create Application"
-          }
-        },
-        "operationId": "createApplication"
-      }
-    },
     "/users/": {
       "get": {
         "tags": [
@@ -571,34 +493,6 @@
           }
         },
         "operationId": "getClient"
-      },
-      "put": {
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ClientRequest"
-              }
-            }
-          },
-          "required": true
-        },
-        "tags": [
-          "Clients"
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ClientResponse"
-                }
-              }
-            },
-            "description": "Update the whole client."
-          }
-        },
-        "operationId": "updateClient"
       },
       "delete": {
         "tags": [
@@ -1072,7 +966,8 @@
                 "$ref": "#/components/schemas/ApplicationSecretRequest"
               }
             }
-          }
+          },
+          "required": true
         },
         "tags": [
           "Applications"
@@ -1115,6 +1010,85 @@
           "required": true
         }
       ]
+    },
+    "/applications/": {
+      "get": {
+        "tags": [
+          "Applications"
+        ],
+        "parameters": [
+          {
+            "name": "authorizationServerIds",
+            "description": "",
+            "schema": {
+              "type": "array",
+              "items": {
+                "format": "UUID",
+                "type": "string"
+              }
+            },
+            "in": "query"
+          },
+          {
+            "name": "limit",
+            "description": "",
+            "schema": {
+              "type": "integer"
+            },
+            "in": "query"
+          },
+          {
+            "name": "offset",
+            "description": "",
+            "schema": {
+              "type": "integer"
+            },
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApplicationsResponse"
+                }
+              }
+            },
+            "description": "Get Applications"
+          }
+        },
+        "operationId": "listApplications"
+      },
+      "post": {
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApplicationRequest"
+              }
+            }
+          },
+          "required": true,
+          "x-validator": "@ValidApplicationRequest"
+        },
+        "tags": [
+          "Applications"
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApplicationResponse"
+                }
+              }
+            },
+            "description": "Create Application"
+          }
+        },
+        "operationId": "createApplication"
+      }
     }
   },
   "components": {
@@ -1161,6 +1135,13 @@
           "metadata": {
             "$ref": "#/components/schemas/Metadata",
             "description": ""
+          },
+          "scopes": {
+            "description": "",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ScopeResponse"
+            }
           }
         },
         "example": {
@@ -1199,55 +1180,6 @@
 
             }
           ]
-        }
-      },
-      "ClientResponse": {
-        "title": "Root Type for ClientResponse",
-        "description": "",
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string"
-          },
-          "name": {
-            "type": "string"
-          },
-          "authorizationServerId": {
-            "type": "string"
-          },
-          "redirectUris": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "createdOn": {
-            "format": "date-time",
-            "type": "string"
-          },
-          "updatedOn": {
-            "format": "date-time",
-            "type": "string"
-          },
-          "scopes": {
-            "description": "",
-            "type": "string"
-          },
-          "metadata": {
-            "$ref": "#/components/schemas/Metadata",
-            "description": ""
-          }
-        },
-        "example": {
-          "id": "e1d1dc54-4799-4d09-a250-8bff9061419a",
-          "name": "Test Client",
-          "authorizationServerId": "66a2270e-0385-4aa4-a2ce-79bb12fa16ff",
-          "redirectUris": [
-            "https://accounts.cartobucket.com"
-          ],
-          "scopes": "test.read test.write",
-          "createdOn": "2023-01-08T02:05:30+00:00",
-          "updatedOn": "2023-01-08T02:05:30+00:00"
         }
       },
       "ClientsResponse": {
@@ -1310,59 +1242,6 @@
               "updatedOn": "2023-01-08T18:49:59+00:00"
             }
           ]
-        }
-      },
-      "ApplicationResponse": {
-        "title": "Root Type for ApplicationResponse",
-        "description": "",
-        "required": [
-          "authorizationServerId"
-        ],
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string"
-          },
-          "authorizationServerId": {
-            "format": "UUID",
-            "description": "",
-            "type": "string"
-          },
-          "name": {
-            "type": "string"
-          },
-          "client_id": {
-            "type": "string"
-          },
-          "client_secret": {
-            "type": "string"
-          },
-          "profile": {
-            "type": "object"
-          },
-          "createdOn": {
-            "format": "date-time",
-            "type": "string"
-          },
-          "updatedOn": {
-            "format": "date-time",
-            "type": "string"
-          },
-          "metadata": {
-            "$ref": "#/components/schemas/Metadata",
-            "description": ""
-          }
-        },
-        "example": {
-          "id": "c4d47e35-48bf-45ab-a1a6-8f3e272423f2",
-          "name": "Example Application",
-          "client_id": "",
-          "client_secret": "",
-          "profile": {
-
-          },
-          "createdOn": "2023-01-08T18:49:59+00:00",
-          "updatedOn": "2023-01-08T18:49:59+00:00"
         }
       },
       "UsersResponse": {
@@ -2198,169 +2077,6 @@
           "authorizationCodeTokenExpiration": 100
         }
       },
-      "ApplicationRequest": {
-        "title": "Root Type for ApplicationRequest",
-        "description": "",
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string",
-            "x-field-extra-annotation": "@ValidApplicationName"
-          },
-          "clientId": {
-            "type": "string",
-            "x-field-extra-annotation": "@ValidApplicationClientId"
-          },
-          "clientSecret": {
-            "type": "string",
-            "x-field-extra-annotation": "@ValidApplicationClientSecret"
-          },
-          "profile": {
-            "type": "object",
-            "x-field-extra-annotation": "@ValidApplicationProfile"
-          },
-          "authorizationServerId": {
-            "format": "UUID",
-            "description": "",
-            "type": "string",
-            "x-field-extra-annotation": "@ValidAuthorizationServer"
-          },
-          "metadata": {
-            "$ref": "#/components/schemas/Metadata",
-            "description": ""
-          }
-        },
-        "example": {
-          "name": "Example Application",
-          "client_id": "8743b52063cd84097a65d1633f5c74f5",
-          "client_secret": "f0fda58630310a6dd91a7d8f0a4ceda2",
-          "profile": {
-
-          },
-          "authorizationServerId": "52a10a2d-080c-4aaa-a184-ec3ba982a9bd"
-        }
-      },
-      "ApplicationSecretRequest": {
-        "title": "Root Type for ApplicationSecretRequest",
-        "description": "",
-        "required": [
-          "applicationId",
-          "expires_in",
-          "name",
-          "scopes"
-        ],
-        "type": "object",
-        "properties": {
-          "expires_in": {
-            "format": "int32",
-            "type": "integer"
-          },
-          "scopes": {
-            "type": "string"
-          },
-          "name": {
-            "description": "",
-            "maxLength": 400,
-            "minLength": 3,
-            "type": "string",
-            "x-field-extra-annotation": "@ValidApplicationSecretName"
-          },
-          "applicationId": {
-            "format": "UUID",
-            "description": "",
-            "type": "string",
-            "x-field-extra-annotation": "@ValidApplication"
-          }
-        },
-        "example": {
-          "expires_in": 12000,
-          "scopes": "test.read test.write",
-          "name": "Test Secret"
-        },
-        "x-class-extra-annotation": "@ValidApplicationSecretScopes"
-      },
-      "ApplicationSecretResponse": {
-        "title": "Root Type for ApplicationSecretResponse",
-        "description": "",
-        "required": [
-          "name",
-          "id"
-        ],
-        "type": "object",
-        "properties": {
-          "client_secret": {
-            "type": "string"
-          },
-          "name": {
-            "description": "",
-            "type": "string"
-          },
-          "id": {
-            "format": "UUID",
-            "description": "",
-            "type": "string"
-          },
-          "expires_in": {
-            "description": "",
-            "type": "integer"
-          },
-          "applicationId": {
-            "format": "UUID",
-            "description": "",
-            "type": "string"
-          },
-          "authorizationServerId": {
-            "format": "UUID",
-            "description": "",
-            "type": "string"
-          }
-        },
-        "example": {
-          "id": "76f31822-7956-4020-8731-e7a5c557f576",
-          "name": "Super Secret",
-          "client_secret": "8743b52063cd84097a65d1633f5c74f5"
-        }
-      },
-      "ClientRequest": {
-        "title": "Root Type for ClientRequest",
-        "description": "",
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string",
-            "x-field-extra-annotation": "@ValidClientName"
-          },
-          "authorizationServerId": {
-            "format": "UUID",
-            "type": "string",
-            "x-field-extra-annotation": "@ValidAuthorizationServer"
-          },
-          "redirectUris": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "x-field-extra-annotation": "@ValidClientRedirectUris"
-          },
-          "scopes": {
-            "description": "",
-            "type": "string"
-          },
-          "metadata": {
-            "$ref": "#/components/schemas/Metadata",
-            "description": ""
-          }
-        },
-        "example": {
-          "name": "Test Client",
-          "authorizationServerId": "66a2270e-0385-4aa4-a2ce-79bb12fa16ff",
-          "redirectUris": [
-            "https://accounts.cartobucket.com"
-          ],
-          "scopes": "test.read test.write"
-        },
-        "x-class-extra-annotation": "@ValidClientScopes"
-      },
       "ScopeRequest": {
         "title": "Root Type for ClientRequest",
         "description": "",
@@ -2543,6 +2259,316 @@
         "example": {
           "next": "https://test.company.example/application?limit=10&offset=10",
           "previous": "https://test.company.example/application?limit=10&offset=0"
+        }
+      },
+      "ApplicationRequest": {
+        "title": "Root Type for ApplicationRequest",
+        "description": "",
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "x-field-extra-annotation": "@ValidApplicationName"
+          },
+          "clientId": {
+            "type": "string",
+            "x-field-extra-annotation": "@ValidApplicationClientId"
+          },
+          "clientSecret": {
+            "type": "string",
+            "x-field-extra-annotation": "@ValidApplicationClientSecret"
+          },
+          "profile": {
+            "type": "object",
+            "x-field-extra-annotation": "@ValidApplicationProfile"
+          },
+          "authorizationServerId": {
+            "format": "UUID",
+            "description": "",
+            "type": "string",
+            "x-field-extra-annotation": "@ValidAuthorizationServer"
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/Metadata",
+            "description": ""
+          },
+          "scopes": {
+            "description": "[\n  \"236834c9-a1ba-490c-a80f-e13ed904e188\",\n  \"1f9287f6-dd58-4519-baf0-3bc456f1650a\"\n]",
+            "type": "array",
+            "items": {
+              "format": "UUID",
+              "type": "string"
+            }
+          }
+        },
+        "example": {
+          "name": "Example Application",
+          "client_id": "8743b52063cd84097a65d1633f5c74f5",
+          "client_secret": "f0fda58630310a6dd91a7d8f0a4ceda2",
+          "profile": {
+
+          },
+          "authorizationServerId": "52a10a2d-080c-4aaa-a184-ec3ba982a9bd",
+          "scopes": [
+            "236834c9-a1ba-490c-a80f-e13ed904e188",
+            "1f9287f6-dd58-4519-baf0-3bc456f1650a"
+          ]
+        }
+      },
+      "ClientRequest": {
+        "title": "Root Type for ClientRequest",
+        "description": "",
+        "required": [
+          "scopes"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "x-field-extra-annotation": "@ValidClientName"
+          },
+          "authorizationServerId": {
+            "format": "UUID",
+            "type": "string",
+            "x-field-extra-annotation": "@ValidAuthorizationServer"
+          },
+          "redirectUris": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "x-field-extra-annotation": "@ValidClientRedirectUris"
+          },
+          "scopes": {
+            "description": "",
+            "type": "array",
+            "items": {
+              "format": "UUID",
+              "type": "string"
+            }
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/Metadata",
+            "description": ""
+          }
+        },
+        "example": {
+          "name": "Test Client",
+          "authorizationServerId": "66a2270e-0385-4aa4-a2ce-79bb12fa16ff",
+          "redirectUris": [
+            "https://accounts.cartobucket.com"
+          ],
+          "scopes": "test.read test.write"
+        },
+        "x-class-extra-annotation": "@ValidClientScopes"
+      },
+      "ApplicationSecretRequest": {
+        "title": "Root Type for ApplicationSecretRequest",
+        "description": "",
+        "required": [
+          "applicationId",
+          "name",
+          "scopes"
+        ],
+        "type": "object",
+        "properties": {
+          "scopes": {
+            "description": "",
+            "type": "array",
+            "items": {
+              "format": "UUID",
+              "type": "string"
+            }
+          },
+          "name": {
+            "description": "",
+            "maxLength": 400,
+            "minLength": 3,
+            "type": "string",
+            "x-field-extra-annotation": "@ValidApplicationSecretName"
+          },
+          "applicationId": {
+            "format": "UUID",
+            "description": "",
+            "type": "string",
+            "x-field-extra-annotation": "@ValidApplication"
+          },
+          "expiresIn": {
+            "format": "int32",
+            "type": "integer"
+          }
+        },
+        "example": {
+          "expires_in": 12000,
+          "scopes": "test.read test.write",
+          "name": "Test Secret"
+        },
+        "x-class-extra-annotation": "@ValidApplicationSecretScopes"
+      },
+      "ApplicationSecretResponse": {
+        "title": "Root Type for ApplicationSecretResponse",
+        "description": "",
+        "required": [
+          "name",
+          "id",
+          "scopes",
+          "createdOn"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "description": "",
+            "type": "string"
+          },
+          "id": {
+            "format": "UUID",
+            "description": "",
+            "type": "string"
+          },
+          "applicationId": {
+            "format": "UUID",
+            "description": "",
+            "type": "string"
+          },
+          "authorizationServerId": {
+            "format": "UUID",
+            "description": "",
+            "type": "string"
+          },
+          "clientSecret": {
+            "type": "string"
+          },
+          "expiresIn": {
+            "description": "",
+            "type": "integer"
+          },
+          "scopes": {
+            "description": "",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ScopeResponse"
+            }
+          },
+          "createdOn": {
+            "format": "date-time",
+            "description": "",
+            "type": "string"
+          }
+        },
+        "example": {
+          "id": "76f31822-7956-4020-8731-e7a5c557f576",
+          "name": "Super Secret",
+          "client_secret": "8743b52063cd84097a65d1633f5c74f5"
+        }
+      },
+      "ClientResponse": {
+        "title": "Root Type for ClientResponse",
+        "description": "",
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "authorizationServerId": {
+            "type": "string"
+          },
+          "redirectUris": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "createdOn": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "updatedOn": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "scopes": {
+            "description": "",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ScopeResponse"
+            }
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/Metadata",
+            "description": ""
+          }
+        },
+        "example": {
+          "id": "e1d1dc54-4799-4d09-a250-8bff9061419a",
+          "name": "Test Client",
+          "authorizationServerId": "66a2270e-0385-4aa4-a2ce-79bb12fa16ff",
+          "redirectUris": [
+            "https://accounts.cartobucket.com"
+          ],
+          "scopes": "test.read test.write",
+          "createdOn": "2023-01-08T02:05:30+00:00",
+          "updatedOn": "2023-01-08T02:05:30+00:00"
+        }
+      },
+      "ApplicationResponse": {
+        "title": "Root Type for ApplicationResponse",
+        "description": "",
+        "required": [
+          "authorizationServerId",
+          "scopes"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "authorizationServerId": {
+            "format": "UUID",
+            "description": "",
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "profile": {
+            "type": "object"
+          },
+          "createdOn": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "updatedOn": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/Metadata",
+            "description": ""
+          },
+          "scopes": {
+            "description": "",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ScopeResponse"
+            }
+          },
+          "clientId": {
+            "type": "string"
+          }
+        },
+        "example": {
+          "id": "c4d47e35-48bf-45ab-a1a6-8f3e272423f2",
+          "name": "Example Application",
+          "client_id": "",
+          "client_secret": "",
+          "profile": {
+
+          },
+          "createdOn": "2023-01-08T18:49:59+00:00",
+          "updatedOn": "2023-01-08T18:49:59+00:00"
         }
       }
     }

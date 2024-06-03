@@ -21,6 +21,7 @@ package com.cartobucket.auth.data.domain;
 
 import java.net.URL;
 import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.UUID;
 
 public class AuthorizationServer {
@@ -37,6 +38,8 @@ public class AuthorizationServer {
     private Long authorizationCodeTokenExpiration;
 
     private Metadata metadata;
+
+    private List<Scope> scopes;
 
     private OffsetDateTime createdOn;
 
@@ -112,5 +115,13 @@ public class AuthorizationServer {
 
     public void setMetadata(Metadata metadata) {
         this.metadata = metadata;
+    }
+
+    public List<Scope> getScopes() {
+        return scopes;
+    }
+
+    public void setScopes(List<Scope> scopes) {
+        this.scopes = scopes;
     }
 }

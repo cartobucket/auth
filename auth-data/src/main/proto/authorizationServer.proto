@@ -74,6 +74,7 @@ message AuthorizationServerCreateResponse {
   Metadata metadata = 7;
   google.protobuf.Timestamp createdOn = 8;
   google.protobuf.Timestamp updatedOn = 9;
+  repeated Scope scopes = 10;
 }
 
 message AuthorizationServerResponse {
@@ -86,6 +87,7 @@ message AuthorizationServerResponse {
   Metadata metadata = 7;
   google.protobuf.Timestamp createdOn = 8;
   google.protobuf.Timestamp updatedOn = 9;
+  repeated Scope scopes = 10;
 }
 
 message AuthorizationServersListResponse {
@@ -124,7 +126,7 @@ message GenerateAccessTokenRequest {
   string authorizationServerId = 1;
   string userId = 2;
   string subject = 3;
-  repeated ScopeResponse scopes = 4;
+  repeated Scope scopes = 4;
   int64 expireInSeconds = 5;
   optional string nonce = 6;
 }

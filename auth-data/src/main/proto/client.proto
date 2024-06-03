@@ -23,7 +23,7 @@ message ClientCreateRequest {
   string name = 1;
   string authorizationServerId = 2;
   repeated string redirectUris = 3;
-  repeated ScopeResponse scopes = 4;
+  repeated string scopeIds = 4;
   Metadata metadata = 5;
 }
 
@@ -31,7 +31,7 @@ message ClientCreateClientCodeRequest {
   string clientId = 1;
   string authorizationServerId = 2;
   string redirectUri = 3;
-  repeated ScopeResponse scopes = 4;
+  repeated Scope scopes = 4;
   optional string state = 5;
   optional string codeChallenge = 6;
   optional string codeChallengeMethod = 7;
@@ -44,7 +44,7 @@ message ClientCreateClientCodeResponse {
   string clientId = 2;
   string authorizationServerId = 3;
   string redirectUri = 4;
-  repeated ScopeResponse scopes = 5;
+  repeated Scope scopes = 5;
   optional string state = 6;
   optional string codeChallenge = 7;
   optional string codeChallengeMethod = 8;
@@ -63,7 +63,7 @@ message ClientCodeResponse {
   string clientId = 2;
   string authorizationServerId = 3;
   string redirectUri = 4;
-  repeated ScopeResponse scopes = 5;
+  repeated Scope scopes = 5;
   optional string state = 6;
   optional string codeChallenge = 7;
   optional string codeChallengeMethod = 8;
@@ -87,7 +87,7 @@ message ClientUpdateRequest {
   string id = 1;
   string name = 2;
   repeated string redirectUris = 3;
-  repeated ScopeResponse scopes = 4;
+  repeated Scope scopes = 4;
   Metadata metadata = 5;
 }
 
@@ -100,7 +100,7 @@ message ClientCreateResponse {
   string name = 2;
   string authorizationServerId = 3;
   repeated string redirectUris = 4;
-  repeated ScopeResponse scopes = 5;
+  repeated Scope scopes = 5;
   Metadata metadata = 6;
   google.protobuf.Timestamp createdOn = 7;
   google.protobuf.Timestamp updatedOn = 8;
@@ -111,7 +111,7 @@ message ClientResponse {
   string name = 2;
   string authorizationServerId = 3;
   repeated string redirectUris = 4;
-  repeated ScopeResponse scopes = 5;
+  repeated Scope scopes = 5;
   Metadata metadata = 6;
   google.protobuf.Timestamp createdOn = 7;
   google.protobuf.Timestamp updatedOn = 8;

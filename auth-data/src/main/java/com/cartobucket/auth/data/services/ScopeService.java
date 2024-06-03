@@ -79,4 +79,6 @@ public interface ScopeService {
                 }).toList();
 
     }
+
+    List<Scope> getScopesForResourceId(UUID id);
 }

@@ -85,16 +85,4 @@ public class Clients implements ClientsApi {
                 .entity(clientsResponse)
                 .build();
     }
-
-    @Override
-    public Response updateClient(UUID clientId, ClientRequest clientRequest) {
-        return Response
-                .ok()
-                .entity(
-                        ClientMapper.toResponse(
-                                clientService.updateClient(clientId, ClientMapper.to(clientRequest))
-                        )
-                )
-                .build();
-    }
 }

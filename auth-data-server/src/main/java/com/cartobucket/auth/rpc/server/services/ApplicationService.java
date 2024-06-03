@@ -25,20 +25,19 @@ import com.cartobucket.auth.data.domain.Application;
 import com.cartobucket.auth.data.domain.ApplicationSecret;
 import com.cartobucket.auth.data.domain.Profile;
 import com.cartobucket.auth.data.domain.ProfileType;
-import com.cartobucket.auth.data.domain.Scope;
 import com.cartobucket.auth.data.exceptions.badrequests.ApplicationSecretNoApplicationBadData;
 import com.cartobucket.auth.data.exceptions.notfound.ApplicationNotFound;
 import com.cartobucket.auth.data.exceptions.notfound.ApplicationSecretNotFound;
 import com.cartobucket.auth.data.exceptions.notfound.ProfileNotFound;
 import com.cartobucket.auth.data.services.ScopeService;
 import com.cartobucket.auth.rpc.server.entities.EventType;
+import com.cartobucket.auth.rpc.server.entities.Scope;
+import com.cartobucket.auth.rpc.server.entities.ScopeReference;
 import com.cartobucket.auth.rpc.server.entities.mappers.ApplicationMapper;
 import com.cartobucket.auth.rpc.server.entities.mappers.ApplicationSecretMapper;
 import com.cartobucket.auth.rpc.server.entities.mappers.ProfileMapper;
-import com.cartobucket.auth.rpc.server.repositories.ApplicationRepository;
-import com.cartobucket.auth.rpc.server.repositories.ApplicationSecretRepository;
-import com.cartobucket.auth.rpc.server.repositories.EventRepository;
-import com.cartobucket.auth.rpc.server.repositories.ProfileRepository;
+import com.cartobucket.auth.rpc.server.repositories.*;
+import io.quarkus.narayana.jta.QuarkusTransaction;
 import io.quarkus.panache.common.Sort;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
@@ -57,6 +56,7 @@ public class ApplicationService implements com.cartobucket.auth.data.services.Ap
     final ApplicationSecretRepository applicationSecretRepository;
     final EventRepository eventRepository;
     final ProfileRepository profileRepository;
+    final ScopeReferenceRepository scopeReferenceRepository;
     final ScopeService scopeService;
 
     public ApplicationService(
@@ -64,12 +64,13 @@ public class ApplicationService implements com.cartobucket.auth.data.services.Ap
             ApplicationSecretRepository applicationSecretRepository,
             EventRepository eventRepository,
             ProfileRepository profileRepository,
-            ScopeService scopeService
+            ScopeReferenceRepository scopeReferenceRepository, ScopeService scopeService
     ) {
         this.applicationRepository = applicationRepository;
         this.applicationSecretRepository = applicationSecretRepository;
         this.eventRepository = eventRepository;
         this.profileRepository = profileRepository;
+        this.scopeReferenceRepository = scopeReferenceRepository;
         this.scopeService = scopeService;
     }
 
@@ -94,6 +95,7 @@ public class ApplicationService implements com.cartobucket.auth.data.services.Ap
     }
 
     @Override
+    @Transactional
     public Pair<Application, Profile> getApplication(final UUID applicationId)
             throws ApplicationNotFound, ProfileNotFound {
         final var application = applicationRepository
@@ -111,8 +113,8 @@ public class ApplicationService implements com.cartobucket.auth.data.services.Ap
     }
 
     @Override
-    @Transactional
     public Pair<Application, Profile> createApplication(final Application application, final Profile profile) {
+        QuarkusTransaction.begin();
         application.setCreatedOn(OffsetDateTime.now());
         application.setUpdatedOn(OffsetDateTime.now());
         var _application = ApplicationMapper.to(application);
@@ -126,12 +128,29 @@ public class ApplicationService implements com.cartobucket.auth.data.services.Ap
         var _profile = ProfileMapper.to(profile);
         profileRepository.persist(_profile);
 
-        var applicationProfilePair = Pair.create(ApplicationMapper.from(_application), ProfileMapper.from(_profile));
+        for (var scope : application.getScopes()) {
+            final var scopeReference = new ScopeReference();
+            scopeReference.setScopeId(scope.getId());
+            scopeReference.setResourceId(_application.getId());
+            scopeReference.setScopeReferenceType(ScopeReference.ScopeReferenceType.APPLICATION);
+            scopeReferenceRepository.persist(scopeReference);
+        }
+        QuarkusTransaction.commit();
+
+        QuarkusTransaction.begin();
+        var applicationProfilePair = Pair.create(
+                ApplicationMapper.from(applicationRepository.findById(_application.getId())),
+                ProfileMapper.from(_profile)
+        );
+        // TODO: This second transaction is wrong and not really needed. Have to save for the scopes to get added,
+        //  but that should not be that important for the even.
         eventRepository.createApplicationProfileEvent(applicationProfilePair, EventType.CREATE);
+        QuarkusTransaction.commit();
         return applicationProfilePair;
     }
 
     @Override
+    @Transactional
     public List<ApplicationSecret> getApplicationSecrets(final List<UUID> applicationIds) throws ApplicationNotFound {
         return applicationSecretRepository.findByApplicationIdIn(applicationIds)
                 .stream()
@@ -140,17 +159,12 @@ public class ApplicationService implements com.cartobucket.auth.data.services.Ap
     }
 
     @Override
-    @Transactional
     public ApplicationSecret createApplicationSecret(
             final ApplicationSecret applicationSecret) throws ApplicationNotFound {
+        QuarkusTransaction.begin();
         final var application = applicationRepository
                 .findByIdOptional(applicationSecret.getApplicationId())
                 .orElseThrow(ApplicationNotFound::new);
-
-        var scopes = scopeService.filterScopesForAuthorizationServerId(
-                application.getAuthorizationServerId(),
-                ScopeService.scopeListToScopeString(applicationSecret.getScopes().stream().map(Scope::getName).toList())
-        );
 
         final MessageDigest messageDigest;
         try {
@@ -163,13 +177,29 @@ public class ApplicationService implements com.cartobucket.auth.data.services.Ap
             applicationSecret.setApplicationSecret(secret);
             applicationSecret.setApplicationSecretHash(secretHash);
             applicationSecret.setAuthorizationServerId(application.getAuthorizationServerId());
-            applicationSecret.setScopes(scopes);
-            applicationSecret.setUpdatedOn(OffsetDateTime.now());
             applicationSecret.setCreatedOn(OffsetDateTime.now());
-            applicationSecretRepository.persist(
-                    ApplicationSecretMapper.to(applicationSecret)
-            );
-            return applicationSecret;
+            var _applicationSecret = ApplicationSecretMapper.to(applicationSecret);
+            applicationSecretRepository.persist(_applicationSecret);
+            var applicationSecretReferences = applicationSecret
+                    .getScopes()
+                    .stream()
+                    .map(
+                            scope -> {
+                                final var scopeReference = new ScopeReference();
+                                scopeReference.setScopeId(scope.getId());
+                                scopeReference.setResourceId(_applicationSecret.getId());
+                                scopeReference.setScopeReferenceType(ScopeReference.ScopeReferenceType.APPLICATION_SECRET);
+                                return scopeReference;
+                            }
+                            )
+                    .toList();
+            scopeReferenceRepository.persist(applicationSecretReferences);
+            QuarkusTransaction.commit();
+
+            // Refresh the secret to get the new scopes and add the actual secret string back on.
+            final var refreshedSecret = applicationSecretRepository.findById(_applicationSecret.getId());
+            refreshedSecret.setApplicationSecret(secret);
+            return ApplicationSecretMapper.from(refreshedSecret);
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         }
@@ -188,6 +218,7 @@ public class ApplicationService implements com.cartobucket.auth.data.services.Ap
     }
 
     @Override
+    @Transactional
     public List<Application> getApplications(final List<UUID> authorizationServerIds, Page page) {
         if (authorizationServerIds.isEmpty()) {
             return applicationRepository
@@ -207,6 +238,7 @@ public class ApplicationService implements com.cartobucket.auth.data.services.Ap
     }
 
     @Override
+    @Transactional
     public boolean isApplicationSecretValid(UUID authorizationServerId, UUID applicationId, String applicationSecret) {
         try {
             final var messageDigest = MessageDigest.getInstance("SHA-256");

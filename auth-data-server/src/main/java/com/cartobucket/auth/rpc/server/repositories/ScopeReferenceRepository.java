@@ -17,33 +17,14 @@
  * THE SOFTWARE.
  */
 
-package com.cartobucket.auth.data.services;
+package com.cartobucket.auth.rpc.server.repositories;
 
-import com.cartobucket.auth.data.domain.Page;
-import com.cartobucket.auth.data.exceptions.badrequests.CodeChallengeBadData;
-import com.cartobucket.auth.data.exceptions.notfound.ClientCodeNotFound;
-import com.cartobucket.auth.data.exceptions.notfound.ClientNotFound;
-import com.cartobucket.auth.data.domain.Client;
-import com.cartobucket.auth.data.domain.ClientCode;
+import com.cartobucket.auth.rpc.server.entities.ScopeReference;
+import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
+import jakarta.enterprise.context.ApplicationScoped;
 
-import java.util.List;
 import java.util.UUID;
 
-public interface ClientService {
-    Client createClient(Client client);
-
-    Client getClient(String clientId) throws ClientNotFound;
-
-    List<Client> getClients(List<UUID> authorizationServerIds, Page page);
-
-    void deleteClient(UUID clientId) throws ClientNotFound;
-
-    Client updateClient(UUID clientId, Client client) throws ClientNotFound;
-
-    ClientCode createClientCode(
-            UUID authorizationServerId,
-            ClientCode clientCode
-    );
-
-    ClientCode getClientCode(String clientCode) throws ClientCodeNotFound;
+@ApplicationScoped
+public class ScopeReferenceRepository implements PanacheRepositoryBase<ScopeReference, UUID> {
 }

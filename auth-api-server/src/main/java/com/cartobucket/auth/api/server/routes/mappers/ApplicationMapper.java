@@ -19,14 +19,13 @@
 
 package com.cartobucket.auth.api.server.routes.mappers;
 
-import com.cartobucket.auth.data.domain.Application;
-import com.cartobucket.auth.data.domain.ApplicationSecret;
-import com.cartobucket.auth.data.domain.Profile;
-import com.cartobucket.auth.data.services.ScopeService;
+import com.cartobucket.auth.data.domain.*;
 import com.cartobucket.auth.model.generated.ApplicationRequest;
 import com.cartobucket.auth.model.generated.ApplicationResponse;
 import com.cartobucket.auth.model.generated.ApplicationSecretRequest;
 import com.cartobucket.auth.model.generated.ApplicationSecretResponse;
+
+import java.util.UUID;
 
 public class ApplicationMapper {
     public static Application from(ApplicationRequest applicationRequest) {
@@ -36,6 +35,17 @@ public class ApplicationMapper {
         if (applicationRequest.getClientId() != null) {
             application.setClientId(applicationRequest.getClientId());
         }
+        application.setScopes(
+                applicationRequest
+                        .getScopes()
+                        .stream()
+                        .map(scopeId -> {
+                            var scope = new Scope();
+                            scope.setId(scopeId);
+                            return scope;
+                        })
+                        .toList()
+        );
         application.setMetadata(MetadataMapper.from(applicationRequest.getMetadata()));
         return application;
     }
@@ -47,6 +57,7 @@ public class ApplicationMapper {
         applicationResponse.setClientId(application.getClientId());
         applicationResponse.setAuthorizationServerId(application.getAuthorizationServerId());
         applicationResponse.setMetadata(MetadataMapper.to(application.getMetadata()));
+        applicationResponse.setScopes(application.getScopes().stream().map(ScopeMapper::toResponse).toList());
         applicationResponse.setCreatedOn(application.getCreatedOn());
         applicationResponse.setUpdatedOn(application.getUpdatedOn());
         return applicationResponse;
@@ -58,6 +69,7 @@ public class ApplicationMapper {
         applicationResponse.setName(application.getName());
         applicationResponse.setClientId(application.getClientId());
         applicationResponse.setAuthorizationServerId(application.getAuthorizationServerId());
+        applicationResponse.setScopes(application.getScopes().stream().map(ScopeMapper::toResponse).toList());
         applicationResponse.setMetadata(MetadataMapper.to(application.getMetadata()));
         applicationResponse.setCreatedOn(application.getCreatedOn());
         applicationResponse.setUpdatedOn(application.getUpdatedOn());
@@ -66,13 +78,13 @@ public class ApplicationMapper {
     }
 
     public static ApplicationSecret secretFrom(Application application, ApplicationSecretRequest applicationSecretRequest) {
-        var secret = new ApplicationSecret();
-        secret.setApplicationId(application.getId());
-        secret.setName(applicationSecretRequest.getName());
-        secret.setAuthorizationServerId(application.getAuthorizationServerId());
-        if (applicationSecretRequest.getScopes() != null)
-            secret.setScopes(ScopeService.scopeStringToScopeList(applicationSecretRequest.getScopes()));
-        return secret;
+        return new ApplicationSecret.Builder()
+                .setApplicationId(application.getId())
+                .setName(applicationSecretRequest.getName())
+                .setAuthorizationServerId(application.getAuthorizationServerId())
+                .setScopes(applicationSecretRequest.getScopes().stream().map(Scope::new).toList())
+                .setExpiresIn(applicationSecretRequest.getExpiresIn())
+                .build();
     }
 
     public static ApplicationSecretResponse toSecretResponse(ApplicationSecret applicationSecret) {
@@ -82,6 +94,9 @@ public class ApplicationMapper {
         secretResponse.setName(applicationSecret.getName());
         secretResponse.setApplicationId(applicationSecret.getApplicationId());
         secretResponse.setAuthorizationServerId(applicationSecret.getAuthorizationServerId());
+        secretResponse.setScopes(applicationSecret.getScopes().stream().map(ScopeMapper::toResponse).toList());
+        secretResponse.setCreatedOn(applicationSecret.getCreatedOn());
+        secretResponse.setExpiresIn(applicationSecret.getExpiresIn());
         return secretResponse;
     }
 }

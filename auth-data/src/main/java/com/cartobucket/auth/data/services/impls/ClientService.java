@@ -179,7 +179,7 @@ public class ClientService implements com.cartobucket.auth.data.services.ClientS
                                 com.cartobucket.auth.rpc.ClientCreateRequest
                                         .newBuilder()
                                         .setName(client.getName())
-                                        .addAllScopes(client.getScopes().stream().map(ScopeMapper::toResponse).toList())
+                                        .addAllScopeIds(client.getScopes().stream().map(Scope::getId).map(String::valueOf).toList())
                                         .addAllRedirectUris(client.getRedirectUris().stream().map(String::valueOf).toList())
                                         .setAuthorizationServerId(String.valueOf(client.getAuthorizationServerId()))
                                         .setMetadata(MetadataMapper.to(client.getMetadata()))

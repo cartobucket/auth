@@ -26,6 +26,7 @@ import com.cartobucket.auth.data.domain.Client;
 import com.cartobucket.auth.data.services.ScopeService;
 
 import java.net.URI;
+import java.util.UUID;
 
 public class ClientMapper {
     public static Client to(ClientRequest clientRequest) {
@@ -33,7 +34,7 @@ public class ClientMapper {
         client.setName(clientRequest.getName());
         client.setAuthorizationServerId(clientRequest.getAuthorizationServerId());
         client.setRedirectUris(clientRequest.getRedirectUris().stream().map(URI::create).toList());
-        client.setScopes(ScopeService.scopeStringToScopeList(clientRequest.getScopes()));
+        client.setScopes(clientRequest.getScopes().stream().map(Scope::new).toList());
         client.setMetadata(MetadataMapper.from(clientRequest.getMetadata()));
         return client;
     }
@@ -44,15 +45,7 @@ public class ClientMapper {
         clientResponse.setName(client.getName());
         clientResponse.setAuthorizationServerId(String.valueOf(client.getAuthorizationServerId()));
         clientResponse.setRedirectUris(client.getRedirectUris().stream().map(String::valueOf).toList());
-        clientResponse.setScopes(
-                ScopeService.scopeListToScopeString(
-                        client
-                                .getScopes()
-                                .stream()
-                                .map(Scope::getName)
-                                .toList()
-                )
-        );
+        clientResponse.setScopes(client.getScopes().stream().map(ScopeMapper::toResponse).toList());
         clientResponse.setMetadata(MetadataMapper.to(client.getMetadata()));
         clientResponse.setCreatedOn(client.getCreatedOn());
         clientResponse.setUpdatedOn(client.getUpdatedOn());

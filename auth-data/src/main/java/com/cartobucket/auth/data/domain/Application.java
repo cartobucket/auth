@@ -20,6 +20,7 @@
 package com.cartobucket.auth.data.domain;
 
 import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.UUID;
 
 public class Application {
@@ -30,6 +31,8 @@ public class Application {
     private String name;
 
     private UUID authorizationServerId;
+
+    private List<Scope> scopes;
 
     private Metadata metadata;
 
@@ -91,5 +94,13 @@ public class Application {
 
     public void setMetadata(Metadata metadata) {
         this.metadata = metadata;
+    }
+
+    public List<Scope> getScopes() {
+        return scopes;
+    }
+
+    public void setScopes(List<Scope> scopes) {
+        this.scopes = scopes;
     }
 }

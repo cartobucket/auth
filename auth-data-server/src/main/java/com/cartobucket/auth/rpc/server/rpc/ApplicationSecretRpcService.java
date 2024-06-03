@@ -22,7 +22,6 @@ package com.cartobucket.auth.rpc.server.rpc;
 
 import com.cartobucket.auth.data.domain.ApplicationSecret;
 import com.cartobucket.auth.data.services.ApplicationService;
-import com.cartobucket.auth.data.services.ScopeService;
 import com.cartobucket.auth.rpc.ApplicationSecretCreateRequest;
 import com.cartobucket.auth.rpc.ApplicationSecretCreateResponse;
 import com.cartobucket.auth.rpc.ApplicationSecretDeleteRequest;
@@ -32,13 +31,13 @@ import com.cartobucket.auth.rpc.ApplicationSecretResponse;
 import com.cartobucket.auth.rpc.ApplicationSecrets;
 import com.cartobucket.auth.rpc.IsApplicationSecretValidRequest;
 import com.cartobucket.auth.rpc.IsApplicationSecretValidResponse;
+import com.cartobucket.auth.rpc.server.entities.Scope;
 import com.cartobucket.auth.rpc.server.entities.mappers.ScopeMapper;
 import com.google.protobuf.Timestamp;
 import io.quarkus.grpc.GrpcService;
 import io.smallrye.common.annotation.Blocking;
 import io.smallrye.mutiny.Uni;
 
-import java.util.List;
 import java.util.UUID;
 
 @GrpcService
@@ -52,13 +51,21 @@ public class ApplicationSecretRpcService implements ApplicationSecrets {
     @Override
     @Blocking
     public Uni<ApplicationSecretCreateResponse> createApplicationSecret(ApplicationSecretCreateRequest request) {
-        var applicationSecret = new ApplicationSecret();
-        applicationSecret.setApplicationId(UUID.fromString(request.getApplicationId()));
-        applicationSecret.setScopes(request.getScopesList().stream().map(scope -> ScopeMapper.fromResponse(scope)).toList());
-        applicationSecret.setAuthorizationServerId(UUID.fromString(request.getAuthorizationServerId()));
-        applicationSecret.setName(request.getName());
-        applicationSecret = applicationService.createApplicationSecret(
-                applicationSecret
+        var applicationSecret = applicationService.createApplicationSecret(
+                new ApplicationSecret.Builder()
+                        .setApplicationId(UUID.fromString(request.getApplicationId()))
+                        .setScopes(
+                                request
+                                        .getScopesList()
+                                        .stream()
+                                        .map(
+                                                scope -> new com.cartobucket.auth.data.domain.Scope(UUID.fromString(scope.getId()))
+                                        ).toList()
+                        )
+                        .setAuthorizationServerId(UUID.fromString(request.getAuthorizationServerId()))
+                        .setName(request.getName())
+                        .setExpiresIn(request.getExpiresIn())
+                        .build()
         );
         return Uni
                 .createFrom()
@@ -69,9 +76,15 @@ public class ApplicationSecretRpcService implements ApplicationSecrets {
                                 .setApplicationId(String.valueOf(applicationSecret.getApplicationId()))
                                 .setApplicationSecret(applicationSecret.getApplicationSecret())
                                 .setName(applicationSecret.getName())
-                                .addAllScopes(applicationSecret.getScopes().stream().map(ScopeMapper::toResponse).toList())
+                                .addAllScopes(applicationSecret
+                                        .getScopes()
+                                        .stream()
+                                        .map(ScopeMapper::toResponse)
+                                        .toList()
+                                )
                                 .setAuthorizationServerId(String.valueOf(applicationSecret.getAuthorizationServerId()))
                                 .setCreatedOn(Timestamp.newBuilder().setSeconds(applicationSecret.getCreatedOn().toEpochSecond()).build())
+                                .setExpiresIn(applicationSecret.getExpiresIn())
                                 .build()
                 );
     }
@@ -100,9 +113,15 @@ public class ApplicationSecretRpcService implements ApplicationSecrets {
                                                                 .setId(String.valueOf(applicationSecret.getId()))
                                                                 .setApplicationId(String.valueOf(applicationSecret.getApplicationId()))
                                                                 .setName(applicationSecret.getName())
-                                                                .addAllScopes(applicationSecret.getScopes().stream().map(ScopeMapper::toResponse).toList())
+                                                                .addAllScopes(applicationSecret
+                                                                        .getScopes()
+                                                                        .stream()
+                                                                        .map(ScopeMapper::toResponse)
+                                                                        .toList()
+                                                                )
                                                                 .setAuthorizationServerId(String.valueOf(applicationSecret.getAuthorizationServerId()))
                                                                 .setCreatedOn(Timestamp.newBuilder().setSeconds(applicationSecret.getCreatedOn().toEpochSecond()).build())
+                                                                .setExpiresIn(applicationSecret.getExpiresIn())
                                                                 .build()
                                                 )
                                                 .toList())

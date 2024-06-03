@@ -30,6 +30,7 @@ public class ApplicationMapper {
         _application.setName(application.getName());
         _application.setClientId(application.getClientId());
         _application.setMetadata(application.getMetadata());
+        _application.setScopes(application.getScopes().stream().map(ScopeMapper::fromNoAuthorizationServer).toList());
         _application.setUpdatedOn(application.getUpdatedOn());
         _application.setCreatedOn(application.getCreatedOn());
         return _application;

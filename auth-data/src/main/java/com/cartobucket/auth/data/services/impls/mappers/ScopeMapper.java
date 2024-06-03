@@ -20,10 +20,7 @@
 package com.cartobucket.auth.data.services.impls.mappers;
 
 import com.cartobucket.auth.data.domain.Scope;
-import com.cartobucket.auth.data.rpc.ScopeResponse;
-import com.cartobucket.auth.data.rpc.ScopeResponse;
 import com.cartobucket.auth.rpc.Metadata;
-import io.smallrye.mutiny.Uni;
 
 import java.time.Instant;
 import java.time.OffsetDateTime;
@@ -31,31 +28,33 @@ import java.time.ZoneId;
 import java.util.UUID;
 
 public class ScopeMapper {
-    public static Scope toScope(ScopeResponse scopeResponse) {
-        var scope = new Scope();
+    public static com.cartobucket.auth.data.domain.Scope toScope(com.cartobucket.auth.data.rpc.Scope scopeResponse) {
+        var scope = new com.cartobucket.auth.data.domain.Scope();
         // TODO: This is obviously not right
         scope.setId(!scopeResponse.getId().equals("null") ? UUID.fromString(scopeResponse.getId()) : UUID.randomUUID());
         scope.setName(scopeResponse.getName());
         // TODO: This too is not correct.
-        scope.setAuthorizationServerId(!scopeResponse.getAuthorizationServerId().equals("null") ? UUID.fromString(scopeResponse.getAuthorizationServerId()) : UUID.randomUUID());
+        final var authorizationServer = new com.cartobucket.auth.data.domain.AuthorizationServer();
+        authorizationServer.setId(!scopeResponse.getAuthorizationServerId().equals("null") ? UUID.fromString(scopeResponse.getAuthorizationServerId()) : UUID.randomUUID());
+        scope.setAuthorizationServer(authorizationServer);
         scope.setMetadata(MetadataMapper.from(scopeResponse.getMetadata()));
         scope.setCreatedOn(OffsetDateTime.ofInstant(Instant.ofEpochSecond(scopeResponse.getCreatedOn().getSeconds()), ZoneId.of("UTC")));
         scope.setUpdatedOn(OffsetDateTime.ofInstant(Instant.ofEpochSecond(scopeResponse.getUpdatedOn().getSeconds()), ZoneId.of("UTC")));
         return scope;
     }
 
-    public static Scope to(String scope) {
-        var scopeObj = new Scope();
+    public static com.cartobucket.auth.data.domain.Scope to(String scope) {
+        var scopeObj = new com.cartobucket.auth.data.domain.Scope();
         scopeObj.setName(scope);
         return scopeObj;
     }
 
-    public static ScopeResponse toResponse(Scope scope) {
+    public static com.cartobucket.auth.data.rpc.Scope toResponse(Scope scope) {
         // TODO: Fix this too.
-        return ScopeResponse.newBuilder()
+        return com.cartobucket.auth.data.rpc.Scope.newBuilder()
                 .setId(scope.getId() != null ? scope.getId().toString() : String.valueOf(UUID.randomUUID()))
                 .setName(scope.getName())
-                .setAuthorizationServerId(scope.getAuthorizationServerId() != null ? scope.getAuthorizationServerId().toString() : String.valueOf(UUID.randomUUID()))
+                .setAuthorizationServerId(String.valueOf(scope.getAuthorizationServer().getId()))
                 .setMetadata(scope.getMetadata() != null ? MetadataMapper.to(scope.getMetadata()) : Metadata.newBuilder().build())
                 .build();
     }

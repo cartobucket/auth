@@ -19,12 +19,7 @@
 
 package com.cartobucket.auth.data.services.impls;
 
-import com.cartobucket.auth.data.domain.Page;
-import com.cartobucket.auth.data.domain.Pair;
-import com.cartobucket.auth.data.domain.Application;
-import com.cartobucket.auth.data.domain.ApplicationSecret;
-import com.cartobucket.auth.data.domain.Profile;
-import com.cartobucket.auth.data.domain.ProfileType;
+import com.cartobucket.auth.data.domain.*;
 import com.cartobucket.auth.data.exceptions.badrequests.ApplicationSecretNoApplicationBadData;
 import com.cartobucket.auth.data.exceptions.notfound.ApplicationNotFound;
 import com.cartobucket.auth.data.exceptions.notfound.ApplicationSecretNotFound;
@@ -32,6 +27,7 @@ import com.cartobucket.auth.data.exceptions.notfound.ProfileNotFound;
 import com.cartobucket.auth.data.services.impls.mappers.ApplicationMapper;
 import com.cartobucket.auth.data.services.impls.mappers.MetadataMapper;
 import com.cartobucket.auth.data.services.impls.mappers.ProfileMapper;
+import com.cartobucket.auth.data.services.impls.mappers.ScopeMapper;
 import com.cartobucket.auth.rpc.*;
 import io.quarkus.arc.DefaultBean;
 import io.quarkus.grpc.GrpcClient;
@@ -85,6 +81,7 @@ public class ApplicationService implements com.cartobucket.auth.data.services.Ap
         ApplicationCreateRequest.Builder createRequest = ApplicationCreateRequest
                 .newBuilder()
                 .setName(application.getName())
+                .addAllScopeIds(application.getScopes().stream().map(Scope::getId).map(UUID::toString).toList())
                 .setProfile(Profile.toProtoMap(profile.getProfile()))
                 .setMetadata(MetadataMapper.to(application.getMetadata()))
                 .setAuthorizationServerId(String.valueOf(application.getAuthorizationServerId()));
@@ -134,6 +131,17 @@ public class ApplicationService implements com.cartobucket.auth.data.services.Ap
                                 .setApplicationId(String.valueOf(applicationSecret.getApplicationId()))
                                 .setAuthorizationServerId(String.valueOf(applicationSecret.getAuthorizationServerId()))
                                 .setName(applicationSecret.getName())
+                                .addAllScopes(
+                                        applicationSecret
+                                                .getScopes()
+                                                .stream()
+                                                .map(scope ->
+                                                        com.cartobucket.auth.data.rpc.Scope.newBuilder()
+                                                                .setId(String.valueOf(scope.getId()))
+                                                                .build())
+                                                .toList()
+                                )
+                                .setExpiresIn(applicationSecret.getExpiresIn() != null ? applicationSecret.getExpiresIn() : 0)
                                 .build()
                 )
                         .await()

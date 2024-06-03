@@ -19,8 +19,8 @@
 
 package com.cartobucket.auth.rpc.server.entities.mappers;
 
+import com.cartobucket.auth.data.domain.AuthorizationServer;
 import com.cartobucket.auth.data.domain.Scope;
-import com.cartobucket.auth.data.rpc.ScopeResponse;
 import com.cartobucket.auth.rpc.server.rpc.mappers.MetadataMapper;
 
 import java.util.UUID;
@@ -32,7 +32,20 @@ public class ScopeMapper {
         _scope.setCreatedOn(scope.getCreatedOn());
         _scope.setUpdatedOn(scope.getUpdatedOn());
         _scope.setName(scope.getName());
-        _scope.setAuthorizationServerId(scope.getAuthorizationServerId());
+        _scope.setAuthorizationServer(AuthorizationServerMapper.from(scope.getAuthorizationServer()));
+        _scope.setMetadata(scope.getMetadata());
+        return _scope;
+    }
+
+    public static Scope fromNoAuthorizationServer(com.cartobucket.auth.rpc.server.entities.Scope scope) {
+        var _scope = new Scope();
+        _scope.setId(scope.getId());
+        _scope.setCreatedOn(scope.getCreatedOn());
+        _scope.setUpdatedOn(scope.getUpdatedOn());
+        _scope.setName(scope.getName());
+        final var authorizationServer = new AuthorizationServer();
+        authorizationServer.setId(scope.getAuthorizationServer().getId());
+        _scope.setAuthorizationServer(authorizationServer);
         _scope.setMetadata(scope.getMetadata());
         return _scope;
     }
@@ -43,36 +56,32 @@ public class ScopeMapper {
         _scope.setCreatedOn(scope.getCreatedOn());
         _scope.setUpdatedOn(scope.getUpdatedOn());
         _scope.setName(scope.getName());
-        _scope.setAuthorizationServerId(scope.getAuthorizationServerId());
+        _scope.setAuthorizationServer(AuthorizationServerMapper.to(scope.getAuthorizationServer()));
         _scope.setMetadata(scope.getMetadata());
         return _scope;
     }
 
-    public static Scope toScope(String scopeString) {
-        var scope = new Scope();
-        scope.setName(scopeString);
-        return scope;
-    }
-
-    public static Scope fromResponse(ScopeResponse scope) {
+    public static Scope fromResponse(com.cartobucket.auth.data.rpc.Scope scope) {
         var _scope = new Scope();
         _scope.setId(UUID.fromString(scope.getId()));
 //        _scope.setCreatedOn(scope.getCreatedOn());
 //        _scope.setUpdatedOn(scope.getUpdatedOn());
         _scope.setName(scope.getName());
-        _scope.setAuthorizationServerId(UUID.fromString(scope.getAuthorizationServerId()));
+        final var _authorizationServer = new AuthorizationServer();
+        _authorizationServer.setId(UUID.fromString(scope.getAuthorizationServerId()));
+        _scope.setAuthorizationServer(_authorizationServer);
         _scope.setMetadata(MetadataMapper.toMetadata(scope.getMetadata()));
         return _scope;
     }
 
-    public static ScopeResponse toResponse(Scope scope) {
-        var _scope = ScopeResponse
+    public static com.cartobucket.auth.data.rpc.Scope toResponse(Scope scope) {
+        var _scope = com.cartobucket.auth.data.rpc.Scope
                 .newBuilder()
                 .setId(String.valueOf(scope.getId()))
 //                .setCreatedOn(scope.getCreatedOn())
 //                .setUpdatedOn(scope.getUpdatedOn())
                 .setName(scope.getName())
-                .setAuthorizationServerId(String.valueOf(scope.getAuthorizationServerId()))
+                .setAuthorizationServerId(String.valueOf(scope.getAuthorizationServer().getId()))
                 .setMetadata(MetadataMapper.from(scope.getMetadata()))
                 .build();
         return _scope;

@@ -89,6 +89,22 @@ public class AuthorizationServerRpcService implements AuthorizationServers {
                                     .setMetadata(MetadataMapper.from(authorizationServer.getMetadata()))
                                     .setCreatedOn(Timestamp.newBuilder().setSeconds(authorizationServer.getCreatedOn().toEpochSecond()).build())
                                     .setUpdatedOn(Timestamp.newBuilder().setSeconds(authorizationServer.getUpdatedOn().toEpochSecond()).build())
+                                    .addAllScopes(
+                                            authorizationServer
+                                                    .getScopes()
+                                                    .stream()
+                                                    .map(scope -> com.cartobucket.auth.data.rpc.Scope
+                                                            .newBuilder()
+                                                            .setId(String.valueOf(scope.getId()))
+                                                            .setName(scope.getName())
+                                                            .setAuthorizationServerId(String.valueOf(scope.getAuthorizationServer().getId()))
+                                                            .setMetadata(com.cartobucket.auth.data.services.impls.mappers.MetadataMapper.to(scope.getMetadata()))
+                                                            .setCreatedOn(Timestamp.newBuilder().setSeconds(scope.getCreatedOn().toEpochSecond()).build())
+                                                            .setUpdatedOn(Timestamp.newBuilder().setSeconds(scope.getUpdatedOn().toEpochSecond()).build())
+                                                            .build()
+                                                    )
+                                                    .toList()
+                                    )
                                     .build()
                     );
         } catch (MalformedURLException e) {
@@ -119,6 +135,22 @@ public class AuthorizationServerRpcService implements AuthorizationServers {
                                 .setMetadata(MetadataMapper.from(authorizationServer.getMetadata()))
                                 .setCreatedOn(Timestamp.newBuilder().setSeconds(authorizationServer.getCreatedOn().toEpochSecond()).build())
                                 .setUpdatedOn(Timestamp.newBuilder().setSeconds(authorizationServer.getUpdatedOn().toEpochSecond()).build())
+                                .addAllScopes(
+                                        authorizationServer
+                                                .getScopes()
+                                                .stream()
+                                                .map(scope -> com.cartobucket.auth.data.rpc.Scope
+                                                        .newBuilder()
+                                                        .setId(String.valueOf(scope.getId()))
+                                                        .setName(scope.getName())
+                                                        .setAuthorizationServerId(String.valueOf(scope.getAuthorizationServer().getId()))
+                                                        .setMetadata(com.cartobucket.auth.data.services.impls.mappers.MetadataMapper.to(scope.getMetadata()))
+                                                        .setCreatedOn(Timestamp.newBuilder().setSeconds(scope.getCreatedOn().toEpochSecond()).build())
+                                                        .setUpdatedOn(Timestamp.newBuilder().setSeconds(scope.getUpdatedOn().toEpochSecond()).build())
+                                                        .build()
+                                                )
+                                                .toList()
+                                )
                                 .build())
                         .toList()
         );
@@ -186,6 +218,22 @@ public class AuthorizationServerRpcService implements AuthorizationServers {
                                     .setMetadata(MetadataMapper.from(authorizationServer.getMetadata()))
                                     .setCreatedOn(Timestamp.newBuilder().setSeconds(authorizationServer.getCreatedOn().toEpochSecond()).build())
                                     .setUpdatedOn(Timestamp.newBuilder().setSeconds(authorizationServer.getUpdatedOn().toEpochSecond()).build())
+                                    .addAllScopes(
+                                            authorizationServer
+                                                    .getScopes()
+                                                    .stream()
+                                                    .map(scope -> com.cartobucket.auth.data.rpc.Scope
+                                                            .newBuilder()
+                                                            .setId(String.valueOf(scope.getId()))
+                                                            .setName(scope.getName())
+                                                            .setAuthorizationServerId(String.valueOf(scope.getAuthorizationServer().getId()))
+                                                            .setMetadata(com.cartobucket.auth.data.services.impls.mappers.MetadataMapper.to(scope.getMetadata()))
+                                                            .setCreatedOn(Timestamp.newBuilder().setSeconds(scope.getCreatedOn().toEpochSecond()).build())
+                                                            .setUpdatedOn(Timestamp.newBuilder().setSeconds(scope.getUpdatedOn().toEpochSecond()).build())
+                                                            .build()
+                                                    )
+                                                    .toList()
+                                    )
                                     .build()
                     );
         }

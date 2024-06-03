@@ -21,6 +21,8 @@ package com.cartobucket.auth.rpc.server.entities.mappers;
 
 import com.cartobucket.auth.data.domain.AuthorizationServer;
 
+import java.util.Collections;
+
 public class AuthorizationServerMapper {
     public static AuthorizationServer from(com.cartobucket.auth.rpc.server.entities.AuthorizationServer authorizationServer) {
         var _authorizationServer = new AuthorizationServer();
@@ -33,6 +35,7 @@ public class AuthorizationServerMapper {
         _authorizationServer.setMetadata(authorizationServer.getMetadata());
         _authorizationServer.setCreatedOn(authorizationServer.getCreatedOn());
         _authorizationServer.setUpdatedOn(authorizationServer.getUpdatedOn());
+        _authorizationServer.setScopes(authorizationServer.getScopes().stream().map(ScopeMapper::fromNoAuthorizationServer).toList());
         return _authorizationServer;
     }
 
@@ -47,6 +50,11 @@ public class AuthorizationServerMapper {
         _authorizationServer.setMetadata(authorizationServer.getMetadata());
         _authorizationServer.setCreatedOn(authorizationServer.getCreatedOn());
         _authorizationServer.setUpdatedOn(authorizationServer.getUpdatedOn());
+        if (authorizationServer.getScopes() != null) {
+            _authorizationServer.setScopes(authorizationServer.getScopes().stream().map(ScopeMapper::to).toList());
+        } else {
+            _authorizationServer.setScopes(Collections.emptyList());
+        }
         return _authorizationServer;
     }
 }
