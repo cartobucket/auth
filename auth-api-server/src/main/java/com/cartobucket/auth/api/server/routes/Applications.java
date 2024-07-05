@@ -21,7 +21,6 @@ package com.cartobucket.auth.api.server.routes;
 
 import com.cartobucket.auth.api.server.routes.mappers.ApplicationMapper;
 import com.cartobucket.auth.api.server.routes.mappers.ProfileMapper;
-import com.cartobucket.auth.data.domain.ApplicationSecret;
 import com.cartobucket.auth.data.domain.Page;
 import com.cartobucket.auth.generated.ApplicationsApi;
 import com.cartobucket.auth.model.generated.ApplicationRequest;
@@ -32,7 +31,6 @@ import com.cartobucket.auth.data.services.ApplicationService;
 import com.cartobucket.auth.data.services.AuthorizationServerService;
 import jakarta.ws.rs.core.Response;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;

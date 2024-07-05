@@ -23,6 +23,7 @@ dependencies {
     implementation 'io.quarkus:quarkus-resteasy-reactive-jackson'
 
     implementation project(':auth-data')
+    implementation project(':auth-data-grpc-client')
     testImplementation 'io.quarkus:quarkus-junit5'
 }
 
