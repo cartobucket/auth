@@ -30,6 +30,8 @@ import jakarta.ws.rs.core.Response;
 import java.util.List;
 import java.util.UUID;
 
+import static com.cartobucket.auth.api.server.routes.Constants.LIMIT_DEFAULT;
+import static com.cartobucket.auth.api.server.routes.Constants.OFFSET_DEFAULT;
 import static com.cartobucket.auth.api.server.routes.Pagination.getPage;
 
 public class Templates implements TemplatesApi {
@@ -71,6 +73,14 @@ public class Templates implements TemplatesApi {
 
     @Override
     public Response listTemplates(List<UUID> authorizationServerIds, Integer limit, Integer offset) {
+        // TODO: Probably makes senes to move to Kotlin and use default parameters
+        if (limit == null) {
+            limit = LIMIT_DEFAULT;
+        }
+        if (offset == null) {
+            offset = OFFSET_DEFAULT;
+        }
+
         final var templatesResponse = new TemplatesResponse();
         templatesResponse.setTemplates(
                 templateService.getTemplates(authorizationServerIds, new Page(limit, offset))

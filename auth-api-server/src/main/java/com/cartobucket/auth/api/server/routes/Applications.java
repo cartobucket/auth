@@ -38,6 +38,8 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static com.cartobucket.auth.api.server.routes.Constants.LIMIT_DEFAULT;
+import static com.cartobucket.auth.api.server.routes.Constants.OFFSET_DEFAULT;
 import static com.cartobucket.auth.api.server.routes.Pagination.getPage;
 
 public class Applications implements ApplicationsApi {
@@ -133,6 +135,14 @@ public class Applications implements ApplicationsApi {
 
     @Override
     public Response listApplications(List<UUID> authorizationServerIds, Integer limit, Integer offset) {
+        // TODO: Probably makes senes to move to Kotlin and use default parameters
+        if (limit == null) {
+            limit = LIMIT_DEFAULT;
+        }
+        if (offset == null) {
+            offset = OFFSET_DEFAULT;
+        }
+
         final var applicationsResponse = new ApplicationsResponse();
         applicationsResponse.setApplications(
                 applicationService

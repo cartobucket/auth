@@ -30,6 +30,8 @@ import jakarta.ws.rs.core.Response;
 import java.util.List;
 import java.util.UUID;
 
+import static com.cartobucket.auth.api.server.routes.Constants.LIMIT_DEFAULT;
+import static com.cartobucket.auth.api.server.routes.Constants.OFFSET_DEFAULT;
 import static com.cartobucket.auth.api.server.routes.Pagination.getPage;
 
 public class Schemas implements SchemasApi {
@@ -69,6 +71,14 @@ public class Schemas implements SchemasApi {
 
     @Override
     public Response getSchemaRequests(List<UUID> authorizationServerIds, Integer limit, Integer offset) {
+        // TODO: Probably makes senes to move to Kotlin and use default parameters
+        if (limit == null) {
+            limit = LIMIT_DEFAULT;
+        }
+        if (offset == null) {
+            offset = OFFSET_DEFAULT;
+        }
+
         final var schemasResponse = new SchemasResponse();
         schemasResponse.setSchemas(
                 schemaService.getSchemas(authorizationServerIds, new Page(limit, offset))

@@ -30,6 +30,8 @@ import jakarta.ws.rs.core.Response;
 import java.util.Collections;
 import java.util.UUID;
 
+import static com.cartobucket.auth.api.server.routes.Constants.LIMIT_DEFAULT;
+import static com.cartobucket.auth.api.server.routes.Constants.OFFSET_DEFAULT;
 import static com.cartobucket.auth.api.server.routes.Pagination.getPage;
 
 public class AuthorizationServers implements AuthorizationServersApi {
@@ -72,6 +74,14 @@ public class AuthorizationServers implements AuthorizationServersApi {
 
     @Override
     public Response listAuthorizationServers(Integer limit, Integer offset) {
+        // TODO: Probably makes senes to move to Kotlin and use default parameters
+        if (limit == null) {
+            limit = LIMIT_DEFAULT;
+        }
+        if (offset == null) {
+            offset = OFFSET_DEFAULT;
+        }
+
         final var authorizationServersResponse = new AuthorizationServersResponse();
         authorizationServersResponse.setAuthorizationServers(
                 authorizationServerService.getAuthorizationServers(new Page(limit, offset))
