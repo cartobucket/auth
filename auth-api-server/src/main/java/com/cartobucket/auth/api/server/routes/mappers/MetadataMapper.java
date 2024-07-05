@@ -14,6 +14,12 @@ public class MetadataMapper {
 
     public static Metadata from(com.cartobucket.auth.model.generated.Metadata metadata) {
         var metadataDomain = new Metadata();
+        if (metadata == null) {
+            metadataDomain.setIdentifiers(Collections.emptyList());
+            metadataDomain.setSchemaValidations(Collections.emptyList());
+            metadataDomain.setProperties(Collections.emptyMap());
+            return metadataDomain;
+        }
         if (metadata.getIdentifiers() == null) {
             metadataDomain.setIdentifiers(Collections.emptyList());
         } else {
