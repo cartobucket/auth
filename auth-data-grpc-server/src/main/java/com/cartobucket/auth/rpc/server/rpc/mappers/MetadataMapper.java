@@ -1,6 +1,7 @@
 package com.cartobucket.auth.rpc.server.rpc.mappers;
 
 import com.cartobucket.auth.data.domain.*;
+import com.cartobucket.auth.data.services.grpc.mappers.ProfileMapper;
 import com.google.protobuf.Timestamp;
 
 import java.time.Instant;
@@ -17,7 +18,7 @@ public class MetadataMapper {
                 .map(MetadataMapper::fromProtoIdentifier)
                 .toList()
         );
-        _metadata.setProperties(Profile.fromProtoMap(metadata.getProperties().getFieldsMap()));
+        _metadata.setProperties(ProfileMapper.fromProtoMap(metadata.getProperties().getFieldsMap()));
         _metadata.setSchemaValidations(metadata
                 .getSchemaValidationsList()
                 .stream()
@@ -61,7 +62,7 @@ public class MetadataMapper {
                 .map(MetadataMapper::toProtoIdentifier)
                 .toList()
         );
-        _metadata.setProperties(Profile.toProtoMap(metadata.getProperties()));
+        _metadata.setProperties(ProfileMapper.toProtoMap(metadata.getProperties()));
         _metadata.addAllSchemaValidations(metadata
                 .getSchemaValidations()
                 .stream()

@@ -27,9 +27,8 @@ import com.cartobucket.auth.data.rpc.ScopeGetRequest;
 import com.cartobucket.auth.data.rpc.ScopeListRequest;
 import com.cartobucket.auth.data.rpc.Scopes;
 import com.cartobucket.auth.data.rpc.ScopesListResponse;
+import com.cartobucket.auth.data.services.AuthorizationServerService;
 import com.cartobucket.auth.data.services.ScopeService;
-import com.cartobucket.auth.postgres.client.entities.mappers.AuthorizationServerMapper;
-import com.cartobucket.auth.postgres.client.repositories.AuthorizationServerRepository;
 import com.cartobucket.auth.rpc.server.rpc.mappers.MetadataMapper;
 import com.google.protobuf.Timestamp;
 import io.quarkus.grpc.GrpcService;
@@ -41,11 +40,11 @@ import java.util.UUID;
 @GrpcService
 public class ScopeRpcService implements Scopes {
     final ScopeService scopeService;
-    final AuthorizationServerRepository authorizationRepository;
+    final AuthorizationServerService authorizationServerService;
 
-    public ScopeRpcService(ScopeService scopeService, AuthorizationServerRepository authorizationRepository) {
+    public ScopeRpcService(ScopeService scopeService, AuthorizationServerService authorizationRepository) {
         this.scopeService = scopeService;
-        this.authorizationRepository = authorizationRepository;
+        this.authorizationServerService = authorizationRepository;
     }
 
     @Override
@@ -54,11 +53,9 @@ public class ScopeRpcService implements Scopes {
         var scope = new Scope();
         scope.setName(request.getName());
         scope.setAuthorizationServer(
-                AuthorizationServerMapper.from(
-                        authorizationRepository.findById(
-                                UUID.fromString(
-                                        request.getAuthorizationServerId()
-                                )
+                authorizationServerService.getAuthorizationServer(
+                        UUID.fromString(
+                                request.getAuthorizationServerId()
                         )
                 )
         );

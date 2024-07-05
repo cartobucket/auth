@@ -59,30 +59,4 @@ public class ScopeMapper {
         _scope.setMetadata(scope.getMetadata());
         return _scope;
     }
-
-    public static Scope fromResponse(com.cartobucket.auth.data.rpc.Scope scope) {
-        var _scope = new Scope();
-        _scope.setId(UUID.fromString(scope.getId()));
-//        _scope.setCreatedOn(scope.getCreatedOn());
-//        _scope.setUpdatedOn(scope.getUpdatedOn());
-        _scope.setName(scope.getName());
-        final var _authorizationServer = new AuthorizationServer();
-        _authorizationServer.setId(UUID.fromString(scope.getAuthorizationServerId()));
-        _scope.setAuthorizationServer(_authorizationServer);
-        _scope.setMetadata(MetadataMapper.toMetadata(scope.getMetadata()));
-        return _scope;
-    }
-
-    public static com.cartobucket.auth.data.rpc.Scope toResponse(Scope scope) {
-        var _scope = com.cartobucket.auth.data.rpc.Scope
-                .newBuilder()
-                .setId(String.valueOf(scope.getId()))
-//                .setCreatedOn(scope.getCreatedOn())
-//                .setUpdatedOn(scope.getUpdatedOn())
-                .setName(scope.getName())
-                .setAuthorizationServerId(String.valueOf(scope.getAuthorizationServer().getId()))
-                .setMetadata(MetadataMapper.from(scope.getMetadata()))
-                .build();
-        return _scope;
-    }
 }

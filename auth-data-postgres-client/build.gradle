@@ -17,7 +17,6 @@ dependencies {
     implementation 'org.apache.camel.quarkus:camel-quarkus-json-validator'
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
 
-    implementation 'io.quarkus:quarkus-grpc'
     implementation 'io.quarkus:quarkus-arc'
     testImplementation 'io.quarkus:quarkus-junit5'
 

@@ -16,6 +16,7 @@ dependencies {
     implementation 'io.quarkus:quarkus-jackson'
 
     implementation project(':auth-data')
+    implementation project(':auth-data-grpc')
 
     testImplementation 'io.quarkus:quarkus-junit5'
 }

@@ -21,9 +21,9 @@ package com.cartobucket.auth.rpc.server.rpc;
 
 import com.cartobucket.auth.data.domain.AuthorizationServer;
 import com.cartobucket.auth.data.domain.Page;
-import com.cartobucket.auth.data.domain.Profile;
 import com.cartobucket.auth.data.exceptions.notfound.AuthorizationServerNotFound;
 import com.cartobucket.auth.data.services.AuthorizationServerService;
+import com.cartobucket.auth.data.services.grpc.mappers.ProfileMapper;
 import com.cartobucket.auth.rpc.AuthorizationServerCreateRequest;
 import com.cartobucket.auth.rpc.AuthorizationServerCreateResponse;
 import com.cartobucket.auth.rpc.AuthorizationServerDeleteRequest;
@@ -40,8 +40,8 @@ import com.cartobucket.auth.rpc.Jwk;
 import com.cartobucket.auth.rpc.JwksResponse;
 import com.cartobucket.auth.rpc.ValidateJwtForAuthorizationServerRequest;
 import com.cartobucket.auth.rpc.ValidateJwtForAuthorizationServerResponse;
-import com.cartobucket.auth.postgres.client.entities.mappers.ScopeMapper;
 import com.cartobucket.auth.rpc.server.rpc.mappers.MetadataMapper;
+import com.cartobucket.auth.rpc.server.rpc.mappers.ScopeMapper;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.Timestamp;
 import io.grpc.Status;
@@ -307,7 +307,7 @@ public class AuthorizationServerRpcService implements AuthorizationServers {
                 .createFrom()
                 .item(ValidateJwtForAuthorizationServerResponse
                         .newBuilder()
-                        .setClaims(Profile.toProtoMap(claims))
+                        .setClaims(ProfileMapper.toProtoMap(claims))
                         .build()
                 );
     }

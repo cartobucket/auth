@@ -13,23 +13,16 @@ dependencies {
     implementation enforcedPlatform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}")
 
     implementation project(path: ':auth-data')
+    implementation project(path: ':auth-data-grpc')
     implementation project(path: ':auth-data-postgres-client')
+    implementation 'io.quarkus:quarkus-hibernate-orm-panache'
+
 
     implementation 'org.apache.camel.quarkus:camel-quarkus-json-validator'
-    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
 
     implementation 'io.quarkus:quarkus-grpc'
     implementation 'io.quarkus:quarkus-arc'
     testImplementation 'io.quarkus:quarkus-junit5'
-
-    implementation 'io.quarkus:quarkus-hibernate-orm-panache'
-    implementation 'io.quarkus:quarkus-jdbc-postgresql'
-
-    // JOSE
-    implementation 'io.quarkus:quarkus-smallrye-jwt-build'
-
-    // Security (password hashing)
-    implementation group: 'org.springframework.security', name: 'spring-security-core', version: '6.2.1'
 
 }
 
