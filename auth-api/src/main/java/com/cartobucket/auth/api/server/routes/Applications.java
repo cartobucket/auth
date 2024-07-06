@@ -24,8 +24,6 @@ import com.cartobucket.auth.api.server.routes.mappers.ProfileMapper;
 import com.cartobucket.auth.data.domain.Page;
 import com.cartobucket.auth.generated.ApplicationsApi;
 import com.cartobucket.auth.model.generated.ApplicationRequest;
-import com.cartobucket.auth.model.generated.ApplicationSecretRequest;
-import com.cartobucket.auth.model.generated.ApplicationSecretsResponse;
 import com.cartobucket.auth.model.generated.ApplicationsResponse;
 import com.cartobucket.auth.data.services.ApplicationService;
 import com.cartobucket.auth.data.services.AuthorizationServerService;
@@ -69,32 +67,8 @@ public class Applications implements ApplicationsApi {
     }
 
     @Override
-    public Response createApplicationSecret(ApplicationSecretRequest applicationSecretRequest) {
-        final var application = applicationService.getApplication(applicationSecretRequest.getApplicationId());
-        return Response
-                .ok()
-                .entity(
-                        ApplicationMapper.toSecretResponse(
-                            applicationService
-                                    .createApplicationSecret(
-                                            ApplicationMapper.secretFrom(application.getLeft(), applicationSecretRequest)
-                                    )
-                    )
-                )
-                .build();
-    }
-
-    @Override
     public Response deleteApplication(UUID applicationId) {
         applicationService.deleteApplication(applicationId);
-        return Response
-                .ok()
-                .build();
-    }
-
-    @Override
-    public Response deleteApplicationSecret(UUID secretId) {
-        applicationService.deleteApplicationSecret(secretId);
         return Response
                 .ok()
                 .build();
@@ -111,23 +85,6 @@ public class Applications implements ApplicationsApi {
                             application.getRight()
                     )
                 )
-                .build();
-    }
-
-    @Override
-    public Response listApplicationSecrets(List<UUID> applicationIds) {
-        final var applicationSecretsResponse = new ApplicationSecretsResponse();
-        // TODO: This should be able to be blank, this should also take a list of authorization server ids
-        applicationSecretsResponse.setApplicationSecrets(
-                applicationService.getApplicationSecrets(applicationIds)
-                        .stream()
-                        .map(ApplicationMapper::toSecretResponse)
-                        .collect(Collectors.toList())
-        );
-
-        return Response
-                .ok()
-                .entity(applicationSecretsResponse)
                 .build();
     }
 

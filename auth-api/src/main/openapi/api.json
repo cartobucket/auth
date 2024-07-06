@@ -928,7 +928,7 @@
     "/applicationSecrets/": {
       "get": {
         "tags": [
-          "Applications"
+          "ApplicationSecrets"
         ],
         "parameters": [
           {
@@ -970,7 +970,7 @@
           "required": true
         },
         "tags": [
-          "Applications"
+          "ApplicationSecrets"
         ],
         "responses": {
           "200": {
@@ -990,7 +990,7 @@
     "/applicationSecrets/{secretId}/": {
       "delete": {
         "tags": [
-          "Applications"
+          "ApplicationSecrets"
         ],
         "responses": {
           "204": {
@@ -2605,6 +2605,10 @@
     {
       "name": "Schemas",
       "description": ""
+    },
+    {
+      "name": "ApplicationSecrets",
+      "description": "Application Secrets can be used in client credential flows to grant a token for non-person entities."
     }
   ]
 }
