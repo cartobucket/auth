@@ -166,17 +166,17 @@ public abstract class AuthorizationServer implements AuthorizationServerApi {
     public Response getOpenIdConnectionWellKnown(UUID authorizationServerId) {
         final var authorizationServer = authorizationServerService.getAuthorizationServer(authorizationServerId);
         var wellKnown = new com.cartobucket.auth.model.generated.WellKnown();
-        wellKnown.setIssuer(String.valueOf(authorizationServer.getServerUrl()) + authorizationServer.getId() + "/");
+        wellKnown.setIssuer(authorizationServer.getServerUrl() + "/" + authorizationServer.getId() + "/");
         wellKnown.setAuthorizationEndpoint(
-                authorizationServer.getServerUrl().toString() + authorizationServer.getId() + "/authorization/");
+                authorizationServer.getServerUrl().toString() + "/"  + authorizationServer.getId() + "/authorization/");
         wellKnown.setTokenEndpoint(
-                authorizationServer.getServerUrl().toString() + authorizationServer.getId() + "/token/");
+                authorizationServer.getServerUrl().toString() + "/"  + authorizationServer.getId() + "/token/");
         wellKnown.setJwksUri(
-                authorizationServer.getServerUrl().toString() + authorizationServer.getId() + "/jwks/");
+                authorizationServer.getServerUrl().toString() + "/"  + authorizationServer.getId() + "/jwks/");
         wellKnown.setRevocationEndpoint(
-                authorizationServer.getServerUrl().toString() + authorizationServer.getId() + "/revocation/");
+                authorizationServer.getServerUrl().toString() + "/"  + authorizationServer.getId() + "/revocation/");
         wellKnown.setUserinfoEndpoint(
-                authorizationServer.getServerUrl().toString() + authorizationServer.getId() + "/userinfo/");
+                authorizationServer.getServerUrl().toString() + "/"  + authorizationServer.getId() + "/userinfo/");
         wellKnown.setTokenEndpointAuthMethodsSupported(
                 List.of(
                         com.cartobucket.auth.model.generated.WellKnown.TokenEndpointAuthMethodsSupportedEnum.POST
