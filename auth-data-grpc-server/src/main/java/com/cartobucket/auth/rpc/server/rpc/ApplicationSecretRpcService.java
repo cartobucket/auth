@@ -31,7 +31,7 @@ import com.cartobucket.auth.rpc.ApplicationSecretResponse;
 import com.cartobucket.auth.rpc.ApplicationSecrets;
 import com.cartobucket.auth.rpc.IsApplicationSecretValidRequest;
 import com.cartobucket.auth.rpc.IsApplicationSecretValidResponse;
-import com.cartobucket.auth.rpc.server.rpc.mappers.ScopeMapper;
+import com.cartobucket.auth.data.services.grpc.mappers.server.ScopeMapper;
 import com.google.protobuf.Timestamp;
 import io.quarkus.grpc.GrpcService;
 import io.smallrye.common.annotation.Blocking;

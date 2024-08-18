@@ -1,9 +1,8 @@
-package com.cartobucket.auth.data.services.grpc.client.mappers;
+package com.cartobucket.auth.data.services.grpc.mappers.server;
 
-import com.cartobucket.auth.data.services.grpc.mappers.ScopeMapper;
+import com.cartobucket.auth.data.domain.ClientCode;
 import com.cartobucket.auth.rpc.ClientCodeResponse;
 import com.cartobucket.auth.rpc.ClientCreateClientCodeResponse;
-import com.cartobucket.auth.data.domain.ClientCode;
 
 import java.time.Instant;
 import java.time.OffsetDateTime;

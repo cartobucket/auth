@@ -33,7 +33,7 @@ import com.cartobucket.auth.rpc.TemplateListResponse;
 import com.cartobucket.auth.rpc.TemplateResponse;
 import com.cartobucket.auth.rpc.TemplateUpdateRequest;
 import com.cartobucket.auth.rpc.Templates;
-import com.cartobucket.auth.rpc.server.rpc.mappers.MetadataMapper;
+import com.cartobucket.auth.data.services.grpc.mappers.server.MetadataMapper;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.Timestamp;
 import io.quarkus.grpc.GrpcService;
@@ -61,7 +61,7 @@ public class TemplateRpcService implements Templates {
         );
         template.setAuthorizationServerId(UUID.fromString(request.getAuthorizationServerId()));
         template.setTemplate(request.getTemplate().toByteArray());
-        template.setMetadata(MetadataMapper.toMetadata(request.getMetadata()));
+        template.setMetadata(MetadataMapper.from(request.getMetadata()));
         template = templateService.createTemplate(template);
 
         return Uni
@@ -76,7 +76,7 @@ public class TemplateRpcService implements Templates {
                                         }
                                 )
                                 .setTemplate(ByteString.copyFrom(template.getTemplate()))
-                                .setMetadata(MetadataMapper.from(template.getMetadata()))
+                                .setMetadata(MetadataMapper.to(template.getMetadata()))
                                 .setCreatedOn(Timestamp.newBuilder().setSeconds(template.getCreatedOn().toEpochSecond()).build())
                                 .setUpdatedOn(Timestamp.newBuilder().setSeconds(template.getUpdatedOn().toEpochSecond()).build())
                                 .build()
@@ -111,7 +111,7 @@ public class TemplateRpcService implements Templates {
                                                         .setAuthorizationServerId(String.valueOf(template.getAuthorizationServerId()))
                                                         .setTemplateType(TemplateResponse.TEMPLATE_TYPE.valueOf(template.getTemplateType().name()))
                                                         .setTemplate(ByteString.copyFrom(template.getTemplate()))
-                                                        .setMetadata(MetadataMapper.from(template.getMetadata()))
+                                                        .setMetadata(MetadataMapper.to(template.getMetadata()))
                                                         .setCreatedOn(Timestamp.newBuilder().setSeconds(template.getCreatedOn().toEpochSecond()).build())
                                                         .setUpdatedOn(Timestamp.newBuilder().setSeconds(template.getUpdatedOn().toEpochSecond()).build())
                                                         .build())
@@ -140,7 +140,7 @@ public class TemplateRpcService implements Templates {
     public Uni<TemplateResponse> updateTemplate(TemplateUpdateRequest request) {
         var template = new Template();
         template.setTemplate(request.getTemplate().toByteArray());
-        template.setMetadata(MetadataMapper.toMetadata(request.getMetadata()));
+        template.setMetadata(MetadataMapper.from(request.getMetadata()));
         template = templateService.updateTemplate(template.getId(), template);
 
         return Uni
@@ -152,7 +152,7 @@ public class TemplateRpcService implements Templates {
                                 .setAuthorizationServerId(String.valueOf(template.getAuthorizationServerId()))
                                 .setTemplateType(TemplateResponse.TEMPLATE_TYPE.valueOf(template.getTemplateType().name()))
                                 .setTemplate(ByteString.copyFrom(template.getTemplate()))
-                                .setMetadata(MetadataMapper.from(template.getMetadata()))
+                                .setMetadata(MetadataMapper.to(template.getMetadata()))
                                 .setCreatedOn(Timestamp.newBuilder().setSeconds(template.getCreatedOn().toEpochSecond()).build())
                                 .setUpdatedOn(Timestamp.newBuilder().setSeconds(template.getUpdatedOn().toEpochSecond()).build())
                                 .build()
@@ -172,7 +172,7 @@ public class TemplateRpcService implements Templates {
                                 .setAuthorizationServerId(String.valueOf(template.getAuthorizationServerId()))
                                 .setTemplateType(TemplateResponse.TEMPLATE_TYPE.valueOf(template.getTemplateType().name()))
                                 .setTemplate(ByteString.copyFrom(template.getTemplate()))
-                                .setMetadata(MetadataMapper.from(template.getMetadata()))
+                                .setMetadata(MetadataMapper.to(template.getMetadata()))
                                 .setCreatedOn(Timestamp.newBuilder().setSeconds(template.getCreatedOn().toEpochSecond()).build())
                                 .setUpdatedOn(Timestamp.newBuilder().setSeconds(template.getUpdatedOn().toEpochSecond()).build())
                                 .build()

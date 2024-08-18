@@ -35,8 +35,8 @@ import com.cartobucket.auth.rpc.ApplicationListResponse;
 import com.cartobucket.auth.rpc.ApplicationResponse;
 import com.cartobucket.auth.rpc.ApplicationUpdateRequest;
 import com.cartobucket.auth.rpc.Applications;
-import com.cartobucket.auth.rpc.server.rpc.mappers.MetadataMapper;
-import com.cartobucket.auth.rpc.server.rpc.mappers.ScopeMapper;
+import com.cartobucket.auth.data.services.grpc.mappers.server.MetadataMapper;
+import com.cartobucket.auth.data.services.grpc.mappers.server.ScopeMapper;
 import com.google.protobuf.Timestamp;
 import io.quarkus.grpc.GrpcService;
 import io.smallrye.common.annotation.Blocking;
@@ -68,7 +68,7 @@ public class ApplicationRpcService implements Applications {
                         .toList()
         );
         application.setAuthorizationServerId(UUID.fromString(request.getAuthorizationServerId()));
-        application.setMetadata(MetadataMapper.toMetadata(request.getMetadata()));
+        application.setMetadata(MetadataMapper.from(request.getMetadata()));
 
         var profile = new Profile();
         profile.setProfile(ProfileMapper.fromProtoMap(request.getProfile().getFieldsMap()));
@@ -88,7 +88,7 @@ public class ApplicationRpcService implements Applications {
                                 .setClientId(_application.getClientId())
                                 .addAllScopes(_application.getScopes().stream().map(ScopeMapper::toResponse).toList())
                                 .setProfile(ProfileMapper.toProtoMap(_profile.getProfile()))
-                                .setMetadata(MetadataMapper.from(_application.getMetadata()))
+                                .setMetadata(MetadataMapper.to(_application.getMetadata()))
                                 .setCreatedOn(Timestamp.newBuilder().setSeconds(_application.getCreatedOn().toEpochSecond()).build())
                                 .setUpdatedOn(Timestamp.newBuilder().setSeconds(_application.getUpdatedOn().toEpochSecond()).build())
                                 .build()
@@ -122,7 +122,7 @@ public class ApplicationRpcService implements Applications {
                                                 .setAuthorizationServerId(String.valueOf(application.getAuthorizationServerId()))
                                                 .setName(application.getName())
                                                 .setClientId(application.getClientId())
-                                                .setMetadata(MetadataMapper.from(application.getMetadata()))
+                                                .setMetadata(MetadataMapper.to(application.getMetadata()))
                                                 .addAllScopes(application.getScopes().stream().map(ScopeMapper::toResponse).toList())
                                                 .setCreatedOn(Timestamp.newBuilder().setSeconds(application.getCreatedOn().toEpochSecond()).build())
                                                 .setUpdatedOn(Timestamp.newBuilder().setSeconds(application.getUpdatedOn().toEpochSecond()).build())
@@ -162,7 +162,7 @@ public class ApplicationRpcService implements Applications {
                                 .setAuthorizationServerId(String.valueOf(application.getAuthorizationServerId()))
                                 .setName(application.getName())
                                 .setClientId(application.getClientId())
-                                .setMetadata(MetadataMapper.from(application.getMetadata()))
+                                .setMetadata(MetadataMapper.to(application.getMetadata()))
                                 .setProfile(ProfileMapper.toProtoMap(profile.getProfile()))
                                 .setCreatedOn(Timestamp.newBuilder().setSeconds(application.getCreatedOn().toEpochSecond()).build())
                                 .setUpdatedOn(Timestamp.newBuilder().setSeconds(application.getUpdatedOn().toEpochSecond()).build())
@@ -186,7 +186,7 @@ public class ApplicationRpcService implements Applications {
                                 .setName(application.getName())
                                 .setClientId(application.getClientId())
                                 .setProfile(ProfileMapper.toProtoMap(profile.getProfile()))
-                                .setMetadata(MetadataMapper.from(application.getMetadata()))
+                                .setMetadata(MetadataMapper.to(application.getMetadata()))
                                 .setCreatedOn(Timestamp.newBuilder().setSeconds(application.getCreatedOn().toEpochSecond()).build())
                                 .setUpdatedOn(Timestamp.newBuilder().setSeconds(application.getUpdatedOn().toEpochSecond()).build())
                                 .build()

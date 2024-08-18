@@ -1,4 +1,4 @@
-package com.cartobucket.auth.data.services.grpc.client.mappers;
+package com.cartobucket.auth.data.services.grpc.mappers.client;
 
 import com.cartobucket.auth.data.domain.Identifier;
 import com.cartobucket.auth.data.domain.Metadata;

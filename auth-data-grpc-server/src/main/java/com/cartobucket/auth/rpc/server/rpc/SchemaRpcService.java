@@ -29,7 +29,7 @@ import com.cartobucket.auth.data.rpc.SchemaResponse;
 import com.cartobucket.auth.data.rpc.Schemas;
 import com.cartobucket.auth.data.rpc.SchemasListResponse;
 import com.cartobucket.auth.data.services.grpc.mappers.ProfileMapper;
-import com.cartobucket.auth.rpc.server.rpc.mappers.MetadataMapper;
+import com.cartobucket.auth.data.services.grpc.mappers.server.MetadataMapper;
 import com.cartobucket.auth.postgres.client.services.SchemaService;
 import com.google.protobuf.Timestamp;
 import com.networknt.schema.SpecVersion;
@@ -55,7 +55,7 @@ public class SchemaRpcService implements Schemas {
         schema.setSchema(ProfileMapper.fromProtoMap(request.getSchema().getFieldsMap()));
         schema.setAuthorizationServerId(UUID.fromString(request.getAuthorizationServerId()));
         schema.setJsonSchemaVersion(String.valueOf(SpecVersion.VersionFlag.V202012));
-        schema.setMetadata(MetadataMapper.toMetadata(request.getMetadata()));
+        schema.setMetadata(MetadataMapper.from(request.getMetadata()));
         schema = schemaService.createSchema(schema);
         return Uni.createFrom().item(
                 SchemaResponse.newBuilder()
@@ -97,7 +97,7 @@ public class SchemaRpcService implements Schemas {
                                                 .setName(schema.getName())
                                                 .setSchema(ProfileMapper.toProtoMap(schema.getSchema()))
                                                 .setAuthorizationServerId(String.valueOf(schema.getAuthorizationServerId()))
-                                                .setMetadata(MetadataMapper.from(schema.getMetadata()))
+                                                .setMetadata(MetadataMapper.to(schema.getMetadata()))
                                                 .setCreatedOn(Timestamp.newBuilder().setSeconds(schema.getCreatedOn().toEpochSecond()).build())
                                                 .setUpdatedOn(Timestamp.newBuilder().setSeconds(schema.getUpdatedOn().toEpochSecond()).build())
                                                 .build()
@@ -124,7 +124,7 @@ public class SchemaRpcService implements Schemas {
                         .setName(schema.getName())
                         .setSchema(ProfileMapper.toProtoMap(schema.getSchema()))
                         .setAuthorizationServerId(String.valueOf(schema.getAuthorizationServerId()))
-                        .setMetadata(MetadataMapper.from(schema.getMetadata()))
+                        .setMetadata(MetadataMapper.to(schema.getMetadata()))
                         .setCreatedOn(Timestamp.newBuilder().setSeconds(schema.getCreatedOn().toEpochSecond()).build())
                         .setUpdatedOn(Timestamp.newBuilder().setSeconds(schema.getUpdatedOn().toEpochSecond()).build())
                         .build());

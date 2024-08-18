@@ -38,8 +38,8 @@ import com.cartobucket.auth.rpc.ClientListResponse;
 import com.cartobucket.auth.rpc.ClientResponse;
 import com.cartobucket.auth.rpc.ClientUpdateRequest;
 import com.cartobucket.auth.rpc.Clients;
-import com.cartobucket.auth.rpc.server.rpc.mappers.MetadataMapper;
-import com.cartobucket.auth.rpc.server.rpc.mappers.ScopeMapper;
+import com.cartobucket.auth.data.services.grpc.mappers.server.MetadataMapper;
+import com.cartobucket.auth.data.services.grpc.mappers.server.ScopeMapper;
 import com.google.protobuf.Timestamp;
 import io.quarkus.grpc.GrpcService;
 import io.smallrye.common.annotation.Blocking;
@@ -79,7 +79,7 @@ public class ClientRpcService implements Clients {
             client.setRedirectUris(
                     list
             );
-            client.setMetadata(MetadataMapper.toMetadata(request.getMetadata()));
+            client.setMetadata(MetadataMapper.from(request.getMetadata()));
             client.setAuthorizationServerId(UUID.fromString(request.getAuthorizationServerId()));
             client = clientService.createClient(client);
             return Uni
@@ -97,7 +97,7 @@ public class ClientRpcService implements Clients {
                                             .map(String::valueOf)
                                             .toList()
                                     )
-                                    .setMetadata(MetadataMapper.from(client.getMetadata()))
+                                    .setMetadata(MetadataMapper.to(client.getMetadata()))
                                     .setCreatedOn(Timestamp.newBuilder().setSeconds(client.getCreatedOn().toEpochSecond()).build())
                                     .setUpdatedOn(Timestamp.newBuilder().setSeconds(client.getUpdatedOn().toEpochSecond()).build())
                                     .build()
@@ -115,7 +115,7 @@ public class ClientRpcService implements Clients {
         clientCode.setClientId(request.getClientId());
         clientCode.setAuthorizationServerId(UUID.fromString(request.getAuthorizationServerId()));
         clientCode.setRedirectUri(request.getRedirectUri());
-        clientCode.setScopes(request.getScopesList().stream().map(ScopeMapper::fromResponse).toList());
+        clientCode.setScopes(request.getScopesList().stream().map(ScopeMapper::toScope).toList());
         clientCode.setState(request.getState());
         clientCode.setCodeChallenge(request.getCodeChallenge());
         clientCode.setCodeChallengeMethod(request.getCodeChallengeMethod());
@@ -177,7 +177,7 @@ public class ClientRpcService implements Clients {
                                                                         .map(String::valueOf)
                                                                         .toList()
                                                                 )
-                                                                .setMetadata(MetadataMapper.from(client.getMetadata()))
+                                                                .setMetadata(MetadataMapper.to(client.getMetadata()))
                                                                 .setCreatedOn(Timestamp.newBuilder().setSeconds(client.getCreatedOn().toEpochSecond()).build())
                                                                 .setUpdatedOn(Timestamp.newBuilder().setSeconds(client.getUpdatedOn().toEpochSecond()).build())
                                                                 .build())
@@ -207,7 +207,7 @@ public class ClientRpcService implements Clients {
         try {
             var client = new Client();
             client.setName(request.getName());
-            client.setScopes(request.getScopesList().stream().map(ScopeMapper::fromResponse).toList());
+            client.setScopes(request.getScopesList().stream().map(ScopeMapper::toScope).toList());
             List<URI> list = new ArrayList<>();
             for (String s : request.getRedirectUrisList()) {
                 list.add(new URI(s));
@@ -231,7 +231,7 @@ public class ClientRpcService implements Clients {
                                             .map(String::valueOf)
                                             .toList()
                                     )
-                                    .setMetadata(MetadataMapper.from(client.getMetadata()))
+                                    .setMetadata(MetadataMapper.to(client.getMetadata()))
                                     .setCreatedOn(Timestamp.newBuilder().setSeconds(client.getCreatedOn().toEpochSecond()).build())
                                     .setUpdatedOn(Timestamp.newBuilder().setSeconds(client.getUpdatedOn().toEpochSecond()).build())
                                     .build()
@@ -261,7 +261,7 @@ public class ClientRpcService implements Clients {
                                         .map(String::valueOf)
                                         .toList()
                                 )
-                                .setMetadata(MetadataMapper.from(client.getMetadata()))
+                                .setMetadata(MetadataMapper.to(client.getMetadata()))
                                 .setCreatedOn(Timestamp.newBuilder().setSeconds(client.getCreatedOn().toEpochSecond()).build())
                                 .setUpdatedOn(Timestamp.newBuilder().setSeconds(client.getUpdatedOn().toEpochSecond()).build())
                                 .build()

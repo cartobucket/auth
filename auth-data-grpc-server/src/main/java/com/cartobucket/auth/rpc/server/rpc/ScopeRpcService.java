@@ -29,7 +29,7 @@ import com.cartobucket.auth.data.rpc.Scopes;
 import com.cartobucket.auth.data.rpc.ScopesListResponse;
 import com.cartobucket.auth.data.services.AuthorizationServerService;
 import com.cartobucket.auth.data.services.ScopeService;
-import com.cartobucket.auth.rpc.server.rpc.mappers.MetadataMapper;
+import com.cartobucket.auth.data.services.grpc.mappers.server.MetadataMapper;
 import com.google.protobuf.Timestamp;
 import io.quarkus.grpc.GrpcService;
 import io.smallrye.common.annotation.Blocking;
@@ -59,7 +59,7 @@ public class ScopeRpcService implements Scopes {
                         )
                 )
         );
-        scope.setMetadata(MetadataMapper.toMetadata(request.getMetadata()));
+        scope.setMetadata(MetadataMapper.from(request.getMetadata()));
         scope = scopeService.createScope(scope);
 
         var response = com.cartobucket.auth.data.rpc.Scope
@@ -67,7 +67,7 @@ public class ScopeRpcService implements Scopes {
                 .setId(String.valueOf(scope.getId()))
                 .setName(scope.getName())
                 .setAuthorizationServerId(String.valueOf(scope.getAuthorizationServer().getId()))
-                .setMetadata(MetadataMapper.from(scope.getMetadata()))
+                .setMetadata(MetadataMapper.to(scope.getMetadata()))
                 .setCreatedOn(Timestamp.newBuilder().setSeconds(scope.getCreatedOn().toEpochSecond()).build())
                 .setUpdatedOn(Timestamp.newBuilder().setSeconds(scope.getUpdatedOn().toEpochSecond()).build())
                 .build();
@@ -102,7 +102,7 @@ public class ScopeRpcService implements Scopes {
                                         .setId(String.valueOf(scope.getId()))
                                         .setName(scope.getName())
                                         .setAuthorizationServerId(String.valueOf(scope.getAuthorizationServer().getId()))
-                                        .setMetadata(MetadataMapper.from(scope.getMetadata()))
+                                        .setMetadata(MetadataMapper.to(scope.getMetadata()))
                                         .setCreatedOn(Timestamp.newBuilder().setSeconds(scope.getCreatedOn().toEpochSecond()).build())
                                         .setUpdatedOn(Timestamp.newBuilder().setSeconds(scope.getUpdatedOn().toEpochSecond()).build())
                                         .build()
@@ -138,7 +138,7 @@ public class ScopeRpcService implements Scopes {
                         .setId(String.valueOf(scope.getId()))
                         .setName(scope.getName())
                         .setAuthorizationServerId(String.valueOf(scope.getAuthorizationServer()))
-                        .setMetadata(MetadataMapper.from(scope.getMetadata()))
+                        .setMetadata(MetadataMapper.to(scope.getMetadata()))
                         .setCreatedOn(Timestamp.newBuilder().setSeconds(scope.getCreatedOn().toEpochSecond()).build())
                         .setUpdatedOn(Timestamp.newBuilder().setSeconds(scope.getUpdatedOn().toEpochSecond()).build())
                         .build());

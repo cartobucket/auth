@@ -17,11 +17,9 @@
  * THE SOFTWARE.
  */
 
-package com.cartobucket.auth.data.services.grpc.client.mappers;
+package com.cartobucket.auth.data.services.grpc.mappers.server;
 
 import com.cartobucket.auth.data.domain.Client;
-import com.cartobucket.auth.data.services.grpc.mappers.MetadataMapper;
-import com.cartobucket.auth.data.services.grpc.mappers.ScopeMapper;
 import com.cartobucket.auth.rpc.ClientCreateResponse;
 import com.cartobucket.auth.rpc.ClientResponse;
 
