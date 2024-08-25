@@ -19,15 +19,7 @@
 
 package com.cartobucket.auth.postgres.client.services;
 
-import com.cartobucket.auth.data.domain.AccessToken;
-import com.cartobucket.auth.data.domain.AuthorizationServer;
-import com.cartobucket.auth.data.domain.JWK;
-import com.cartobucket.auth.data.domain.Page;
-import com.cartobucket.auth.data.domain.Profile;
-import com.cartobucket.auth.data.domain.Scope;
-import com.cartobucket.auth.data.domain.SigningKey;
-import com.cartobucket.auth.data.domain.Template;
-import com.cartobucket.auth.data.domain.TemplateTypeEnum;
+import com.cartobucket.auth.data.domain.*;
 import com.cartobucket.auth.data.exceptions.NotAuthorized;
 import com.cartobucket.auth.data.exceptions.notfound.AuthorizationServerNotFound;
 import com.cartobucket.auth.data.exceptions.notfound.ProfileNotFound;
@@ -380,7 +372,7 @@ public class AuthorizationServerService implements com.cartobucket.auth.data.ser
             var accessToken = new AccessToken();
             accessToken.setAccessToken(token);
             accessToken.setIdToken(token); // TODO: This is obviously wrong.
-            accessToken.setTokenType(AccessToken.TokenTypeEnum.BEARER);
+            accessToken.setTokenType(TokenTypeEnum.BEARER);
             accessToken.setExpiresIn(Math.toIntExact(authorizationServer.getAuthorizationCodeTokenExpiration()));
             accessToken.setScope((String) additionalClaims.get("scope"));
             return accessToken;

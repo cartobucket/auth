@@ -22,6 +22,7 @@ package com.cartobucket.auth.data.services.grpc.mappers.client;
 import com.cartobucket.auth.data.domain.AccessToken;
 import com.cartobucket.auth.data.domain.AuthorizationServer;
 import com.cartobucket.auth.data.domain.SigningKey;
+import com.cartobucket.auth.data.domain.TokenTypeEnum;
 import com.cartobucket.auth.data.services.grpc.mappers.MetadataMapper;
 import com.cartobucket.auth.data.services.grpc.mappers.ScopeMapper;
 import com.cartobucket.auth.rpc.AuthorizationServerCreateResponse;
@@ -91,7 +92,7 @@ public class AuthorizationServerMapper {
         var accessToken = new AccessToken();
         accessToken.setAccessToken(generateAccessTokenResponse.getAccessToken());
         accessToken.setExpiresIn(Math.toIntExact(generateAccessTokenResponse.getExpireInSeconds()));
-        accessToken.setTokenType(AccessToken.TokenTypeEnum.BEARER);
+        accessToken.setTokenType(TokenTypeEnum.BEARER);
         accessToken.setScope(generateAccessTokenResponse.getScope());
         accessToken.setRefreshToken(generateAccessTokenResponse.getRefreshToken());
         accessToken.setIdToken(generateAccessTokenResponse.getIdToken());
