@@ -15,10 +15,10 @@ import com.google.protobuf.Value;
 
 public class ProfileMapper {
     public static Profile toProfile(Struct profile, ProfileType profileType) {
-        var _profile = new Profile();
-        _profile.setProfileType(profileType);
-            _profile.setProfile(fromProtoMap(profile.getFieldsMap()));
-        return _profile;
+        return new Profile.Builder()
+                .setProfileType(profileType)
+                .setProfile(fromProtoMap(profile.getFieldsMap()))
+                .build();
     }
 
 

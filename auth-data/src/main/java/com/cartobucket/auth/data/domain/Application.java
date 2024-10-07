@@ -40,6 +40,17 @@ public class Application {
 
     private OffsetDateTime updatedOn;
 
+    public Application(UUID id, String clientId, String name, UUID authorizationServerId, List<Scope> scopes, Metadata metadata, OffsetDateTime createdOn, OffsetDateTime updatedOn) {
+        this.id = id;
+        this.clientId = clientId;
+        this.name = name;
+        this.authorizationServerId = authorizationServerId;
+        this.scopes = scopes;
+        this.metadata = metadata;
+        this.createdOn = createdOn;
+        this.updatedOn = updatedOn;
+    }
+
     public void setId(UUID id) {
         this.id = id;
     }
@@ -102,5 +113,60 @@ public class Application {
 
     public void setScopes(List<Scope> scopes) {
         this.scopes = scopes;
+    }
+
+    public static class Builder {
+        private UUID id;
+        private String clientId;
+        private String name;
+        private UUID authorizationServerId;
+        private List<Scope> scopes;
+        private Metadata metadata;
+        private OffsetDateTime createdOn;
+        private OffsetDateTime updatedOn;
+
+        public Builder setId(UUID id) {
+            this.id = id;
+            return this;
+        }
+
+        public Builder setClientId(String clientId) {
+            this.clientId = clientId;
+            return this;
+        }
+
+        public Builder setName(String name) {
+            this.name = name;
+            return this;
+        }
+
+        public Builder setAuthorizationServerId(UUID authorizationServerId) {
+            this.authorizationServerId = authorizationServerId;
+            return this;
+        }
+
+        public Builder setScopes(List<Scope> scopes) {
+            this.scopes = scopes;
+            return this;
+        }
+
+        public Builder setMetadata(Metadata metadata) {
+            this.metadata = metadata;
+            return this;
+        }
+
+        public Builder setCreatedOn(OffsetDateTime createdOn) {
+            this.createdOn = createdOn;
+            return this;
+        }
+
+        public Builder setUpdatedOn(OffsetDateTime updatedOn) {
+            this.updatedOn = updatedOn;
+            return this;
+        }
+
+        public Application build() {
+            return new Application(id, clientId, name, authorizationServerId, scopes, metadata, createdOn, updatedOn);
+        }
     }
 }

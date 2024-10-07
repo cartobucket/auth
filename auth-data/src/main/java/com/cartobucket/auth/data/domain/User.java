@@ -40,6 +40,17 @@ public class User {
 
     private OffsetDateTime updatedOn;
 
+    public User(UUID id, UUID authorizationServerId, String password, String username, String email, Metadata metadata, OffsetDateTime createdOn, OffsetDateTime updatedOn) {
+        this.id = id;
+        this.authorizationServerId = authorizationServerId;
+        this.password = password;
+        this.username = username;
+        this.email = email;
+        this.metadata = metadata;
+        this.createdOn = createdOn;
+        this.updatedOn = updatedOn;
+    }
+
     public void setId(UUID id) {
         this.id = id;
     }
@@ -106,5 +117,61 @@ public class User {
 
     public void setMetadata(Metadata metadata) {
         this.metadata = metadata;
+    }
+
+
+    public static class Builder {
+        private UUID id;
+        private UUID authorizationServerId;
+        private String password;
+        private String username;
+        private String email;
+        private Metadata metadata;
+        private OffsetDateTime createdOn;
+        private OffsetDateTime updatedOn;
+
+        public Builder setId(UUID id) {
+            this.id = id;
+            return this;
+        }
+
+        public Builder setAuthorizationServerId(UUID authorizationServerId) {
+            this.authorizationServerId = authorizationServerId;
+            return this;
+        }
+
+        public Builder setPassword(String password) {
+            this.password = password;
+            return this;
+        }
+
+        public Builder setUsername(String username) {
+            this.username = username;
+            return this;
+        }
+
+        public Builder setEmail(String email) {
+            this.email = email;
+            return this;
+        }
+
+        public Builder setMetadata(Metadata metadata) {
+            this.metadata = metadata;
+            return this;
+        }
+
+        public Builder setCreatedOn(OffsetDateTime createdOn) {
+            this.createdOn = createdOn;
+            return this;
+        }
+
+        public Builder setUpdatedOn(OffsetDateTime updatedOn) {
+            this.updatedOn = updatedOn;
+            return this;
+        }
+
+        public User build() {
+            return new User(id, authorizationServerId, password, username, email, metadata, createdOn, updatedOn);
+        }
     }
 }

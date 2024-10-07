@@ -20,10 +20,7 @@
 package com.cartobucket.auth.rpc.server.rpc;
 
 
-import com.cartobucket.auth.data.domain.Page;
-import com.cartobucket.auth.data.domain.Pair;
-import com.cartobucket.auth.data.domain.Profile;
-import com.cartobucket.auth.data.domain.User;
+import com.cartobucket.auth.data.domain.*;
 import com.cartobucket.auth.data.services.UserService;
 import com.cartobucket.auth.data.services.grpc.mappers.ProfileMapper;
 import com.cartobucket.auth.rpc.UserCreateRequest;
@@ -58,6 +55,7 @@ public class UserRpcService implements Users {
     @Override
     @Blocking
     public Uni<UserCreateResponse> createUser(UserCreateRequest request) {
+<<<<<<< Updated upstream
         var user = new User();
         user.setAuthorizationServerId(UUID.fromString(request.getAuthorizationServerId()));
         user.setEmail(request.getEmail());
@@ -70,6 +68,23 @@ public class UserRpcService implements Users {
         var userAndProfile = userService.createUser(Pair.create(user, profile));
         user = userAndProfile.getLeft();
         profile = userAndProfile.getRight();
+=======
+        var userAndProfile = userService.createUser(
+                Pair.create(
+                        new User.Builder()
+                                .setAuthorizationServerId(UUID.fromString(request.getAuthorizationServerId()))
+                                .setEmail(request.getEmail())
+                                .setUsername(request.getUsername())
+                                .setMetadata(MetadataMapper.toMetadata(request.getMetadata()))
+                                .build(),
+                        new Profile.Builder()
+                                .setProfile(ProfileMapper.fromProtoMap(request.getProfile().getFieldsMap()))
+                                .build()
+                        )
+        );
+        var user = userAndProfile.getLeft();
+        var profile = userAndProfile.getRight();
+>>>>>>> Stashed changes
         profile.setProfile(ProfileMapper.fromProtoMap(request.getProfile().getFieldsMap()));
 
         if (!request.getPassword().isEmpty()) {
@@ -142,19 +157,33 @@ public class UserRpcService implements Users {
     @Override
     @Blocking
     public Uni<UserResponse> updateUser(UserUpdateRequest request) {
+<<<<<<< Updated upstream
         var user = new User();
         user.setId(UUID.fromString(request.getId()));
         user.setUsername(request.getUsername());
         user.setEmail(request.getEmail());
         user.setMetadata(MetadataMapper.from(request.getMetadata()));
+=======
+        var userId = UUID.fromString(request.getId());
+        var userAndProfiler = userService.updateUser(
+                userId,
+                Pair.create(
+                        new User.Builder()
+                                .setId(userId)
+                                .setUsername(request.getUsername())
+                                .setEmail(request.getEmail())
+                                .setMetadata(MetadataMapper.toMetadata(request.getMetadata()))
+                                .build(),
+                        new Profile.Builder()
+                                .setProfile(ProfileMapper.fromProtoMap(request.getProfile().getFieldsMap()))
+                                .setResource(userId)
+                                .build()
+                )
+        );
+>>>>>>> Stashed changes
 
-        var profile = new Profile();
-        profile.setResource(user.getId());
-        profile.setProfile(ProfileMapper.fromProtoMap(request.getProfile().getFieldsMap()));
-        var userAndProfiler = userService.updateUser(user.getId(), Pair.create(user, profile));
-
-        user = userAndProfiler.getLeft();
-        profile = userAndProfiler.getRight();
+        var user = userAndProfiler.getLeft();
+        var profile = userAndProfiler.getRight();
 
         return Uni
                 .createFrom()

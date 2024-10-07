@@ -23,16 +23,16 @@ import com.cartobucket.auth.data.domain.Application;
 
 public class ApplicationMapper {
     public static Application from(com.cartobucket.auth.postgres.client.entities.Application application) {
-        var _application = new Application();
-        _application.setId(application.getId());
-        _application.setAuthorizationServerId(application.getAuthorizationServerId());
-        _application.setName(application.getName());
-        _application.setClientId(application.getClientId());
-        _application.setMetadata(application.getMetadata());
-        _application.setScopes(application.getScopes().stream().map(ScopeMapper::fromNoAuthorizationServer).toList());
-        _application.setUpdatedOn(application.getUpdatedOn());
-        _application.setCreatedOn(application.getCreatedOn());
-        return _application;
+        return new Application.Builder()
+                .setId(application.getId())
+                .setAuthorizationServerId(application.getAuthorizationServerId())
+                .setName(application.getName())
+                .setClientId(application.getClientId())
+                .setScopes(application.getScopes().stream().map(ScopeMapper::fromNoAuthorizationServer).toList())
+                .setMetadata(application.getMetadata())
+                .setCreatedOn(application.getCreatedOn())
+                .setUpdatedOn(application.getUpdatedOn())
+                .build();
     }
 
     public static com.cartobucket.auth.postgres.client.entities.Application to(Application application) {

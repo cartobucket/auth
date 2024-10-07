@@ -9,6 +9,9 @@ repositories {
 }
 
 dependencies {
+    implementation 'io.quarkiverse.helm:quarkus-helm:1.2.3'
+    implementation 'io.quarkus:quarkus-kubernetes'
+    implementation 'io.quarkus:quarkus-container-image-docker'
     // Tooling
     implementation group: 'io.swagger', name: 'swagger-annotations', version: '1.6.12'
     implementation group: 'org.openapitools', name: 'jackson-databind-nullable', version: '0.2.6'

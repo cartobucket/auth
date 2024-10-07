@@ -19,8 +19,15 @@
 
 package com.cartobucket.auth.data.services.grpc.mappers;
 
-import com.cartobucket.auth.data.domain.*;
-import com.cartobucket.auth.rpc.*;
+import com.cartobucket.auth.data.domain.Application;
+import com.cartobucket.auth.data.domain.ApplicationSecret;
+import com.cartobucket.auth.data.domain.Pair;
+import com.cartobucket.auth.data.domain.Profile;
+import com.cartobucket.auth.data.domain.ProfileType;
+import com.cartobucket.auth.rpc.ApplicationCreateResponse;
+import com.cartobucket.auth.rpc.ApplicationResponse;
+import com.cartobucket.auth.rpc.ApplicationSecretCreateResponse;
+import com.cartobucket.auth.rpc.ApplicationSecretResponse;
 
 import java.time.Instant;
 import java.time.OffsetDateTime;
@@ -29,38 +36,41 @@ import java.util.UUID;
 
 public class ApplicationMapper {
     public static Application toApplication(ApplicationResponse applicationResponse) {
-        var application = new Application();
-        application.setId(UUID.fromString(applicationResponse.getId()));
-        application.setName(applicationResponse.getName());
-        application.setClientId(applicationResponse.getClientId());
-        application.setAuthorizationServerId(UUID.fromString(applicationResponse.getAuthorizationServerId()));
-        application.setScopes(applicationResponse.getScopesList().stream().map(ScopeMapper::toScope).toList());
-        application.setMetadata(MetadataMapper.from(applicationResponse.getMetadata()));
-        application.setCreatedOn(OffsetDateTime.ofInstant(Instant.ofEpochSecond(applicationResponse.getCreatedOn().getSeconds()), ZoneId.of("UTC")));
-        application.setUpdatedOn(OffsetDateTime.ofInstant(Instant.ofEpochSecond(applicationResponse.getUpdatedOn().getSeconds()), ZoneId.of("UTC")));
-        return application;
+        return  new Application.Builder()
+                .setId(UUID.fromString(applicationResponse.getId()))
+                .setName(applicationResponse.getName())
+                .setClientId(applicationResponse.getClientId())
+                .setAuthorizationServerId(UUID.fromString(applicationResponse.getAuthorizationServerId()))
+                .setScopes(applicationResponse.getScopesList().stream().map(ScopeMapper::toScope).toList())
+                .setMetadata(MetadataMapper.from(applicationResponse.getMetadata()))
+                .setCreatedOn(OffsetDateTime.ofInstant(Instant.ofEpochSecond(applicationResponse.getCreatedOn().getSeconds()), ZoneId.of("UTC")))
+                .setUpdatedOn(OffsetDateTime.ofInstant(Instant.ofEpochSecond(applicationResponse.getUpdatedOn().getSeconds()), ZoneId.of("UTC")))
+                .build();
     }
 
     public static Pair<Application, Profile> toApplicationWithProfile(ApplicationCreateResponse applicationCreateResponse, ProfileType profileType) {
-        var application = new Application();
-        application.setId(UUID.fromString(applicationCreateResponse.getId()));
-        application.setName(applicationCreateResponse.getName());
-        application.setClientId(applicationCreateResponse.getClientId());
-        application.setAuthorizationServerId(UUID.fromString(applicationCreateResponse.getAuthorizationServerId()));
-        application.setMetadata(MetadataMapper.from(applicationCreateResponse.getMetadata()));
-        application.setScopes(applicationCreateResponse.getScopesList().stream().map(ScopeMapper::toScope).toList());
-        application.setCreatedOn(OffsetDateTime.ofInstant(Instant.ofEpochSecond(applicationCreateResponse.getCreatedOn().getSeconds()), ZoneId.of("UTC")));
-        application.setUpdatedOn(OffsetDateTime.ofInstant(Instant.ofEpochSecond(applicationCreateResponse.getUpdatedOn().getSeconds()), ZoneId.of("UTC")));
-
-        var profile = new Profile();
-        profile.setProfileType(profileType);
-        profile.setProfile(ProfileMapper.fromProtoMap(applicationCreateResponse.getProfile().getFieldsMap()));
-        profile.setResource(application.getId());
-        profile.setAuthorizationServerId(application.getAuthorizationServerId());
-        profile.setCreatedOn(OffsetDateTime.ofInstant(Instant.ofEpochSecond(applicationCreateResponse.getCreatedOn().getSeconds()), ZoneId.of("UTC")));
-        profile.setUpdatedOn(OffsetDateTime.ofInstant(Instant.ofEpochSecond(applicationCreateResponse.getUpdatedOn().getSeconds()), ZoneId.of("UTC")));
-
-        return Pair.create(application, profile);
+        var applicationId = UUID.fromString(applicationCreateResponse.getId());
+        var authorizationServerId = UUID.fromString(applicationCreateResponse.getAuthorizationServerId());
+        return Pair.create(
+                new Application.Builder()
+                        .setId(applicationId)
+                        .setName(applicationCreateResponse.getName())
+                        .setClientId(applicationCreateResponse.getClientId())
+                        .setAuthorizationServerId(authorizationServerId)
+                        .setScopes(applicationCreateResponse.getScopesList().stream().map(ScopeMapper::toScope).toList())
+                        .setMetadata(MetadataMapper.from(applicationCreateResponse.getMetadata()))
+                        .setCreatedOn(OffsetDateTime.ofInstant(Instant.ofEpochSecond(applicationCreateResponse.getCreatedOn().getSeconds()), ZoneId.of("UTC")))
+                        .setUpdatedOn(OffsetDateTime.ofInstant(Instant.ofEpochSecond(applicationCreateResponse.getUpdatedOn().getSeconds()), ZoneId.of("UTC")))
+                        .build(),
+                new Profile.Builder()
+                        .setProfileType(profileType)
+                        .setProfile(ProfileMapper.fromProtoMap(applicationCreateResponse.getProfile().getFieldsMap()))
+                        .setResource(applicationId)
+                        .setAuthorizationServerId(authorizationServerId)
+                        .setCreatedOn(OffsetDateTime.ofInstant(Instant.ofEpochSecond(applicationCreateResponse.getCreatedOn().getSeconds()), ZoneId.of("UTC")))
+                        .setUpdatedOn(OffsetDateTime.ofInstant(Instant.ofEpochSecond(applicationCreateResponse.getUpdatedOn().getSeconds()), ZoneId.of("UTC")))
+                        .build()
+        );
     }
 
     public static ApplicationSecret toApplicationSecret(ApplicationSecretCreateResponse applicationSecret) {

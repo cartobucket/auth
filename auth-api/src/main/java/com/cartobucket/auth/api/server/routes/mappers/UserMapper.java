@@ -28,18 +28,20 @@ import java.util.Map;
 
 public class UserMapper {
     public static Pair<User, Profile> from(UserRequest userRequest) {
-        var user = new User();
-        user.setAuthorizationServerId(userRequest.getAuthorizationServerId());
-        user.setMetadata(MetadataMapper.from(userRequest.getMetadata()));
-        user.setUsername(userRequest.getUsername());
-        user.setEmail(userRequest.getEmail());
-        user.setPassword(userRequest.getPassword());
-
-        var profile = new Profile();
-        profile.setProfileType(ProfileType.User);
-        profile.setProfile((Map<String, Object>) userRequest.getProfile());
-        profile.setAuthorizationServerId(userRequest.getAuthorizationServerId());
-        return Pair.create(user, profile);
+        return Pair.create(
+                new User.Builder()
+                        .setAuthorizationServerId(userRequest.getAuthorizationServerId())
+                        .setMetadata(MetadataMapper.from(userRequest.getMetadata()))
+                        .setUsername(userRequest.getUsername())
+                        .setEmail(userRequest.getEmail())
+                        .setPassword(userRequest.getPassword())
+                        .build(),
+                new Profile.Builder()
+                        .setProfileType(ProfileType.User)
+                        .setProfile((Map<String, Object>) userRequest.getProfile())
+                        .setAuthorizationServerId(userRequest.getAuthorizationServerId())
+                        .build()
+        );
     }
     public static UserResponse toResponse(Pair<User, Profile> userProfilePair) {
         var user = userProfilePair.getLeft();

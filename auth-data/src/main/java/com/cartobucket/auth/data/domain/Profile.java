@@ -20,16 +20,9 @@
 package com.cartobucket.auth.data.domain;
 
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-
 import java.time.OffsetDateTime;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 public class Profile {
     private UUID id;
@@ -45,6 +38,16 @@ public class Profile {
     private OffsetDateTime createdOn;
 
     private OffsetDateTime updatedOn;
+
+    public Profile(UUID id, UUID authorizationServerId, UUID resource, ProfileType profileType, Map<String, Object> profile, OffsetDateTime createdOn, OffsetDateTime updatedOn) {
+        this.id = id;
+        this.authorizationServerId = authorizationServerId;
+        this.resource = resource;
+        this.profileType = profileType;
+        this.profile = profile;
+        this.createdOn = createdOn;
+        this.updatedOn = updatedOn;
+    }
 
     public void setId(UUID id) {
         this.id = id;
@@ -102,5 +105,54 @@ public class Profile {
         this.updatedOn = updatedOn;
     }
 
+
+    public static class Builder {
+        private UUID id;
+        private UUID authorizationServerId;
+        private UUID resource;
+        private ProfileType profileType;
+        private Map<String, Object> profile;
+        private OffsetDateTime createdOn;
+        private OffsetDateTime updatedOn;
+
+        public Builder setId(UUID id) {
+            this.id = id;
+            return this;
+        }
+
+        public Builder setAuthorizationServerId(UUID authorizationServerId) {
+            this.authorizationServerId = authorizationServerId;
+            return this;
+        }
+
+        public Builder setResource(UUID resource) {
+            this.resource = resource;
+            return this;
+        }
+
+        public Builder setProfileType(ProfileType profileType) {
+            this.profileType = profileType;
+            return this;
+        }
+
+        public Builder setProfile(Map<String, Object> profile) {
+            this.profile = profile;
+            return this;
+        }
+
+        public Builder setCreatedOn(OffsetDateTime createdOn) {
+            this.createdOn = createdOn;
+            return this;
+        }
+
+        public Builder setUpdatedOn(OffsetDateTime updatedOn) {
+            this.updatedOn = updatedOn;
+            return this;
+        }
+
+        public Profile build() {
+            return new Profile(id, authorizationServerId, resource, profileType, profile, createdOn, updatedOn);
+        }
+    }
 
 }

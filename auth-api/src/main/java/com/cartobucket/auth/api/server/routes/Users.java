@@ -19,13 +19,10 @@
 
 package com.cartobucket.auth.api.server.routes;
 
-import com.cartobucket.auth.data.domain.Page;
-import com.cartobucket.auth.data.domain.Pair;
+import com.cartobucket.auth.data.domain.*;
 import com.cartobucket.auth.generated.UsersApi;
 import com.cartobucket.auth.model.generated.UserRequest;
 import com.cartobucket.auth.model.generated.UsersResponse;
-import com.cartobucket.auth.data.domain.Profile;
-import com.cartobucket.auth.data.domain.User;
 import com.cartobucket.auth.api.server.routes.mappers.UserMapper;
 import com.cartobucket.auth.data.services.UserService;
 import jakarta.ws.rs.core.Response;
@@ -89,7 +86,7 @@ public class Users implements UsersApi {
                 userService
                         .getUsers(authorizationServerIds, new Page(limit, offset))
                         .stream()
-                        .map((User user) -> UserMapper.toResponse(Pair.create(user, new Profile())))
+                        .map((User user) -> UserMapper.toResponse(Pair.create(user, new Profile.Builder().build())))
                         .toList()
         );
         usersResponse.setPage(getPage("users", authorizationServerIds, limit, offset));

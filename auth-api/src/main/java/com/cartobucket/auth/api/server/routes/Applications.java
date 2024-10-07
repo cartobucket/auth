@@ -20,8 +20,9 @@
 package com.cartobucket.auth.api.server.routes;
 
 import com.cartobucket.auth.api.server.routes.mappers.ApplicationMapper;
-import com.cartobucket.auth.api.server.routes.mappers.ProfileMapper;
 import com.cartobucket.auth.data.domain.Page;
+import com.cartobucket.auth.data.domain.Profile;
+import com.cartobucket.auth.data.domain.ProfileType;
 import com.cartobucket.auth.generated.ApplicationsApi;
 import com.cartobucket.auth.model.generated.ApplicationRequest;
 import com.cartobucket.auth.model.generated.ApplicationsResponse;
@@ -53,7 +54,10 @@ public class Applications implements ApplicationsApi {
         final var application = applicationService
                 .createApplication(
                         ApplicationMapper.from(applicationRequest),
-                        ProfileMapper.toProfile((Map<String, Object>) applicationRequest.getProfile())
+                        new Profile.Builder()
+                                .setProfileType(ProfileType.Application)
+                                .setProfile((Map<String, Object>) applicationRequest.getProfile())
+                                .build()
                 );
         return Response
                 .ok()

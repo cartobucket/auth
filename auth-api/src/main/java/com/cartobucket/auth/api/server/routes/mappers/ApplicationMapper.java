@@ -25,29 +25,23 @@ import com.cartobucket.auth.model.generated.ApplicationResponse;
 import com.cartobucket.auth.model.generated.ApplicationSecretRequest;
 import com.cartobucket.auth.model.generated.ApplicationSecretResponse;
 
-import java.util.UUID;
-
 public class ApplicationMapper {
     public static Application from(ApplicationRequest applicationRequest) {
-        var application = new Application();
-        application.setName(applicationRequest.getName());
-        application.setAuthorizationServerId(applicationRequest.getAuthorizationServerId());
+        var applicationBuilder = new Application.Builder()
+                .setName(applicationRequest.getName())
+                .setAuthorizationServerId(applicationRequest.getAuthorizationServerId())
+                .setScopes(
+                        applicationRequest
+                                .getScopes()
+                                .stream()
+                                .map(Scope::new)
+                                .toList()
+                )
+                .setMetadata(MetadataMapper.from(applicationRequest.getMetadata()));
         if (applicationRequest.getClientId() != null) {
-            application.setClientId(applicationRequest.getClientId());
+            applicationBuilder.setClientId(applicationRequest.getClientId());
         }
-        application.setScopes(
-                applicationRequest
-                        .getScopes()
-                        .stream()
-                        .map(scopeId -> {
-                            var scope = new Scope();
-                            scope.setId(scopeId);
-                            return scope;
-                        })
-                        .toList()
-        );
-        application.setMetadata(MetadataMapper.from(applicationRequest.getMetadata()));
-        return application;
+        return applicationBuilder.build();
     }
 
     public static ApplicationResponse toResponse(Application application) {

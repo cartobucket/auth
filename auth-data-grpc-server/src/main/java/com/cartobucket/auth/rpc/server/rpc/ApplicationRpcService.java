@@ -20,10 +20,7 @@
 package com.cartobucket.auth.rpc.server.rpc;
 
 
-import com.cartobucket.auth.data.domain.Application;
-import com.cartobucket.auth.data.domain.Page;
-import com.cartobucket.auth.data.domain.Profile;
-import com.cartobucket.auth.data.domain.Scope;
+import com.cartobucket.auth.data.domain.*;
 import com.cartobucket.auth.data.services.ApplicationService;
 import com.cartobucket.auth.data.services.grpc.mappers.ProfileMapper;
 import com.cartobucket.auth.rpc.ApplicationCreateRequest;
@@ -55,18 +52,28 @@ public class ApplicationRpcService implements Applications {
     @Override
     @Blocking
     public Uni<ApplicationCreateResponse> createApplication(ApplicationCreateRequest request) {
-        var application = new Application();
-        application.setId(UUID.randomUUID());
-        application.setClientId(!request.getClientId().isEmpty() ? request.getClientId() : application.getId().toString());
-        application.setName(request.getName());
-        application.setScopes(
-                request
-                        .getScopeIdsList()
-                        .stream()
-                        .map(UUID::fromString)
-                        .map(Scope::new)
-                        .toList()
+        var applicationId = UUID.randomUUID();
+        final var applicationAndProfile = applicationService.createApplication(
+                new Application.Builder()
+                        .setId(applicationId)
+                        .setClientId(!request.getClientId().isEmpty() ? request.getClientId() : applicationId.toString())
+                        .setName(request.getName())
+                        .setScopes(
+                                request
+                                        .getScopeIdsList()
+                                        .stream()
+                                        .map(UUID::fromString)
+                                        .map(Scope::new)
+                                        .toList()
+                        )
+                        .setAuthorizationServerId(UUID.fromString(request.getAuthorizationServerId()))
+                        .setMetadata(MetadataMapper.toMetadata(request.getMetadata()))
+                        .build(),
+                new Profile.Builder()
+                        .setProfile(ProfileMapper.fromProtoMap(request.getProfile().getFieldsMap()))
+                        .build()
         );
+<<<<<<< Updated upstream
         application.setAuthorizationServerId(UUID.fromString(request.getAuthorizationServerId()));
         application.setMetadata(MetadataMapper.from(request.getMetadata()));
 
@@ -74,6 +81,8 @@ public class ApplicationRpcService implements Applications {
         profile.setProfile(ProfileMapper.fromProtoMap(request.getProfile().getFieldsMap()));
 
         final var applicationAndProfile = applicationService.createApplication(application, profile);
+=======
+>>>>>>> Stashed changes
         final var _application = applicationAndProfile.getLeft();
         final var _profile = applicationAndProfile.getRight();
 

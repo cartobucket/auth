@@ -1,69 +1,72 @@
 package com.cartobucket.auth.data.services.grpc.mappers;
 
-import com.cartobucket.auth.data.domain.Pair;
-import com.cartobucket.auth.data.domain.Profile;
-import com.cartobucket.auth.data.domain.ProfileType;
-import com.cartobucket.auth.data.domain.User;
+import com.cartobucket.auth.data.domain.*;
 import com.cartobucket.auth.rpc.UserCreateResponse;
 import com.cartobucket.auth.rpc.UserResponse;
 
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
+import java.util.UUID;
 
 public class UserMapper {
     public static User to(UserResponse userResponse) {
-        var user = new User();
-        user.setId(java.util.UUID.fromString(userResponse.getId()));
-        user.setAuthorizationServerId(java.util.UUID.fromString(userResponse.getAuthorizationServerId()));
-        user.setEmail(userResponse.getEmail());
-        user.setUsername(userResponse.getUsername());
-        user.setMetadata(MetadataMapper.from(userResponse.getMetadata()));
-        user.setCreatedOn(OffsetDateTime.ofInstant(Instant.ofEpochSecond(userResponse.getCreatedOn().getSeconds()), ZoneId.of("UTC")));
-        user.setUpdatedOn(OffsetDateTime.ofInstant(Instant.ofEpochSecond(userResponse.getUpdatedOn().getSeconds()), ZoneId.of("UTC")));
-
-        return user;
+        return new User.Builder()
+                .setId(UUID.fromString(userResponse.getId()))
+                .setAuthorizationServerId(UUID.fromString(userResponse.getAuthorizationServerId()))
+                .setEmail(userResponse.getEmail())
+                .setUsername(userResponse.getUsername())
+                .setMetadata(MetadataMapper.from(userResponse.getMetadata()))
+                .setCreatedOn(OffsetDateTime.ofInstant(Instant.ofEpochSecond(userResponse.getCreatedOn().getSeconds()), ZoneId.of("UTC")))
+                .setUpdatedOn(OffsetDateTime.ofInstant(Instant.ofEpochSecond(userResponse.getUpdatedOn().getSeconds()), ZoneId.of("UTC")))
+                .build();
     }
 
     public static Pair<User, Profile> toUserAndProfile(UserCreateResponse userCreateResponse) {
-        var user = new User();
-        user.setId(java.util.UUID.fromString(userCreateResponse.getId()));
-        user.setAuthorizationServerId(java.util.UUID.fromString(userCreateResponse.getAuthorizationServerId()));
-        user.setEmail(userCreateResponse.getEmail());
-        user.setUsername(userCreateResponse.getUsername());
-        user.setMetadata(MetadataMapper.from(userCreateResponse.getMetadata()));
-        user.setCreatedOn(OffsetDateTime.ofInstant(Instant.ofEpochSecond(userCreateResponse.getCreatedOn().getSeconds()), ZoneId.of("UTC")));
-        user.setUpdatedOn(OffsetDateTime.ofInstant(Instant.ofEpochSecond(userCreateResponse.getUpdatedOn().getSeconds()), ZoneId.of("UTC")));
-
-        var profile = new Profile();
-        profile.setProfileType(ProfileType.User);
-        profile.setProfile(ProfileMapper.fromProtoMap(userCreateResponse.getProfile().getFieldsMap()));
-        profile.setResource(user.getId());
-        profile.setAuthorizationServerId(user.getAuthorizationServerId());
-        profile.setCreatedOn(OffsetDateTime.ofInstant(Instant.ofEpochSecond(userCreateResponse.getCreatedOn().getSeconds()), ZoneId.of("UTC")));
-        profile.setUpdatedOn(OffsetDateTime.ofInstant(Instant.ofEpochSecond(userCreateResponse.getUpdatedOn().getSeconds()), ZoneId.of("UTC")));
-
-        return Pair.create(user, profile);
+        var userId = UUID.fromString(userCreateResponse.getId());
+        var authorizationServerId = UUID.fromString(userCreateResponse.getAuthorizationServerId());
+        return Pair.create(
+                new User.Builder()
+                        .setId(userId)
+                        .setAuthorizationServerId(authorizationServerId)
+                        .setEmail(userCreateResponse.getEmail())
+                        .setUsername(userCreateResponse.getUsername())
+                        .setMetadata(MetadataMapper.from(userCreateResponse.getMetadata()))
+                        .setCreatedOn(OffsetDateTime.ofInstant(Instant.ofEpochSecond(userCreateResponse.getCreatedOn().getSeconds()), ZoneId.of("UTC")))
+                        .setUpdatedOn(OffsetDateTime.ofInstant(Instant.ofEpochSecond(userCreateResponse.getUpdatedOn().getSeconds()), ZoneId.of("UTC")))
+                        .build(),
+                new Profile.Builder()
+                        .setProfileType(ProfileType.User)
+                        .setProfile(ProfileMapper.fromProtoMap(userCreateResponse.getProfile().getFieldsMap()))
+                        .setResource(userId)
+                        .setAuthorizationServerId(authorizationServerId)
+                        .setCreatedOn(OffsetDateTime.ofInstant(Instant.ofEpochSecond(userCreateResponse.getCreatedOn().getSeconds()), ZoneId.of("UTC")))
+                        .setUpdatedOn(OffsetDateTime.ofInstant(Instant.ofEpochSecond(userCreateResponse.getUpdatedOn().getSeconds()), ZoneId.of("UTC")))
+                        .build()
+        );
     }
 
     public static Pair<User, Profile> toUserAndProfile(UserResponse userResponse) {
-        var user = new User();
-        user.setId(java.util.UUID.fromString(userResponse.getId()));
-        user.setAuthorizationServerId(java.util.UUID.fromString(userResponse.getAuthorizationServerId()));
-        user.setEmail(userResponse.getEmail());
-        user.setUsername(userResponse.getUsername());
-        user.setMetadata(MetadataMapper.from(userResponse.getMetadata()));
-        user.setCreatedOn(OffsetDateTime.ofInstant(Instant.ofEpochSecond(userResponse.getCreatedOn().getSeconds()), ZoneId.of("UTC")));
-        user.setUpdatedOn(OffsetDateTime.ofInstant(Instant.ofEpochSecond(userResponse.getUpdatedOn().getSeconds()), ZoneId.of("UTC")));
-
-        var profile = new Profile();
-        profile.setProfileType(ProfileType.User);
-        profile.setProfile(ProfileMapper.fromProtoMap(userResponse.getProfile().getFieldsMap()));
-        profile.setResource(user.getId());
-        profile.setAuthorizationServerId(user.getAuthorizationServerId());
-        profile.setCreatedOn(OffsetDateTime.ofInstant(Instant.ofEpochSecond(userResponse.getCreatedOn().getSeconds()), ZoneId.of("UTC")));
-        profile.setUpdatedOn(OffsetDateTime.ofInstant(Instant.ofEpochSecond(userResponse.getUpdatedOn().getSeconds()), ZoneId.of("UTC")));
-
-        return Pair.create(user, profile);
+        var userId = UUID.fromString(userResponse.getId());
+        var authorizationServerId = UUID.fromString(userResponse.getAuthorizationServerId());
+        return Pair.create(
+                new User.Builder()
+                        .setId(userId)
+                        .setAuthorizationServerId(authorizationServerId)
+                        .setEmail(userResponse.getEmail())
+                        .setUsername(userResponse.getUsername())
+                        .setMetadata(MetadataMapper.from(userResponse.getMetadata()))
+                        .setCreatedOn(OffsetDateTime.ofInstant(Instant.ofEpochSecond(userResponse.getCreatedOn().getSeconds()), ZoneId.of("UTC")))
+                        .setUpdatedOn(OffsetDateTime.ofInstant(Instant.ofEpochSecond(userResponse.getUpdatedOn().getSeconds()), ZoneId.of("UTC")))
+                        .build(),
+                new Profile.Builder()
+                        .setProfileType(ProfileType.User)
+                        .setProfile(ProfileMapper.fromProtoMap(userResponse.getProfile().getFieldsMap()))
+                        .setResource(userId)
+                        .setAuthorizationServerId(authorizationServerId)
+                        .setCreatedOn(OffsetDateTime.ofInstant(Instant.ofEpochSecond(userResponse.getCreatedOn().getSeconds()), ZoneId.of("UTC")))
+                        .setUpdatedOn(OffsetDateTime.ofInstant(Instant.ofEpochSecond(userResponse.getUpdatedOn().getSeconds()), ZoneId.of("UTC")))
+                        .build()
+        );
     }
 }

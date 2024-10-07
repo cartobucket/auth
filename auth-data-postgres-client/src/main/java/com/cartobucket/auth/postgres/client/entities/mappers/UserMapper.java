@@ -23,16 +23,16 @@ import com.cartobucket.auth.data.domain.User;
 
 public class UserMapper {
     public static User from (com.cartobucket.auth.postgres.client.entities.User user) {
-        var _user = new User();
-        _user.setId(user.getId());
-        _user.setUpdatedOn(user.getUpdatedOn());
-        _user.setCreatedOn(user.getCreatedOn());
-        _user.setAuthorizationServerId(user.getAuthorizationServerId());
-        _user.setMetadata(user.getMetadata());
-        _user.setEmail(user.getEmail());
-        _user.setUsername(user.getUsername());
-        _user.setPassword(user.getPasswordHash());
-        return _user;
+        return new User.Builder()
+                .setId(user.getId())
+                .setUpdatedOn(user.getUpdatedOn())
+                .setCreatedOn(user.getCreatedOn())
+                .setAuthorizationServerId(user.getAuthorizationServerId())
+                .setMetadata(user.getMetadata())
+                .setEmail(user.getEmail())
+                .setUsername(user.getUsername())
+                .setPassword(user.getPasswordHash())
+                .build();
     }
 
     public static com.cartobucket.auth.postgres.client.entities.User to (User user) {

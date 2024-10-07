@@ -11,6 +11,7 @@ repositories {
 }
 
 dependencies {
+	implementation 'io.quarkiverse.helm:quarkus-helm:1.2.3'
 	implementation enforcedPlatform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}")
 }
 

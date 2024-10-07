@@ -23,15 +23,15 @@ import com.cartobucket.auth.data.domain.Profile;
 
 public class ProfileMapper {
     public static Profile from (com.cartobucket.auth.postgres.client.entities.Profile profile) {
-        var _profile = new Profile();
-        _profile.setId(profile.getId());
-        _profile.setProfile(profile.getProfile());
-        _profile.setProfileType(profile.getProfileType());
-        _profile.setResource(profile.getResource());
-        _profile.setAuthorizationServerId(profile.getAuthorizationServerId());
-        _profile.setUpdatedOn(profile.getUpdatedOn());
-        _profile.setCreatedOn(profile.getCreatedOn());
-        return _profile;
+        return new Profile.Builder()
+                .setId(profile.getId())
+                .setProfile(profile.getProfile())
+                .setProfileType(profile.getProfileType())
+                .setResource(profile.getResource())
+                .setAuthorizationServerId(profile.getAuthorizationServerId())
+                .setUpdatedOn(profile.getUpdatedOn())
+                .setCreatedOn(profile.getCreatedOn())
+                .build();
     }
 
     public static com.cartobucket.auth.postgres.client.entities.Profile to (Profile profile) {
