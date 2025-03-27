@@ -90,10 +90,11 @@ public @interface ValidAccessTokenRequest {
                         return false;
                     }
                     // TODO: The code_verifier should be the only required field but it is not supported yet in the mozilla django oidc package.
-                    if (value.getClientSecret() == null && value.getCodeVerifier() == null) {
-                        context.buildConstraintViolationWithTemplate("The Access Token request must contain a client_secret or a code_verifier field when using the authorization_code grant_type.").addPropertyNode("code_verifier").addConstraintViolation();
-                        return false;
-                    }
+                    // TODO: Undo some amount of this maybe? Pretty sure that the client_secret is required.
+//                    if (value.getClientSecret() == null && value.getCodeVerifier() == null) {
+//                        context.buildConstraintViolationWithTemplate("The Access Token request must contain a client_secret or a code_verifier field when using the authorization_code grant_type.").addPropertyNode("code_verifier").addConstraintViolation();
+//                        return false;
+//                    }
                     return true;
                 }
             }

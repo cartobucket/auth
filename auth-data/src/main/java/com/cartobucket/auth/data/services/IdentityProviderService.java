@@ -23,9 +23,7 @@ import com.cartobucket.auth.data.domain.IdentityProvider;
 import com.cartobucket.auth.data.domain.WellKnownEndpoints;
 import com.cartobucket.auth.data.exceptions.badrequests.WellKnownEndpointsFetchFailure;
 import com.cartobucket.auth.data.exceptions.notfound.IdentityProviderNotFound;
-import io.quarkus.restclient.runtime.QuarkusRestClientBuilder;
-import io.quarkus.resteasy.common.runtime.jackson.QuarkusJacksonSerializer;
-import jakarta.json.JsonBuilderFactory;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 import java.net.URI;
@@ -45,34 +43,26 @@ public interface IdentityProviderService {
     IdentityProvider updateIdentityProvider(final UUID identityProviderId, final IdentityProvider identityProvider) throws IdentityProviderNotFound;
 
     default WellKnownEndpoints fetchWellKnownEndpoints(final String discoveryEndpoint) throws WellKnownEndpointsFetchFailure {
-        final var client = HttpClient
+        try (var client = HttpClient
                 .newBuilder()
-                .build();
-        final var request = HttpRequest
-                .newBuilder()
-                .GET()
-                .uri(URI.create(discoveryEndpoint))
-                .header("Accept", "application/json")
-                .timeout(Duration.ofSeconds(60))
-                .build();
+                .build()) {
+            var response = client.send(
+                    HttpRequest
+                            .newBuilder()
+                            .GET()
+                            .uri(URI.create(discoveryEndpoint))
+                            .header("Accept", "application/json")
+                            .timeout(Duration.ofSeconds(60))
+                            .build(),
+                    HttpResponse.BodyHandlers.ofString()
+            );
+            if (response.statusCode() != 200) {
+                throw new WellKnownEndpointsFetchFailure(response.body());
+            }
 
-        try {
-            var response = client.send(request, HttpResponse.BodyHandlers.ofString());
-            var json = response.body();
-            
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            return new ObjectMapper().readValue(response.body(), WellKnownEndpoints.class);
+        } catch (IOException | InterruptedException e) {
+            throw new WellKnownEndpointsFetchFailure(e.getMessage());
         }
-
-        return new WellKnownEndpoints
-                .Builder()
-                .setAuthorizationEndpoint("")
-                .setTokenEndpoint("")
-                .setIssuerEndpoint("")
-                .setUserInfoEndpoint("")
-                .setJwksEndpoint("")
-                .build();
     }
 }

@@ -153,7 +153,9 @@ public class AuthorizationServerService implements com.cartobucket.auth.data.ser
             additionalClaims.put("nonce", nonce);
         }
         additionalClaims.put("sub", subject);
-        additionalClaims.put("scope", ScopeService.scopeListToScopeString(scopes.stream().map(Scope::getName).toList()));
+        additionalClaims.put("scope", "openid");
+// TODO: THis needs to get fixed
+//        additionalClaims.put("scope", ScopeService.scopeListToScopeString(scopes.stream().map(Scope::getName).toList()));
         additionalClaims.put("exp", OffsetDateTime.now().plusSeconds(expiresInSeconds).toEpochSecond());
 
         return buildAccessTokenResponse(authorizationServer, profile, additionalClaims);
@@ -350,7 +352,7 @@ public class AuthorizationServerService implements com.cartobucket.auth.data.ser
         final var signingKey = getSigningKeysForAuthorizationServer(authorizationServer.getId());
         try {
             var jwt = Jwt
-                    .issuer(authorizationServer.getServerUrl().toExternalForm() + authorizationServer.getId() + "/")
+                    .issuer(authorizationServer.getServerUrl().toExternalForm() + "/" + authorizationServer.getId() + "/")
                     .audience(authorizationServer.getAudience())
                     .expiresIn(authorizationServer.getClientCredentialsTokenExpiration());
 

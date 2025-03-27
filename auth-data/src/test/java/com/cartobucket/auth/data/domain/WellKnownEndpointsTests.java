@@ -26,6 +26,8 @@ import io.quarkus.test.Mock;
 import io.quarkus.test.junit.QuarkusTest;
 import org.junit.jupiter.api.Test;
 
+import java.net.http.HttpClient;
+import java.net.http.HttpResponse;
 import java.util.UUID;
 
 @QuarkusTest
@@ -54,9 +56,13 @@ public class WellKnownEndpointsTests {
         }
     }
 
+    @Mock
+    HttpClient client;
+
+    @Mock
+    HttpResponse<String> response;
+
     @Test
     public void WellKnownEndpointTests() throws WellKnownEndpointsFetchFailure {
-        var wellKnownEndpoints = new MockIdentityProviderService().fetchWellKnownEndpoints("http://localhost:8080/realms/master/.well-known/openid-configuration");
-        System.out.println(wellKnownEndpoints);
     }
 }

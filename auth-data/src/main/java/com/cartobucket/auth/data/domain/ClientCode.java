@@ -19,6 +19,8 @@
 
 package com.cartobucket.auth.data.domain;
 
+import io.quarkus.runtime.util.StringUtil;
+
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -137,6 +139,9 @@ public class ClientCode {
     }
 
     public String getNonce() {
+        if (nonce == null) {
+            return UUID.randomUUID().toString();
+        }
         return nonce;
     }
 

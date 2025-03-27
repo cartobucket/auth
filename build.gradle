@@ -11,6 +11,7 @@ repositories {
 }
 
 dependencies {
+	implementation 'io.quarkus:quarkus-container-image-jib'
 	implementation enforcedPlatform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}")
 }
 

@@ -20,6 +20,7 @@
 package com.cartobucket.auth.postgres.client.entities.mappers;
 
 import com.cartobucket.auth.data.domain.ClientCode;
+import com.cartobucket.auth.data.domain.Scope;
 
 import java.util.UUID;
 
@@ -36,7 +37,13 @@ public class ClientCodeMapper {
         _clientCode.setAuthorizationServerId(clientCode.getAuthorizationServerId());
         _clientCode.setRedirectUri(clientCode.getRedirectUri());
         _clientCode.setUserId(clientCode.getUserId());
-        _clientCode.setScopes(clientCode.getScopes().stream().map(ScopeMapper::from).toList());
+//        _clientCode.setScopes(clientCode.getScopes().stream().map(
+//                scope -> {
+//                    var _scope = new Scope();
+//                    _scope.setId(scope.getId());
+//                    return _scope;
+//                }
+//        ).toList());
         _clientCode.setCreatedOn(clientCode.getCreatedOn());
         return _clientCode;
     }
@@ -53,7 +60,13 @@ public class ClientCodeMapper {
         _clientCode.setAuthorizationServerId(clientCode.getAuthorizationServerId());
         _clientCode.setRedirectUri(clientCode.getRedirectUri());
         _clientCode.setUserId(clientCode.getUserId());
-        _clientCode.setScopes(clientCode.getScopes().stream().map(ScopeMapper::to).toList());
+//        _clientCode.setScopes(clientCode.getScopes().stream().map(
+//                scope -> {
+//                    var _scope = new com.cartobucket.auth.postgres.client.entities.Scope();
+//                    _scope.setId(scope.getId());
+//                    return _scope;
+//                }
+//        ).toList());
         _clientCode.setCreatedOn(clientCode.getCreatedOn());
         return _clientCode;
     }

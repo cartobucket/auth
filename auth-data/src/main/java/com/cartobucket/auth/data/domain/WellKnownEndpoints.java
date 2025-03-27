@@ -19,27 +19,33 @@
 
 package com.cartobucket.auth.data.domain;
 
-import java.time.OffsetDateTime;
-import java.util.List;
-import java.util.UUID;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class WellKnownEndpoints {
 
+    @JsonProperty("authorization_endpoint")
     private String authorizationEndpoint;
 
+    @JsonProperty("token_endpoint")
     private String tokenEndpoint;
 
+    @JsonProperty("userinfo_endpoint")
     private String userInfoEndpoint;
 
-    private String issuerEndpoint;
+    private String issuer;
 
+    @JsonProperty("jwks_uri")
     private String jwksEndpoint;
+
+    WellKnownEndpoints() {}
 
     public WellKnownEndpoints(String authorizationEndpoint, String tokenEndpoint, String userInfoEndpoint, String issuerEndpoint, String jwksEndpoint) {
         this.authorizationEndpoint = authorizationEndpoint;
         this.tokenEndpoint = tokenEndpoint;
         this.userInfoEndpoint = userInfoEndpoint;
-        this.issuerEndpoint = issuerEndpoint;
+        this.issuer = issuerEndpoint;
         this.jwksEndpoint = jwksEndpoint;
     }
 
@@ -67,12 +73,12 @@ public class WellKnownEndpoints {
         this.userInfoEndpoint = userInfoEndpoint;
     }
 
-    public String getIssuerEndpoint() {
-        return issuerEndpoint;
+    public String getIssuer() {
+        return issuer;
     }
 
-    public void setIssuerEndpoint(String issuerEndpoint) {
-        this.issuerEndpoint = issuerEndpoint;
+    public void setIssuer(String issuerEndpoint) {
+        this.issuer = issuerEndpoint;
     }
 
     public String getJwksEndpoint() {
@@ -86,7 +92,7 @@ public class WellKnownEndpoints {
         private String authorizationEndpoint;
         private String tokenEndpoint;
         private String userInfoEndpoint;
-        private String issuerEndpoint;
+        private String issuer;
         private String jwksEndpoint;
 
         public WellKnownEndpoints.Builder setAuthorizationEndpoint(String authorizationEndpoint) {
@@ -104,8 +110,8 @@ public class WellKnownEndpoints {
             return this;
         }
 
-        public WellKnownEndpoints.Builder setIssuerEndpoint(String issuerEndpoint) {
-            this.issuerEndpoint = issuerEndpoint;
+        public WellKnownEndpoints.Builder setIssuer(String issuer) {
+            this.issuer = issuer;
             return this;
         }
 
@@ -115,7 +121,7 @@ public class WellKnownEndpoints {
         }
 
         public WellKnownEndpoints build() {
-            return new WellKnownEndpoints(authorizationEndpoint, tokenEndpoint, userInfoEndpoint, issuerEndpoint, jwksEndpoint);
+            return new WellKnownEndpoints(authorizationEndpoint, tokenEndpoint, userInfoEndpoint, issuer, jwksEndpoint);
         }
     }
 }
