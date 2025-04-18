@@ -123,6 +123,9 @@ public class UserService implements com.cartobucket.auth.data.services.UserServi
         user.setUpdatedOn(OffsetDateTime.now());
         var _user = UserMapper.to(user);
         userRepository.persist(_user);
+        if (user.getPassword() != null) {
+            setPassword(user, user.getPassword());
+        }
 
         profile.setCreatedOn(OffsetDateTime.now());
         profile.setUpdatedOn(OffsetDateTime.now());

@@ -19,6 +19,7 @@
 
 package com.cartobucket.auth.api.server.validators;
 
+import com.cartobucket.auth.data.exceptions.notfound.UserNotFound;
 import com.cartobucket.auth.data.services.UserService;
 import jakarta.inject.Inject;
 import jakarta.validation.Constraint;
@@ -71,7 +72,11 @@ public @interface ValidUsername {
             if (value == null) {
                 return false;
             }
-            return userService.getUser(value) == null;
+            try {
+                return userService.getUser(value) == null;
+            } catch (UserNotFound userNotFound) {
+                return true;
+            }
         }
     }
 }

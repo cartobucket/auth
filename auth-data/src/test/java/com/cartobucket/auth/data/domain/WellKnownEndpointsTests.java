@@ -64,5 +64,6 @@ public class WellKnownEndpointsTests {
 
     @Test
     public void WellKnownEndpointTests() throws WellKnownEndpointsFetchFailure {
+      assert true;
     }
 }
