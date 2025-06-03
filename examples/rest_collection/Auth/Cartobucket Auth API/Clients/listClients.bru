@@ -1,0 +1,17 @@
+meta {
+  name: listClients
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/clients/
+  body: none
+  auth: none
+}
+
+params:query {
+  ~authorizationServerIds: 
+  ~limit: 
+  ~offset: 
+}

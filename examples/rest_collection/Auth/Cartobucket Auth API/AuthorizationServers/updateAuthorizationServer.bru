@@ -1,0 +1,37 @@
+meta {
+  name: updateAuthorizationServer
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{baseUrl}}/authorizationServers/:authorizationServerId
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "serverUrl": "",
+    "audience": "",
+    "clientCredentialsTokenExpiration": "",
+    "authorizationCodeTokenExpiration": "",
+    "name": "",
+    "metadata": {
+      "properties": {},
+      "identifiers": [
+        {
+          "system": "",
+          "value": ""
+        }
+      ],
+      "schemaValidations": [
+        {
+          "schemaId": "",
+          "isValid": "",
+          "validatedOn": ""
+        }
+      ]
+    }
+  }
+}

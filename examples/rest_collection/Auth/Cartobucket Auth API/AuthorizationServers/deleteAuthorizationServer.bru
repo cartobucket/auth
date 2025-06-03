@@ -1,0 +1,11 @@
+meta {
+  name: deleteAuthorizationServer
+  type: http
+  seq: 5
+}
+
+delete {
+  url: {{baseUrl}}/authorizationServers/:authorizationServerId
+  body: none
+  auth: none
+}

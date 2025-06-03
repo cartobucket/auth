@@ -1,0 +1,11 @@
+meta {
+  name: deleteClient
+  type: http
+  seq: 4
+}
+
+delete {
+  url: {{baseUrl}}/clients/:clientId
+  body: none
+  auth: none
+}

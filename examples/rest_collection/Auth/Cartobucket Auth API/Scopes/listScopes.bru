@@ -1,0 +1,17 @@
+meta {
+  name: listScopes
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/scopes/
+  body: none
+  auth: none
+}
+
+params:query {
+  ~authorizationServerIds: 
+  ~limit: 
+  ~offset: 
+}

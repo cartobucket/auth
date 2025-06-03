@@ -1,0 +1,36 @@
+meta {
+  name: Update a SchemaRequest
+  type: http
+  seq: 2
+}
+
+put {
+  url: {{baseUrl}}/schemas/:schemaId
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "authorizationServer": "",
+    "name": "",
+    "schemaVersion": "",
+    "schema": {},
+    "metadata": {
+      "properties": {},
+      "identifiers": [
+        {
+          "system": "",
+          "value": ""
+        }
+      ],
+      "schemaValidations": [
+        {
+          "schemaId": "",
+          "isValid": "",
+          "validatedOn": ""
+        }
+      ]
+    }
+  }
+}

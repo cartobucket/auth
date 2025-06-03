@@ -1,0 +1,11 @@
+meta {
+  name: deleteApplication
+  type: http
+  seq: 2
+}
+
+delete {
+  url: {{baseUrl}}/applications/:applicationId
+  body: none
+  auth: none
+}

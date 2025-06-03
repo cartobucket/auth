@@ -1,0 +1,36 @@
+meta {
+  name: Create a SchemaRequest
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{baseUrl}}/schemas
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "authorizationServer": "",
+    "name": "",
+    "schemaVersion": "",
+    "schema": {},
+    "metadata": {
+      "properties": {},
+      "identifiers": [
+        {
+          "system": "",
+          "value": ""
+        }
+      ],
+      "schemaValidations": [
+        {
+          "schemaId": "",
+          "isValid": "",
+          "validatedOn": ""
+        }
+      ]
+    }
+  }
+}

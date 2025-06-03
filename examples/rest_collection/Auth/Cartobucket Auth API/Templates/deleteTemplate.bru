@@ -1,0 +1,11 @@
+meta {
+  name: deleteTemplate
+  type: http
+  seq: 5
+}
+
+delete {
+  url: {{baseUrl}}/templates/:templateId/
+  body: none
+  auth: none
+}

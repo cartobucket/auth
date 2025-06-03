@@ -1,0 +1,17 @@
+meta {
+  name: listUsers
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/users/
+  body: none
+  auth: none
+}
+
+params:query {
+  ~authorizationServerIds: 
+  ~limit: 
+  ~offset: 
+}

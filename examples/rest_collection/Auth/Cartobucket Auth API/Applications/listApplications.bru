@@ -1,0 +1,17 @@
+meta {
+  name: listApplications
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/applications/
+  body: none
+  auth: none
+}
+
+params:query {
+  ~authorizationServerIds: 
+  ~limit: 
+  ~offset: 
+}

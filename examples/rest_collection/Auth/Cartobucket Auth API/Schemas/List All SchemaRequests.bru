@@ -1,0 +1,17 @@
+meta {
+  name: List All SchemaRequests
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{baseUrl}}/schemas
+  body: none
+  auth: none
+}
+
+params:query {
+  ~authorizationServerIds: 
+  ~limit: 
+  ~offset: 
+}

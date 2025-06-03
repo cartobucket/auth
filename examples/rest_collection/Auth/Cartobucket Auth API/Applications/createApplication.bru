@@ -1,0 +1,38 @@
+meta {
+  name: createApplication
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{baseUrl}}/applications/
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "name": "",
+    "clientId": "",
+    "clientSecret": "",
+    "profile": {},
+    "authorizationServerId": "",
+    "metadata": {
+      "properties": {},
+      "identifiers": [
+        {
+          "system": "",
+          "value": ""
+        }
+      ],
+      "schemaValidations": [
+        {
+          "schemaId": "",
+          "isValid": "",
+          "validatedOn": ""
+        }
+      ]
+    },
+    "scopes": []
+  }
+}

@@ -1,0 +1,37 @@
+meta {
+  name: createUser
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/users/
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "authorizationServerId": "",
+    "username": "",
+    "email": "",
+    "profile": {},
+    "password": "",
+    "metadata": {
+      "properties": {},
+      "identifiers": [
+        {
+          "system": "",
+          "value": ""
+        }
+      ],
+      "schemaValidations": [
+        {
+          "schemaId": "",
+          "isValid": "",
+          "validatedOn": ""
+        }
+      ]
+    }
+  }
+}

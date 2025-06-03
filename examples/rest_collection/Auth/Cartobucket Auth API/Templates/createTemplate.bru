@@ -1,0 +1,35 @@
+meta {
+  name: createTemplate
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/templates/
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "templateType": "",
+    "template": "",
+    "authorizationServerId": "",
+    "metadata": {
+      "properties": {},
+      "identifiers": [
+        {
+          "system": "",
+          "value": ""
+        }
+      ],
+      "schemaValidations": [
+        {
+          "schemaId": "",
+          "isValid": "",
+          "validatedOn": ""
+        }
+      ]
+    }
+  }
+}

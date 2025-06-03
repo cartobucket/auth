@@ -1,0 +1,35 @@
+meta {
+  name: updateTemplate
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{baseUrl}}/templates/:templateId/
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "templateType": "",
+    "template": "",
+    "authorizationServerId": "",
+    "metadata": {
+      "properties": {},
+      "identifiers": [
+        {
+          "system": "",
+          "value": ""
+        }
+      ],
+      "schemaValidations": [
+        {
+          "schemaId": "",
+          "isValid": "",
+          "validatedOn": ""
+        }
+      ]
+    }
+  }
+}

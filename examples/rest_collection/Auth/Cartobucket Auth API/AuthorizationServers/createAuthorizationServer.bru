@@ -1,0 +1,37 @@
+meta {
+  name: createAuthorizationServer
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/authorizationServers/
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "serverUrl": "",
+    "audience": "",
+    "clientCredentialsTokenExpiration": "",
+    "authorizationCodeTokenExpiration": "",
+    "name": "",
+    "metadata": {
+      "properties": {},
+      "identifiers": [
+        {
+          "system": "",
+          "value": ""
+        }
+      ],
+      "schemaValidations": [
+        {
+          "schemaId": "",
+          "isValid": "",
+          "validatedOn": ""
+        }
+      ]
+    }
+  }
+}
