@@ -19,7 +19,6 @@
 
 package com.cartobucket.auth.data.services
 
-import com.cartobucket.auth.data.domain.AuthorizationServer
 import com.cartobucket.auth.data.domain.Identifier
 import com.cartobucket.auth.data.domain.Pair
 import com.cartobucket.auth.data.domain.Profile
@@ -27,7 +26,7 @@ import com.cartobucket.auth.data.domain.SchemaValidation
 import com.cartobucket.auth.data.domain.User
 import com.cartobucket.auth.data.exceptions.notfound.ProfileNotFound
 import com.cartobucket.auth.data.exceptions.notfound.UserNotFound
-import java.util.UUID
+import java.util.*
 
 interface UserService {
     data class Page(
