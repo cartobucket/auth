@@ -80,8 +80,8 @@ public class UserService implements com.cartobucket.auth.data.services.UserServi
             queryParameters.and("identifiers", query.identifiers());
         }
         // Next, filter by validations
-        if (!query.validations().isEmpty()) {
-            queryParameters.and("validations", query.validations());
+        if (!query.schemaValidations().isEmpty()) {
+            queryParameters.and("validations", query.schemaValidations());
         }
         final var _map = queryParameters.map();
 
@@ -134,7 +134,7 @@ public class UserService implements com.cartobucket.auth.data.services.UserServi
         profile.setAuthorizationServerId(user.getAuthorizationServerId());
         var _profile = ProfileMapper.to(profile);
         profileRepository.persist(_profile);
-        var pair = Pair.create(UserMapper.from(_user), ProfileMapper.from(_profile));
+        var pair = Pair.Companion.create(UserMapper.from(_user), ProfileMapper.from(_profile));
         eventRepository.createUserProfileEvent(pair, EventType.CREATE);
         return pair;
     }
@@ -151,7 +151,7 @@ public class UserService implements com.cartobucket.auth.data.services.UserServi
         userRepository.delete(user);
         profileRepository.delete(profile);
         eventRepository.createUserProfileEvent(
-                Pair.create(UserMapper.from(user), ProfileMapper.from(profile)),
+                Pair.Companion.create(UserMapper.from(user), ProfileMapper.from(profile)),
                 EventType.DELETE
         );
     }
@@ -167,7 +167,7 @@ public class UserService implements com.cartobucket.auth.data.services.UserServi
                 .findByResourceAndProfileType(userId, ProfileType.User)
                 .map(ProfileMapper::from)
                 .orElseThrow(ProfileNotFound::new);
-        return Pair.create(user, profile);
+        return Pair.Companion.create(user, profile);
     }
 
     @Override
@@ -181,7 +181,7 @@ public class UserService implements com.cartobucket.auth.data.services.UserServi
                 .findByResourceAndProfileType(user.getId(), ProfileType.User)
                 .map(ProfileMapper::from)
                 .orElseThrow(ProfileNotFound::new);
-        return Pair.create(user, profile);
+        return Pair.Companion.create(user, profile);
     }
 
     @Override
@@ -206,7 +206,7 @@ public class UserService implements com.cartobucket.auth.data.services.UserServi
         _profile.setProfile(profile.getProfile());
         profileRepository.persist(_profile);
 
-        final var pair = Pair.create(UserMapper.from(_user), ProfileMapper.from(_profile));
+        final var pair = Pair.Companion.create(UserMapper.from(_user), ProfileMapper.from(_profile));
         eventRepository.createUserProfileEvent(pair, EventType.UPDATE);
         return pair;
     }

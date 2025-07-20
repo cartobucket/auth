@@ -27,6 +27,29 @@ java {
     targetCompatibility = JavaVersion.VERSION_21
 }
 
+kotlin {
+    jvmToolchain(21)
+}
+
+sourceSets {
+    main {
+        kotlin {
+            srcDirs = ['src/main/kotlin']
+        }
+        java {
+            srcDirs = ['src/main/java']
+        }
+    }
+    test {
+        kotlin {
+            srcDirs = ['src/test/kotlin']
+        }
+        java {
+            srcDirs = ['src/test/java']
+        }
+    }
+}
+
 test {
     systemProperty "java.util.logging.manager", "org.jboss.logmanager.LogManager"
 }

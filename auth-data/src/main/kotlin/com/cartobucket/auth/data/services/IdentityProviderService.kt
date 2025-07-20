@@ -64,9 +64,9 @@ interface IdentityProviderService {
                 ObjectMapper().readValue(response.body(), WellKnownEndpoints::class.java)
             }
         } catch (e: IOException) {
-            throw WellKnownEndpointsFetchFailure(e.message)
+            throw WellKnownEndpointsFetchFailure(e.message.toString())
         } catch (e: InterruptedException) {
-            throw WellKnownEndpointsFetchFailure(e.message)
+            throw WellKnownEndpointsFetchFailure(e.message.toString())
         }
     }
 }
