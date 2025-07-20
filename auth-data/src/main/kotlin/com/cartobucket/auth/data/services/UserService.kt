@@ -19,6 +19,7 @@
 
 package com.cartobucket.auth.data.services
 
+import com.cartobucket.auth.data.domain.AuthorizationServer
 import com.cartobucket.auth.data.domain.Identifier
 import com.cartobucket.auth.data.domain.Pair
 import com.cartobucket.auth.data.domain.Profile
@@ -32,16 +33,48 @@ interface UserService {
     data class Page(
         val limit: Int,
         val offset: Int
-    )
+    ) {
+        fun offset(): Int {
+            return offset
+        }
+
+        fun limit(): Int {
+            return limit
+        }
+    }
 
     data class UserQuery(
         val authorizationServerIds: List<UUID>,
         val userIds: List<UUID>,
         val emails: List<String>,
         val identifiers: List<Identifier>,
-        val validations: List<SchemaValidation>,
+        val schemaValidations: List<SchemaValidation>,
         val page: Page
-    )
+    ) {
+        fun userIds(): List<UUID> {
+            return userIds
+        }
+
+        fun emails(): List<String> {
+            return emails
+        }
+
+        fun identifiers(): List<Identifier> {
+            return identifiers
+        }
+
+        fun schemaValidations(): List<SchemaValidation> {
+            return schemaValidations
+        }
+
+        fun page(): Page {
+            return page
+        }
+
+        fun authorizationServerIds(): List<UUID> {
+            return authorizationServerIds
+        }
+    }
 
     fun query(query: UserQuery): List<User>
 

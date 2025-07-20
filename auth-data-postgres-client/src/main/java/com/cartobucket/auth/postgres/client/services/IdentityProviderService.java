@@ -1,8 +1,11 @@
 package com.cartobucket.auth.postgres.client.services;
 
 import com.cartobucket.auth.data.domain.IdentityProvider;
+import com.cartobucket.auth.data.domain.WellKnownEndpoints;
+import com.cartobucket.auth.data.exceptions.badrequests.WellKnownEndpointsFetchFailure;
 import com.cartobucket.auth.data.exceptions.notfound.IdentityProviderNotFound;
 import com.cartobucket.auth.postgres.client.repositories.IdentityProviderRepository;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
 
@@ -41,5 +44,10 @@ public class IdentityProviderService implements com.cartobucket.auth.data.servic
         //TODO: Update values;
         identityProviderRepository.persist(provider);
         return to(provider);
+    }
+
+    @Override
+    public @NotNull WellKnownEndpoints fetchWellKnownEndpoints(@NotNull String discoveryEndpoint) throws WellKnownEndpointsFetchFailure {
+        return com.cartobucket.auth.data.services.IdentityProviderService.super.fetchWellKnownEndpoints(discoveryEndpoint);
     }
 }

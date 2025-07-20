@@ -30,6 +30,7 @@ data class Scope(
     var createdOn: OffsetDateTime? = null,
     var updatedOn: OffsetDateTime? = null
 ) {
+    constructor(id: UUID) : this(id, null, null, null, null, null)
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other == null || this::class != other::class) return false

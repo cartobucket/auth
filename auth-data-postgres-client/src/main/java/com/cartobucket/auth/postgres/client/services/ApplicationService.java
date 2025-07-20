@@ -88,7 +88,7 @@ public class ApplicationService implements com.cartobucket.auth.data.services.Ap
         applicationRepository.delete(application);
         profileRepository.delete(profile);
         eventRepository.createApplicationProfileEvent(
-                Pair.create(ApplicationMapper.from(application), ProfileMapper.from(profile)),
+                Pair.Companion.create(ApplicationMapper.from(application), ProfileMapper.from(profile)),
                 EventType.DELETE
         );
     }
@@ -108,7 +108,7 @@ public class ApplicationService implements com.cartobucket.auth.data.services.Ap
                 )
                 .map(ProfileMapper::from)
                 .orElseThrow(ProfileNotFound::new);
-        return Pair.create(application, profile);
+        return Pair.Companion.create(application, profile);
     }
 
     @Override
@@ -137,7 +137,7 @@ public class ApplicationService implements com.cartobucket.auth.data.services.Ap
         QuarkusTransaction.commit();
 
         QuarkusTransaction.begin();
-        var applicationProfilePair = Pair.create(
+        var applicationProfilePair = Pair.Companion.create(
                 ApplicationMapper.from(applicationRepository.findById(_application.getId())),
                 ProfileMapper.from(_profile)
         );

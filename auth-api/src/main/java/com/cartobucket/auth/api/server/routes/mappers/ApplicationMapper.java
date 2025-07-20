@@ -78,13 +78,13 @@ public class ApplicationMapper {
     }
 
     public static ApplicationSecret secretFrom(Application application, ApplicationSecretRequest applicationSecretRequest) {
-        return new ApplicationSecret.Builder()
-                .setApplicationId(application.getId())
-                .setName(applicationSecretRequest.getName())
-                .setAuthorizationServerId(application.getAuthorizationServerId())
-                .setScopes(applicationSecretRequest.getScopes().stream().map(Scope::new).toList())
-                .setExpiresIn(applicationSecretRequest.getExpiresIn())
-                .build();
+        var applicationSecret = new ApplicationSecret();
+        applicationSecret.setApplicationId(application.getId());
+        applicationSecret.setName(applicationSecretRequest.getName());
+        applicationSecret.setAuthorizationServerId(application.getAuthorizationServerId());
+        applicationSecret.setScopes(applicationSecretRequest.getScopes().stream().map(Scope::new).toList());
+        applicationSecret.setExpiresIn(applicationSecretRequest.getExpiresIn());
+        return applicationSecret;
     }
 
     public static ApplicationSecretResponse toSecretResponse(ApplicationSecret applicationSecret) {

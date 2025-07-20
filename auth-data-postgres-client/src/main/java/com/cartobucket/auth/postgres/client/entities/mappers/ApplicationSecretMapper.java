@@ -24,17 +24,17 @@ import com.cartobucket.auth.data.domain.ApplicationSecret;
 
 public class ApplicationSecretMapper {
     public static ApplicationSecret from(com.cartobucket.auth.postgres.client.entities.ApplicationSecret applicationSecret) {
-        return new ApplicationSecret.Builder()
-                .setApplicationId(applicationSecret.getApplicationId())
-                .setApplicationSecret(applicationSecret.getApplicationSecret())
-                .setApplicationSecretHash(applicationSecret.getApplicationSecretHash())
-                .setId(applicationSecret.getId())
-                .setScopes(applicationSecret.getScopes().stream().map(ScopeMapper::fromNoAuthorizationServer).toList())
-                .setAuthorizationServerId(applicationSecret.getAuthorizationServerId())
-                .setName(applicationSecret.getName())
-                .setExpiresIn(applicationSecret.getExpiresIn())
-                .setCreatedOn(applicationSecret.getCreatedOn())
-                .build();
+        var secret = new ApplicationSecret();
+        secret.setApplicationId(applicationSecret.getApplicationId());
+        secret.setApplicationSecret(applicationSecret.getApplicationSecret());
+        secret.setApplicationSecretHash(applicationSecret.getApplicationSecretHash());
+        secret.setId(applicationSecret.getId());
+        secret.setScopes(applicationSecret.getScopes().stream().map(ScopeMapper::fromNoAuthorizationServer).toList());
+        secret.setAuthorizationServerId(applicationSecret.getAuthorizationServerId());
+        secret.setName(applicationSecret.getName());
+        secret.setExpiresIn(applicationSecret.getExpiresIn());
+        secret.setCreatedOn(applicationSecret.getCreatedOn());
+        return secret;
     }
 
     public static com.cartobucket.auth.postgres.client.entities.ApplicationSecret to(ApplicationSecret applicationSecret) {

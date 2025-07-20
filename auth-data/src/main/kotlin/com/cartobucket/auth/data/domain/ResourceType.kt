@@ -1,12 +1,14 @@
 package com.cartobucket.auth.data.domain
 
 enum class ResourceType {
-    APPLICATIONS,
-    AUTHORIZATION_SERVERS,
-    APPLICATION_SECRETS,
-    CLIENTS,
-    SCHEMAS,
-    SCOPES,
-    TEMPLATES,
-    USERS
+    APPLICATION,
+    AUTHORIZATION_SERVER,
+    APPLICATION_SECRET,
+    CLIENT,
+    CLIENT_CODE,
+    SCHEMA,
+    SCOPE,
+    SIGNING_KEY,
+    TEMPLATE,
+    USER
 }

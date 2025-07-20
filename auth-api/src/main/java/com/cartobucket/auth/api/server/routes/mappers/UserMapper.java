@@ -39,7 +39,7 @@ public class UserMapper {
         profile.setProfileType(ProfileType.User);
         profile.setProfile((Map<String, Object>) userRequest.getProfile());
         profile.setAuthorizationServerId(userRequest.getAuthorizationServerId());
-        return Pair.create(user, profile);
+        return Pair.Companion.create(user, profile);
     }
     public static UserResponse toResponse(Pair<User, Profile> userProfilePair) {
         var user = userProfilePair.getLeft();

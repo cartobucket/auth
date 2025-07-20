@@ -89,7 +89,7 @@ public class Users implements UsersApi {
                 userService
                         .getUsers(authorizationServerIds, new Page(limit, offset))
                         .stream()
-                        .map((User user) -> UserMapper.toResponse(Pair.create(user, new Profile())))
+                        .map((User user) -> UserMapper.toResponse(Pair.Companion.create(user, new Profile())))
                         .toList()
         );
         usersResponse.setPage(getPage("users", authorizationServerIds, limit, offset));
