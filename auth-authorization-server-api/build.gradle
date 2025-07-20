@@ -2,6 +2,7 @@ import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
 
 plugins {
     id 'java-library'
+    id 'org.jetbrains.kotlin.jvm' version '2.2.0'
     id 'io.quarkus'
     id 'org.openapi.generator' version '7.2.0'
 }
@@ -13,6 +14,8 @@ repositories {
 
 dependencies {
     implementation 'io.quarkus:quarkus-container-image-jib'
+    implementation 'io.quarkus:quarkus-kotlin'
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib'
     implementation enforcedPlatform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}")
 
     // Tooling
