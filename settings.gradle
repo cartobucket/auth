@@ -11,12 +11,7 @@ pluginManagement {
 }
 rootProject.name='auth'
 include 'auth-api'
-include 'auth-api-grpc-server'
 include 'auth-authorization-server-api'
-include 'auth-authorization-server-grpc-server'
 include 'auth-data'
-include 'auth-data-grpc'
-include 'auth-data-grpc-client'
 include 'auth-data-postgres-client'
-include 'auth-data-grpc-server'
 include 'auth-single-server'
