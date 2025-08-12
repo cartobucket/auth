@@ -71,19 +71,22 @@ public class AuthorizationServerService implements com.cartobucket.auth.data.ser
     final ProfileRepository profileRepository;
     final SingingKeyRepository singingKeyRepository;
     final TemplateService templateService;
+    final ScopeService scopeService;
 
     public AuthorizationServerService(
             AuthorizationServerRepository authorizationServerRepository,
             EventRepository eventRepository,
             ProfileRepository profileRepository,
             SingingKeyRepository singingKeyRepository,
-            TemplateService templateService
+            TemplateService templateService,
+            ScopeService scopeService
     ) {
         this.authorizationServerRepository = authorizationServerRepository;
         this.eventRepository = eventRepository;
         this.profileRepository = profileRepository;
         this.singingKeyRepository = singingKeyRepository;
         this.templateService = templateService;
+        this.scopeService = scopeService;
     }
 
     public static SigningKey generateSigningKey(AuthorizationServer authorizationServer) {
@@ -182,6 +185,9 @@ public class AuthorizationServerService implements com.cartobucket.auth.data.ser
                 SigningKeyMapper.from(signingKey),
                 EventType.CREATE
         );
+
+        // Create the default scopes
+        createDefaultScopesForAuthorizationServer(authorizationServer);
 
         // Create the templates
         createDefaultTemplatesForAuthorizationServer(authorizationServer);
@@ -325,6 +331,21 @@ public class AuthorizationServerService implements com.cartobucket.auth.data.ser
         return jwk;
     }
 
+    private void createDefaultScopesForAuthorizationServer(AuthorizationServer authorizationServer) {
+        String[] defaultScopeNames = {"openid", "email", "profile", "offline_access"};
+        
+        for (String scopeName : defaultScopeNames) {
+            var scope = new Scope();
+            scope.setName(scopeName);
+            scope.setAuthorizationServer(authorizationServer);
+            var metadata = new Metadata();
+            metadata.setIdentifiers(Collections.emptyList());
+            metadata.setProperties(Collections.emptyMap());
+            scope.setMetadata(metadata);
+            scopeService.createScope(scope);
+        }
+    }
+
     private void createDefaultTemplatesForAuthorizationServer(AuthorizationServer authorizationServer) {
         try (InputStream inputStream = getClass().getResourceAsStream("/templates/login.html")) {
             assert inputStream != null;
@@ -334,6 +355,10 @@ public class AuthorizationServerService implements com.cartobucket.auth.data.ser
                 template.setTemplate(Base64.getEncoder().encode(contents.getBytes()));
                 template.setTemplateType(TemplateTypeEnum.LOGIN);
                 template.setAuthorizationServerId(authorizationServer.getId());
+                var metadata = new Metadata();
+                metadata.setIdentifiers(Collections.emptyList());
+                metadata.setProperties(Collections.emptyMap());
+                template.setMetadata(metadata);
                 var _template = templateService.createTemplate(template);
                 eventRepository.createTemplateEvent(
                         _template,
