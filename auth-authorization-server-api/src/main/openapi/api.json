@@ -755,8 +755,13 @@
           "grant_type": {
             "enum": [
               "client_credentials",
-              "authorization_code"
+              "authorization_code",
+              "refresh_token"
             ],
+            "type": "string"
+          },
+          "refresh_token": {
+            "description": "The refresh token to use for obtaining a new access token",
             "type": "string"
           },
           "code": {

@@ -59,4 +59,10 @@ interface AuthorizationServerService {
         expireInSeconds: Long,
         nonce: String
     ): AccessToken
+    
+    fun refreshAccessToken(
+        authorizationServerId: UUID,
+        refreshToken: String,
+        clientId: String
+    ): AccessToken
 }

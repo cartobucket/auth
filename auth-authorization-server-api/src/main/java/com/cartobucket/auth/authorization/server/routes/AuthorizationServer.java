@@ -114,12 +114,20 @@ public abstract class AuthorizationServer implements AuthorizationServerApi {
             return renderLoginScreen(authorizationServerId);
         }
 
-        // TODO: FIx this
-//        final var scopes = ScopeService.scopeStringToScopeList(scope);
-//        if (client.getScopes().containsAll(scopes)) {
-//            LOG.error("Scopes not found: " + scopes + " and " + client.getScopes().toString());
-//            return renderLoginScreen(authorizationServerId);
-//        }
+        // Validate requested scopes against client's allowed scopes
+        final var requestedScopes = ScopeService.scopeStringToScopeList(scope);
+        final var validScopes = scopeService.filterScopesForAuthorizationServerId(
+                authorizationServerId,
+                scope
+        );
+        
+        // Check if offline_access is requested and allowed
+        boolean offlineAccessRequested = requestedScopes.stream()
+                .anyMatch(s -> "offline_access".equals(s.getName()));
+        
+        if (offlineAccessRequested) {
+            LOG.info("offline_access scope requested for client: " + clientId);
+        }
 
         var clientCode = new ClientCode();
         clientCode.setClientId(clientId);
@@ -129,7 +137,7 @@ public abstract class AuthorizationServer implements AuthorizationServerApi {
         clientCode.setState(state);
         clientCode.setCodeChallenge(codeChallenge);
         clientCode.setCodeChallengeMethod(codeChallengeMethod);
-        clientCode.setScopes(ScopeService.scopeStringToScopeList(scope));
+        clientCode.setScopes(validScopes);
         clientCode.setUserId(user.getId());
 
         LOG.error("We are about to call into the client service now");
@@ -212,7 +220,8 @@ public abstract class AuthorizationServer implements AuthorizationServerApi {
         wellKnown.setGrantTypesSupported(
                 Arrays.asList(
                         AccessTokenRequest.GrantTypeEnum.CLIENT_CREDENTIALS.value(),
-                        AccessTokenRequest.GrantTypeEnum.AUTHORIZATION_CODE.value()
+                        AccessTokenRequest.GrantTypeEnum.AUTHORIZATION_CODE.value(),
+                        AccessTokenRequest.GrantTypeEnum.REFRESH_TOKEN.value()
                 )
         );
         return Response.ok().entity(wellKnown).build();
@@ -247,7 +256,8 @@ public abstract class AuthorizationServer implements AuthorizationServerApi {
             @FormParam("code") String code,
             @FormParam("redirect_uri") String redirectUri,
             @FormParam("code_verifier") String codeVerifier,
-            @FormParam("scope") String scope) {
+            @FormParam("scope") String scope,
+            @FormParam("refresh_token") String refreshToken) {
         final var accessTokenRequest = new AccessTokenRequest();
         accessTokenRequest.setClientId(clientId);
         accessTokenRequest.setClientSecret(clientSecret);
@@ -256,6 +266,7 @@ public abstract class AuthorizationServer implements AuthorizationServerApi {
         accessTokenRequest.setRedirectUri(redirectUri);
         accessTokenRequest.setCodeVerifier(codeVerifier);
         accessTokenRequest.setScope(scope != null ? scope : "");
+        accessTokenRequest.setRefreshToken(refreshToken);
         return issueToken(authorizationServerId, accessTokenRequest);
     }
 
@@ -318,6 +329,28 @@ public abstract class AuthorizationServer implements AuthorizationServerApi {
                                                         authorizationServer.getAuthorizationCodeTokenExpiration(),
                                                         clientCode.getNonce()
                                                 )
+                                )
+                        )
+                        .build();
+            }
+            case REFRESH_TOKEN -> {
+                if (accessTokenRequest.getRefreshToken() == null || accessTokenRequest.getRefreshToken().isEmpty()) {
+                    throw new BadRequestException("refresh_token is required");
+                }
+                
+                if (accessTokenRequest.getClientId() == null || accessTokenRequest.getClientId().isEmpty()) {
+                    throw new BadRequestException("client_id is required");
+                }
+                
+                return Response
+                        .ok()
+                        .entity(
+                                AccessTokenResponseMapper.toAccessTokenResponse(
+                                        authorizationServerService.refreshAccessToken(
+                                                authorizationServerId,
+                                                accessTokenRequest.getRefreshToken(),
+                                                accessTokenRequest.getClientId()
+                                        )
                                 )
                         )
                         .build();

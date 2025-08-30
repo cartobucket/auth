@@ -27,6 +27,7 @@ import com.cartobucket.auth.data.services.ScopeService;
 import com.cartobucket.auth.data.services.TemplateService;
 import com.cartobucket.auth.postgres.client.repositories.AuthorizationServerRepository;
 import com.cartobucket.auth.postgres.client.repositories.EventRepository;
+import com.cartobucket.auth.postgres.client.repositories.RefreshTokenRepository;
 import com.cartobucket.auth.postgres.client.repositories.SingingKeyRepository;
 import com.cartobucket.auth.postgres.client.entities.EventType;
 import com.cartobucket.auth.postgres.client.entities.mappers.AuthorizationServerMapper;
@@ -49,7 +50,10 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 import java.security.GeneralSecurityException;
+import java.security.SecureRandom;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
@@ -69,6 +73,7 @@ public class AuthorizationServerService implements com.cartobucket.auth.data.ser
     final AuthorizationServerRepository authorizationServerRepository;
     final EventRepository eventRepository;
     final ProfileRepository profileRepository;
+    final RefreshTokenRepository refreshTokenRepository;
     final SingingKeyRepository singingKeyRepository;
     final TemplateService templateService;
     final ScopeService scopeService;
@@ -77,6 +82,7 @@ public class AuthorizationServerService implements com.cartobucket.auth.data.ser
             AuthorizationServerRepository authorizationServerRepository,
             EventRepository eventRepository,
             ProfileRepository profileRepository,
+            RefreshTokenRepository refreshTokenRepository,
             SingingKeyRepository singingKeyRepository,
             TemplateService templateService,
             ScopeService scopeService
@@ -84,6 +90,7 @@ public class AuthorizationServerService implements com.cartobucket.auth.data.ser
         this.authorizationServerRepository = authorizationServerRepository;
         this.eventRepository = eventRepository;
         this.profileRepository = profileRepository;
+        this.refreshTokenRepository = refreshTokenRepository;
         this.singingKeyRepository = singingKeyRepository;
         this.templateService = templateService;
         this.scopeService = scopeService;
@@ -161,7 +168,101 @@ public class AuthorizationServerService implements com.cartobucket.auth.data.ser
 //        additionalClaims.put("scope", ScopeService.scopeListToScopeString(scopes.stream().map(Scope::getName).toList()));
         additionalClaims.put("exp", OffsetDateTime.now().plusSeconds(expiresInSeconds).toEpochSecond());
 
-        return buildAccessTokenResponse(authorizationServer, profile, additionalClaims);
+        var accessToken = buildAccessTokenResponse(authorizationServer, profile, additionalClaims);
+        
+        // Generate refresh token if offline_access scope is present
+        if (scopes != null && scopes.stream().anyMatch(scope -> "offline_access".equals(scope.getName()))) {
+            var refreshToken = generateRefreshToken();
+            var refreshTokenHash = hashRefreshToken(refreshToken);
+            
+            // Store refresh token in database
+            var refreshTokenEntity = new com.cartobucket.auth.postgres.client.entities.RefreshToken();
+            refreshTokenEntity.tokenHash = refreshTokenHash;
+            refreshTokenEntity.userId = userId;
+            refreshTokenEntity.clientId = subject;
+            refreshTokenEntity.authorizationServerId = authorizationServerId;
+            refreshTokenEntity.scopes = scopes.stream().map(Scope::getName).toList();
+            refreshTokenEntity.expiresAt = OffsetDateTime.now().plusDays(30); // 30 days expiration
+            refreshTokenEntity.createdOn = OffsetDateTime.now();
+            refreshTokenEntity.isRevoked = false;
+            
+            refreshTokenRepository.persist(refreshTokenEntity);
+            accessToken.setRefreshToken(refreshToken);
+        }
+        
+        return accessToken;
+    }
+
+    @Override
+    @Transactional
+    public AccessToken refreshAccessToken(UUID authorizationServerId, String refreshToken, String clientId) {
+        // Hash the incoming refresh token to match against stored hash
+        var tokenHash = hashRefreshToken(refreshToken);
+        
+        // Find the refresh token in the database
+        var storedToken = refreshTokenRepository.findByTokenHash(tokenHash)
+                .orElseThrow(() -> new NotAuthorized("Invalid or expired refresh token"));
+        
+        // Verify the client ID matches
+        if (!storedToken.clientId.equals(clientId)) {
+            throw new NotAuthorized("Client ID mismatch");
+        }
+        
+        // Verify the authorization server ID matches
+        if (!storedToken.authorizationServerId.equals(authorizationServerId)) {
+            throw new NotAuthorized("Authorization server mismatch");
+        }
+        
+        // Immediately revoke the old refresh token (token rotation)
+        storedToken.isRevoked = true;
+        storedToken.revokedAt = OffsetDateTime.now();
+        refreshTokenRepository.persist(storedToken);
+        
+        // Get the user profile
+        final var profile = profileRepository.findByResourceId(storedToken.userId)
+                .map(ProfileMapper::from)
+                .orElseThrow(ProfileNotFound::new);
+        
+        // Get the authorization server
+        final var authorizationServer = authorizationServerRepository
+                .findByIdOptional(authorizationServerId)
+                .orElseThrow();
+        
+        // Create scopes from stored scope names
+        var scopes = storedToken.scopes.stream()
+                .map(name -> {
+                    var scope = new Scope();
+                    scope.setName(name);
+                    return scope;
+                })
+                .toList();
+        
+        // Generate new access token
+        var additionalClaims = new HashMap<String, Object>();
+        additionalClaims.put("sub", storedToken.clientId);
+        additionalClaims.put("scope", String.join(" ", storedToken.scopes));
+        additionalClaims.put("exp", OffsetDateTime.now().plusSeconds(authorizationServer.getAuthorizationCodeTokenExpiration()).toEpochSecond());
+        
+        var newAccessToken = buildAccessTokenResponse(authorizationServer, profile, additionalClaims);
+        
+        // Generate and store a new refresh token (token rotation)
+        var newRefreshToken = generateRefreshToken();
+        var newRefreshTokenHash = hashRefreshToken(newRefreshToken);
+        
+        var newRefreshTokenEntity = new com.cartobucket.auth.postgres.client.entities.RefreshToken();
+        newRefreshTokenEntity.tokenHash = newRefreshTokenHash;
+        newRefreshTokenEntity.userId = storedToken.userId;
+        newRefreshTokenEntity.clientId = storedToken.clientId;
+        newRefreshTokenEntity.authorizationServerId = storedToken.authorizationServerId;
+        newRefreshTokenEntity.scopes = storedToken.scopes;
+        newRefreshTokenEntity.expiresAt = OffsetDateTime.now().plusDays(30); // 30 days expiration
+        newRefreshTokenEntity.createdOn = OffsetDateTime.now();
+        newRefreshTokenEntity.isRevoked = false;
+        
+        refreshTokenRepository.persist(newRefreshTokenEntity);
+        newAccessToken.setRefreshToken(newRefreshToken);
+        
+        return newAccessToken;
     }
 
     @Override
@@ -331,6 +432,33 @@ public class AuthorizationServerService implements com.cartobucket.auth.data.ser
         return jwk;
     }
 
+    private String generateRefreshToken() {
+        SecureRandom random = new SecureRandom();
+        byte[] bytes = new byte[32];
+        random.nextBytes(bytes);
+        return Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
+    }
+    
+    private String hashRefreshToken(String token) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hash = digest.digest(token.getBytes(StandardCharsets.UTF_8));
+            return Base64.getUrlEncoder().withoutPadding().encodeToString(hash);
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException("SHA-256 not available", e);
+        }
+    }
+    
+    @Transactional
+    public void cleanupExpiredRefreshTokens() {
+        refreshTokenRepository.deleteExpiredTokens();
+    }
+    
+    @Transactional  
+    public void revokeAllUserRefreshTokens(UUID userId) {
+        refreshTokenRepository.revokeAllUserTokens(userId);
+    }
+    
     private void createDefaultScopesForAuthorizationServer(AuthorizationServer authorizationServer) {
         String[] defaultScopeNames = {"openid", "email", "profile", "offline_access"};
         
