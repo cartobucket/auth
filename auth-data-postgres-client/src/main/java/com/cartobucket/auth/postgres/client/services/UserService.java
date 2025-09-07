@@ -22,11 +22,15 @@ package com.cartobucket.auth.postgres.client.services;
 import com.cartobucket.auth.data.domain.Pair;
 import com.cartobucket.auth.data.domain.Profile;
 import com.cartobucket.auth.data.domain.ProfileType;
+import com.cartobucket.auth.data.domain.Schema;
+import com.cartobucket.auth.data.domain.SchemaValidation;
 import com.cartobucket.auth.data.domain.User;
+import com.cartobucket.auth.data.domain.Metadata;
 import com.cartobucket.auth.data.exceptions.notfound.ProfileNotFound;
 import com.cartobucket.auth.data.exceptions.notfound.UserNotFound;
 import com.cartobucket.auth.postgres.client.repositories.EventRepository;
 import com.cartobucket.auth.postgres.client.repositories.ProfileRepository;
+import com.cartobucket.auth.postgres.client.repositories.SchemaRepository;
 import com.cartobucket.auth.postgres.client.repositories.UserRepository;
 import com.cartobucket.auth.postgres.client.entities.EventType;
 import com.cartobucket.auth.postgres.client.entities.mappers.ProfileMapper;
@@ -46,14 +50,17 @@ public class UserService implements com.cartobucket.auth.data.services.UserServi
     final EventRepository eventRepository;
     final UserRepository userRepository;
     final ProfileRepository profileRepository;
+    final SchemaService schemaService;
     public UserService(
             EventRepository eventRepository,
             UserRepository userRepository,
-            ProfileRepository profileRepository
+            ProfileRepository profileRepository,
+            SchemaService schemaService
     ) {
         this.eventRepository = eventRepository;
         this.userRepository = userRepository;
         this.profileRepository = profileRepository;
+        this.schemaService = schemaService;
     }
 
     @Override
@@ -132,6 +139,10 @@ public class UserService implements com.cartobucket.auth.data.services.UserServi
         profile.setProfileType(ProfileType.User);
         profile.setResource(_user.getId());
         profile.setAuthorizationServerId(user.getAuthorizationServerId());
+        
+        // Validate profile against OIDC schema and store validation results
+        validateAndStoreSchemaValidation(profile, user.getAuthorizationServerId());
+        
         var _profile = ProfileMapper.to(profile);
         profileRepository.persist(_profile);
         var pair = Pair.Companion.create(UserMapper.from(_user), ProfileMapper.from(_profile));
@@ -232,5 +243,45 @@ public class UserService implements com.cartobucket.auth.data.services.UserServi
                 .findByIdOptional(userId)
                 .orElseThrow();
         return new BCryptPasswordEncoder().matches(password, user.getPasswordHash());
+    }
+
+    private void validateAndStoreSchemaValidation(Profile profile, UUID authorizationServerId) {
+        try {
+            // Find the OIDC UserInfo claims schema for this authorization server
+            var schemas = schemaService.getSchemas(List.of(authorizationServerId), 
+                com.cartobucket.auth.data.domain.Page.builder().limit(100).offset(0).build());
+            
+            var oidcSchema = schemas.stream()
+                .filter(schema -> "oidc-userinfo-claims".equals(schema.getName()))
+                .findFirst();
+                
+            if (oidcSchema.isPresent()) {
+                // Validate the profile against the schema
+                var validationErrors = schemaService.validateProfileAgainstSchema(profile, oidcSchema.get());
+                
+                // Create schema validation result
+                var schemaValidation = new SchemaValidation();
+                schemaValidation.setSchemaId(oidcSchema.get().getId());
+                schemaValidation.setIsValid(validationErrors.isEmpty());
+                schemaValidation.setValidatedOn(OffsetDateTime.now());
+                
+                // Store the validation result in the profile's metadata
+                if (profile.getMetadata() == null) {
+                    profile.setMetadata(new Metadata());
+                }
+                if (profile.getMetadata().getSchemaValidations() == null) {
+                    profile.getMetadata().setSchemaValidations(List.of());
+                }
+                
+                // Add or update the schema validation in the list
+                var existingValidations = new java.util.ArrayList<>(profile.getMetadata().getSchemaValidations());
+                existingValidations.removeIf(sv -> oidcSchema.get().getId().equals(sv.getSchemaId()));
+                existingValidations.add(schemaValidation);
+                profile.getMetadata().setSchemaValidations(existingValidations);
+            }
+        } catch (Exception e) {
+            // Log warning but don't fail user creation if validation fails
+            System.err.println("Warning: Could not validate profile against OIDC schema: " + e.getMessage());
+        }
     }
 }

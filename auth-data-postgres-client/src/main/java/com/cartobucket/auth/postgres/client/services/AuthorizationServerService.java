@@ -24,7 +24,9 @@ import com.cartobucket.auth.data.exceptions.NotAuthorized;
 import com.cartobucket.auth.data.exceptions.notfound.AuthorizationServerNotFound;
 import com.cartobucket.auth.data.exceptions.notfound.ProfileNotFound;
 import com.cartobucket.auth.data.services.ScopeService;
+import com.cartobucket.auth.data.services.SchemaService;
 import com.cartobucket.auth.data.services.TemplateService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.cartobucket.auth.postgres.client.repositories.AuthorizationServerRepository;
 import com.cartobucket.auth.postgres.client.repositories.EventRepository;
 import com.cartobucket.auth.postgres.client.repositories.RefreshTokenRepository;
@@ -79,6 +81,7 @@ public class AuthorizationServerService implements com.cartobucket.auth.data.ser
     final SingingKeyRepository singingKeyRepository;
     final TemplateService templateService;
     final ScopeService scopeService;
+    final SchemaService schemaService;
 
     public AuthorizationServerService(
             AuthorizationServerRepository authorizationServerRepository,
@@ -88,7 +91,8 @@ public class AuthorizationServerService implements com.cartobucket.auth.data.ser
             ScopeRepository scopeRepository,
             SingingKeyRepository singingKeyRepository,
             TemplateService templateService,
-            ScopeService scopeService
+            ScopeService scopeService,
+            SchemaService schemaService
     ) {
         this.authorizationServerRepository = authorizationServerRepository;
         this.eventRepository = eventRepository;
@@ -98,6 +102,7 @@ public class AuthorizationServerService implements com.cartobucket.auth.data.ser
         this.singingKeyRepository = singingKeyRepository;
         this.templateService = templateService;
         this.scopeService = scopeService;
+        this.schemaService = schemaService;
     }
 
     public static SigningKey generateSigningKey(AuthorizationServer authorizationServer) {
@@ -366,6 +371,9 @@ public class AuthorizationServerService implements com.cartobucket.auth.data.ser
         // Create the templates
         createDefaultTemplatesForAuthorizationServer(authorizationServer);
 
+        // Create the default OIDC schemas
+        createDefaultSchemasForAuthorizationServer(authorizationServer);
+
         return authorizationServer;
     }
 
@@ -568,6 +576,37 @@ public class AuthorizationServerService implements com.cartobucket.auth.data.ser
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    private void createDefaultSchemasForAuthorizationServer(AuthorizationServer authorizationServer) {
+        try (InputStream inputStream = getClass().getResourceAsStream("/schemas/oidc-userinfo-claims.json")) {
+            if (inputStream != null) {
+                try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
+                    String contents = reader.lines().collect(Collectors.joining(System.lineSeparator()));
+                    var objectMapper = new ObjectMapper();
+                    @SuppressWarnings("unchecked")
+                    Map<String, Object> schemaMap = objectMapper.readValue(contents, Map.class);
+                    
+                    var schema = new Schema();
+                    schema.setName("oidc-userinfo-claims");
+                    schema.setAuthorizationServerId(authorizationServer.getId());
+                    schema.setJsonSchemaVersion("https://json-schema.org/draft/2020-12/schema");
+                    schema.setSchema(schemaMap);
+                    schema.setCreatedOn(OffsetDateTime.now());
+                    schema.setUpdatedOn(OffsetDateTime.now());
+                    
+                    var metadata = new Metadata();
+                    metadata.setIdentifiers(Collections.emptyList());
+                    metadata.setProperties(Collections.emptyMap());
+                    schema.setMetadata(metadata);
+                    
+                    schemaService.createSchema(schema);
+                }
+            }
+        } catch (IOException e) {
+            // Log warning but don't fail authorization server creation if schema creation fails
+            System.err.println("Warning: Could not create OIDC UserInfo claims schema: " + e.getMessage());
         }
     }
 
