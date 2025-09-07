@@ -51,23 +51,22 @@ interface AuthorizationServerService {
 
     fun getJwksForAuthorizationServer(authorizationServerId: UUID): List<JWK>
 
-    fun generateAccessToken(
+    fun generateClientCredentialsAccessToken(
         authorizationServerId: UUID,
-        userId: UUID,
+        applicationId: UUID,
         subject: String,
         scopes: List<Scope>,
-        expireInSeconds: Long,
-        nonce: String
+        expiresInSeconds: Long
     ): AccessToken
     
-    fun generateAccessTokenWithClientId(
+    fun generateAuthorizationCodeFlowAccessToken(
         authorizationServerId: UUID,
         userId: UUID,
         subject: String,
         clientId: String,
         scopes: List<Scope>,
-        expireInSeconds: Long,
-        nonce: String
+        expiresInSeconds: Long,
+        nonce: String?
     ): AccessToken
     
     fun refreshAccessToken(

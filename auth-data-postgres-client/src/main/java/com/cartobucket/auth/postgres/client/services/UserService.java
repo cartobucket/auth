@@ -128,6 +128,10 @@ public class UserService implements com.cartobucket.auth.data.services.UserServi
         final var profile = userProfilePair.getRight();
         user.setCreatedOn(OffsetDateTime.now());
         user.setUpdatedOn(OffsetDateTime.now());
+        
+        // Validate profile against OIDC schema and store validation results in user metadata
+        validateProfileAndUpdateUserMetadata(user, profile);
+        
         var _user = UserMapper.to(user);
         userRepository.persist(_user);
         if (user.getPassword() != null) {
@@ -139,9 +143,6 @@ public class UserService implements com.cartobucket.auth.data.services.UserServi
         profile.setProfileType(ProfileType.User);
         profile.setResource(_user.getId());
         profile.setAuthorizationServerId(user.getAuthorizationServerId());
-        
-        // Validate profile against OIDC schema and store validation results
-        validateAndStoreSchemaValidation(profile, user.getAuthorizationServerId());
         
         var _profile = ProfileMapper.to(profile);
         profileRepository.persist(_profile);
@@ -245,39 +246,44 @@ public class UserService implements com.cartobucket.auth.data.services.UserServi
         return new BCryptPasswordEncoder().matches(password, user.getPasswordHash());
     }
 
-    private void validateAndStoreSchemaValidation(Profile profile, UUID authorizationServerId) {
+    private void validateProfileAndUpdateUserMetadata(User user, Profile profile) {
         try {
             // Find the OIDC UserInfo claims schema for this authorization server
-            var schemas = schemaService.getSchemas(List.of(authorizationServerId), 
-                com.cartobucket.auth.data.domain.Page.builder().limit(100).offset(0).build());
-            
-            var oidcSchema = schemas.stream()
-                .filter(schema -> "oidc-userinfo-claims".equals(schema.getName()))
-                .findFirst();
+            var oidcSchema = schemaService.getSchemaByNameAndAuthorizationServerId(
+                "oidc-userinfo-claims", user.getAuthorizationServerId());
                 
-            if (oidcSchema.isPresent()) {
+            if (oidcSchema != null) {
                 // Validate the profile against the schema
-                var validationErrors = schemaService.validateProfileAgainstSchema(profile, oidcSchema.get());
+                var validationErrors = schemaService.validateProfileAgainstSchema(profile, oidcSchema);
                 
                 // Create schema validation result
                 var schemaValidation = new SchemaValidation();
-                schemaValidation.setSchemaId(oidcSchema.get().getId());
-                schemaValidation.setIsValid(validationErrors.isEmpty());
+                schemaValidation.setSchemaId(oidcSchema.getId());
+                schemaValidation.setValid(validationErrors.isEmpty());
                 schemaValidation.setValidatedOn(OffsetDateTime.now());
                 
-                // Store the validation result in the profile's metadata
-                if (profile.getMetadata() == null) {
-                    profile.setMetadata(new Metadata());
-                }
-                if (profile.getMetadata().getSchemaValidations() == null) {
-                    profile.getMetadata().setSchemaValidations(List.of());
+                // Initialize user metadata if needed
+                if (user.getMetadata() == null) {
+                    user.setMetadata(new Metadata());
                 }
                 
-                // Add or update the schema validation in the list
-                var existingValidations = new java.util.ArrayList<>(profile.getMetadata().getSchemaValidations());
-                existingValidations.removeIf(sv -> oidcSchema.get().getId().equals(sv.getSchemaId()));
-                existingValidations.add(schemaValidation);
-                profile.getMetadata().setSchemaValidations(existingValidations);
+                // Initialize schema validations list if needed
+                if (user.getMetadata().getSchemaValidations() == null) {
+                    user.getMetadata().setSchemaValidations(new java.util.ArrayList<>());
+                } else {
+                    // Make sure we have a mutable list
+                    user.getMetadata().setSchemaValidations(
+                        new java.util.ArrayList<>(user.getMetadata().getSchemaValidations())
+                    );
+                }
+                
+                // Remove any existing validation for this schema
+                user.getMetadata().getSchemaValidations().removeIf(
+                    sv -> oidcSchema.getId().equals(sv.getSchemaId())
+                );
+                
+                // Add the new validation result
+                user.getMetadata().getSchemaValidations().add(schemaValidation);
             }
         } catch (Exception e) {
             // Log warning but don't fail user creation if validation fails

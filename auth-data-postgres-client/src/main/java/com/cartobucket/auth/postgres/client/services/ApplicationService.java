@@ -23,8 +23,11 @@ import com.cartobucket.auth.data.domain.Page;
 import com.cartobucket.auth.data.domain.Pair;
 import com.cartobucket.auth.data.domain.Application;
 import com.cartobucket.auth.data.domain.ApplicationSecret;
+import com.cartobucket.auth.data.domain.Metadata;
 import com.cartobucket.auth.data.domain.Profile;
 import com.cartobucket.auth.data.domain.ProfileType;
+import com.cartobucket.auth.data.domain.SchemaValidation;
+import com.cartobucket.auth.data.services.SchemaService;
 import com.cartobucket.auth.data.exceptions.badrequests.ApplicationSecretNoApplicationBadData;
 import com.cartobucket.auth.data.exceptions.notfound.ApplicationNotFound;
 import com.cartobucket.auth.data.exceptions.notfound.ApplicationSecretNotFound;
@@ -57,13 +60,16 @@ public class ApplicationService implements com.cartobucket.auth.data.services.Ap
     final ProfileRepository profileRepository;
     final ScopeReferenceRepository scopeReferenceRepository;
     final ScopeService scopeService;
+    final SchemaService schemaService;
 
     public ApplicationService(
             ApplicationRepository applicationRepository,
             ApplicationSecretRepository applicationSecretRepository,
             EventRepository eventRepository,
             ProfileRepository profileRepository,
-            ScopeReferenceRepository scopeReferenceRepository, ScopeService scopeService
+            ScopeReferenceRepository scopeReferenceRepository,
+            ScopeService scopeService,
+            SchemaService schemaService
     ) {
         this.applicationRepository = applicationRepository;
         this.applicationSecretRepository = applicationSecretRepository;
@@ -71,6 +77,7 @@ public class ApplicationService implements com.cartobucket.auth.data.services.Ap
         this.profileRepository = profileRepository;
         this.scopeReferenceRepository = scopeReferenceRepository;
         this.scopeService = scopeService;
+        this.schemaService = schemaService;
     }
 
     @Override
@@ -114,8 +121,18 @@ public class ApplicationService implements com.cartobucket.auth.data.services.Ap
     @Override
     public Pair<Application, Profile> createApplication(final Application application, final Profile profile) {
         QuarkusTransaction.begin();
+        
+        // Generate ID for application since it doesn't use @GeneratedValue
+        if (application.getId() == null) {
+            application.setId(UUID.randomUUID());
+        }
+        
         application.setCreatedOn(OffsetDateTime.now());
         application.setUpdatedOn(OffsetDateTime.now());
+        
+        // Validate profile against OIDC schema and store validation results in application metadata
+        validateProfileAndUpdateApplicationMetadata(application, profile);
+        
         var _application = ApplicationMapper.to(application);
         applicationRepository.persist(_application);
 
@@ -238,27 +255,83 @@ public class ApplicationService implements com.cartobucket.auth.data.services.Ap
 
     @Override
     @Transactional
-    public boolean isApplicationSecretValid(UUID authorizationServerId, UUID applicationId, String applicationSecret) {
+    public boolean isApplicationSecretValid(UUID authorizationServerId, UUID applicationSecretId, String applicationSecret) {
         try {
+            // Find the application secret by ID first
+            final var _applicationSecret = applicationSecretRepository.findByIdOptional(applicationSecretId);
+            if (_applicationSecret.isEmpty()) {
+                return false;
+            }
+            
+            // Verify it belongs to the correct authorization server
+            if (!authorizationServerId.equals(_applicationSecret.get().getAuthorizationServerId())) {
+                return false;
+            }
+            
+            // Hash the provided secret and compare
             final var messageDigest = MessageDigest.getInstance("SHA-256");
             final var secretHash = new BigInteger(
                     1,
                     messageDigest.digest(applicationSecret.getBytes())
             ).toString(16);
-
-            final var _applicationSecret = applicationSecretRepository
-                    .findByApplicationSecretHash(secretHash);
-            if (_applicationSecret.isEmpty()) {
-                return false;
-            }
-
-            if (!applicationId.equals(_applicationSecret.get().getApplicationId())) {
-                throw new ApplicationSecretNoApplicationBadData();
-            }
-
-            return true;
+            
+            return secretHash.equals(_applicationSecret.get().getApplicationSecretHash());
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    @Transactional
+    public ApplicationSecret getApplicationSecret(String applicationSecretId) {
+        return applicationSecretRepository
+                .findByIdOptional(UUID.fromString(applicationSecretId))
+                .map(ApplicationSecretMapper::from)
+                .orElseThrow(() -> new RuntimeException("ApplicationSecret not found"));
+    }
+
+    private void validateProfileAndUpdateApplicationMetadata(Application application, Profile profile) {
+        try {
+            // Find the OIDC UserInfo claims schema for this authorization server
+            var oidcSchema = schemaService.getSchemaByNameAndAuthorizationServerId(
+                "oidc-userinfo-claims", application.getAuthorizationServerId());
+                
+            if (oidcSchema != null) {
+                // Validate the profile against the schema
+                var validationErrors = schemaService.validateProfileAgainstSchema(profile, oidcSchema);
+                
+                // Create schema validation result
+                var schemaValidation = new SchemaValidation();
+                schemaValidation.setSchemaId(oidcSchema.getId());
+                schemaValidation.setValid(validationErrors.isEmpty());
+                schemaValidation.setValidatedOn(OffsetDateTime.now());
+                
+                // Initialize application metadata if needed
+                if (application.getMetadata() == null) {
+                    application.setMetadata(new Metadata());
+                }
+                
+                // Initialize schema validations list if needed
+                if (application.getMetadata().getSchemaValidations() == null) {
+                    application.getMetadata().setSchemaValidations(new java.util.ArrayList<>());
+                } else {
+                    // Make sure we have a mutable list
+                    application.getMetadata().setSchemaValidations(
+                        new java.util.ArrayList<>(application.getMetadata().getSchemaValidations())
+                    );
+                }
+                
+                // Remove any existing validation for this schema
+                application.getMetadata().getSchemaValidations().removeIf(
+                    sv -> oidcSchema.getId().equals(sv.getSchemaId())
+                );
+                
+                // Add the new validation result
+                application.getMetadata().getSchemaValidations().add(schemaValidation);
+            }
+        } catch (Exception e) {
+            // Log warning but don't fail application creation if validation fails
+            System.err.println("Warning: Could not validate profile against OIDC schema: " + e.getMessage());
         }
     }
 }

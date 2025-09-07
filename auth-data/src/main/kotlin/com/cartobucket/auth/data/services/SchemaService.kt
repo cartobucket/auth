@@ -38,6 +38,8 @@ interface SchemaService {
 
     fun getSchemas(authorizationServerIds: List<UUID>, page: Page): List<Schema>
 
+    fun getSchemaByNameAndAuthorizationServerId(name: String, authorizationServerId: UUID): Schema?
+
     @Throws(SchemaNotFound::class)
     fun updateSchema(schemaId: UUID, schema: Schema): Schema
 }

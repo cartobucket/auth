@@ -125,6 +125,13 @@ public class SchemaService implements com.cartobucket.auth.data.services.SchemaS
     }
 
     @Override
+    public Schema getSchemaByNameAndAuthorizationServerId(String name, UUID authorizationServerId) {
+        return schemaRepository.findByNameAndAuthorizationServerId(name, authorizationServerId)
+                .map(SchemaMapper::from)
+                .orElse(null);
+    }
+
+    @Override
     @Transactional
     public Schema updateSchema(final UUID schemaId, Schema schema) throws SchemaNotFound {
         var _schema = schemaRepository

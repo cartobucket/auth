@@ -25,12 +25,17 @@ import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
 import jakarta.enterprise.context.ApplicationScoped;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @ApplicationScoped
 public class SchemaRepository implements PanacheRepositoryBase<Schema, UUID> {
     public List<Schema> findAllByAuthorizationServerIdIn(List<UUID> authorizationServerIds) {
         return find("authorizationServerId in ?1", authorizationServerIds).list();
+    }
+    
+    public Optional<Schema> findByNameAndAuthorizationServerId(String name, UUID authorizationServerId) {
+        return find("name = ?1 and authorizationServerId = ?2", name, authorizationServerId).firstResultOptional();
     }
 
 }
