@@ -15,6 +15,6 @@ public class ApplicationSecretRepository implements PanacheRepositoryBase<Applic
     }
 
     public Optional<ApplicationSecret> findByApplicationSecretHash(String secretHash) {
-        return find("secretHash = ?1", secretHash).singleResultOptional();
+        return find("applicationSecretHash = ?1", secretHash).singleResultOptional();
     }
 }

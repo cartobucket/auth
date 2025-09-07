@@ -51,5 +51,7 @@ interface ApplicationService {
 
     fun getApplications(authorizationServerIds: List<UUID>, page: Page): List<Application>
 
-    fun isApplicationSecretValid(authorizationServerId: UUID, applicationId: UUID, applicationSecret: String): Boolean
+    fun isApplicationSecretValid(authorizationServerId: UUID, applicationSecretId: UUID, applicationSecret: String): Boolean
+    
+    fun getApplicationSecret(applicationSecretId: String): ApplicationSecret
 }

@@ -28,14 +28,14 @@ data class Scope(
     var name: String? = null,
     var metadata: Metadata? = null,
     var createdOn: OffsetDateTime? = null,
-    var updatedOn: OffsetDateTime? = null
+    var updatedOn: OffsetDateTime? = null,
 ) {
     constructor(id: UUID) : this(id, null, null, null, null, null)
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (other == null || this::class != other::class) return false
-        other as Scope
-        return name == other.name
+        if (this.id == null || other !is Scope || other.id == null) return false
+        return this.id == other.id
     }
 
     override fun hashCode(): Int = name?.hashCode() ?: 0

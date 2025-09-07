@@ -381,31 +381,29 @@ public abstract class AuthorizationServer implements AuthorizationServerApi {
         // TODO: This stuff should be moved to a validator
         switch (accessTokenRequest.getGrantType()) {
             case CLIENT_CREDENTIALS -> {
-                if (applicationService.isApplicationSecretValid(
+                if (!applicationService.isApplicationSecretValid(
                         authorizationServerId,
                         UUID.fromString(accessTokenRequest.getClientId()),
                         accessTokenRequest.getClientSecret())) {
                     throw new BadRequestException();
                 }
 
+
+                final var applicationSecret = applicationService.getApplicationSecret(accessTokenRequest.getClientId());
                 final var scopes = scopeService.filterScopesForAuthorizationServerId(
                         authorizationServerId,
                         accessTokenRequest.getScope()
-                );
-
+                ).stream().filter(scope -> applicationSecret.getScopes().contains(scope)).toList();
                 return Response
                         .ok()
                         .entity(
                                 authorizationServerService
-                                        .generateAccessToken(
+                                        .generateClientCredentialsAccessToken(
                                                 authorizationServerId,
-                                                UUID.fromString(accessTokenRequest.getClientId()),
-                                                accessTokenRequest.getClientId(),
-                                                // TODO: Fix this
-                                                scopeService.getScopes(List.of(authorizationServerId), new Page(100, 0)),
-                                                //scopes,
-                                                authorizationServer.getClientCredentialsTokenExpiration(),
-                                                null
+                                                applicationSecret.getApplicationId(),
+                                                String.valueOf(applicationSecret.getApplicationId()),
+                                                scopes,
+                                                authorizationServer.getClientCredentialsTokenExpiration()
                                         )
                         )
                         .build();
@@ -425,7 +423,7 @@ public abstract class AuthorizationServer implements AuthorizationServerApi {
                         .entity(
                                 AccessTokenResponseMapper.toAccessTokenResponse(
                                         authorizationServerService
-                                                .generateAccessTokenWithClientId(
+                                                .generateAuthorizationCodeFlowAccessToken(
                                                         authorizationServerId,
                                                         clientCode.getUserId(),
                                                         String.valueOf(clientCode.getUserId()),

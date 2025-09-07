@@ -23,8 +23,12 @@ import com.cartobucket.auth.postgres.client.entities.Application;
 import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
 import jakarta.enterprise.context.ApplicationScoped;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @ApplicationScoped
 public class ApplicationRepository implements PanacheRepositoryBase<Application, UUID> {
+    public Optional<Application> findByClientIdAndAuthorizationServerId(String clientId, UUID authorizationServerId) {
+        return find("clientId = ?1 and authorizationServerId = ?2", clientId, authorizationServerId).firstResultOptional();
+    }
 }

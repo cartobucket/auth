@@ -19,12 +19,27 @@
 
 package com.cartobucket.auth.postgres.client.services;
 
-import com.cartobucket.auth.data.domain.*;
+import com.cartobucket.auth.data.domain.AccessToken;
+import com.cartobucket.auth.data.domain.AuthorizationServer;
+import com.cartobucket.auth.data.domain.JWK;
+import com.cartobucket.auth.data.domain.Metadata;
+import com.cartobucket.auth.data.domain.Page;
+import com.cartobucket.auth.data.domain.Profile;
+import com.cartobucket.auth.data.domain.Schema;
+import com.cartobucket.auth.data.domain.Scope;
+import com.cartobucket.auth.data.domain.SigningKey;
+import com.cartobucket.auth.data.domain.Template;
+import com.cartobucket.auth.data.domain.TemplateTypeEnum;
+import com.cartobucket.auth.data.domain.TokenTypeEnum;
 import com.cartobucket.auth.data.exceptions.NotAuthorized;
+import com.cartobucket.auth.data.exceptions.TokenGenerationException;
 import com.cartobucket.auth.data.exceptions.notfound.AuthorizationServerNotFound;
 import com.cartobucket.auth.data.exceptions.notfound.ProfileNotFound;
 import com.cartobucket.auth.data.services.ScopeService;
+import com.cartobucket.auth.data.services.SchemaService;
 import com.cartobucket.auth.data.services.TemplateService;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.cartobucket.auth.postgres.client.repositories.ApplicationSecretRepository;
 import com.cartobucket.auth.postgres.client.repositories.AuthorizationServerRepository;
 import com.cartobucket.auth.postgres.client.repositories.EventRepository;
 import com.cartobucket.auth.postgres.client.repositories.RefreshTokenRepository;
@@ -41,6 +56,7 @@ import io.smallrye.jwt.build.Jwt;
 import io.smallrye.jwt.util.KeyUtils;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
+import org.jboss.logging.Logger;
 import org.jose4j.jwa.AlgorithmConstraints;
 import org.jose4j.jws.AlgorithmIdentifiers;
 import org.jose4j.jwt.JwtClaims;
@@ -71,7 +87,10 @@ import java.util.stream.Collectors;
 
 @ApplicationScoped
 public class AuthorizationServerService implements com.cartobucket.auth.data.services.AuthorizationServerService {
+    private static final Logger LOG = Logger.getLogger(AuthorizationServerService.class);
+    
     final AuthorizationServerRepository authorizationServerRepository;
+    final ApplicationSecretRepository applicationSecretRepository;
     final EventRepository eventRepository;
     final ProfileRepository profileRepository;
     final RefreshTokenRepository refreshTokenRepository;
@@ -79,18 +98,22 @@ public class AuthorizationServerService implements com.cartobucket.auth.data.ser
     final SingingKeyRepository singingKeyRepository;
     final TemplateService templateService;
     final ScopeService scopeService;
+    final SchemaService schemaService;
 
     public AuthorizationServerService(
             AuthorizationServerRepository authorizationServerRepository,
+            ApplicationSecretRepository applicationSecretRepository,
             EventRepository eventRepository,
             ProfileRepository profileRepository,
             RefreshTokenRepository refreshTokenRepository,
             ScopeRepository scopeRepository,
             SingingKeyRepository singingKeyRepository,
             TemplateService templateService,
-            ScopeService scopeService
+            ScopeService scopeService,
+            SchemaService schemaService
     ) {
         this.authorizationServerRepository = authorizationServerRepository;
+        this.applicationSecretRepository = applicationSecretRepository;
         this.eventRepository = eventRepository;
         this.profileRepository = profileRepository;
         this.refreshTokenRepository = refreshTokenRepository;
@@ -98,6 +121,7 @@ public class AuthorizationServerService implements com.cartobucket.auth.data.ser
         this.singingKeyRepository = singingKeyRepository;
         this.templateService = templateService;
         this.scopeService = scopeService;
+        this.schemaService = schemaService;
     }
 
     public static SigningKey generateSigningKey(AuthorizationServer authorizationServer) {
@@ -145,64 +169,33 @@ public class AuthorizationServerService implements com.cartobucket.auth.data.ser
 
     @Override
     @Transactional
-    public AccessToken generateAccessToken(
+    public AccessToken generateClientCredentialsAccessToken(
             UUID authorizationServerId,
-            UUID userId,
+            UUID applicationId,
             String subject,
             List<Scope> scopes,
-            long expiresInSeconds,
-            String nonce) {
+            long expiresInSeconds) {
         final var authorizationServer = authorizationServerRepository
                 .findByIdOptional(authorizationServerId)
                 .orElseThrow();
 
-        final var profile = profileRepository.findByResourceId(
-                        userId
-                )
+        final var profile = profileRepository.findByResourceId(applicationId)
                 .map(ProfileMapper::from)
                 .orElseThrow(ProfileNotFound::new);
 
         var additionalClaims = new HashMap<String, Object>();
-        if (nonce != null) {
-            additionalClaims.put("nonce", nonce);
-        }
         additionalClaims.put("sub", subject);
         if (scopes != null && !scopes.isEmpty()) {
             additionalClaims.put("scope", ScopeService.scopeListToScopeString(scopes.stream().map(Scope::getName).toList()));
-        } else {
-            additionalClaims.put("scope", "openid");
         }
         additionalClaims.put("exp", OffsetDateTime.now().plusSeconds(expiresInSeconds).toEpochSecond());
 
-        var accessToken = buildAccessTokenResponse(authorizationServer, profile, additionalClaims);
-        
-        // Always generate refresh token for user authentication flows
-        // (userId != null indicates this is a user auth flow, not client credentials)
-        if (userId != null) {
-            var refreshToken = generateRefreshToken();
-            var refreshTokenHash = hashRefreshToken(refreshToken);
-            
-            // Store refresh token in database
-            var refreshTokenEntity = new com.cartobucket.auth.postgres.client.entities.RefreshToken();
-            refreshTokenEntity.tokenHash = refreshTokenHash;
-            refreshTokenEntity.userId = userId;
-            refreshTokenEntity.clientId = subject;
-            refreshTokenEntity.authorizationServerId = authorizationServerId;
-            refreshTokenEntity.scopeIds = scopes != null ? scopes.stream().map(Scope::getId).toList() : Collections.emptyList();
-            refreshTokenEntity.expiresAt = OffsetDateTime.now().plusDays(30); // 30 days expiration
-            refreshTokenEntity.createdOn = OffsetDateTime.now();
-            refreshTokenEntity.isRevoked = false;
-            
-            refreshTokenRepository.persist(refreshTokenEntity);
-            accessToken.setRefreshToken(refreshToken);
-        }
-        
-        return accessToken;
+        return buildClientCredentialsAccessToken(authorizationServer, profile, additionalClaims);
     }
-    
+
     @Override
     @Transactional
-    public AccessToken generateAccessTokenWithClientId(
+    public AccessToken generateAuthorizationCodeFlowAccessToken(
             UUID authorizationServerId,
             UUID userId,
             String subject,
@@ -214,9 +207,7 @@ public class AuthorizationServerService implements com.cartobucket.auth.data.ser
                 .findByIdOptional(authorizationServerId)
                 .orElseThrow();
 
-        final var profile = profileRepository.findByResourceId(
-                        userId
-                )
+        final var profile = profileRepository.findByResourceId(userId)
                 .map(ProfileMapper::from)
                 .orElseThrow(ProfileNotFound::new);
 
@@ -234,29 +225,27 @@ public class AuthorizationServerService implements com.cartobucket.auth.data.ser
 
         var accessToken = buildAccessTokenResponse(authorizationServer, profile, additionalClaims);
         
-        // Always generate refresh token for user authentication flows
-        // (userId != null indicates this is a user auth flow, not client credentials)
-        if (userId != null) {
-            var refreshToken = generateRefreshToken();
-            var refreshTokenHash = hashRefreshToken(refreshToken);
-            
-            // Store refresh token in database
-            var refreshTokenEntity = new com.cartobucket.auth.postgres.client.entities.RefreshToken();
-            refreshTokenEntity.tokenHash = refreshTokenHash;
-            refreshTokenEntity.userId = userId;
-            refreshTokenEntity.clientId = clientId;  // Use actual client ID instead of subject
-            refreshTokenEntity.authorizationServerId = authorizationServerId;
-            refreshTokenEntity.scopeIds = scopes != null ? scopes.stream().map(Scope::getId).toList() : Collections.emptyList();
-            refreshTokenEntity.expiresAt = OffsetDateTime.now().plusDays(30); // 30 days expiration
-            refreshTokenEntity.createdOn = OffsetDateTime.now();
-            refreshTokenEntity.isRevoked = false;
-            
-            refreshTokenRepository.persist(refreshTokenEntity);
-            accessToken.setRefreshToken(refreshToken);
-        }
+        // Generate refresh token
+        var refreshToken = generateRefreshToken();
+        var refreshTokenHash = hashRefreshToken(refreshToken);
+        
+        // Store refresh token in database
+        var refreshTokenEntity = new com.cartobucket.auth.postgres.client.entities.RefreshToken();
+        refreshTokenEntity.tokenHash = refreshTokenHash;
+        refreshTokenEntity.userId = userId;
+        refreshTokenEntity.clientId = clientId;
+        refreshTokenEntity.authorizationServerId = authorizationServerId;
+        refreshTokenEntity.scopeIds = scopes != null ? scopes.stream().map(Scope::getId).toList() : Collections.emptyList();
+        refreshTokenEntity.expiresAt = OffsetDateTime.now().plusDays(30);
+        refreshTokenEntity.createdOn = OffsetDateTime.now();
+        refreshTokenEntity.isRevoked = false;
+        
+        refreshTokenRepository.persist(refreshTokenEntity);
+        accessToken.setRefreshToken(refreshToken);
         
         return accessToken;
     }
+    
 
     @Override
     @Transactional
@@ -365,6 +354,9 @@ public class AuthorizationServerService implements com.cartobucket.auth.data.ser
 
         // Create the templates
         createDefaultTemplatesForAuthorizationServer(authorizationServer);
+
+        // Create the default OIDC schemas
+        createDefaultSchemasForAuthorizationServer(authorizationServer);
 
         return authorizationServer;
     }
@@ -571,6 +563,37 @@ public class AuthorizationServerService implements com.cartobucket.auth.data.ser
         }
     }
 
+    private void createDefaultSchemasForAuthorizationServer(AuthorizationServer authorizationServer) {
+        try (InputStream inputStream = getClass().getResourceAsStream("/schemas/oidc-userinfo-claims.json")) {
+            if (inputStream != null) {
+                try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
+                    String contents = reader.lines().collect(Collectors.joining(System.lineSeparator()));
+                    var objectMapper = new ObjectMapper();
+                    @SuppressWarnings("unchecked")
+                    Map<String, Object> schemaMap = objectMapper.readValue(contents, Map.class);
+                    
+                    var schema = new Schema();
+                    schema.setName("oidc-userinfo-claims");
+                    schema.setAuthorizationServerId(authorizationServer.getId());
+                    schema.setJsonSchemaVersion("https://json-schema.org/draft/2020-12/schema");
+                    schema.setSchema(schemaMap);
+                    schema.setCreatedOn(OffsetDateTime.now());
+                    schema.setUpdatedOn(OffsetDateTime.now());
+                    
+                    var metadata = new Metadata();
+                    metadata.setIdentifiers(Collections.emptyList());
+                    metadata.setProperties(Collections.emptyMap());
+                    schema.setMetadata(metadata);
+                    
+                    schemaService.createSchema(schema);
+                }
+            }
+        } catch (IOException e) {
+            // Log warning but don't fail authorization server creation if schema creation fails
+            LOG.warn("Could not create OIDC UserInfo claims schema: " + e.getMessage(), e);
+        }
+    }
+
     private AccessToken buildAccessTokenResponse(
             com.cartobucket.auth.postgres.client.entities.AuthorizationServer authorizationServer,
             Profile profile,
@@ -596,16 +619,52 @@ public class AuthorizationServerService implements com.cartobucket.auth.data.ser
             profile.getProfile().forEach(jwt::claim);
             final var token = jwt.sign(KeyUtils.decodePrivateKey(signingKey.getPrivateKey()));
 
-            // TODO: This should be refactored into the caller.
             var accessToken = new AccessToken();
             accessToken.setAccessToken(token);
-            accessToken.setIdToken(token); // TODO: This is obviously wrong.
+            accessToken.setIdToken(token); // TODO: ID token should be separate from access token
             accessToken.setTokenType(TokenTypeEnum.BEARER);
             accessToken.setExpiresIn(Math.toIntExact(authorizationServer.getAuthorizationCodeTokenExpiration()));
             accessToken.setScope((String) additionalClaims.get("scope"));
             return accessToken;
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new TokenGenerationException("Failed to generate access token", e);
+        }
+    }
+    
+    private AccessToken buildClientCredentialsAccessToken(
+            com.cartobucket.auth.postgres.client.entities.AuthorizationServer authorizationServer,
+            Profile profile,
+            Map<String, Object> additionalClaims) {
+        final var signingKey = getSigningKeysForAuthorizationServer(authorizationServer.getId());
+        try {
+            var jwt = Jwt
+                    .issuer(authorizationServer.getServerUrl().toExternalForm() + "/" + authorizationServer.getId() + "/")
+                    .audience(authorizationServer.getAudience())
+                    .expiresIn(authorizationServer.getClientCredentialsTokenExpiration());
+
+            jwt.jws()
+                    .algorithm(
+                            switch (signingKey.getKeyType()) {
+                                default ->
+                                        SignatureAlgorithm.RS256;
+                            }
+                    )
+                    .keyId(String.valueOf(signingKey.getId()));
+
+            additionalClaims.forEach(jwt::claim);
+
+            profile.getProfile().forEach(jwt::claim);
+            final var token = jwt.sign(KeyUtils.decodePrivateKey(signingKey.getPrivateKey()));
+
+            var accessToken = new AccessToken();
+            accessToken.setAccessToken(token);
+            // No ID token for client credentials flow
+            accessToken.setTokenType(TokenTypeEnum.BEARER);
+            accessToken.setExpiresIn(Math.toIntExact(authorizationServer.getClientCredentialsTokenExpiration()));
+            accessToken.setScope((String) additionalClaims.get("scope"));
+            return accessToken;
+        } catch (Exception e) {
+            throw new TokenGenerationException("Failed to generate client credentials access token", e);
         }
     }
 }
