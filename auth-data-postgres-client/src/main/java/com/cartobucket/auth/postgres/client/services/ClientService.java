@@ -82,12 +82,33 @@ public class ClientService implements com.cartobucket.auth.data.services.ClientS
             throw new CodeChallengeBadData("Unable to find the Client with the credentials provided");
         }
 
-        // Filter down to the scopes that are associated with the authorization server.
-        // TODO: This might be a problem
-//        var _scopes = scopeService.filterScopesForAuthorizationServerId(
-//                authorizationServerId,
-//                ScopeService.scopeListToScopeString(clientCode.getScopes().stream().map(com.cartobucket.auth.data.domain.Scope::getName).toList())
-//        );
+        // Validate that all requested scopes exist for the authorization server
+        if (clientCode.getScopes() != null && !clientCode.getScopes().isEmpty()) {
+            var requestedScopeNames = clientCode.getScopes().stream()
+                    .map(com.cartobucket.auth.data.domain.Scope::getName)
+                    .toList();
+            
+            var validScopes = scopeService.filterScopesForAuthorizationServerId(
+                    authorizationServerId,
+                    ScopeService.scopeListToScopeString(requestedScopeNames)
+            );
+            
+            // Check if any requested scopes are invalid (not found on the authorization server)
+            var validScopeNames = validScopes.stream()
+                    .map(com.cartobucket.auth.data.domain.Scope::getName)
+                    .toList();
+            
+            var invalidScopes = requestedScopeNames.stream()
+                    .filter(scopeName -> !validScopeNames.contains(scopeName))
+                    .toList();
+            
+            if (!invalidScopes.isEmpty()) {
+                throw new CodeChallengeBadData("Invalid scopes requested: " + String.join(", ", invalidScopes));
+            }
+            
+            // Update clientCode with only the valid scopes
+            clientCode.setScopes(validScopes);
+        }
 
         final MessageDigest messageDigest;
         try {
@@ -102,22 +123,12 @@ public class ClientService implements com.cartobucket.auth.data.services.ClientS
                 .toString(16);
         clientCode.setCode(code);
 
-        // TODO: Undo this once the line above has been fixed.
-        //clientCode.setScopes(_scopes);
         clientCode.setCreatedOn(OffsetDateTime.now());
         var _clientCode = ClientCodeMapper.to(clientCode);
         clientCodeRepository.persist(_clientCode);
-
-        for (var scope : clientCode.getScopes()) {
-            var _scopeReference = new ScopeReference();
-            _scopeReference.setId(UUID.randomUUID());
-            _scopeReference.setScopeId(scope.getId());
-            _scopeReference.setResourceId(_clientCode.getId());
-            _scopeReference.setScopeReferenceType(ScopeReference.ScopeReferenceType.CLIENT);
-//            scopeReferenceRepository.persist(_scopeReference);
-        }
-        clientCode = ClientCodeMapper.from(_clientCode);
-        clientCode.setScopes(scopeService.getScopesForResourceId(clientCode.getId()));
+        
+        // Return the clientCode with the scopes converted from IDs
+        clientCode = ClientCodeMapper.from(_clientCode, scopeService);
 
         eventRepository.createClientCodeEvent(clientCode, EventType.CREATE);
 
@@ -164,7 +175,7 @@ public class ClientService implements com.cartobucket.auth.data.services.ClientS
     public ClientCode getClientCode(String clientCode) throws ClientCodeNotFound {
         final var code = clientCodeRepository.findByCode(clientCode);
         return code
-                .map(ClientCodeMapper::from)
+                .map(c -> ClientCodeMapper.from(c, scopeService))
                 .orElseThrow(ClientCodeNotFound::new);
     }
 

@@ -31,6 +31,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 
 import java.time.OffsetDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -104,14 +105,17 @@ public class ScopeService implements com.cartobucket.auth.data.services.ScopeSer
         final var authorizationServerScopes = scopeRepository
                 .findAllByAuthorizationServerIdIn(List.of(authorizationServerId));
 
-        final var scopesList = authorizationServerScopes
+        // Parse the requested scope names
+        final var requestedScopeNames = scopes != null ? 
+                List.of(scopes.split("\\s+")) : 
+                Collections.<String>emptyList();
+        
+        // Filter the authorization server scopes by the requested names and return full Scope entities with IDs
+        return authorizationServerScopes
                 .stream()
-                .map(com.cartobucket.auth.postgres.client.entities.Scope::getName)
+                .filter(scope -> requestedScopeNames.contains(scope.getName()))
+                .map(ScopeMapper::from)
                 .toList();
-        return com.cartobucket.auth.data.services.ScopeService.filterScopesByList(
-                scopes,
-                scopesList
-        );
     }
 
     @Override

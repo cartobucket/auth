@@ -48,8 +48,8 @@ public class RefreshToken extends PanacheEntityBase {
     public UUID authorizationServerId;
 
     @JdbcTypeCode(SqlTypes.JSON)
-    @Column(name = "scopes", columnDefinition = "jsonb")
-    public List<String> scopes;
+    @Column(name = "scope_ids", columnDefinition = "jsonb")
+    public List<UUID> scopeIds;
 
     @Column(name = "expires_at", nullable = false)
     public OffsetDateTime expiresAt;

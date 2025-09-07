@@ -97,6 +97,17 @@ public @interface ValidAccessTokenRequest {
 //                    }
                     return true;
                 }
+                case REFRESH_TOKEN -> {
+                    if (value.getRefreshToken() == null || value.getRefreshToken().isEmpty()) {
+                        context.buildConstraintViolationWithTemplate("The Access Token request must contain a refresh_token field when using the refresh_token grant_type.").addPropertyNode("refresh_token").addConstraintViolation();
+                        return false;
+                    }
+                    if (value.getClientId() == null) {
+                        context.buildConstraintViolationWithTemplate("The Access Token request must contain a client_id field when using the refresh_token grant_type.").addPropertyNode("client_id").addConstraintViolation();
+                        return false;
+                    }
+                    return true;
+                }
             }
             return false;
         }
