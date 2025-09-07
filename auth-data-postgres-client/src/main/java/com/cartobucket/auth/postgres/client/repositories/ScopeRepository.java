@@ -30,7 +30,7 @@ import java.util.UUID;
 public class ScopeRepository implements PanacheRepositoryBase<Scope, UUID> {
 
     public List<Scope> findAllByAuthorizationServerIdIn(List<UUID> authorizationServerIds) {
-        return find("authorizationServerId in ?1", authorizationServerIds).list();
+        return find("authorizationServer.id in ?1", authorizationServerIds).list();
     }
 
 }

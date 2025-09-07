@@ -86,7 +86,7 @@ public class UserService implements com.cartobucket.auth.data.services.UserServi
         final var _map = queryParameters.map();
 
         return userRepository
-                .find("authorizationServerIds in ?1", query.authorizationServerIds(), queryParameters)
+                .find("authorizationServerId in ?1", query.authorizationServerIds())
                 .range(query.page().offset(), query.page().limit())
                 .stream()
                 .map(UserMapper::from)
@@ -124,7 +124,7 @@ public class UserService implements com.cartobucket.auth.data.services.UserServi
         var _user = UserMapper.to(user);
         userRepository.persist(_user);
         if (user.getPassword() != null) {
-            setPassword(user, user.getPassword());
+            setPassword(UserMapper.from(_user), user.getPassword());
         }
 
         profile.setCreatedOn(OffsetDateTime.now());
@@ -200,7 +200,7 @@ public class UserService implements com.cartobucket.auth.data.services.UserServi
         userRepository.persist(_user);
 
         var _profile = profileRepository
-                .findByResourceAndProfileType(user.getId(), ProfileType.User)
+                .findByResourceAndProfileType(userId, ProfileType.User)
                 .orElseThrow(ProfileNotFound::new);
         _profile.setUpdatedOn(OffsetDateTime.now());
         _profile.setProfile(profile.getProfile());

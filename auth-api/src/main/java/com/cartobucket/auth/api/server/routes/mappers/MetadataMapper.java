@@ -70,19 +70,37 @@ public class MetadataMapper {
 
     public static com.cartobucket.auth.model.generated.Metadata to(Metadata metadata) {
         var _metadata = new com.cartobucket.auth.model.generated.Metadata();
-        _metadata.setIdentifiers(metadata
-                .getIdentifiers()
-                .stream()
-                .map(MetadataMapper::toIdentifier)
-                .toList()
-        );
-        _metadata.setProperties(metadata.getProperties());
-        _metadata.setSchemaValidations(metadata
-                .getSchemaValidations()
-                .stream()
-                .map(MetadataMapper::toSchemaValidation)
-                .toList()
-        );
+        if (metadata == null) {
+            _metadata.setIdentifiers(Collections.emptyList());
+            _metadata.setProperties(Collections.emptyMap());
+            _metadata.setSchemaValidations(Collections.emptyList());
+            return _metadata;
+        }
+        if (metadata.getIdentifiers() == null) {
+            _metadata.setIdentifiers(Collections.emptyList());
+        } else {
+            _metadata.setIdentifiers(metadata
+                    .getIdentifiers()
+                    .stream()
+                    .map(MetadataMapper::toIdentifier)
+                    .toList()
+            );
+        }
+        if (metadata.getProperties() == null) {
+            _metadata.setProperties(Collections.emptyMap());
+        } else {
+            _metadata.setProperties(metadata.getProperties());
+        }
+        if (metadata.getSchemaValidations() == null) {
+            _metadata.setSchemaValidations(Collections.emptyList());
+        } else {
+            _metadata.setSchemaValidations(metadata
+                    .getSchemaValidations()
+                    .stream()
+                    .map(MetadataMapper::toSchemaValidation)
+                    .toList()
+            );
+        }
         return _metadata;
     }
 

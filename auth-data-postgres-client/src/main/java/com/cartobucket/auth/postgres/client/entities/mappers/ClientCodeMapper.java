@@ -22,10 +22,11 @@ package com.cartobucket.auth.postgres.client.entities.mappers;
 import com.cartobucket.auth.data.domain.ClientCode;
 import com.cartobucket.auth.data.domain.Scope;
 
+import java.util.Collections;
 import java.util.UUID;
 
 public class ClientCodeMapper {
-    public static ClientCode from (com.cartobucket.auth.postgres.client.entities.ClientCode clientCode) {
+    public static ClientCode from (com.cartobucket.auth.postgres.client.entities.ClientCode clientCode, com.cartobucket.auth.data.services.ScopeService scopeService) {
         var _clientCode = new ClientCode();
         _clientCode.setCode(clientCode.getCode());
         _clientCode.setClientId(String.valueOf(clientCode.getClientId()));
@@ -37,13 +38,25 @@ public class ClientCodeMapper {
         _clientCode.setAuthorizationServerId(clientCode.getAuthorizationServerId());
         _clientCode.setRedirectUri(clientCode.getRedirectUri());
         _clientCode.setUserId(clientCode.getUserId());
-//        _clientCode.setScopes(clientCode.getScopes().stream().map(
-//                scope -> {
-//                    var _scope = new Scope();
-//                    _scope.setId(scope.getId());
-//                    return _scope;
-//                }
-//        ).toList());
+        // Convert scope IDs back to Scope entities
+        if (clientCode.getScopeIds() != null && !clientCode.getScopeIds().isEmpty()) {
+            var scopes = clientCode.getScopeIds().stream()
+                    .filter(scopeId -> scopeId != null) // Filter out null scope IDs
+                    .map(scopeId -> {
+                        try {
+                            return scopeService.getScope(scopeId);
+                        } catch (Exception e) {
+                            // Log the error but don't fail the entire operation
+                            System.err.println("Failed to load scope with ID: " + scopeId + " - " + e.getMessage());
+                            return null;
+                        }
+                    })
+                    .filter(scope -> scope != null) // Filter out failed scope lookups
+                    .toList();
+            _clientCode.setScopes(scopes);
+        } else {
+            _clientCode.setScopes(Collections.emptyList());
+        }
         _clientCode.setCreatedOn(clientCode.getCreatedOn());
         return _clientCode;
     }
@@ -60,13 +73,13 @@ public class ClientCodeMapper {
         _clientCode.setAuthorizationServerId(clientCode.getAuthorizationServerId());
         _clientCode.setRedirectUri(clientCode.getRedirectUri());
         _clientCode.setUserId(clientCode.getUserId());
-//        _clientCode.setScopes(clientCode.getScopes().stream().map(
-//                scope -> {
-//                    var _scope = new com.cartobucket.auth.postgres.client.entities.Scope();
-//                    _scope.setId(scope.getId());
-//                    return _scope;
-//                }
-//        ).toList());
+        if (clientCode.getScopes() != null) {
+            _clientCode.setScopeIds(clientCode.getScopes().stream()
+                    .map(Scope::getId)
+                    .toList());
+        } else {
+            _clientCode.setScopeIds(Collections.emptyList());
+        }
         _clientCode.setCreatedOn(clientCode.getCreatedOn());
         return _clientCode;
     }

@@ -24,6 +24,7 @@ import com.cartobucket.auth.authorization.server.routes.mappers.JwksMapper;
 import com.cartobucket.auth.data.domain.ClientCode;
 import com.cartobucket.auth.data.domain.Page;
 import com.cartobucket.auth.data.domain.Scope;
+import com.cartobucket.auth.data.domain.User;
 import com.cartobucket.auth.data.services.ApplicationService;
 import com.cartobucket.auth.data.services.ScopeService;
 import com.cartobucket.auth.generated.AuthorizationServerApi;
@@ -38,6 +39,7 @@ import jakarta.ws.rs.FormParam;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
+import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.jboss.logging.Logger;
 
@@ -87,47 +89,51 @@ public abstract class AuthorizationServer implements AuthorizationServerApi {
             String password) {
         // TODO: Check the CSRF token
 
-        final var user = userService.getUser(username).getLeft();
-        if (user == null) {
-            LOG.error("User not found: " + username);
-            return renderLoginScreen(authorizationServerId);
-        }
-        if (!user.getAuthorizationServerId().equals(authorizationServerId)) {
-            LOG.error("AuthorizationServer does not equal the user AuthorizationServer: " + authorizationServerId);
-            return renderLoginScreen(authorizationServerId);
-        }
-        if (!userService.validatePassword(user.getId(), password)) {
-            LOG.error("Password was not correct: " + password);
-            return renderLoginScreen(authorizationServerId);
-        }
-        final var client = clientService.getClient(clientId);
-        if (client == null) {
-            LOG.error("Client not found: " + clientId);
-            return renderLoginScreen(authorizationServerId);
-        }
-        if (!client.getAuthorizationServerId().equals(authorizationServerId)) {
-            LOG.error("Client not found in AuthorizationServer: " + authorizationServerId);
-            return renderLoginScreen(authorizationServerId);
-        }
-        if (client.getRedirectUris().contains(redirectUri)) {
-            LOG.error("Redirects not found: " + redirectUri);
+        // If no username/password provided, show login screen
+        if (username == null || username.isEmpty() || password == null || password.isEmpty()) {
             return renderLoginScreen(authorizationServerId);
         }
 
-        // Validate requested scopes against client's allowed scopes
-        final var requestedScopes = ScopeService.scopeStringToScopeList(scope);
+        final User user;
+        try {
+            user = userService.getUser(username).getLeft();
+        } catch (Exception e) {
+            LOG.error("User not found: " + username);
+            return renderLoginScreen(authorizationServerId, "Invalid username or password");
+        }
+        
+        if (user == null) {
+            LOG.error("User not found: " + username);
+            return renderLoginScreen(authorizationServerId, "Invalid username or password");
+        }
+        if (!user.getAuthorizationServerId().equals(authorizationServerId)) {
+            LOG.error("AuthorizationServer does not equal the user AuthorizationServer: " + authorizationServerId);
+            return renderLoginScreen(authorizationServerId, "Invalid username or password");
+        }
+        if (!userService.validatePassword(user.getId(), password)) {
+            LOG.error("Password was not correct");
+            return renderLoginScreen(authorizationServerId, "Invalid username or password");
+        }
+        // Client validation should have already happened in initiateAuthorization
+        // This is just a safety check for the POST endpoint
+        final com.cartobucket.auth.data.domain.Client client;
+        try {
+            client = clientService.getClient(clientId);
+            if (!client.getAuthorizationServerId().equals(authorizationServerId)) {
+                LOG.error("Client not authorized for server in POST: " + clientId);
+                return renderLoginScreen(authorizationServerId, "Invalid client_id");
+            }
+        } catch (com.cartobucket.auth.data.exceptions.notfound.ClientNotFound e) {
+            LOG.error("Client not found in POST: " + clientId);
+            return renderLoginScreen(authorizationServerId, "Invalid client_id");
+        }
+        
+        // These validations should have happened in initiateAuthorization
+        // Keep them here as safety checks for direct POST requests
         final var validScopes = scopeService.filterScopesForAuthorizationServerId(
                 authorizationServerId,
                 scope
         );
-        
-        // Check if offline_access is requested and allowed
-        boolean offlineAccessRequested = requestedScopes.stream()
-                .anyMatch(s -> "offline_access".equals(s.getName()));
-        
-        if (offlineAccessRequested) {
-            LOG.info("offline_access scope requested for client: " + clientId);
-        }
 
         var clientCode = new ClientCode();
         clientCode.setClientId(clientId);
@@ -146,22 +152,30 @@ public abstract class AuthorizationServer implements AuthorizationServerApi {
                 clientCode
         );
 
+        var redirectUrl = redirectUri + "?code=" + URLEncoder.encode(code.getCode(), StandardCharsets.UTF_8);
+        
+        if (code.getState() != null) {
+            redirectUrl += "&state=" + URLEncoder.encode(code.getState(), StandardCharsets.UTF_8);
+        }
+        
+        if (code.getNonce() != null) {
+            redirectUrl += "&nonce=" + URLEncoder.encode(code.getNonce(), StandardCharsets.UTF_8);
+        }
+        
+        // Include the actual scopes that were validated and stored
+        if (code.getScopes() != null && !code.getScopes().isEmpty()) {
+            String scopeString = ScopeService.scopeListToScopeString(
+                    code.getScopes().stream()
+                            .map(Scope::getName)
+                            .toList()
+            );
+            redirectUrl += "&scope=" + URLEncoder.encode(scopeString, StandardCharsets.UTF_8);
+        } else {
+            redirectUrl += "&scope=" + URLEncoder.encode("openid", StandardCharsets.UTF_8);
+        }
+        
         return Response.status(302).location(
-                URI.create(
-                        redirectUri +
-                                "?code=" +
-                                URLEncoder.encode(code.getCode(), StandardCharsets.UTF_8) +
-                                "&state=" + URLEncoder.encode(code.getState(), StandardCharsets.UTF_8) +
-                                "&nonce=" + URLEncoder.encode(code.getNonce(), StandardCharsets.UTF_8) +
-                                "&scope" + URLEncoder.encode("openid", StandardCharsets.UTF_8)
-//                                        ScopeService.scopeListToScopeString(
-//                                                code
-//                                                        .getScopes()
-//                                                        .stream()
-//                                                        .map(Scope::getName)
-//                                                        .toList()
-//                                        ), StandardCharsets.UTF_8)
-                )
+                URI.create(redirectUrl)
         ).build();
     }
 
@@ -242,6 +256,96 @@ public abstract class AuthorizationServer implements AuthorizationServerApi {
     @Override
     @Consumes({ "*/*" })
     public Response initiateAuthorization(UUID authorizationServerId, String clientId, String responseType, String codeChallenge, String codeChallengeMethod, String redirectUri, String scope, String state, String nonce) {
+        // Validate client_id first (OAuth2 spec: if invalid, don't redirect)
+        if (clientId == null || clientId.isEmpty()) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("{\"error\":\"invalid_request\",\"error_description\":\"client_id is required\"}")
+                    .type(MediaType.APPLICATION_JSON)
+                    .build();
+        }
+        
+        final com.cartobucket.auth.data.domain.Client client;
+        try {
+            client = clientService.getClient(clientId);
+        } catch (com.cartobucket.auth.data.exceptions.notfound.ClientNotFound e) {
+            return Response.status(Response.Status.UNAUTHORIZED)
+                    .entity("{\"error\":\"invalid_client\",\"error_description\":\"Client authentication failed\"}")
+                    .type(MediaType.APPLICATION_JSON)
+                    .build();
+        }
+        
+        if (!client.getAuthorizationServerId().equals(authorizationServerId)) {
+            return Response.status(Response.Status.UNAUTHORIZED)
+                    .entity("{\"error\":\"invalid_client\",\"error_description\":\"Client not authorized for this server\"}")
+                    .type(MediaType.APPLICATION_JSON)
+                    .build();
+        }
+        
+        // Validate redirect_uri (OAuth2 spec: if invalid, don't redirect)
+        if (redirectUri == null || redirectUri.isEmpty()) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("{\"error\":\"invalid_request\",\"error_description\":\"redirect_uri is required\"}")
+                    .type(MediaType.APPLICATION_JSON)
+                    .build();
+        }
+        
+        boolean redirectUriAllowed = false;
+        try {
+            URI requestedUri = URI.create(redirectUri);
+            redirectUriAllowed = client.getRedirectUris().stream()
+                    .anyMatch(allowedUri -> {
+                        try {
+                            return normalizeUri(allowedUri).equals(normalizeUri(requestedUri));
+                        } catch (Exception e) {
+                            LOG.warn("Invalid URI in client redirect URIs: " + allowedUri);
+                            return false;
+                        }
+                    });
+        } catch (Exception e) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("{\"error\":\"invalid_request\",\"error_description\":\"Invalid redirect_uri format\"}")
+                    .type(MediaType.APPLICATION_JSON)
+                    .build();
+        }
+        
+        if (!redirectUriAllowed) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("{\"error\":\"invalid_request\",\"error_description\":\"redirect_uri not registered for this client\"}")
+                    .type(MediaType.APPLICATION_JSON)
+                    .build();
+        }
+        
+        // Validate scopes (OAuth2 spec: if invalid, redirect with error)
+        if (scope != null && !scope.isEmpty()) {
+            final var requestedScopes = ScopeService.scopeStringToScopeList(scope);
+            final var validScopes = scopeService.filterScopesForAuthorizationServerId(
+                    authorizationServerId,
+                    scope
+            );
+            
+            var validScopeNames = validScopes.stream()
+                    .map(com.cartobucket.auth.data.domain.Scope::getName)
+                    .toList();
+            var invalidScopeNames = requestedScopes.stream()
+                    .map(com.cartobucket.auth.data.domain.Scope::getName)
+                    .filter(scopeName -> !validScopeNames.contains(scopeName))
+                    .toList();
+            
+            if (!invalidScopeNames.isEmpty()) {
+                // Redirect with error for invalid scopes
+                var errorUri = redirectUri + 
+                    (redirectUri.contains("?") ? "&" : "?") +
+                    "error=invalid_scope" +
+                    "&error_description=" + java.net.URLEncoder.encode("Invalid scopes: " + String.join(", ", invalidScopeNames), java.nio.charset.StandardCharsets.UTF_8);
+                if (state != null) {
+                    errorUri += "&state=" + state;
+                }
+                return Response.status(Response.Status.FOUND)
+                        .location(URI.create(errorUri))
+                        .build();
+            }
+        }
+        
         return renderLoginScreen(authorizationServerId);
     }
 
@@ -321,10 +425,11 @@ public abstract class AuthorizationServer implements AuthorizationServerApi {
                         .entity(
                                 AccessTokenResponseMapper.toAccessTokenResponse(
                                         authorizationServerService
-                                                .generateAccessToken(
+                                                .generateAccessTokenWithClientId(
                                                         authorizationServerId,
                                                         clientCode.getUserId(),
                                                         String.valueOf(clientCode.getUserId()),
+                                                        clientCode.getClientId(),
                                                         clientCode.getScopes(),
                                                         authorizationServer.getAuthorizationCodeTokenExpiration(),
                                                         clientCode.getNonce()
@@ -360,4 +465,47 @@ public abstract class AuthorizationServer implements AuthorizationServerApi {
     }
 
     protected abstract Response renderLoginScreen(UUID authorizationServerId);
+    
+    protected Response renderLoginScreen(UUID authorizationServerId, String errorMessage) {
+        // Default implementation that ignores the error message for backward compatibility
+        return renderLoginScreen(authorizationServerId);
+    }
+    
+    private String normalizeUri(URI uri) {
+        // Normalize URI for comparison:
+        // - Convert scheme and host to lowercase
+        // - Remove default ports (80 for HTTP, 443 for HTTPS)
+        // - Normalize path (remove trailing slash if it's just "/")
+        String scheme = uri.getScheme() != null ? uri.getScheme().toLowerCase() : "";
+        String host = uri.getHost() != null ? uri.getHost().toLowerCase() : "";
+        int port = uri.getPort();
+        String path = uri.getPath() != null ? uri.getPath() : "";
+        String query = uri.getQuery();
+        String fragment = uri.getFragment();
+        
+        // Remove default ports
+        if ((port == 80 && "http".equals(scheme)) || (port == 443 && "https".equals(scheme))) {
+            port = -1;
+        }
+        
+        // Build normalized URI string
+        StringBuilder normalized = new StringBuilder();
+        normalized.append(scheme);
+        if (!scheme.isEmpty()) {
+            normalized.append("://");
+        }
+        normalized.append(host);
+        if (port != -1) {
+            normalized.append(":").append(port);
+        }
+        normalized.append(path);
+        if (query != null) {
+            normalized.append("?").append(query);
+        }
+        if (fragment != null) {
+            normalized.append("#").append(fragment);
+        }
+        
+        return normalized.toString();
+    }
 }

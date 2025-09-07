@@ -30,6 +30,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.OneToMany;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -49,17 +51,8 @@ public class ClientCode {
 
     private String redirectUri;
 
-//    @JoinTable(
-//            name = "scopereference",
-//            joinColumns = { @JoinColumn(
-//                    name = "resourceId",
-//                    referencedColumnName = "id",
-//                    foreignKey = @ForeignKey(name = "none", value = ConstraintMode.NO_CONSTRAINT)
-//            ) },
-//            inverseJoinColumns = { @JoinColumn(name = "scopeId") }
-//    )
-//    @OneToMany(cascade = CascadeType.DETACH, orphanRemoval = true, fetch = FetchType.EAGER)
-//    private List<Scope> scopes;
+    @JdbcTypeCode(SqlTypes.JSON)
+    private List<UUID> scopeIds;
 
     @Nullable
     private String state;
@@ -165,11 +158,11 @@ public class ClientCode {
         this.nonce = nonce;
     }
 
-//    public List<Scope> getScopes() {
-//        return scopes;
-//    }
-//
-//    public void setScopes(List<Scope> scopes) {
-//        this.scopes = scopes;
-//    }
+    public List<UUID> getScopeIds() {
+        return scopeIds;
+    }
+
+    public void setScopeIds(List<UUID> scopeIds) {
+        this.scopeIds = scopeIds;
+    }
 }

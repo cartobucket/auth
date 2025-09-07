@@ -22,6 +22,11 @@ public class AuthorizationServerRoutes extends AuthorizationServer {
 
     @Override
     protected Response renderLoginScreen(UUID authorizationServerId) {
+        return renderLoginScreen(authorizationServerId, null);
+    }
+    
+    @Override
+    protected Response renderLoginScreen(UUID authorizationServerId, String errorMessage) {
         final var template = this.templateService
                 .getTemplates(Collections.singletonList(authorizationServerId), new Page(1, 0))
                 .stream()
@@ -29,12 +34,14 @@ public class AuthorizationServerRoutes extends AuthorizationServer {
                 .findFirst()
                 .orElseThrow(TemplateNotFound::new);
 
+        var quteTemplate = Qute.fmt(new String(Base64.getDecoder().decode(template.getTemplate())));
+        
+        // Always set error data (null if no error)
+        quteTemplate = quteTemplate.data("error", errorMessage);
+        
         return Response
                 .ok()
-                .entity(
-                        Qute.fmt(new String(Base64.getDecoder().decode(template.getTemplate())))
-                                .render()
-                )
+                .entity(quteTemplate.render())
                 .build();
     }
 }

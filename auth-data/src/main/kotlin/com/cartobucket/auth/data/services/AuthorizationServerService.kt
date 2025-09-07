@@ -60,6 +60,16 @@ interface AuthorizationServerService {
         nonce: String
     ): AccessToken
     
+    fun generateAccessTokenWithClientId(
+        authorizationServerId: UUID,
+        userId: UUID,
+        subject: String,
+        clientId: String,
+        scopes: List<Scope>,
+        expireInSeconds: Long,
+        nonce: String
+    ): AccessToken
+    
     fun refreshAccessToken(
         authorizationServerId: UUID,
         refreshToken: String,
