@@ -43,6 +43,7 @@ import io.quarkus.narayana.jta.QuarkusTransaction;
 import io.quarkus.panache.common.Sort;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
+import org.jboss.logging.Logger;
 
 import java.math.BigInteger;
 import java.security.MessageDigest;
@@ -54,6 +55,8 @@ import java.util.UUID;
 
 @ApplicationScoped
 public class ApplicationService implements com.cartobucket.auth.data.services.ApplicationService {
+    private static final Logger LOG = Logger.getLogger(ApplicationService.class);
+    
     final ApplicationRepository applicationRepository;
     final ApplicationSecretRepository applicationSecretRepository;
     final EventRepository eventRepository;
@@ -258,13 +261,13 @@ public class ApplicationService implements com.cartobucket.auth.data.services.Ap
     public boolean isApplicationSecretValid(UUID authorizationServerId, UUID applicationSecretId, String applicationSecret) {
         try {
             // Find the application secret by ID first
-            final var _applicationSecret = applicationSecretRepository.findByIdOptional(applicationSecretId);
-            if (_applicationSecret.isEmpty()) {
+            final var applicationSecretOpt = applicationSecretRepository.findByIdOptional(applicationSecretId);
+            if (applicationSecretOpt.isEmpty()) {
                 return false;
             }
             
             // Verify it belongs to the correct authorization server
-            if (!authorizationServerId.equals(_applicationSecret.get().getAuthorizationServerId())) {
+            if (!authorizationServerId.equals(applicationSecretOpt.get().getAuthorizationServerId())) {
                 return false;
             }
             
@@ -275,7 +278,7 @@ public class ApplicationService implements com.cartobucket.auth.data.services.Ap
                     messageDigest.digest(applicationSecret.getBytes())
             ).toString(16);
             
-            return secretHash.equals(_applicationSecret.get().getApplicationSecretHash());
+            return secretHash.equals(applicationSecretOpt.get().getApplicationSecretHash());
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         }
@@ -331,7 +334,7 @@ public class ApplicationService implements com.cartobucket.auth.data.services.Ap
             }
         } catch (Exception e) {
             // Log warning but don't fail application creation if validation fails
-            System.err.println("Warning: Could not validate profile against OIDC schema: " + e.getMessage());
+            LOG.warn("Could not validate profile against OIDC schema: " + e.getMessage(), e);
         }
     }
 }

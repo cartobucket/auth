@@ -39,6 +39,7 @@ import io.quarkus.panache.common.Parameters;
 import io.quarkus.panache.common.Sort;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
+import org.jboss.logging.Logger;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.time.OffsetDateTime;
@@ -47,6 +48,8 @@ import java.util.UUID;
 
 @ApplicationScoped
 public class UserService implements com.cartobucket.auth.data.services.UserService {
+    private static final Logger LOG = Logger.getLogger(UserService.class);
+    
     final EventRepository eventRepository;
     final UserRepository userRepository;
     final ProfileRepository profileRepository;
@@ -287,7 +290,7 @@ public class UserService implements com.cartobucket.auth.data.services.UserServi
             }
         } catch (Exception e) {
             // Log warning but don't fail user creation if validation fails
-            System.err.println("Warning: Could not validate profile against OIDC schema: " + e.getMessage());
+            LOG.warn("Could not validate profile against OIDC schema: " + e.getMessage(), e);
         }
     }
 }

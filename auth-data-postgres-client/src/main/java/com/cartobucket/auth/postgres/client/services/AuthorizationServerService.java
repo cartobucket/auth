@@ -19,8 +19,20 @@
 
 package com.cartobucket.auth.postgres.client.services;
 
-import com.cartobucket.auth.data.domain.*;
+import com.cartobucket.auth.data.domain.AccessToken;
+import com.cartobucket.auth.data.domain.AuthorizationServer;
+import com.cartobucket.auth.data.domain.JWK;
+import com.cartobucket.auth.data.domain.Metadata;
+import com.cartobucket.auth.data.domain.Page;
+import com.cartobucket.auth.data.domain.Profile;
+import com.cartobucket.auth.data.domain.Schema;
+import com.cartobucket.auth.data.domain.Scope;
+import com.cartobucket.auth.data.domain.SigningKey;
+import com.cartobucket.auth.data.domain.Template;
+import com.cartobucket.auth.data.domain.TemplateTypeEnum;
+import com.cartobucket.auth.data.domain.TokenTypeEnum;
 import com.cartobucket.auth.data.exceptions.NotAuthorized;
+import com.cartobucket.auth.data.exceptions.TokenGenerationException;
 import com.cartobucket.auth.data.exceptions.notfound.AuthorizationServerNotFound;
 import com.cartobucket.auth.data.exceptions.notfound.ProfileNotFound;
 import com.cartobucket.auth.data.services.ScopeService;
@@ -44,6 +56,7 @@ import io.smallrye.jwt.build.Jwt;
 import io.smallrye.jwt.util.KeyUtils;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
+import org.jboss.logging.Logger;
 import org.jose4j.jwa.AlgorithmConstraints;
 import org.jose4j.jws.AlgorithmIdentifiers;
 import org.jose4j.jwt.JwtClaims;
@@ -74,6 +87,8 @@ import java.util.stream.Collectors;
 
 @ApplicationScoped
 public class AuthorizationServerService implements com.cartobucket.auth.data.services.AuthorizationServerService {
+    private static final Logger LOG = Logger.getLogger(AuthorizationServerService.class);
+    
     final AuthorizationServerRepository authorizationServerRepository;
     final ApplicationSecretRepository applicationSecretRepository;
     final EventRepository eventRepository;
@@ -575,7 +590,7 @@ public class AuthorizationServerService implements com.cartobucket.auth.data.ser
             }
         } catch (IOException e) {
             // Log warning but don't fail authorization server creation if schema creation fails
-            System.err.println("Warning: Could not create OIDC UserInfo claims schema: " + e.getMessage());
+            LOG.warn("Could not create OIDC UserInfo claims schema: " + e.getMessage(), e);
         }
     }
 
@@ -612,7 +627,7 @@ public class AuthorizationServerService implements com.cartobucket.auth.data.ser
             accessToken.setScope((String) additionalClaims.get("scope"));
             return accessToken;
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new TokenGenerationException("Failed to generate access token", e);
         }
     }
     
@@ -649,7 +664,7 @@ public class AuthorizationServerService implements com.cartobucket.auth.data.ser
             accessToken.setScope((String) additionalClaims.get("scope"));
             return accessToken;
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new TokenGenerationException("Failed to generate client credentials access token", e);
         }
     }
 }
