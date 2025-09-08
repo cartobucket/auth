@@ -20,9 +20,9 @@
 package com.cartobucket.auth.api.server.routes;
 
 import com.cartobucket.auth.data.domain.Page;
-import com.cartobucket.auth.generated.SchemasApi;
-import com.cartobucket.auth.model.generated.SchemaRequest;
-import com.cartobucket.auth.model.generated.SchemasResponse;
+import com.cartobucket.auth.api.interfaces.SchemasApi;
+import com.cartobucket.auth.api.dto.SchemaRequest;
+import com.cartobucket.auth.api.dto.SchemasResponse;
 import com.cartobucket.auth.api.server.routes.mappers.SchemaMapper;
 import com.cartobucket.auth.data.services.SchemaService;
 import jakarta.ws.rs.core.Response;
@@ -42,7 +42,7 @@ public class Schemas implements SchemasApi {
     }
 
     @Override
-    public Response createSchemaRequest(SchemaRequest schemaRequest) {
+    public Response createSchema(SchemaRequest schemaRequest) {
         return Response
                 .ok()
                 .entity(
@@ -54,7 +54,7 @@ public class Schemas implements SchemasApi {
     }
 
     @Override
-    public Response deleteSchemaRequest(UUID schemaId) {
+    public Response deleteSchema(UUID schemaId) {
         schemaService.deleteSchema(schemaId);
         return Response
                 .noContent()
@@ -62,7 +62,7 @@ public class Schemas implements SchemasApi {
     }
 
     @Override
-    public Response getSchemaRequest(UUID schemaId) {
+    public Response getSchema(UUID schemaId) {
         return Response
                 .ok()
                 .entity(SchemaMapper.toResponse(schemaService.getSchema(schemaId)))
@@ -70,7 +70,7 @@ public class Schemas implements SchemasApi {
     }
 
     @Override
-    public Response getSchemaRequests(List<UUID> authorizationServerIds, Integer limit, Integer offset) {
+    public Response listSchemas(List<UUID> authorizationServerIds, Integer limit, Integer offset) {
         // TODO: Probably makes senes to move to Kotlin and use default parameters
         if (limit == null) {
             limit = LIMIT_DEFAULT;
@@ -96,7 +96,7 @@ public class Schemas implements SchemasApi {
     }
 
     @Override
-    public Response updateSchemaRequest(UUID schemaId, SchemaRequest schemaRequest) {
+    public Response updateSchema(UUID schemaId, SchemaRequest schemaRequest) {
         return Response
                 .ok()
                 .entity(

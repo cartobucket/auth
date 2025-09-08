@@ -19,8 +19,9 @@
 
 package com.cartobucket.auth.api.server.routes.mappers;
 
-import com.cartobucket.auth.model.generated.TemplateRequest;
-import com.cartobucket.auth.model.generated.TemplateResponse;
+import com.cartobucket.auth.api.dto.TemplateRequest;
+import com.cartobucket.auth.api.dto.TemplateResponse;
+import static com.cartobucket.auth.api.dto.TemplateTypeEnum.LOGIN;
 import com.cartobucket.auth.data.domain.Template;
 import com.cartobucket.auth.data.domain.TemplateTypeEnum;
 
@@ -31,7 +32,7 @@ public class TemplateMapper {
         template.setTemplate(templateRequest.getTemplate().getBytes());
         template.setMetadata(MetadataMapper.from(templateRequest.getMetadata()));
         switch (templateRequest.getTemplateType()) {
-            case LOGIN -> {
+            case "login" -> {
                 template.setTemplateType(TemplateTypeEnum.LOGIN);
             }
             default -> throw new IllegalStateException("Unexpected value: " + templateRequest.getTemplateType());

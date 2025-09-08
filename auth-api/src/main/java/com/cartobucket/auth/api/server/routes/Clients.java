@@ -20,11 +20,12 @@
 package com.cartobucket.auth.api.server.routes;
 
 import com.cartobucket.auth.data.domain.Page;
-import com.cartobucket.auth.generated.ClientsApi;
-import com.cartobucket.auth.model.generated.ClientRequest;
-import com.cartobucket.auth.model.generated.ClientsResponse;
+import com.cartobucket.auth.api.interfaces.ClientsApi;
+import com.cartobucket.auth.api.dto.ClientRequest;
+import com.cartobucket.auth.api.dto.ClientsResponse;
 import com.cartobucket.auth.api.server.routes.mappers.ClientMapper;
 import com.cartobucket.auth.data.services.ClientService;
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.ws.rs.core.Response;
 
 import java.util.List;
@@ -93,6 +94,18 @@ public class Clients implements ClientsApi {
         return Response
                 .ok()
                 .entity(clientsResponse)
+                .build();
+    }
+
+    @Override
+    public Response updateClient(UUID clientId, ClientRequest clientRequest) {
+        return Response
+                .ok()
+                .entity(
+                        ClientMapper.toResponse(
+                                clientService.updateClient(clientId, ClientMapper.to(clientRequest))
+                        )
+                )
                 .build();
     }
 }

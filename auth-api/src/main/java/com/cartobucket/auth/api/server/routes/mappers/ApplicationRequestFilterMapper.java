@@ -19,7 +19,7 @@
 
 package com.cartobucket.auth.api.server.routes.mappers;
 
-import com.cartobucket.auth.model.generated.ApplicationRequestFilter;
+import com.cartobucket.auth.api.dto.ApplicationRequestFilter;
 
 import java.util.List;
 import java.util.UUID;

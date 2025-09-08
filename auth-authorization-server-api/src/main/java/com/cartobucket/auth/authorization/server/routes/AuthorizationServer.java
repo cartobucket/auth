@@ -414,14 +414,16 @@ public abstract class AuthorizationServer implements AuthorizationServerApi {
                 return Response
                         .ok()
                         .entity(
-                                authorizationServerService
-                                        .generateClientCredentialsAccessToken(
-                                                authorizationServerId,
-                                                applicationSecret.getApplicationId(),
-                                                String.valueOf(applicationSecret.getApplicationId()),
-                                                scopes,
-                                                authorizationServer.getClientCredentialsTokenExpiration()
-                                        )
+                                AccessTokenResponseMapper.toAccessTokenResponse(
+                                        authorizationServerService
+                                                .generateClientCredentialsAccessToken(
+                                                        authorizationServerId,
+                                                        applicationSecret.getApplicationId(),
+                                                        String.valueOf(applicationSecret.getApplicationId()),
+                                                        scopes,
+                                                        authorizationServer.getClientCredentialsTokenExpiration()
+                                                )
+                                )
                         )
                         .build();
             }

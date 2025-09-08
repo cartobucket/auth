@@ -3,16 +3,14 @@ package com.cartobucket.auth.api.server.routes.mappers;
 import com.cartobucket.auth.data.domain.Identifier;
 import com.cartobucket.auth.data.domain.Metadata;
 import com.cartobucket.auth.data.domain.SchemaValidation;
-import com.cartobucket.auth.model.generated.MetadataIdentifiersInner;
-import com.cartobucket.auth.model.generated.MetadataSchemaValidationsInner;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.cartobucket.auth.api.dto.MetadataIdentifiersInner;
+import com.cartobucket.auth.api.dto.MetadataSchemaValidationsInner;
 
 import java.util.Collections;
 
 public class MetadataMapper {
 
-    public static Metadata from(com.cartobucket.auth.model.generated.Metadata metadata) {
+    public static Metadata from(com.cartobucket.auth.api.dto.Metadata metadata) {
         var metadataDomain = new Metadata();
         if (metadata == null) {
             metadataDomain.setIdentifiers(Collections.emptyList());
@@ -43,12 +41,7 @@ public class MetadataMapper {
         if (metadata.getProperties() == null) {
             metadataDomain.setProperties(Collections.emptyMap());
         } else {
-            metadataDomain.setProperties(
-                    new ObjectMapper().convertValue(metadata.getProperties(),
-                            new TypeReference<>() {
-                            }
-                    )
-            );
+            metadataDomain.setProperties(metadata.getProperties());
         }
         return metadataDomain;
     }
@@ -68,8 +61,8 @@ public class MetadataMapper {
         return identifier;
     }
 
-    public static com.cartobucket.auth.model.generated.Metadata to(Metadata metadata) {
-        var _metadata = new com.cartobucket.auth.model.generated.Metadata();
+    public static com.cartobucket.auth.api.dto.Metadata to(Metadata metadata) {
+        var _metadata = new com.cartobucket.auth.api.dto.Metadata();
         if (metadata == null) {
             _metadata.setIdentifiers(Collections.emptyList());
             _metadata.setProperties(Collections.emptyMap());
@@ -104,16 +97,16 @@ public class MetadataMapper {
         return _metadata;
     }
 
-    private static com.cartobucket.auth.model.generated.MetadataSchemaValidationsInner toSchemaValidation(SchemaValidation schemaValidation) {
-        var _schemaValidation = new com.cartobucket.auth.model.generated.MetadataSchemaValidationsInner();
+    private static com.cartobucket.auth.api.dto.MetadataSchemaValidationsInner toSchemaValidation(SchemaValidation schemaValidation) {
+        var _schemaValidation = new com.cartobucket.auth.api.dto.MetadataSchemaValidationsInner();
         _schemaValidation.setSchemaId(schemaValidation.getSchemaId());
         _schemaValidation.setIsValid(schemaValidation.isValid());
         _schemaValidation.setValidatedOn(schemaValidation.getValidatedOn());
         return _schemaValidation;
     }
 
-    private static com.cartobucket.auth.model.generated.MetadataIdentifiersInner toIdentifier(Identifier identifier) {
-        var _identifier = new com.cartobucket.auth.model.generated.MetadataIdentifiersInner();
+    private static com.cartobucket.auth.api.dto.MetadataIdentifiersInner toIdentifier(Identifier identifier) {
+        var _identifier = new com.cartobucket.auth.api.dto.MetadataIdentifiersInner();
         _identifier.setSystem(identifier.getSystem());
         _identifier.setValue(identifier.getValue());
         return _identifier;

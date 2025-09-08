@@ -19,8 +19,8 @@
 
 package com.cartobucket.auth.api.server.routes.mappers;
 
-import com.cartobucket.auth.model.generated.SchemaRequest;
-import com.cartobucket.auth.model.generated.SchemaResponse;
+import com.cartobucket.auth.api.dto.SchemaRequest;
+import com.cartobucket.auth.api.dto.SchemaResponse;
 import com.cartobucket.auth.data.domain.Schema;
 
 import java.util.Map;

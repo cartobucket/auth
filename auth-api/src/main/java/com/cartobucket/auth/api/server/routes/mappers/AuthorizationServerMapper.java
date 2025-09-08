@@ -19,8 +19,8 @@
 
 package com.cartobucket.auth.api.server.routes.mappers;
 
-import com.cartobucket.auth.model.generated.AuthorizationServerRequest;
-import com.cartobucket.auth.model.generated.AuthorizationServerResponse;
+import com.cartobucket.auth.api.dto.AuthorizationServerRequest;
+import com.cartobucket.auth.api.dto.AuthorizationServerResponse;
 import com.cartobucket.auth.data.domain.AuthorizationServer;
 
 import java.net.MalformedURLException;

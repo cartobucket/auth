@@ -20,8 +20,8 @@
 package com.cartobucket.auth.api.server.routes.mappers;
 
 import com.cartobucket.auth.data.domain.Scope;
-import com.cartobucket.auth.model.generated.ClientRequest;
-import com.cartobucket.auth.model.generated.ClientResponse;
+import com.cartobucket.auth.api.dto.ClientRequest;
+import com.cartobucket.auth.api.dto.ClientResponse;
 import com.cartobucket.auth.data.domain.Client;
 import com.cartobucket.auth.data.services.ScopeService;
 
@@ -43,7 +43,7 @@ public class ClientMapper {
         var clientResponse = new ClientResponse();
         clientResponse.setId(String.valueOf(client.getId()));
         clientResponse.setName(client.getName());
-        clientResponse.setAuthorizationServerId(String.valueOf(client.getAuthorizationServerId()));
+        clientResponse.setAuthorizationServerId(client.getAuthorizationServerId());
         clientResponse.setRedirectUris(client.getRedirectUris().stream().map(String::valueOf).toList());
         clientResponse.setScopes(client.getScopes().stream().map(ScopeMapper::toResponse).toList());
         clientResponse.setMetadata(MetadataMapper.to(client.getMetadata()));

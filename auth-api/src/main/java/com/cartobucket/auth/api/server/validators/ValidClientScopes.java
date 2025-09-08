@@ -22,7 +22,7 @@ package com.cartobucket.auth.api.server.validators;
 import com.cartobucket.auth.data.domain.Page;
 import com.cartobucket.auth.data.domain.Scope;
 import com.cartobucket.auth.data.services.ScopeService;
-import com.cartobucket.auth.model.generated.ClientRequest;
+import com.cartobucket.auth.api.dto.ClientRequest;
 import jakarta.inject.Inject;
 import jakarta.validation.Constraint;
 import jakarta.validation.ConstraintValidator;

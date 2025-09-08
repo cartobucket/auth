@@ -20,8 +20,8 @@
 package com.cartobucket.auth.api.server.routes.mappers;
 
 import com.cartobucket.auth.data.domain.AuthorizationServer;
-import com.cartobucket.auth.model.generated.ScopeRequest;
-import com.cartobucket.auth.model.generated.ScopeResponse;
+import com.cartobucket.auth.api.dto.ScopeRequest;
+import com.cartobucket.auth.api.dto.ScopeResponse;
 import com.cartobucket.auth.data.domain.Scope;
 
 public class ScopeMapper {

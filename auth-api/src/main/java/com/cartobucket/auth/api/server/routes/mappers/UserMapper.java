@@ -20,8 +20,8 @@
 package com.cartobucket.auth.api.server.routes.mappers;
 
 import com.cartobucket.auth.data.domain.*;
-import com.cartobucket.auth.model.generated.UserRequest;
-import com.cartobucket.auth.model.generated.UserResponse;
+import com.cartobucket.auth.api.dto.UserRequest;
+import com.cartobucket.auth.api.dto.UserResponse;
 
 import java.util.Collections;
 import java.util.Map;
@@ -46,7 +46,7 @@ public class UserMapper {
         var profile = userProfilePair.getRight();
         var userResponse = new UserResponse();
         userResponse.setId(String.valueOf(user.getId()));
-        userResponse.setAuthorizationServerId(String.valueOf(user.getAuthorizationServerId()));
+        userResponse.setAuthorizationServerId(user.getAuthorizationServerId());
         userResponse.setUsername(user.getUsername());
         userResponse.setEmail(user.getEmail());
         userResponse.setMetadata(MetadataMapper.to(user.getMetadata()));

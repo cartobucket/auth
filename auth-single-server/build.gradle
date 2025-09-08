@@ -13,8 +13,6 @@ dependencies {
     implementation 'io.quarkus:quarkus-container-image-jib'
     implementation 'io.quarkus:quarkus-kotlin'
     implementation 'org.jetbrains.kotlin:kotlin-stdlib'
-    // Tooling
-    implementation group: 'io.swagger', name: 'swagger-annotations', version: '1.6.12'
     implementation 'io.quarkus:quarkus-hibernate-validator'
 
     implementation enforcedPlatform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}")

@@ -209,6 +209,21 @@ paths:
       responses:
         "200":
           description: OK
+    put:
+      parameters:
+      - name: clientId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/UUID'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClientRequest'
+      responses:
+        "200":
+          description: OK
     delete:
       parameters:
       - name: clientId
@@ -329,6 +344,21 @@ paths:
         required: true
         schema:
           $ref: '#/components/schemas/UUID'
+      responses:
+        "200":
+          description: OK
+    put:
+      parameters:
+      - name: scopeId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/UUID'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScopeRequest'
       responses:
         "200":
           description: OK
@@ -689,17 +719,18 @@ components:
         scope:
           type: string
     ApplicationRequest:
+      required:
+      - authorization_server_id
+      - name
       type: object
       properties:
+        authorization_server_id:
+          $ref: '#/components/schemas/UUID'
         name:
           type: string
-        clientId:
-          type: string
-        clientSecret:
+        client_id:
           type: string
         profile: {}
-        authorizationServerId:
-          $ref: '#/components/schemas/UUID'
         metadata:
           $ref: '#/components/schemas/Metadata'
         scopes:
@@ -710,40 +741,35 @@ components:
             type: string
     ApplicationSecretRequest:
       required:
-      - scopes
+      - application_id
       - name
-      - applicationId
+      - scopes
       type: object
       properties:
+        application_id:
+          $ref: '#/components/schemas/UUID'
+        name:
+          type: string
         scopes:
           type: array
           items:
             format: uuid
             pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
             type: string
-        name:
-          maxLength: 400
-          minLength: 3
-          type: string
-        applicationId:
-          $ref: '#/components/schemas/UUID'
-        expiresIn:
+        expires_in:
           format: int32
           type: integer
     AuthorizationServerRequest:
-      required:
-      - clientCredentialsTokenExpiration
-      - authorizationCodeTokenExpiration
       type: object
       properties:
-        serverUrl:
+        server_url:
           type: string
         audience:
           type: string
-        clientCredentialsTokenExpiration:
+        client_credentials_token_expiration:
           format: int32
           type: integer
-        authorizationCodeTokenExpiration:
+        authorization_code_token_expiration:
           format: int32
           type: integer
         name:
@@ -751,15 +777,13 @@ components:
         metadata:
           $ref: '#/components/schemas/Metadata'
     ClientRequest:
-      required:
-      - scopes
       type: object
       properties:
         name:
           type: string
-        authorizationServerId:
+        authorization_server_id:
           $ref: '#/components/schemas/UUID'
-        redirectUris:
+        redirect_uris:
           type: array
           items:
             type: string
@@ -780,7 +804,9 @@ components:
     Metadata:
       type: object
       properties:
-        properties: {}
+        properties:
+          type: object
+          additionalProperties: {}
         identifiers:
           type: array
           items:
@@ -811,51 +837,38 @@ components:
       example: 2022-03-10T12:15:50-04:00
     SchemaRequest:
       required:
-      - authorizationServer
-      - name
-      - schemaVersion
+      - authorization_server
       type: object
       properties:
-        authorizationServer:
+        authorization_server:
           $ref: '#/components/schemas/UUID'
         name:
           type: string
-        schemaVersion:
+        schema_version:
           type: string
         schema: {}
         metadata:
           $ref: '#/components/schemas/Metadata'
     ScopeRequest:
-      required:
-      - name
-      - authorizationServerId
       type: object
       properties:
+        authorization_server_id:
+          $ref: '#/components/schemas/UUID'
         name:
           type: string
-        authorizationServerId:
-          $ref: '#/components/schemas/UUID'
         metadata:
           $ref: '#/components/schemas/Metadata'
     TemplateRequest:
-      required:
-      - templateType
-      - template
-      - authorizationServerId
       type: object
       properties:
-        templateType:
-          $ref: '#/components/schemas/TemplateTypeEnum'
+        authorization_server_id:
+          $ref: '#/components/schemas/UUID'
+        template_type:
+          type: string
         template:
           type: string
-        authorizationServerId:
-          $ref: '#/components/schemas/UUID'
         metadata:
           $ref: '#/components/schemas/Metadata'
-    TemplateTypeEnum:
-      enum:
-      - login
-      type: string
     UUID:
       format: uuid
       pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
@@ -863,7 +876,7 @@ components:
     UserRequest:
       type: object
       properties:
-        authorizationServerId:
+        authorization_server_id:
           $ref: '#/components/schemas/UUID'
         username:
           type: string

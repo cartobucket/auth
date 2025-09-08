@@ -14,14 +14,11 @@ import com.cartobucket.auth.data.domain.Template;
 import com.cartobucket.auth.data.domain.User;
 import com.cartobucket.auth.postgres.client.entities.Event;
 import com.cartobucket.auth.postgres.client.entities.EventType;
-import jakarta.json.bind.Jsonb;
-import jakarta.json.bind.JsonbBuilder;
-import jakarta.json.JsonObject;
-import java.util.HashMap;
 import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
 import jakarta.enterprise.context.ApplicationScoped;
 
 import java.time.OffsetDateTime;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -29,7 +26,6 @@ import java.util.UUID;
 public class EventRepository implements PanacheRepositoryBase<Event, UUID> {
     // TODO: Figure out how to version things.
     // TODO: DRY event creation, should be easier in Java 21.
-    final private Jsonb jsonb = JsonbBuilder.create();
 
     public Event createApplicationProfileEvent(Pair<Application, Profile> applicationAndProfile, EventType eventType) {
         Event event = new Event();
@@ -189,34 +185,11 @@ public class EventRepository implements PanacheRepositoryBase<Event, UUID> {
     
     @SuppressWarnings("unchecked")
     private Map<String, Object> convertToMap(Object obj) {
-        String json = jsonb.toJson(obj);
-        JsonObject jsonObject = jsonb.fromJson(json, JsonObject.class);
+        // For event logging, we'll just store the object's toString representation
+        // This avoids circular reference issues and removes Jackson dependency
         Map<String, Object> map = new HashMap<>();
-        jsonObject.forEach((key, value) -> {
-            if (value instanceof jakarta.json.JsonValue) {
-                switch (value.getValueType()) {
-                    case STRING:
-                        map.put(key, ((jakarta.json.JsonString) value).getString());
-                        break;
-                    case NUMBER:
-                        map.put(key, ((jakarta.json.JsonNumber) value).numberValue());
-                        break;
-                    case TRUE:
-                        map.put(key, true);
-                        break;
-                    case FALSE:
-                        map.put(key, false);
-                        break;
-                    case NULL:
-                        map.put(key, null);
-                        break;
-                    default:
-                        map.put(key, value);
-                }
-            } else {
-                map.put(key, value);
-            }
-        });
+        map.put("type", obj.getClass().getSimpleName());
+        map.put("data", obj.toString());
         return map;
     }
 }
