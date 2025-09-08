@@ -20,8 +20,7 @@
 
 package com.cartobucket.auth.postgres.client.entities;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonTypeName;
+import jakarta.json.bind.annotation.JsonbProperty;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,9 +30,7 @@ import java.util.Objects;
 * 
 **/
 
-@JsonTypeName("JWKS")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaJAXRSSpecServerCodegen", date = "2023-05-23T21:07:45.072820760-07:00[America/Los_Angeles]")
-@com.fasterxml.jackson.annotation.JsonInclude(com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL)
 
 public class JWKS   {
     private List<JWK> keys;
@@ -46,12 +43,12 @@ public class JWKS   {
     }
 
     
-    @JsonProperty("keys")
+    @JsonbProperty("keys")
       public List<JWK> getKeys() {
     return keys;
     }
 
-    @JsonProperty("keys")
+    @JsonbProperty("keys")
     public void setKeys(List<JWK> keys) {
     this.keys = keys;
     }

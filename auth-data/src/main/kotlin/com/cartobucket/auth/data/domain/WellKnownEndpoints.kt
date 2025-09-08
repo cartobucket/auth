@@ -19,22 +19,20 @@
 
 package com.cartobucket.auth.data.domain
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties
-import com.fasterxml.jackson.annotation.JsonProperty
+import jakarta.json.bind.annotation.JsonbProperty
 
-@JsonIgnoreProperties(ignoreUnknown = true)
 data class WellKnownEndpoints(
-    @JsonProperty("authorization_endpoint")
+    @JsonbProperty("authorization_endpoint")
     var authorizationEndpoint: String? = null,
     
-    @JsonProperty("token_endpoint")
+    @JsonbProperty("token_endpoint")
     var tokenEndpoint: String? = null,
     
-    @JsonProperty("userinfo_endpoint")
+    @JsonbProperty("userinfo_endpoint")
     var userInfoEndpoint: String? = null,
     
     var issuer: String? = null,
     
-    @JsonProperty("jwks_uri")
+    @JsonbProperty("jwks_uri")
     var jwksEndpoint: String? = null
 )

@@ -14,10 +14,10 @@ import com.cartobucket.auth.data.domain.Template;
 import com.cartobucket.auth.data.domain.User;
 import com.cartobucket.auth.postgres.client.entities.Event;
 import com.cartobucket.auth.postgres.client.entities.EventType;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import jakarta.json.bind.Jsonb;
+import jakarta.json.bind.JsonbBuilder;
+import jakarta.json.JsonObject;
+import java.util.HashMap;
 import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
 import jakarta.enterprise.context.ApplicationScoped;
 
@@ -29,7 +29,7 @@ import java.util.UUID;
 public class EventRepository implements PanacheRepositoryBase<Event, UUID> {
     // TODO: Figure out how to version things.
     // TODO: DRY event creation, should be easier in Java 21.
-    final private ObjectMapper objectMapper = getObjectMapper();
+    final private Jsonb jsonb = JsonbBuilder.create();
 
     public Event createApplicationProfileEvent(Pair<Application, Profile> applicationAndProfile, EventType eventType) {
         Event event = new Event();
@@ -41,8 +41,8 @@ public class EventRepository implements PanacheRepositoryBase<Event, UUID> {
 
         event.setResource(
                 Map.of(
-                        "application", objectMapper.convertValue(applicationAndProfile.getLeft(), new TypeReference<Map<String, Object>>() {}),
-                        "profile", objectMapper.convertValue(applicationAndProfile.getRight().getProfile(), new TypeReference<Map<String, Object>>() {}))
+                        "application", convertToMap(applicationAndProfile.getLeft()),
+                        "profile", convertToMap(applicationAndProfile.getRight().getProfile()))
         );
 
         persist(event);
@@ -60,7 +60,7 @@ public class EventRepository implements PanacheRepositoryBase<Event, UUID> {
         event.setResource(
                 Map.of(
                         "authorizationServer",
-                        objectMapper.convertValue(authorizationServer, new TypeReference<Map<String, Object>>() {})
+                        convertToMap(authorizationServer)
                 )
         );
 
@@ -75,7 +75,7 @@ public class EventRepository implements PanacheRepositoryBase<Event, UUID> {
         event.setResourceType(ResourceType.SIGNING_KEY);
         event.setResourceId(signingKey.getId());
         event.setCreatedOn(OffsetDateTime.now());
-        Map<String, Object> resource = objectMapper.convertValue(signingKey, new TypeReference<>() {});
+        Map<String, Object> resource = convertToMap(signingKey);
         resource.remove("privateKey");
 
         event.setResource(
@@ -93,8 +93,7 @@ public class EventRepository implements PanacheRepositoryBase<Event, UUID> {
         event.setResourceType(ResourceType.TEMPLATE);
         event.setResourceId(template.getId());
         event.setCreatedOn(OffsetDateTime.now());
-        Map<String, Object> resource = objectMapper.convertValue(template, new TypeReference<>() {
-        });
+        Map<String, Object> resource = convertToMap(template);
 
         event.setResource(
                 Map.of("template", resource)
@@ -110,8 +109,7 @@ public class EventRepository implements PanacheRepositoryBase<Event, UUID> {
         event.setResourceType(ResourceType.CLIENT_CODE);
         event.setResourceId(clientCode.getId());
         event.setCreatedOn(OffsetDateTime.now());
-        Map<String, Object> resource = objectMapper.convertValue(clientCode, new TypeReference<>() {
-        });
+        Map<String, Object> resource = convertToMap(clientCode);
 
         event.setResource(
                 Map.of("clientCode", resource)
@@ -127,8 +125,7 @@ public class EventRepository implements PanacheRepositoryBase<Event, UUID> {
         event.setResourceType(ResourceType.CLIENT);
         event.setResourceId(client.getId());
         event.setCreatedOn(OffsetDateTime.now());
-        Map<String, Object> resource = objectMapper.convertValue(client, new TypeReference<>() {
-        });
+        Map<String, Object> resource = convertToMap(client);
 
         event.setResource(
                 Map.of("client", resource)
@@ -145,8 +142,7 @@ public class EventRepository implements PanacheRepositoryBase<Event, UUID> {
         event.setResourceType(ResourceType.SCHEMA);
         event.setResourceId(schema.getId());
         event.setCreatedOn(OffsetDateTime.now());
-        Map<String, Object> resource = objectMapper.convertValue(schema, new TypeReference<>() {
-        });
+        Map<String, Object> resource = convertToMap(schema);
 
         event.setResource(
                 Map.of("schema", resource)
@@ -163,8 +159,7 @@ public class EventRepository implements PanacheRepositoryBase<Event, UUID> {
         event.setResourceType(ResourceType.SCOPE);
         event.setResourceId(scope.getId());
         event.setCreatedOn(OffsetDateTime.now());
-        Map<String, Object> resource = objectMapper.convertValue(scope, new TypeReference<>() {
-        });
+        Map<String, Object> resource = convertToMap(scope);
 
         event.setResource(
                 Map.of("scope", resource)
@@ -184,20 +179,44 @@ public class EventRepository implements PanacheRepositoryBase<Event, UUID> {
 
         event.setResource(
                 Map.of(
-                        "user", objectMapper.convertValue(pair.getLeft(), new TypeReference<Map<String, Object>>() {}),
-                        "profile", objectMapper.convertValue(pair.getRight().getProfile(), new TypeReference<Map<String, Object>>() {}))
+                        "user", convertToMap(pair.getLeft()),
+                        "profile", convertToMap(pair.getRight().getProfile()))
         );
 
         persist(event);
         return event;
     }
-
-    private static ObjectMapper getObjectMapper() {
-        var objectMapper = new ObjectMapper();
-        objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-        objectMapper.registerModule(new JavaTimeModule());
-        return objectMapper;
+    
+    @SuppressWarnings("unchecked")
+    private Map<String, Object> convertToMap(Object obj) {
+        String json = jsonb.toJson(obj);
+        JsonObject jsonObject = jsonb.fromJson(json, JsonObject.class);
+        Map<String, Object> map = new HashMap<>();
+        jsonObject.forEach((key, value) -> {
+            if (value instanceof jakarta.json.JsonValue) {
+                switch (value.getValueType()) {
+                    case STRING:
+                        map.put(key, ((jakarta.json.JsonString) value).getString());
+                        break;
+                    case NUMBER:
+                        map.put(key, ((jakarta.json.JsonNumber) value).numberValue());
+                        break;
+                    case TRUE:
+                        map.put(key, true);
+                        break;
+                    case FALSE:
+                        map.put(key, false);
+                        break;
+                    case NULL:
+                        map.put(key, null);
+                        break;
+                    default:
+                        map.put(key, value);
+                }
+            } else {
+                map.put(key, value);
+            }
+        });
+        return map;
     }
-
-
 }

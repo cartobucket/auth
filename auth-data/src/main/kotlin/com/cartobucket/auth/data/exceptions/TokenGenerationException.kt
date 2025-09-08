@@ -17,29 +17,9 @@
  * THE SOFTWARE.
  */
 
-package com.cartobucket.auth.authorization.server.routes.mappers;
+package com.cartobucket.auth.data.exceptions
 
-
-import com.cartobucket.auth.authorization.server.dto.JWK;
-import com.cartobucket.auth.authorization.server.dto.JWKS;
-
-import java.util.List;
-
-public class JwksMapper {
-    public static JWK to(com.cartobucket.auth.data.domain.JWK jwk) {
-        var jwkModel = new JWK();
-        jwkModel.setAlg(jwk.getAlg());
-        jwkModel.setE(jwk.getE());
-        jwkModel.setKid(jwk.getKid());
-        jwkModel.setKty(jwk.getKty());
-        jwkModel.setN(jwk.getN());
-        jwkModel.setUse(jwk.getUse());
-        return jwkModel;
-    }
-
-    public static JWKS toJwksResponse(List<com.cartobucket.auth.data.domain.JWK> jwksForAuthorizationServer) {
-        var jwks = new JWKS();
-        jwks.setKeys(jwksForAuthorizationServer.stream().map(JwksMapper::to).toList());
-        return jwks;
-    }
+class TokenGenerationException : RuntimeException {
+    constructor(message: String) : super(message)
+    constructor(message: String, cause: Throwable) : super(message, cause)
 }

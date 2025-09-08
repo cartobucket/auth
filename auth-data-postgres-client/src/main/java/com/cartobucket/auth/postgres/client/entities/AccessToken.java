@@ -20,10 +20,9 @@
 
 package com.cartobucket.auth.postgres.client.entities;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import jakarta.json.bind.annotation.JsonbProperty;
+import jakarta.json.bind.annotation.JsonbTypeAdapter;
+import jakarta.json.bind.adapter.JsonbAdapter;
 
 import java.util.Objects;
 
@@ -31,13 +30,12 @@ import java.util.Objects;
 * 
 **/
 
-@JsonTypeName("AccessTokenResponse")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaJAXRSSpecServerCodegen", date = "2023-05-29T17:50:42.716026387-07:00[America/Los_Angeles]")
-@com.fasterxml.jackson.annotation.JsonInclude(com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL)
 
 public class AccessToken {
     private  String accessToken;
-            public enum TokenTypeEnum {
+    @JsonbTypeAdapter(TokenTypeAdapter.class)
+    public enum TokenTypeEnum {
 
     BEARER(String.valueOf("Bearer"));
 
@@ -53,7 +51,6 @@ public class AccessToken {
     }
 
     @Override
-    @JsonValue
     public String toString() {
         return String.valueOf(value);
     }
@@ -73,7 +70,6 @@ public class AccessToken {
         throw new IllegalArgumentException("Unexpected string value '" + s + "'");
 	}
 	
-    @JsonCreator
     public static TokenTypeEnum fromValue(String value) {
         for (TokenTypeEnum b : TokenTypeEnum.values()) {
             if (b.value.equals(value)) {
@@ -82,7 +78,19 @@ public class AccessToken {
         }
         throw new IllegalArgumentException("Unexpected value '" + value + "'");
     }
-}
+    }
+    
+    public static class TokenTypeAdapter implements JsonbAdapter<TokenTypeEnum, String> {
+        @Override
+        public String adaptToJson(TokenTypeEnum value) {
+            return value != null ? value.value() : null;
+        }
+        
+        @Override
+        public TokenTypeEnum adaptFromJson(String value) {
+            return value != null ? TokenTypeEnum.fromValue(value) : null;
+        }
+    }
 
     private  TokenTypeEnum tokenType;
     private  String refreshToken;
@@ -98,12 +106,12 @@ public class AccessToken {
     }
 
     
-    @JsonProperty("access_token")
+    @JsonbProperty("access_token")
       public String getAccessToken() {
     return accessToken;
     }
 
-    @JsonProperty("access_token")
+    @JsonbProperty("access_token")
     public void setAccessToken(String accessToken) {
     this.accessToken = accessToken;
     }
@@ -116,12 +124,12 @@ public class AccessToken {
     }
 
     
-    @JsonProperty("token_type")
+    @JsonbProperty("token_type")
       public TokenTypeEnum getTokenType() {
     return tokenType;
     }
 
-    @JsonProperty("token_type")
+    @JsonbProperty("token_type")
     public void setTokenType(TokenTypeEnum tokenType) {
     this.tokenType = tokenType;
     }
@@ -134,12 +142,12 @@ public class AccessToken {
     }
 
     
-    @JsonProperty("refresh_token")
+    @JsonbProperty("refresh_token")
       public String getRefreshToken() {
     return refreshToken;
     }
 
-    @JsonProperty("refresh_token")
+    @JsonbProperty("refresh_token")
     public void setRefreshToken(String refreshToken) {
     this.refreshToken = refreshToken;
     }
@@ -152,12 +160,12 @@ public class AccessToken {
     }
 
     
-    @JsonProperty("expires_in")
+    @JsonbProperty("expires_in")
       public Integer getExpiresIn() {
     return expiresIn;
     }
 
-    @JsonProperty("expires_in")
+    @JsonbProperty("expires_in")
     public void setExpiresIn(Integer expiresIn) {
     this.expiresIn = expiresIn;
     }
@@ -170,12 +178,12 @@ public class AccessToken {
     }
 
     
-    @JsonProperty("id_token")
+    @JsonbProperty("id_token")
       public String getIdToken() {
     return idToken;
     }
 
-    @JsonProperty("id_token")
+    @JsonbProperty("id_token")
     public void setIdToken(String idToken) {
     this.idToken = idToken;
     }
@@ -189,12 +197,12 @@ public class AccessToken {
     }
 
     
-    @JsonProperty("scope")
+    @JsonbProperty("scope")
       public String getScope() {
     return scope;
     }
 
-    @JsonProperty("scope")
+    @JsonbProperty("scope")
     public void setScope(String scope) {
     this.scope = scope;
     }
