@@ -66,6 +66,9 @@ sourceSets {
         java {
             srcDirs "$projectDir/src/main/java"
         }
+        kotlin {
+            srcDirs "$projectDir/src/main/kotlin"
+        }
         resources {
             srcDir "$projectDir/src/main/resources"
         }

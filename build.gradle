@@ -1,6 +1,8 @@
 plugins {
 	id 'java'
 	id 'org.jetbrains.kotlin.jvm' version '2.2.10'
+	id 'org.jetbrains.kotlin.plugin.allopen' version '2.2.10'
+	id 'org.jetbrains.kotlin.plugin.noarg' version '2.2.10'
 	id 'io.quarkus'
 	id 'org.openapi.generator' version '7.2.0'
 	id("com.diffplug.spotless") version "6.16.0"
@@ -51,6 +53,28 @@ sourceSets {
 	}
 }
 
+// Kotlin compiler configuration
+allOpen {
+	annotation("jakarta.ws.rs.Path")
+	annotation("jakarta.enterprise.context.ApplicationScoped")
+	annotation("jakarta.persistence.Entity")
+	annotation("io.quarkus.test.junit.QuarkusTest")
+}
+
+noArg {
+	annotation("jakarta.persistence.Entity")
+	annotation("jakarta.persistence.MappedSuperclass")
+	annotation("jakarta.persistence.Embeddable")
+}
+
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
+	kotlinOptions {
+		jvmTarget = "21"
+		javaParameters = true
+		freeCompilerArgs += ["-Xjsr305=strict"]
+	}
+}
+
 spotless {
 	// optional: limit format enforcement to just the files changed by this feature branch
 	ratchetFrom 'origin/main'
@@ -74,6 +98,10 @@ spotless {
 		// make sure every file has the following copyright header.
 		// optionally, Spotless can set copyright years by digging
 		// through git history (see "license" section below)
+		licenseHeader '/* (C)$YEAR */'
+	}
+	kotlin {
+		ktlint()
 		licenseHeader '/* (C)$YEAR */'
 	}
 }

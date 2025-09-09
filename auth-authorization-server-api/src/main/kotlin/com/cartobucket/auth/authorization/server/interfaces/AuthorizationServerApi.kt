@@ -1,23 +1,24 @@
-package com.cartobucket.auth.authorization.server.interfaces;
+/* (C)2024 */
+package com.cartobucket.auth.authorization.server.interfaces
 
-import com.cartobucket.auth.authorization.server.dto.*;
-import com.cartobucket.auth.authorization.server.validators.ValidAuthorizationServer;
-import org.eclipse.microprofile.openapi.annotations.Operation;
-import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
-import org.eclipse.microprofile.openapi.annotations.media.Content;
-import org.eclipse.microprofile.openapi.annotations.media.Schema;
-import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
-import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
-import org.eclipse.microprofile.openapi.annotations.tags.Tag;
-import jakarta.validation.constraints.NotNull;
-import jakarta.ws.rs.*;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
-import java.util.UUID;
+import com.cartobucket.auth.authorization.server.dto.*
+import com.cartobucket.auth.authorization.server.validators.ValidAuthorizationServer
+import org.eclipse.microprofile.openapi.annotations.Operation
+import org.eclipse.microprofile.openapi.annotations.parameters.Parameter
+import org.eclipse.microprofile.openapi.annotations.media.Content
+import org.eclipse.microprofile.openapi.annotations.media.Schema
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponse
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponses
+import org.eclipse.microprofile.openapi.annotations.tags.Tag
+import jakarta.validation.constraints.NotNull
+import jakarta.ws.rs.*
+import jakarta.ws.rs.core.MediaType
+import jakarta.ws.rs.core.Response
+import java.util.*
 
 @Path("/{authorizationServerId}")
 @Tag(name = "Authorization Server")
-public interface AuthorizationServerApi {
+interface AuthorizationServerApi {
     
     @GET
     @Path("/.well-known/openid-connect/")
@@ -26,19 +27,19 @@ public interface AuthorizationServerApi {
         summary = "Well Known Endpoint",
         description = "Returns the OpenID Connect Well-Known configuration"
     )
-    @APIResponses(value = {
-        @APIResponse(
+    @APIResponses(value = [
+        APIResponse(
             responseCode = "200",
             description = "Returns a well-known configuration object",
-            content = @Content(schema = @Schema(implementation = WellKnown.class))
+            content = [Content(schema = Schema(implementation = WellKnown::class))]
         )
-    })
-    Response getOpenIdConnectionWellKnown(
+    ])
+    fun getOpenIdConnectionWellKnown(
         @ValidAuthorizationServer
         @PathParam("authorizationServerId")
         @Parameter(description = "Authorization Server ID", required = true)
-        UUID authorizationServerId
-    );
+        authorizationServerId: UUID
+    ): Response
     
     @GET
     @Path("/authorization/")
@@ -47,123 +48,123 @@ public interface AuthorizationServerApi {
         summary = "Authorization Endpoint",
         description = "OAuth2/OIDC authorization endpoint"
     )
-    @APIResponses(value = {
-        @APIResponse(
+    @APIResponses(value = [
+        APIResponse(
             responseCode = "200",
             description = "Returns authorization form"
         ),
-        @APIResponse(
+        APIResponse(
             responseCode = "302",
             description = "Redirect to client with authorization code"
         )
-    })
-    Response getAuthorization(
+    ])
+    fun getAuthorization(
         @ValidAuthorizationServer
         @PathParam("authorizationServerId")
         @Parameter(description = "Authorization Server ID", required = true)
-        UUID authorizationServerId,
+        authorizationServerId: UUID,
         
         @QueryParam("client_id")
         @NotNull
         @Parameter(description = "Client identifier", required = true)
-        String clientId,
+        clientId: String?,
         
         @QueryParam("response_type")
         @NotNull
         @Parameter(description = "Response type", required = true)
-        String responseType,
+        responseType: String?,
         
         @QueryParam("redirect_uri")
         @Parameter(description = "Redirect URI")
-        String redirectUri,
+        redirectUri: String?,
         
         @QueryParam("scope")
         @Parameter(description = "Requested scopes")
-        String scope,
+        scope: String?,
         
         @QueryParam("state")
         @Parameter(description = "State parameter")
-        String state,
+        state: String?,
         
         @QueryParam("nonce")
         @Parameter(description = "Nonce for ID token")
-        String nonce,
+        nonce: String?,
         
         @QueryParam("code_challenge")
         @Parameter(description = "PKCE code challenge")
-        String codeChallenge,
+        codeChallenge: String?,
         
         @QueryParam("code_challenge_method")
         @Parameter(description = "PKCE code challenge method")
-        String codeChallengeMethod
-    );
+        codeChallengeMethod: String?
+    ): Response
     
     @POST
     @Path("/authorization/")
-    @Consumes({"multipart/form-data", MediaType.APPLICATION_FORM_URLENCODED, MediaType.APPLICATION_JSON})
+    @Consumes("multipart/form-data", MediaType.APPLICATION_FORM_URLENCODED, MediaType.APPLICATION_JSON)
     @Produces(MediaType.TEXT_HTML)
     @Operation(
         summary = "Process Authorization",
         description = "Process authorization with credentials"
     )
-    @APIResponses(value = {
-        @APIResponse(
+    @APIResponses(value = [
+        APIResponse(
             responseCode = "200",
             description = "Rerender the form when the user does not provide valid credentials"
         ),
-        @APIResponse(
+        APIResponse(
             responseCode = "302",
             description = "Redirect the user back to the redirect uri on success"
         )
-    })
-    Response createAuthorizationCode(
+    ])
+    fun createAuthorizationCode(
         @ValidAuthorizationServer
         @PathParam("authorizationServerId")
         @Parameter(description = "Authorization Server ID", required = true)
-        UUID authorizationServerId,
+        authorizationServerId: UUID,
         
         @QueryParam("client_id")
         @NotNull
         @Parameter(description = "Client identifier", required = true)
-        String clientId,
+        clientId: String?,
         
         @QueryParam("response_type")
         @NotNull
         @Parameter(description = "Response type", required = true)
-        String responseType,
+        responseType: String?,
         
         @QueryParam("code_challenge")
         @Parameter(description = "PKCE code challenge")
-        String codeChallenge,
+        codeChallenge: String?,
         
         @QueryParam("code_challenge_method")
         @Parameter(description = "PKCE code challenge method")
-        String codeChallengeMethod,
+        codeChallengeMethod: String?,
         
         @QueryParam("redirect_uri")
         @Parameter(description = "Redirect URI")
-        String redirectUri,
+        redirectUri: String?,
         
         @QueryParam("scope")
         @Parameter(description = "Requested scopes")
-        String scope,
+        scope: String?,
         
         @QueryParam("state")
         @Parameter(description = "State parameter")
-        String state,
+        state: String?,
         
         @QueryParam("nonce")
         @Parameter(description = "Nonce for ID token")
-        String nonce,
+        nonce: String?,
         
         @FormParam("username")
         @Parameter(description = "Username")
-        String username,
+        username: String?,
         
         @FormParam("password")
         @Parameter(description = "Password")
-        String password
-    );
+        password: String?
+    ): Response
     
     @POST
     @Path("/token/")
@@ -173,59 +174,59 @@ public interface AuthorizationServerApi {
         summary = "Token Endpoint (Form Data)",
         description = "OAuth2/OIDC token endpoint with form data"
     )
-    @APIResponses(value = {
-        @APIResponse(
+    @APIResponses(value = [
+        APIResponse(
             responseCode = "200",
             description = "Returns access token",
-            content = @Content(schema = @Schema(implementation = AccessTokenResponse.class))
+            content = [Content(schema = Schema(implementation = AccessTokenResponse::class))]
         ),
-        @APIResponse(
+        APIResponse(
             responseCode = "400",
             description = "Invalid request"
         ),
-        @APIResponse(
+        APIResponse(
             responseCode = "401",
             description = "Invalid client credentials"
         )
-    })
-    Response postToken(
+    ])
+    fun postToken(
         @ValidAuthorizationServer
         @PathParam("authorizationServerId")
         @Parameter(description = "Authorization Server ID", required = true)
-        UUID authorizationServerId,
+        authorizationServerId: UUID,
         
         @FormParam("grant_type")
         @Parameter(description = "Grant type", required = true)
-        String grantType,
+        grantType: String?,
         
         @FormParam("client_id")
         @Parameter(description = "Client identifier", required = true)
-        String clientId,
+        clientId: String?,
         
         @FormParam("client_secret")
         @Parameter(description = "Client secret")
-        String clientSecret,
+        clientSecret: String?,
         
         @FormParam("code")
         @Parameter(description = "Authorization code")
-        String code,
+        code: String?,
         
         @FormParam("redirect_uri")
         @Parameter(description = "Redirect URI")
-        String redirectUri,
+        redirectUri: String?,
         
         @FormParam("code_verifier")
         @Parameter(description = "PKCE code verifier")
-        String codeVerifier,
+        codeVerifier: String?,
         
         @FormParam("refresh_token")
         @Parameter(description = "Refresh token")
-        String refreshToken,
+        refreshToken: String?,
         
         @FormParam("scope")
         @Parameter(description = "Requested scopes")
-        String scope
-    );
+        scope: String?
+    ): Response
     
     @POST
     @Path("/token/")
@@ -235,30 +236,30 @@ public interface AuthorizationServerApi {
         summary = "Token Endpoint (JSON)",
         description = "OAuth2/OIDC token endpoint with JSON request body"
     )
-    @APIResponses(value = {
-        @APIResponse(
+    @APIResponses(value = [
+        APIResponse(
             responseCode = "200",
             description = "Returns access token",
-            content = @Content(schema = @Schema(implementation = AccessTokenResponse.class))
+            content = [Content(schema = Schema(implementation = AccessTokenResponse::class))]
         ),
-        @APIResponse(
+        APIResponse(
             responseCode = "400",
             description = "Invalid request"
         ),
-        @APIResponse(
+        APIResponse(
             responseCode = "401",
             description = "Invalid client credentials"
         )
-    })
-    Response postTokenJson(
+    ])
+    fun postTokenJson(
         @ValidAuthorizationServer
         @PathParam("authorizationServerId")
         @Parameter(description = "Authorization Server ID", required = true)
-        UUID authorizationServerId,
+        authorizationServerId: UUID,
         
         @Parameter(description = "Access token request", required = true)
-        AccessTokenRequest request
-    );
+        request: AccessTokenRequest?
+    ): Response
     
     @GET
     @Path("/jwks/")
@@ -267,19 +268,19 @@ public interface AuthorizationServerApi {
         summary = "JWKS Endpoint",
         description = "JSON Web Key Set endpoint"
     )
-    @APIResponses(value = {
-        @APIResponse(
+    @APIResponses(value = [
+        APIResponse(
             responseCode = "200",
             description = "Returns JWKS",
-            content = @Content(schema = @Schema(implementation = JWKS.class))
+            content = [Content(schema = Schema(implementation = JWKS::class))]
         )
-    })
-    Response getAuthorizationServerJwks(
+    ])
+    fun getAuthorizationServerJwks(
         @ValidAuthorizationServer
         @PathParam("authorizationServerId")
         @Parameter(description = "Authorization Server ID", required = true)
-        UUID authorizationServerId
-    );
+        authorizationServerId: UUID
+    ): Response
     
     @GET
     @Path("/userinfo/")
@@ -288,25 +289,25 @@ public interface AuthorizationServerApi {
         summary = "User Info",
         description = "OpenID Connect UserInfo endpoint"
     )
-    @APIResponses(value = {
-        @APIResponse(
+    @APIResponses(value = [
+        APIResponse(
             responseCode = "200",
             description = "Returns user information"
         ),
-        @APIResponse(
+        APIResponse(
             responseCode = "401",
             description = "Unauthorized"
         )
-    })
-    Response getUserInfo(
+    ])
+    fun getUserInfo(
         @ValidAuthorizationServer
         @PathParam("authorizationServerId")
         @Parameter(description = "Authorization Server ID", required = true)
-        UUID authorizationServerId,
+        authorizationServerId: UUID,
         
         @HeaderParam("Authorization")
         @NotNull
         @Parameter(description = "Bearer token", required = true)
-        String authorization
-    );
+        authorization: String?
+    ): Response
 }

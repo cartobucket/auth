@@ -47,3 +47,17 @@ compileJava {
 compileTestJava {
     options.encoding = 'UTF-8'
 }
+
+sourceSets {
+    main {
+        java {
+            srcDirs "$projectDir/src/main/java"
+        }
+        kotlin {
+            srcDirs "$projectDir/src/main/kotlin"
+        }
+        resources {
+            srcDir "$projectDir/src/main/resources"
+        }
+    }
+}

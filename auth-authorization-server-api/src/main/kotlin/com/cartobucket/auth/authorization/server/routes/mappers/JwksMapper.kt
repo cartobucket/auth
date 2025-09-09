@@ -17,29 +17,21 @@
  * THE SOFTWARE.
  */
 
-package com.cartobucket.auth.authorization.server.routes.mappers;
+package com.cartobucket.auth.authorization.server.routes.mappers
 
+import com.cartobucket.auth.authorization.server.dto.JWK
+import com.cartobucket.auth.authorization.server.dto.JWKS
 
-import com.cartobucket.auth.authorization.server.dto.JWK;
-import com.cartobucket.auth.authorization.server.dto.JWKS;
+object JwksMapper {
+    fun com.cartobucket.auth.data.domain.JWK.toDto(): JWK = JWK(
+        alg = this.alg,
+        e = this.e,
+        kid = this.kid,
+        kty = this.kty,
+        n = this.n,
+        use = this.use
+    )
 
-import java.util.List;
-
-public class JwksMapper {
-    public static JWK to(com.cartobucket.auth.data.domain.JWK jwk) {
-        var jwkModel = new JWK();
-        jwkModel.setAlg(jwk.getAlg());
-        jwkModel.setE(jwk.getE());
-        jwkModel.setKid(jwk.getKid());
-        jwkModel.setKty(jwk.getKty());
-        jwkModel.setN(jwk.getN());
-        jwkModel.setUse(jwk.getUse());
-        return jwkModel;
-    }
-
-    public static JWKS toJwksResponse(List<com.cartobucket.auth.data.domain.JWK> jwksForAuthorizationServer) {
-        var jwks = new JWKS();
-        jwks.setKeys(jwksForAuthorizationServer.stream().map(JwksMapper::to).toList());
-        return jwks;
-    }
+    fun List<com.cartobucket.auth.data.domain.JWK>.toJwksResponse(): JWKS = 
+        JWKS(keys = this.map { it.toDto() })
 }
