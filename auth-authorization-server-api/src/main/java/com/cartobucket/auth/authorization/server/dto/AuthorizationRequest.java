@@ -2,53 +2,41 @@ package com.cartobucket.auth.authorization.server.dto;
 
 import jakarta.json.bind.annotation.JsonbProperty;
 import jakarta.json.bind.annotation.JsonbNillable;
-import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 
-@Schema(description = "Authorization request parameters")
 @JsonbNillable(false)
 public class AuthorizationRequest {
     
     @JsonbProperty("client_id")
-    @Schema(description = "Client identifier", required = true)
     @NotNull
     private String clientId;
     
     @JsonbProperty("response_type")
-    @Schema(description = "Response type", required = true, allowableValues = {"code", "token", "id_token"})
     @NotNull
     private String responseType;
     
     @JsonbProperty("redirect_uri")
-    @Schema(description = "Redirect URI")
     private String redirectUri;
     
     @JsonbProperty("scope")
-    @Schema(description = "Requested scopes")
     private String scope;
     
     @JsonbProperty("state")
-    @Schema(description = "State parameter")
     private String state;
     
     @JsonbProperty("nonce")
-    @Schema(description = "Nonce for ID token")
     private String nonce;
     
     @JsonbProperty("code_challenge")
-    @Schema(description = "PKCE code challenge")
     private String codeChallenge;
     
     @JsonbProperty("code_challenge_method")
-    @Schema(description = "PKCE code challenge method", allowableValues = {"plain", "S256"})
     private String codeChallengeMethod;
     
     @JsonbProperty("username")
-    @Schema(description = "Username for authentication")
     private String username;
     
     @JsonbProperty("password")
-    @Schema(description = "Password for authentication")
     private String password;
     
     public String getClientId() {

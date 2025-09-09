@@ -2,15 +2,12 @@ package com.cartobucket.auth.api.dto;
 
 import com.cartobucket.auth.api.dto.MetadataIdentifiersInner;
 import com.cartobucket.auth.api.dto.MetadataSchemaValidationsInner;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import jakarta.validation.constraints.*;
 import jakarta.validation.Valid;
 
-import io.swagger.annotations.*;
 import java.util.Objects;
 import jakarta.json.bind.annotation.JsonbProperty;
 import com.cartobucket.auth.api.server.validators.*;
@@ -18,7 +15,6 @@ import com.cartobucket.auth.api.server.validators.*;
 /**
 * 
 **/
-@ApiModel(description = "")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaJAXRSSpecServerCodegen", date = "2025-09-07T19:06:14.647087583-07:00[America/Los_Angeles]")
 @jakarta.json.bind.annotation.JsonbNillable(false)
 
@@ -35,8 +31,7 @@ public class Metadata   {
     }
 
     
-        @ApiModelProperty(value = "")
-    @JsonbProperty("properties")
+        @JsonbProperty("properties")
       public java.util.Map<String, Object> getProperties() {
     return properties;
     }
@@ -54,8 +49,7 @@ public class Metadata   {
     }
 
     
-        @ApiModelProperty(value = "")
-    @JsonbProperty("identifiers")
+        @JsonbProperty("identifiers")
       public List<MetadataIdentifiersInner> getIdentifiers() {
     return identifiers;
     }
@@ -89,8 +83,7 @@ public class Metadata   {
     }
 
     
-        @ApiModelProperty(value = "")
-    @JsonbProperty("schemaValidations")
+        @JsonbProperty("schemaValidations")
       public List<MetadataSchemaValidationsInner> getSchemaValidations() {
     return schemaValidations;
     }

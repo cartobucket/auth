@@ -1,13 +1,10 @@
 package com.cartobucket.auth.api.dto;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 import jakarta.validation.constraints.*;
 import jakarta.validation.Valid;
 
-import io.swagger.annotations.*;
 import java.util.Objects;
 import jakarta.json.bind.annotation.JsonbProperty;
 import com.cartobucket.auth.api.server.validators.*;
@@ -28,8 +25,7 @@ public class MetadataSchemaValidationsInner   {
     }
 
     
-        @ApiModelProperty(value = "")
-    @JsonbProperty("schemaId")
+        @JsonbProperty("schemaId")
       public UUID getSchemaId() {
     return schemaId;
     }
@@ -47,8 +43,7 @@ public class MetadataSchemaValidationsInner   {
     }
 
     
-        @ApiModelProperty(value = "")
-    @JsonbProperty("isValid")
+        @JsonbProperty("isValid")
       public Boolean getIsValid() {
     return isValid;
     }
@@ -66,8 +61,7 @@ public class MetadataSchemaValidationsInner   {
     }
 
     
-        @ApiModelProperty(value = "")
-    @JsonbProperty("validatedOn")
+        @JsonbProperty("validatedOn")
       public OffsetDateTime getValidatedOn() {
     return validatedOn;
     }

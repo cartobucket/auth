@@ -4,12 +4,10 @@ import jakarta.json.bind.annotation.JsonbProperty;
 import jakarta.json.bind.annotation.JsonbNillable;
 import jakarta.json.bind.annotation.JsonbTypeAdapter;
 import jakarta.json.bind.adapter.JsonbAdapter;
-import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.Valid;
 import java.util.Objects;
 
-@Schema(description = "Access token request")
 @JsonbNillable(false)
 public class AccessTokenRequest {
     
@@ -66,37 +64,29 @@ public class AccessTokenRequest {
     }
     
     @JsonbProperty("client_id")
-    @Schema(description = "Client ID", required = true)
     @NotNull
     private @Valid String clientId;
     
     @JsonbProperty("client_secret")
-    @Schema(description = "Client secret")
     private @Valid String clientSecret;
     
     @JsonbProperty("grant_type")
-    @Schema(description = "Grant type", required = true)
     @NotNull
     private @Valid GrantTypeEnum grantType;
     
     @JsonbProperty("code")
-    @Schema(description = "Authorization code (for authorization_code grant)")
     private @Valid String code;
     
     @JsonbProperty("redirect_uri")
-    @Schema(description = "Redirect URI (for authorization_code grant)")
     private @Valid String redirectUri;
     
     @JsonbProperty("code_verifier")
-    @Schema(description = "PKCE code verifier")
     private @Valid String codeVerifier;
     
     @JsonbProperty("refresh_token")
-    @Schema(description = "Refresh token (for refresh_token grant)")
     private @Valid String refreshToken;
     
     @JsonbProperty("scope")
-    @Schema(description = "Requested scopes")
     private @Valid String scope;
     
     public AccessTokenRequest clientId(String clientId) {

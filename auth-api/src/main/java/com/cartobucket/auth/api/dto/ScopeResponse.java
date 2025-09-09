@@ -1,14 +1,11 @@
 package com.cartobucket.auth.api.dto;
 
 import com.cartobucket.auth.api.dto.Metadata;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 import jakarta.validation.constraints.*;
 import jakarta.validation.Valid;
 
-import io.swagger.annotations.*;
 import java.util.Objects;
 import jakarta.json.bind.annotation.JsonbProperty;
 import com.cartobucket.auth.api.server.validators.*;
@@ -16,7 +13,6 @@ import com.cartobucket.auth.api.server.validators.*;
 /**
 * 
 **/
-@ApiModel(description = "")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaJAXRSSpecServerCodegen", date = "2025-09-07T19:06:14.647087583-07:00[America/Los_Angeles]")
 @jakarta.json.bind.annotation.JsonbNillable(false)
 
@@ -36,8 +32,7 @@ public class ScopeResponse   {
     }
 
     
-        @ApiModelProperty(value = "")
-    @JsonbProperty("id")
+        @JsonbProperty("id")
       public String getId() {
     return id;
     }
@@ -56,8 +51,7 @@ public class ScopeResponse   {
     }
 
     
-        @ApiModelProperty(value = "")
-    @JsonbProperty("authorizationServerId")
+        @JsonbProperty("authorizationServerId")
       public UUID getAuthorizationServerId() {
     return authorizationServerId;
     }
@@ -75,8 +69,7 @@ public class ScopeResponse   {
     }
 
     
-        @ApiModelProperty(value = "")
-    @JsonbProperty("createdOn")
+        @JsonbProperty("createdOn")
       public OffsetDateTime getCreatedOn() {
     return createdOn;
     }
@@ -94,8 +87,7 @@ public class ScopeResponse   {
     }
 
     
-        @ApiModelProperty(value = "")
-    @JsonbProperty("updatedOn")
+        @JsonbProperty("updatedOn")
       public OffsetDateTime getUpdatedOn() {
     return updatedOn;
     }
@@ -113,8 +105,7 @@ public class ScopeResponse   {
     }
 
     
-        @ApiModelProperty(value = "")
-    @JsonbProperty("name")
+        @JsonbProperty("name")
       public String getName() {
     return name;
     }
@@ -132,8 +123,7 @@ public class ScopeResponse   {
     }
 
     
-        @ApiModelProperty(value = "")
-    @JsonbProperty("metadata")
+        @JsonbProperty("metadata")
       public Metadata getMetadata() {
     return metadata;
     }

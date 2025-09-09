@@ -1,11 +1,8 @@
 package com.cartobucket.auth.api.dto;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 import jakarta.validation.constraints.*;
 import jakarta.validation.Valid;
 
-import io.swagger.annotations.*;
 import java.util.Objects;
 import jakarta.json.bind.annotation.JsonbProperty;
 import com.cartobucket.auth.api.server.validators.*;
@@ -25,8 +22,7 @@ public class MetadataIdentifiersInner   {
     }
 
     
-        @ApiModelProperty(value = "")
-    @JsonbProperty("system")
+        @JsonbProperty("system")
       public String getSystem() {
     return system;
     }
@@ -44,8 +40,7 @@ public class MetadataIdentifiersInner   {
     }
 
     
-        @ApiModelProperty(value = "")
-    @JsonbProperty("value")
+        @JsonbProperty("value")
       public String getValue() {
     return value;
     }

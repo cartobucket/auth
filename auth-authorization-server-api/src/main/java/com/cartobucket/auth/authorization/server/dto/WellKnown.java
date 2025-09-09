@@ -3,12 +3,10 @@ package com.cartobucket.auth.authorization.server.dto;
 import jakarta.json.bind.annotation.JsonbProperty;
 import jakarta.json.bind.annotation.JsonbNillable;
 import jakarta.json.bind.config.PropertyNamingStrategy;
-import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Objects;
 
-@Schema(description = "OpenID Connect Well-Known Configuration")
 @JsonbNillable(false)
 public class WellKnown {
     
@@ -286,59 +284,45 @@ public class WellKnown {
     }
     
     @JsonbProperty("issuer")
-    @Schema(description = "Issuer identifier", required = true)
     private @Valid String issuer;
     
     @JsonbProperty("authorization_endpoint")
-    @Schema(description = "Authorization endpoint URL", required = true)
     private @Valid String authorizationEndpoint;
     
     @JsonbProperty("token_endpoint")
-    @Schema(description = "Token endpoint URL", required = true)
     private @Valid String tokenEndpoint;
     
     @JsonbProperty("userinfo_endpoint")
-    @Schema(description = "UserInfo endpoint URL")
     private @Valid String userinfoEndpoint;
     
     @JsonbProperty("jwks_uri")
-    @Schema(description = "JWKS URI", required = true)
     private @Valid String jwksUri;
     
     @JsonbProperty("revocation_endpoint")
-    @Schema(description = "Token revocation endpoint URL")
     private @Valid String revocationEndpoint;
     
     @JsonbProperty("scopes_supported")
-    @Schema(description = "Supported scopes")
     private @Valid List<String> scopesSupported;
     
     @JsonbProperty("response_types_supported")
-    @Schema(description = "Supported response types", required = true)
     private @Valid List<String> responseTypesSupported;
     
     @JsonbProperty("grant_types_supported")
-    @Schema(description = "Supported grant types")
     private @Valid List<String> grantTypesSupported;
     
     @JsonbProperty("subject_types_supported")
-    @Schema(description = "Supported subject types")
     private @Valid List<String> subjectTypesSupported;
     
     @JsonbProperty("id_token_signing_alg_values_supported")
-    @Schema(description = "Supported ID token signing algorithms")
     private @Valid List<String> idTokenSigningAlgValuesSupported;
     
     @JsonbProperty("token_endpoint_auth_methods_supported")
-    @Schema(description = "Supported token endpoint authentication methods")
     private @Valid List<String> tokenEndpointAuthMethodsSupported;
     
     @JsonbProperty("claims_supported")
-    @Schema(description = "Supported claims")
     private @Valid List<String> claimsSupported;
     
     @JsonbProperty("code_challenge_methods_supported")
-    @Schema(description = "Supported PKCE code challenge methods")
     private @Valid List<String> codeChallengeMethodsSupported;
     
     public WellKnown issuer(String issuer) {

@@ -1,6 +1,5 @@
 package com.cartobucket.auth.api.dto;
 
-import io.swagger.annotations.ApiModel;
 import jakarta.validation.constraints.*;
 import jakarta.validation.Valid;
 

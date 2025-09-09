@@ -70,7 +70,7 @@ public interface AuthorizationServerApi {
         
         @QueryParam("response_type")
         @NotNull
-        @Parameter(description = "Response type", required = true, schema = @Schema(allowableValues = {"code", "token"}))
+        @Parameter(description = "Response type", required = true)
         String responseType,
         
         @QueryParam("redirect_uri")
@@ -94,7 +94,7 @@ public interface AuthorizationServerApi {
         String codeChallenge,
         
         @QueryParam("code_challenge_method")
-        @Parameter(description = "PKCE code challenge method", schema = @Schema(allowableValues = {"plain", "S256"}))
+        @Parameter(description = "PKCE code challenge method")
         String codeChallengeMethod
     );
     
@@ -195,7 +195,7 @@ public interface AuthorizationServerApi {
         UUID authorizationServerId,
         
         @FormParam("grant_type")
-        @Parameter(description = "Grant type", required = true, schema = @Schema(allowableValues = {"authorization_code", "client_credentials", "refresh_token"}))
+        @Parameter(description = "Grant type", required = true)
         String grantType,
         
         @FormParam("client_id")

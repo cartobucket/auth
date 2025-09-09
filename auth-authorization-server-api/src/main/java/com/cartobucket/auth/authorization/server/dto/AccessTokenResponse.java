@@ -1,6 +1,5 @@
 package com.cartobucket.auth.authorization.server.dto;
 
-import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.json.bind.annotation.JsonbProperty;
 import jakarta.json.bind.annotation.JsonbPropertyOrder;
 import jakarta.json.bind.annotation.JsonbTypeAdapter;
@@ -9,7 +8,6 @@ import jakarta.json.bind.config.PropertyOrderStrategy;
 import jakarta.validation.Valid;
 import java.util.Objects;
 
-@Schema(description = "Access token response")
 @JsonbPropertyOrder({"access_token", "token_type", "expires_in", "refresh_token", "scope", "id_token"})
 public class AccessTokenResponse {
     
@@ -64,27 +62,21 @@ public class AccessTokenResponse {
     }
     
     @JsonbProperty("access_token")
-    @Schema(description = "Access token", required = true)
     private @Valid String accessToken;
     
     @JsonbProperty("token_type")
-    @Schema(description = "Token type", required = true, example = "Bearer")
     private @Valid TokenTypeEnum tokenType;
     
     @JsonbProperty("expires_in")
-    @Schema(description = "Token expiration time in seconds", required = true)
     private @Valid Integer expiresIn;
     
     @JsonbProperty("refresh_token")
-    @Schema(description = "Refresh token")
     private @Valid String refreshToken;
     
     @JsonbProperty("scope")
-    @Schema(description = "Granted scopes")
     private @Valid String scope;
     
     @JsonbProperty("id_token")
-    @Schema(description = "ID token (for OpenID Connect)")
     private @Valid String idToken;
     
     public AccessTokenResponse accessToken(String accessToken) {

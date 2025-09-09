@@ -1,11 +1,8 @@
 package com.cartobucket.auth.api.dto;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 import jakarta.validation.constraints.*;
 import jakarta.validation.Valid;
 
-import io.swagger.annotations.*;
 import java.util.Objects;
 import jakarta.json.bind.annotation.JsonbProperty;
 import com.cartobucket.auth.api.server.validators.*;
@@ -13,7 +10,6 @@ import com.cartobucket.auth.api.server.validators.*;
 /**
 * 
 **/
-@ApiModel(description = "")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaJAXRSSpecServerCodegen", date = "2025-09-07T19:06:14.647087583-07:00[America/Los_Angeles]")
 @jakarta.json.bind.annotation.JsonbNillable(false)
 
@@ -29,8 +25,7 @@ public class Page   {
     }
 
     
-        @ApiModelProperty(value = "")
-    @JsonbProperty("next")
+        @JsonbProperty("next")
       public String getNext() {
     return next;
     }
@@ -48,8 +43,7 @@ public class Page   {
     }
 
     
-        @ApiModelProperty(value = "")
-    @JsonbProperty("previous")
+        @JsonbProperty("previous")
       public String getPrevious() {
     return previous;
     }
