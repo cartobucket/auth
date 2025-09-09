@@ -171,6 +171,9 @@ public class ApplicationService implements com.cartobucket.auth.data.services.Ap
     @Override
     @Transactional
     public List<ApplicationSecret> getApplicationSecrets(final List<UUID> applicationIds) throws ApplicationNotFound {
+        if (applicationIds.isEmpty())
+            return applicationSecretRepository.findAll().stream().map(ApplicationSecretMapper::from).toList();
+
         return applicationSecretRepository.findByApplicationIdIn(applicationIds)
                 .stream()
                 .map(ApplicationSecretMapper::from)

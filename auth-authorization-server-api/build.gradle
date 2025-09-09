@@ -17,7 +17,7 @@ dependencies {
     
     // OpenAPI support - included with Quarkus SmallRye OpenAPI
     implementation 'io.quarkus:quarkus-smallrye-openapi'
-    implementation 'io.swagger.core.v3:swagger-annotations-jakarta:2.2.30'
+    implementation 'org.eclipse.microprofile.openapi:microprofile-openapi-api:3.1.1'
     
     
     // Jakarta APIs - Updated to latest versions

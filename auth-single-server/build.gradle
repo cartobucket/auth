@@ -20,6 +20,7 @@ dependencies {
     implementation 'io.quarkus:quarkus-resteasy-reactive'
     implementation 'io.quarkus:quarkus-resteasy-reactive-jsonb'
     implementation 'io.quarkus:quarkus-resteasy-reactive-qute'
+    implementation 'io.quarkus:quarkus-smallrye-openapi'
 
     implementation project(':auth-api')
     implementation project(':auth-authorization-server-api')

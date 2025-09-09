@@ -1,10 +1,12 @@
 ---
 openapi: 3.0.3
 info:
-  title: Cartobucket Auth Authorization Server API
-  description: OAuth2/OpenID Connect Authorization Server API
+  title: Cartobucket Auth API
+  description: OAuth 2.1/OIDC Server API
+  termsOfService: https://cartobucket.com/terms
   contact:
     name: Cartobucket
+    url: https://cartobucket.com
     email: info@cartobucket.com
   license:
     name: MIT
@@ -15,9 +17,21 @@ servers:
   description: Auto generated value
 - url: http://0.0.0.0:5000
   description: Auto generated value
+tags:
+- name: Application Secrets
+- name: Applications
+- name: Authorization Server
+- name: Authorization Servers
+- name: Clients
+- name: Schemas
+- name: Scopes
+- name: Templates
+- name: Users
 paths:
   /applicationSecrets:
     get:
+      tags:
+      - Application Secrets
       parameters:
       - name: applicationIds
         in: query
@@ -31,6 +45,8 @@ paths:
         "200":
           description: OK
     post:
+      tags:
+      - Application Secrets
       requestBody:
         content:
           application/json:
@@ -41,6 +57,8 @@ paths:
           description: OK
   /applicationSecrets/{secretId}:
     delete:
+      tags:
+      - Application Secrets
       parameters:
       - name: secretId
         in: path
@@ -52,6 +70,8 @@ paths:
           description: OK
   /applications:
     get:
+      tags:
+      - Applications
       parameters:
       - name: authorizationServerIds
         in: query
@@ -75,6 +95,8 @@ paths:
         "200":
           description: OK
     post:
+      tags:
+      - Applications
       requestBody:
         content:
           application/json:
@@ -85,6 +107,8 @@ paths:
           description: OK
   /applications/{applicationId}:
     get:
+      tags:
+      - Applications
       parameters:
       - name: applicationId
         in: path
@@ -95,6 +119,8 @@ paths:
         "200":
           description: OK
     delete:
+      tags:
+      - Applications
       parameters:
       - name: applicationId
         in: path
@@ -106,6 +132,8 @@ paths:
           description: OK
   /authorizationServers:
     get:
+      tags:
+      - Authorization Servers
       parameters:
       - name: limit
         in: query
@@ -121,6 +149,8 @@ paths:
         "200":
           description: OK
     post:
+      tags:
+      - Authorization Servers
       requestBody:
         content:
           application/json:
@@ -131,6 +161,8 @@ paths:
           description: OK
   /authorizationServers/{authorizationServerId}:
     get:
+      tags:
+      - Authorization Servers
       parameters:
       - name: authorizationServerId
         in: path
@@ -141,6 +173,8 @@ paths:
         "200":
           description: OK
     put:
+      tags:
+      - Authorization Servers
       parameters:
       - name: authorizationServerId
         in: path
@@ -156,6 +190,8 @@ paths:
         "200":
           description: OK
     delete:
+      tags:
+      - Authorization Servers
       parameters:
       - name: authorizationServerId
         in: path
@@ -167,6 +203,8 @@ paths:
           description: OK
   /clients:
     get:
+      tags:
+      - Clients
       parameters:
       - name: authorizationServerIds
         in: query
@@ -190,6 +228,8 @@ paths:
         "200":
           description: OK
     post:
+      tags:
+      - Clients
       requestBody:
         content:
           application/json:
@@ -200,6 +240,8 @@ paths:
           description: OK
   /clients/{clientId}:
     get:
+      tags:
+      - Clients
       parameters:
       - name: clientId
         in: path
@@ -210,6 +252,8 @@ paths:
         "200":
           description: OK
     put:
+      tags:
+      - Clients
       parameters:
       - name: clientId
         in: path
@@ -225,6 +269,8 @@ paths:
         "200":
           description: OK
     delete:
+      tags:
+      - Clients
       parameters:
       - name: clientId
         in: path
@@ -236,6 +282,8 @@ paths:
           description: OK
   /schemas:
     get:
+      tags:
+      - Schemas
       parameters:
       - name: authorizationServerIds
         in: query
@@ -259,6 +307,8 @@ paths:
         "200":
           description: OK
     post:
+      tags:
+      - Schemas
       requestBody:
         content:
           application/json:
@@ -269,6 +319,8 @@ paths:
           description: OK
   /schemas/{schemaId}:
     get:
+      tags:
+      - Schemas
       parameters:
       - name: schemaId
         in: path
@@ -279,6 +331,8 @@ paths:
         "200":
           description: OK
     put:
+      tags:
+      - Schemas
       parameters:
       - name: schemaId
         in: path
@@ -294,6 +348,8 @@ paths:
         "200":
           description: OK
     delete:
+      tags:
+      - Schemas
       parameters:
       - name: schemaId
         in: path
@@ -305,6 +361,8 @@ paths:
           description: OK
   /scopes:
     get:
+      tags:
+      - Scopes
       parameters:
       - name: authorizationServerIds
         in: query
@@ -328,6 +386,8 @@ paths:
         "200":
           description: OK
     post:
+      tags:
+      - Scopes
       requestBody:
         content:
           application/json:
@@ -338,6 +398,8 @@ paths:
           description: OK
   /scopes/{scopeId}:
     get:
+      tags:
+      - Scopes
       parameters:
       - name: scopeId
         in: path
@@ -348,6 +410,8 @@ paths:
         "200":
           description: OK
     put:
+      tags:
+      - Scopes
       parameters:
       - name: scopeId
         in: path
@@ -363,6 +427,8 @@ paths:
         "200":
           description: OK
     delete:
+      tags:
+      - Scopes
       parameters:
       - name: scopeId
         in: path
@@ -374,6 +440,8 @@ paths:
           description: OK
   /templates:
     get:
+      tags:
+      - Templates
       parameters:
       - name: authorizationServerIds
         in: query
@@ -397,6 +465,8 @@ paths:
         "200":
           description: OK
     post:
+      tags:
+      - Templates
       requestBody:
         content:
           application/json:
@@ -407,6 +477,8 @@ paths:
           description: OK
   /templates/{templateId}:
     get:
+      tags:
+      - Templates
       parameters:
       - name: templateId
         in: path
@@ -417,6 +489,8 @@ paths:
         "200":
           description: OK
     put:
+      tags:
+      - Templates
       parameters:
       - name: templateId
         in: path
@@ -432,6 +506,8 @@ paths:
         "200":
           description: OK
     delete:
+      tags:
+      - Templates
       parameters:
       - name: templateId
         in: path
@@ -443,6 +519,8 @@ paths:
           description: OK
   /users:
     get:
+      tags:
+      - Users
       parameters:
       - name: authorizationServerIds
         in: query
@@ -466,6 +544,8 @@ paths:
         "200":
           description: OK
     post:
+      tags:
+      - Users
       requestBody:
         content:
           application/json:
@@ -476,6 +556,8 @@ paths:
           description: OK
   /users/{userId}:
     get:
+      tags:
+      - Users
       parameters:
       - name: userId
         in: path
@@ -486,6 +568,8 @@ paths:
         "200":
           description: OK
     put:
+      tags:
+      - Users
       parameters:
       - name: userId
         in: path
@@ -501,6 +585,8 @@ paths:
         "200":
           description: OK
     delete:
+      tags:
+      - Users
       parameters:
       - name: userId
         in: path
@@ -512,6 +598,8 @@ paths:
           description: OK
   /{authorizationServerId}/.well-known/openid-connect:
     get:
+      tags:
+      - Authorization Server
       parameters:
       - name: authorizationServerId
         in: path
@@ -523,6 +611,8 @@ paths:
           description: OK
   /{authorizationServerId}/authorization:
     get:
+      tags:
+      - Authorization Server
       parameters:
       - name: authorizationServerId
         in: path
@@ -567,6 +657,8 @@ paths:
         "200":
           description: OK
     post:
+      tags:
+      - Authorization Server
       parameters:
       - name: authorizationServerId
         in: path
@@ -638,6 +730,8 @@ paths:
           description: OK
   /{authorizationServerId}/jwks:
     get:
+      tags:
+      - Authorization Server
       parameters:
       - name: authorizationServerId
         in: path
@@ -649,6 +743,8 @@ paths:
           description: OK
   /{authorizationServerId}/token:
     post:
+      tags:
+      - Authorization Server
       parameters:
       - name: authorizationServerId
         in: path
@@ -685,6 +781,8 @@ paths:
           description: OK
   /{authorizationServerId}/userinfo:
     get:
+      tags:
+      - Authorization Server
       parameters:
       - name: authorizationServerId
         in: path

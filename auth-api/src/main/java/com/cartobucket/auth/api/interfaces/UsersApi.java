@@ -8,10 +8,12 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import java.util.List;
 import java.util.UUID;
 
 @Path("/users")
+@Tag(name = "Users")
 public interface UsersApi {
 
     @POST

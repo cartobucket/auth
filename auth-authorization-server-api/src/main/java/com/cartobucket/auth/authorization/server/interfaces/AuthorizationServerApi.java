@@ -2,13 +2,13 @@ package com.cartobucket.auth.authorization.server.interfaces;
 
 import com.cartobucket.auth.authorization.server.dto.*;
 import com.cartobucket.auth.authorization.server.validators.ValidAuthorizationServer;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import io.swagger.v3.oas.annotations.tags.Tag;
+import org.eclipse.microprofile.openapi.annotations.Operation;
+import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
+import org.eclipse.microprofile.openapi.annotations.media.Content;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import jakarta.validation.constraints.NotNull;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
@@ -16,7 +16,7 @@ import jakarta.ws.rs.core.Response;
 import java.util.UUID;
 
 @Path("/{authorizationServerId}")
-@Tag(name = "AuthorizationServer", description = "Authorization Server endpoints")
+@Tag(name = "Authorization Server")
 public interface AuthorizationServerApi {
     
     @GET
@@ -26,8 +26,8 @@ public interface AuthorizationServerApi {
         summary = "Well Known Endpoint",
         description = "Returns the OpenID Connect Well-Known configuration"
     )
-    @ApiResponses(value = {
-        @ApiResponse(
+    @APIResponses(value = {
+        @APIResponse(
             responseCode = "200",
             description = "Returns a well-known configuration object",
             content = @Content(schema = @Schema(implementation = WellKnown.class))
@@ -47,12 +47,12 @@ public interface AuthorizationServerApi {
         summary = "Authorization Endpoint",
         description = "OAuth2/OIDC authorization endpoint"
     )
-    @ApiResponses(value = {
-        @ApiResponse(
+    @APIResponses(value = {
+        @APIResponse(
             responseCode = "200",
             description = "Returns authorization form"
         ),
-        @ApiResponse(
+        @APIResponse(
             responseCode = "302",
             description = "Redirect to client with authorization code"
         )
@@ -106,12 +106,12 @@ public interface AuthorizationServerApi {
         summary = "Process Authorization",
         description = "Process authorization with credentials"
     )
-    @ApiResponses(value = {
-        @ApiResponse(
+    @APIResponses(value = {
+        @APIResponse(
             responseCode = "200",
             description = "Rerender the form when the user does not provide valid credentials"
         ),
-        @ApiResponse(
+        @APIResponse(
             responseCode = "302",
             description = "Redirect the user back to the redirect uri on success"
         )
@@ -173,17 +173,17 @@ public interface AuthorizationServerApi {
         summary = "Token Endpoint (Form Data)",
         description = "OAuth2/OIDC token endpoint with form data"
     )
-    @ApiResponses(value = {
-        @ApiResponse(
+    @APIResponses(value = {
+        @APIResponse(
             responseCode = "200",
             description = "Returns access token",
             content = @Content(schema = @Schema(implementation = AccessTokenResponse.class))
         ),
-        @ApiResponse(
+        @APIResponse(
             responseCode = "400",
             description = "Invalid request"
         ),
-        @ApiResponse(
+        @APIResponse(
             responseCode = "401",
             description = "Invalid client credentials"
         )
@@ -235,17 +235,17 @@ public interface AuthorizationServerApi {
         summary = "Token Endpoint (JSON)",
         description = "OAuth2/OIDC token endpoint with JSON request body"
     )
-    @ApiResponses(value = {
-        @ApiResponse(
+    @APIResponses(value = {
+        @APIResponse(
             responseCode = "200",
             description = "Returns access token",
             content = @Content(schema = @Schema(implementation = AccessTokenResponse.class))
         ),
-        @ApiResponse(
+        @APIResponse(
             responseCode = "400",
             description = "Invalid request"
         ),
-        @ApiResponse(
+        @APIResponse(
             responseCode = "401",
             description = "Invalid client credentials"
         )
@@ -267,8 +267,8 @@ public interface AuthorizationServerApi {
         summary = "JWKS Endpoint",
         description = "JSON Web Key Set endpoint"
     )
-    @ApiResponses(value = {
-        @ApiResponse(
+    @APIResponses(value = {
+        @APIResponse(
             responseCode = "200",
             description = "Returns JWKS",
             content = @Content(schema = @Schema(implementation = JWKS.class))
@@ -288,12 +288,12 @@ public interface AuthorizationServerApi {
         summary = "User Info",
         description = "OpenID Connect UserInfo endpoint"
     )
-    @ApiResponses(value = {
-        @ApiResponse(
+    @APIResponses(value = {
+        @APIResponse(
             responseCode = "200",
             description = "Returns user information"
         ),
-        @ApiResponse(
+        @APIResponse(
             responseCode = "401",
             description = "Unauthorized"
         )

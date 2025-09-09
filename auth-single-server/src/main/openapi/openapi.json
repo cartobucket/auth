@@ -1,10 +1,12 @@
 {
   "openapi" : "3.0.3",
   "info" : {
-    "title" : "Cartobucket Auth Authorization Server API",
-    "description" : "OAuth2/OpenID Connect Authorization Server API",
+    "title" : "Cartobucket Auth API",
+    "description" : "OAuth 2.1/OIDC Server API",
+    "termsOfService" : "https://cartobucket.com/terms",
     "contact" : {
       "name" : "Cartobucket",
+      "url" : "https://cartobucket.com",
       "email" : "info@cartobucket.com"
     },
     "license" : {
@@ -20,9 +22,29 @@
     "url" : "http://0.0.0.0:5000",
     "description" : "Auto generated value"
   } ],
+  "tags" : [ {
+    "name" : "Application Secrets"
+  }, {
+    "name" : "Applications"
+  }, {
+    "name" : "Authorization Server"
+  }, {
+    "name" : "Authorization Servers"
+  }, {
+    "name" : "Clients"
+  }, {
+    "name" : "Schemas"
+  }, {
+    "name" : "Scopes"
+  }, {
+    "name" : "Templates"
+  }, {
+    "name" : "Users"
+  } ],
   "paths" : {
     "/applicationSecrets" : {
       "get" : {
+        "tags" : [ "Application Secrets" ],
         "parameters" : [ {
           "name" : "applicationIds",
           "in" : "query",
@@ -42,6 +64,7 @@
         }
       },
       "post" : {
+        "tags" : [ "Application Secrets" ],
         "requestBody" : {
           "content" : {
             "application/json" : {
@@ -60,6 +83,7 @@
     },
     "/applicationSecrets/{secretId}" : {
       "delete" : {
+        "tags" : [ "Application Secrets" ],
         "parameters" : [ {
           "name" : "secretId",
           "in" : "path",
@@ -77,6 +101,7 @@
     },
     "/applications" : {
       "get" : {
+        "tags" : [ "Applications" ],
         "parameters" : [ {
           "name" : "authorizationServerIds",
           "in" : "query",
@@ -110,6 +135,7 @@
         }
       },
       "post" : {
+        "tags" : [ "Applications" ],
         "requestBody" : {
           "content" : {
             "application/json" : {
@@ -128,6 +154,7 @@
     },
     "/applications/{applicationId}" : {
       "get" : {
+        "tags" : [ "Applications" ],
         "parameters" : [ {
           "name" : "applicationId",
           "in" : "path",
@@ -143,6 +170,7 @@
         }
       },
       "delete" : {
+        "tags" : [ "Applications" ],
         "parameters" : [ {
           "name" : "applicationId",
           "in" : "path",
@@ -160,6 +188,7 @@
     },
     "/authorizationServers" : {
       "get" : {
+        "tags" : [ "Authorization Servers" ],
         "parameters" : [ {
           "name" : "limit",
           "in" : "query",
@@ -182,6 +211,7 @@
         }
       },
       "post" : {
+        "tags" : [ "Authorization Servers" ],
         "requestBody" : {
           "content" : {
             "application/json" : {
@@ -200,6 +230,7 @@
     },
     "/authorizationServers/{authorizationServerId}" : {
       "get" : {
+        "tags" : [ "Authorization Servers" ],
         "parameters" : [ {
           "name" : "authorizationServerId",
           "in" : "path",
@@ -215,6 +246,7 @@
         }
       },
       "put" : {
+        "tags" : [ "Authorization Servers" ],
         "parameters" : [ {
           "name" : "authorizationServerId",
           "in" : "path",
@@ -239,6 +271,7 @@
         }
       },
       "delete" : {
+        "tags" : [ "Authorization Servers" ],
         "parameters" : [ {
           "name" : "authorizationServerId",
           "in" : "path",
@@ -256,6 +289,7 @@
     },
     "/clients" : {
       "get" : {
+        "tags" : [ "Clients" ],
         "parameters" : [ {
           "name" : "authorizationServerIds",
           "in" : "query",
@@ -289,6 +323,7 @@
         }
       },
       "post" : {
+        "tags" : [ "Clients" ],
         "requestBody" : {
           "content" : {
             "application/json" : {
@@ -307,6 +342,7 @@
     },
     "/clients/{clientId}" : {
       "get" : {
+        "tags" : [ "Clients" ],
         "parameters" : [ {
           "name" : "clientId",
           "in" : "path",
@@ -322,6 +358,7 @@
         }
       },
       "put" : {
+        "tags" : [ "Clients" ],
         "parameters" : [ {
           "name" : "clientId",
           "in" : "path",
@@ -346,6 +383,7 @@
         }
       },
       "delete" : {
+        "tags" : [ "Clients" ],
         "parameters" : [ {
           "name" : "clientId",
           "in" : "path",
@@ -363,6 +401,7 @@
     },
     "/schemas" : {
       "get" : {
+        "tags" : [ "Schemas" ],
         "parameters" : [ {
           "name" : "authorizationServerIds",
           "in" : "query",
@@ -396,6 +435,7 @@
         }
       },
       "post" : {
+        "tags" : [ "Schemas" ],
         "requestBody" : {
           "content" : {
             "application/json" : {
@@ -414,6 +454,7 @@
     },
     "/schemas/{schemaId}" : {
       "get" : {
+        "tags" : [ "Schemas" ],
         "parameters" : [ {
           "name" : "schemaId",
           "in" : "path",
@@ -429,6 +470,7 @@
         }
       },
       "put" : {
+        "tags" : [ "Schemas" ],
         "parameters" : [ {
           "name" : "schemaId",
           "in" : "path",
@@ -453,6 +495,7 @@
         }
       },
       "delete" : {
+        "tags" : [ "Schemas" ],
         "parameters" : [ {
           "name" : "schemaId",
           "in" : "path",
@@ -470,6 +513,7 @@
     },
     "/scopes" : {
       "get" : {
+        "tags" : [ "Scopes" ],
         "parameters" : [ {
           "name" : "authorizationServerIds",
           "in" : "query",
@@ -503,6 +547,7 @@
         }
       },
       "post" : {
+        "tags" : [ "Scopes" ],
         "requestBody" : {
           "content" : {
             "application/json" : {
@@ -521,6 +566,7 @@
     },
     "/scopes/{scopeId}" : {
       "get" : {
+        "tags" : [ "Scopes" ],
         "parameters" : [ {
           "name" : "scopeId",
           "in" : "path",
@@ -536,6 +582,7 @@
         }
       },
       "put" : {
+        "tags" : [ "Scopes" ],
         "parameters" : [ {
           "name" : "scopeId",
           "in" : "path",
@@ -560,6 +607,7 @@
         }
       },
       "delete" : {
+        "tags" : [ "Scopes" ],
         "parameters" : [ {
           "name" : "scopeId",
           "in" : "path",
@@ -577,6 +625,7 @@
     },
     "/templates" : {
       "get" : {
+        "tags" : [ "Templates" ],
         "parameters" : [ {
           "name" : "authorizationServerIds",
           "in" : "query",
@@ -610,6 +659,7 @@
         }
       },
       "post" : {
+        "tags" : [ "Templates" ],
         "requestBody" : {
           "content" : {
             "application/json" : {
@@ -628,6 +678,7 @@
     },
     "/templates/{templateId}" : {
       "get" : {
+        "tags" : [ "Templates" ],
         "parameters" : [ {
           "name" : "templateId",
           "in" : "path",
@@ -643,6 +694,7 @@
         }
       },
       "put" : {
+        "tags" : [ "Templates" ],
         "parameters" : [ {
           "name" : "templateId",
           "in" : "path",
@@ -667,6 +719,7 @@
         }
       },
       "delete" : {
+        "tags" : [ "Templates" ],
         "parameters" : [ {
           "name" : "templateId",
           "in" : "path",
@@ -684,6 +737,7 @@
     },
     "/users" : {
       "get" : {
+        "tags" : [ "Users" ],
         "parameters" : [ {
           "name" : "authorizationServerIds",
           "in" : "query",
@@ -717,6 +771,7 @@
         }
       },
       "post" : {
+        "tags" : [ "Users" ],
         "requestBody" : {
           "content" : {
             "application/json" : {
@@ -735,6 +790,7 @@
     },
     "/users/{userId}" : {
       "get" : {
+        "tags" : [ "Users" ],
         "parameters" : [ {
           "name" : "userId",
           "in" : "path",
@@ -750,6 +806,7 @@
         }
       },
       "put" : {
+        "tags" : [ "Users" ],
         "parameters" : [ {
           "name" : "userId",
           "in" : "path",
@@ -774,6 +831,7 @@
         }
       },
       "delete" : {
+        "tags" : [ "Users" ],
         "parameters" : [ {
           "name" : "userId",
           "in" : "path",
@@ -791,6 +849,7 @@
     },
     "/{authorizationServerId}/.well-known/openid-connect" : {
       "get" : {
+        "tags" : [ "Authorization Server" ],
         "parameters" : [ {
           "name" : "authorizationServerId",
           "in" : "path",
@@ -808,6 +867,7 @@
     },
     "/{authorizationServerId}/authorization" : {
       "get" : {
+        "tags" : [ "Authorization Server" ],
         "parameters" : [ {
           "name" : "authorizationServerId",
           "in" : "path",
@@ -873,6 +933,7 @@
         }
       },
       "post" : {
+        "tags" : [ "Authorization Server" ],
         "parameters" : [ {
           "name" : "authorizationServerId",
           "in" : "path",
@@ -983,6 +1044,7 @@
     },
     "/{authorizationServerId}/jwks" : {
       "get" : {
+        "tags" : [ "Authorization Server" ],
         "parameters" : [ {
           "name" : "authorizationServerId",
           "in" : "path",
@@ -1000,6 +1062,7 @@
     },
     "/{authorizationServerId}/token" : {
       "post" : {
+        "tags" : [ "Authorization Server" ],
         "parameters" : [ {
           "name" : "authorizationServerId",
           "in" : "path",
@@ -1057,6 +1120,7 @@
     },
     "/{authorizationServerId}/userinfo" : {
       "get" : {
+        "tags" : [ "Authorization Server" ],
         "parameters" : [ {
           "name" : "authorizationServerId",
           "in" : "path",
