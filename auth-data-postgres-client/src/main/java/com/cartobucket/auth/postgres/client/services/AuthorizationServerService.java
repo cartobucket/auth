@@ -38,7 +38,8 @@ import com.cartobucket.auth.data.exceptions.notfound.ProfileNotFound;
 import com.cartobucket.auth.data.services.ScopeService;
 import com.cartobucket.auth.data.services.SchemaService;
 import com.cartobucket.auth.data.services.TemplateService;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.json.bind.Jsonb;
+import jakarta.json.bind.JsonbBuilder;
 import com.cartobucket.auth.postgres.client.repositories.ApplicationSecretRepository;
 import com.cartobucket.auth.postgres.client.repositories.AuthorizationServerRepository;
 import com.cartobucket.auth.postgres.client.repositories.EventRepository;
@@ -568,9 +569,9 @@ public class AuthorizationServerService implements com.cartobucket.auth.data.ser
             if (inputStream != null) {
                 try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
                     String contents = reader.lines().collect(Collectors.joining(System.lineSeparator()));
-                    var objectMapper = new ObjectMapper();
+                    var jsonb = JsonbBuilder.create();
                     @SuppressWarnings("unchecked")
-                    Map<String, Object> schemaMap = objectMapper.readValue(contents, Map.class);
+                    Map<String, Object> schemaMap = jsonb.fromJson(contents, Map.class);
                     
                     var schema = new Schema();
                     schema.setName("oidc-userinfo-claims");

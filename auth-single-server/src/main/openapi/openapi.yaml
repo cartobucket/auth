@@ -1,0 +1,987 @@
+---
+openapi: 3.0.3
+info:
+  title: Cartobucket Auth API
+  description: OAuth 2.1/OIDC Server API
+  termsOfService: https://cartobucket.com/terms
+  contact:
+    name: Cartobucket
+    url: https://cartobucket.com
+    email: info@cartobucket.com
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  version: 1.0.0
+servers:
+- url: http://localhost:5000
+  description: Auto generated value
+- url: http://0.0.0.0:5000
+  description: Auto generated value
+tags:
+- name: Application Secrets
+- name: Applications
+- name: Authorization Server
+- name: Authorization Servers
+- name: Clients
+- name: Schemas
+- name: Scopes
+- name: Templates
+- name: Users
+paths:
+  /applicationSecrets:
+    get:
+      tags:
+      - Application Secrets
+      parameters:
+      - name: applicationIds
+        in: query
+        schema:
+          type: array
+          items:
+            format: uuid
+            pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+            type: string
+      responses:
+        "200":
+          description: OK
+    post:
+      tags:
+      - Application Secrets
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApplicationSecretRequest'
+      responses:
+        "200":
+          description: OK
+  /applicationSecrets/{secretId}:
+    delete:
+      tags:
+      - Application Secrets
+      parameters:
+      - name: secretId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/UUID'
+      responses:
+        "200":
+          description: OK
+  /applications:
+    get:
+      tags:
+      - Applications
+      parameters:
+      - name: authorizationServerIds
+        in: query
+        schema:
+          type: array
+          items:
+            format: uuid
+            pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+            type: string
+      - name: limit
+        in: query
+        schema:
+          format: int32
+          type: integer
+      - name: offset
+        in: query
+        schema:
+          format: int32
+          type: integer
+      responses:
+        "200":
+          description: OK
+    post:
+      tags:
+      - Applications
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApplicationRequest'
+      responses:
+        "200":
+          description: OK
+  /applications/{applicationId}:
+    get:
+      tags:
+      - Applications
+      parameters:
+      - name: applicationId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/UUID'
+      responses:
+        "200":
+          description: OK
+    delete:
+      tags:
+      - Applications
+      parameters:
+      - name: applicationId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/UUID'
+      responses:
+        "200":
+          description: OK
+  /authorizationServers:
+    get:
+      tags:
+      - Authorization Servers
+      parameters:
+      - name: limit
+        in: query
+        schema:
+          format: int32
+          type: integer
+      - name: offset
+        in: query
+        schema:
+          format: int32
+          type: integer
+      responses:
+        "200":
+          description: OK
+    post:
+      tags:
+      - Authorization Servers
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthorizationServerRequest'
+      responses:
+        "200":
+          description: OK
+  /authorizationServers/{authorizationServerId}:
+    get:
+      tags:
+      - Authorization Servers
+      parameters:
+      - name: authorizationServerId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/UUID'
+      responses:
+        "200":
+          description: OK
+    put:
+      tags:
+      - Authorization Servers
+      parameters:
+      - name: authorizationServerId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/UUID'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthorizationServerRequest'
+      responses:
+        "200":
+          description: OK
+    delete:
+      tags:
+      - Authorization Servers
+      parameters:
+      - name: authorizationServerId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/UUID'
+      responses:
+        "200":
+          description: OK
+  /clients:
+    get:
+      tags:
+      - Clients
+      parameters:
+      - name: authorizationServerIds
+        in: query
+        schema:
+          type: array
+          items:
+            format: uuid
+            pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+            type: string
+      - name: limit
+        in: query
+        schema:
+          format: int32
+          type: integer
+      - name: offset
+        in: query
+        schema:
+          format: int32
+          type: integer
+      responses:
+        "200":
+          description: OK
+    post:
+      tags:
+      - Clients
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClientRequest'
+      responses:
+        "200":
+          description: OK
+  /clients/{clientId}:
+    get:
+      tags:
+      - Clients
+      parameters:
+      - name: clientId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/UUID'
+      responses:
+        "200":
+          description: OK
+    put:
+      tags:
+      - Clients
+      parameters:
+      - name: clientId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/UUID'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClientRequest'
+      responses:
+        "200":
+          description: OK
+    delete:
+      tags:
+      - Clients
+      parameters:
+      - name: clientId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/UUID'
+      responses:
+        "200":
+          description: OK
+  /schemas:
+    get:
+      tags:
+      - Schemas
+      parameters:
+      - name: authorizationServerIds
+        in: query
+        schema:
+          type: array
+          items:
+            format: uuid
+            pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+            type: string
+      - name: limit
+        in: query
+        schema:
+          format: int32
+          type: integer
+      - name: offset
+        in: query
+        schema:
+          format: int32
+          type: integer
+      responses:
+        "200":
+          description: OK
+    post:
+      tags:
+      - Schemas
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SchemaRequest'
+      responses:
+        "200":
+          description: OK
+  /schemas/{schemaId}:
+    get:
+      tags:
+      - Schemas
+      parameters:
+      - name: schemaId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/UUID'
+      responses:
+        "200":
+          description: OK
+    put:
+      tags:
+      - Schemas
+      parameters:
+      - name: schemaId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/UUID'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SchemaRequest'
+      responses:
+        "200":
+          description: OK
+    delete:
+      tags:
+      - Schemas
+      parameters:
+      - name: schemaId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/UUID'
+      responses:
+        "200":
+          description: OK
+  /scopes:
+    get:
+      tags:
+      - Scopes
+      parameters:
+      - name: authorizationServerIds
+        in: query
+        schema:
+          type: array
+          items:
+            format: uuid
+            pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+            type: string
+      - name: limit
+        in: query
+        schema:
+          format: int32
+          type: integer
+      - name: offset
+        in: query
+        schema:
+          format: int32
+          type: integer
+      responses:
+        "200":
+          description: OK
+    post:
+      tags:
+      - Scopes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScopeRequest'
+      responses:
+        "200":
+          description: OK
+  /scopes/{scopeId}:
+    get:
+      tags:
+      - Scopes
+      parameters:
+      - name: scopeId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/UUID'
+      responses:
+        "200":
+          description: OK
+    put:
+      tags:
+      - Scopes
+      parameters:
+      - name: scopeId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/UUID'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScopeRequest'
+      responses:
+        "200":
+          description: OK
+    delete:
+      tags:
+      - Scopes
+      parameters:
+      - name: scopeId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/UUID'
+      responses:
+        "200":
+          description: OK
+  /templates:
+    get:
+      tags:
+      - Templates
+      parameters:
+      - name: authorizationServerIds
+        in: query
+        schema:
+          type: array
+          items:
+            format: uuid
+            pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+            type: string
+      - name: limit
+        in: query
+        schema:
+          format: int32
+          type: integer
+      - name: offset
+        in: query
+        schema:
+          format: int32
+          type: integer
+      responses:
+        "200":
+          description: OK
+    post:
+      tags:
+      - Templates
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TemplateRequest'
+      responses:
+        "200":
+          description: OK
+  /templates/{templateId}:
+    get:
+      tags:
+      - Templates
+      parameters:
+      - name: templateId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/UUID'
+      responses:
+        "200":
+          description: OK
+    put:
+      tags:
+      - Templates
+      parameters:
+      - name: templateId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/UUID'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TemplateRequest'
+      responses:
+        "200":
+          description: OK
+    delete:
+      tags:
+      - Templates
+      parameters:
+      - name: templateId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/UUID'
+      responses:
+        "200":
+          description: OK
+  /users:
+    get:
+      tags:
+      - Users
+      parameters:
+      - name: authorizationServerIds
+        in: query
+        schema:
+          type: array
+          items:
+            format: uuid
+            pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+            type: string
+      - name: limit
+        in: query
+        schema:
+          format: int32
+          type: integer
+      - name: offset
+        in: query
+        schema:
+          format: int32
+          type: integer
+      responses:
+        "200":
+          description: OK
+    post:
+      tags:
+      - Users
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+      responses:
+        "200":
+          description: OK
+  /users/{userId}:
+    get:
+      tags:
+      - Users
+      parameters:
+      - name: userId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/UUID'
+      responses:
+        "200":
+          description: OK
+    put:
+      tags:
+      - Users
+      parameters:
+      - name: userId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/UUID'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+      responses:
+        "200":
+          description: OK
+    delete:
+      tags:
+      - Users
+      parameters:
+      - name: userId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/UUID'
+      responses:
+        "200":
+          description: OK
+  /{authorizationServerId}/.well-known/openid-connect:
+    get:
+      tags:
+      - Authorization Server
+      parameters:
+      - name: authorizationServerId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/UUID'
+      responses:
+        "200":
+          description: OK
+  /{authorizationServerId}/authorization:
+    get:
+      tags:
+      - Authorization Server
+      parameters:
+      - name: authorizationServerId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/UUID'
+      - name: client_id
+        in: query
+        required: true
+        schema:
+          type: string
+      - name: code_challenge
+        in: query
+        schema:
+          type: string
+      - name: code_challenge_method
+        in: query
+        schema:
+          type: string
+      - name: nonce
+        in: query
+        schema:
+          type: string
+      - name: redirect_uri
+        in: query
+        schema:
+          type: string
+      - name: response_type
+        in: query
+        required: true
+        schema:
+          type: string
+      - name: scope
+        in: query
+        schema:
+          type: string
+      - name: state
+        in: query
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+    post:
+      tags:
+      - Authorization Server
+      parameters:
+      - name: authorizationServerId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/UUID'
+      - name: client_id
+        in: query
+        required: true
+        schema:
+          type: string
+      - name: code_challenge
+        in: query
+        schema:
+          type: string
+      - name: code_challenge_method
+        in: query
+        schema:
+          type: string
+      - name: nonce
+        in: query
+        schema:
+          type: string
+      - name: redirect_uri
+        in: query
+        schema:
+          type: string
+      - name: response_type
+        in: query
+        required: true
+        schema:
+          type: string
+      - name: scope
+        in: query
+        schema:
+          type: string
+      - name: state
+        in: query
+        schema:
+          type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+      responses:
+        "200":
+          description: OK
+  /{authorizationServerId}/jwks:
+    get:
+      tags:
+      - Authorization Server
+      parameters:
+      - name: authorizationServerId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/UUID'
+      responses:
+        "200":
+          description: OK
+  /{authorizationServerId}/token:
+    post:
+      tags:
+      - Authorization Server
+      parameters:
+      - name: authorizationServerId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/UUID'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccessTokenRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                grant_type:
+                  type: string
+                client_id:
+                  type: string
+                client_secret:
+                  type: string
+                code:
+                  type: string
+                redirect_uri:
+                  type: string
+                code_verifier:
+                  type: string
+                refresh_token:
+                  type: string
+                scope:
+                  type: string
+      responses:
+        "200":
+          description: OK
+  /{authorizationServerId}/userinfo:
+    get:
+      tags:
+      - Authorization Server
+      parameters:
+      - name: authorizationServerId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/UUID'
+      responses:
+        "200":
+          description: OK
+components:
+  schemas:
+    AccessTokenRequest:
+      required:
+      - client_id
+      - grant_type
+      type: object
+      properties:
+        client_id:
+          type: string
+        client_secret:
+          type: string
+        grant_type:
+          $ref: '#/components/schemas/GrantTypeEnum'
+        code:
+          type: string
+        redirect_uri:
+          type: string
+        code_verifier:
+          type: string
+        refresh_token:
+          type: string
+        scope:
+          type: string
+    ApplicationRequest:
+      required:
+      - authorization_server_id
+      - name
+      type: object
+      properties:
+        authorization_server_id:
+          $ref: '#/components/schemas/UUID'
+        name:
+          type: string
+        client_id:
+          type: string
+        profile: {}
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+        scopes:
+          type: array
+          items:
+            format: uuid
+            pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+            type: string
+    ApplicationSecretRequest:
+      required:
+      - application_id
+      - name
+      - scopes
+      type: object
+      properties:
+        application_id:
+          $ref: '#/components/schemas/UUID'
+        name:
+          type: string
+        scopes:
+          type: array
+          items:
+            format: uuid
+            pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+            type: string
+        expires_in:
+          format: int32
+          type: integer
+    AuthorizationServerRequest:
+      type: object
+      properties:
+        server_url:
+          type: string
+        audience:
+          type: string
+        client_credentials_token_expiration:
+          format: int32
+          type: integer
+        authorization_code_token_expiration:
+          format: int32
+          type: integer
+        name:
+          type: string
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+    ClientRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        authorization_server_id:
+          $ref: '#/components/schemas/UUID'
+        redirect_uris:
+          type: array
+          items:
+            type: string
+        scopes:
+          type: array
+          items:
+            format: uuid
+            pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+            type: string
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+    GrantTypeEnum:
+      enum:
+      - CLIENT_CREDENTIALS
+      - AUTHORIZATION_CODE
+      - REFRESH_TOKEN
+      type: string
+    Metadata:
+      type: object
+      properties:
+        properties:
+          type: object
+          additionalProperties: {}
+        identifiers:
+          type: array
+          items:
+            $ref: '#/components/schemas/MetadataIdentifiersInner'
+        schemaValidations:
+          type: array
+          items:
+            $ref: '#/components/schemas/MetadataSchemaValidationsInner'
+    MetadataIdentifiersInner:
+      type: object
+      properties:
+        system:
+          type: string
+        value:
+          type: string
+    MetadataSchemaValidationsInner:
+      type: object
+      properties:
+        schemaId:
+          $ref: '#/components/schemas/UUID'
+        isValid:
+          type: boolean
+        validatedOn:
+          $ref: '#/components/schemas/OffsetDateTime'
+    OffsetDateTime:
+      format: date-time
+      type: string
+      example: 2022-03-10T12:15:50-04:00
+    SchemaRequest:
+      required:
+      - authorization_server
+      type: object
+      properties:
+        authorization_server:
+          $ref: '#/components/schemas/UUID'
+        name:
+          type: string
+        schema_version:
+          type: string
+        schema: {}
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+    ScopeRequest:
+      type: object
+      properties:
+        authorization_server_id:
+          $ref: '#/components/schemas/UUID'
+        name:
+          type: string
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+    TemplateRequest:
+      type: object
+      properties:
+        authorization_server_id:
+          $ref: '#/components/schemas/UUID'
+        template_type:
+          type: string
+        template:
+          type: string
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+    UUID:
+      format: uuid
+      pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+      type: string
+    UserRequest:
+      type: object
+      properties:
+        authorization_server_id:
+          $ref: '#/components/schemas/UUID'
+        username:
+          type: string
+        email:
+          type: string
+        profile: {}
+        password:
+          type: string
+        metadata:
+          $ref: '#/components/schemas/Metadata'

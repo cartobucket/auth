@@ -20,8 +20,8 @@
 package com.cartobucket.auth.authorization.server.routes.mappers;
 
 
-import com.cartobucket.auth.model.generated.JWK;
-import com.cartobucket.auth.model.generated.JWKS;
+import com.cartobucket.auth.authorization.server.dto.JWK;
+import com.cartobucket.auth.authorization.server.dto.JWKS;
 
 import java.util.List;
 

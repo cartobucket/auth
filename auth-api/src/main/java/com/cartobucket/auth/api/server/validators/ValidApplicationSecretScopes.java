@@ -23,7 +23,7 @@ import com.cartobucket.auth.data.domain.Page;
 import com.cartobucket.auth.data.domain.Scope;
 import com.cartobucket.auth.data.services.ApplicationService;
 import com.cartobucket.auth.data.services.ScopeService;
-import com.cartobucket.auth.model.generated.ApplicationSecretRequest;
+import com.cartobucket.auth.api.dto.ApplicationSecretRequest;
 import jakarta.inject.Inject;
 import jakarta.validation.Constraint;
 import jakarta.validation.ConstraintValidator;

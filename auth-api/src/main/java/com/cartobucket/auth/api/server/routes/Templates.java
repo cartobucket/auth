@@ -20,9 +20,9 @@
 package com.cartobucket.auth.api.server.routes;
 
 import com.cartobucket.auth.data.domain.Page;
-import com.cartobucket.auth.generated.TemplatesApi;
-import com.cartobucket.auth.model.generated.TemplateRequest;
-import com.cartobucket.auth.model.generated.TemplatesResponse;
+import com.cartobucket.auth.api.interfaces.TemplatesApi;
+import com.cartobucket.auth.api.dto.TemplateRequest;
+import com.cartobucket.auth.api.dto.TemplatesResponse;
 import com.cartobucket.auth.api.server.routes.mappers.TemplateMapper;
 import com.cartobucket.auth.data.services.TemplateService;
 import jakarta.ws.rs.core.Response;

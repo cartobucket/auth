@@ -21,9 +21,9 @@ package com.cartobucket.auth.api.server.routes;
 
 import com.cartobucket.auth.data.domain.Page;
 import com.cartobucket.auth.data.domain.Pair;
-import com.cartobucket.auth.generated.UsersApi;
-import com.cartobucket.auth.model.generated.UserRequest;
-import com.cartobucket.auth.model.generated.UsersResponse;
+import com.cartobucket.auth.api.interfaces.UsersApi;
+import com.cartobucket.auth.api.dto.UserRequest;
+import com.cartobucket.auth.api.dto.UsersResponse;
 import com.cartobucket.auth.data.domain.Profile;
 import com.cartobucket.auth.data.domain.User;
 import com.cartobucket.auth.api.server.routes.mappers.UserMapper;

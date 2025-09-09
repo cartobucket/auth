@@ -21,9 +21,9 @@ package com.cartobucket.auth.api.server.routes;
 
 import com.cartobucket.auth.api.server.routes.mappers.ScopeMapper;
 import com.cartobucket.auth.data.domain.Page;
-import com.cartobucket.auth.generated.ScopesApi;
-import com.cartobucket.auth.model.generated.ScopeRequest;
-import com.cartobucket.auth.model.generated.ScopesResponse;
+import com.cartobucket.auth.api.interfaces.ScopesApi;
+import com.cartobucket.auth.api.dto.ScopeRequest;
+import com.cartobucket.auth.api.dto.ScopesResponse;
 import com.cartobucket.auth.data.services.ScopeService;
 import jakarta.ws.rs.core.Response;
 
@@ -92,6 +92,14 @@ public class Scopes implements ScopesApi {
         return Response
                 .ok()
                 .entity(scopesResponse)
+                .build();
+    }
+
+    @Override
+    public Response updateScope(UUID scopeId, com.cartobucket.auth.api.dto.ScopeRequest scopeRequest) {
+        // TODO: Implement updateScope in ScopeService
+        return Response
+                .status(Response.Status.NOT_IMPLEMENTED)
                 .build();
     }
 }

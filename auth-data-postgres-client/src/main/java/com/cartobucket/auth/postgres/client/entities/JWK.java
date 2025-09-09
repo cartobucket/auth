@@ -20,8 +20,7 @@
 
 package com.cartobucket.auth.postgres.client.entities;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonTypeName;
+import jakarta.json.bind.annotation.JsonbProperty;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,9 +29,7 @@ import java.util.Objects;
 /**
 * 
 **/
-@JsonTypeName("JWK")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaJAXRSSpecServerCodegen", date = "2023-05-23T21:07:45.072820760-07:00[America/Los_Angeles]")
-@com.fasterxml.jackson.annotation.JsonInclude(com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL)
 
 public class JWK   {
     private String kid;
@@ -53,12 +50,12 @@ public class JWK   {
     }
 
     
-    @JsonProperty("kid")
+    @JsonbProperty("kid")
       public String getKid() {
     return kid;
     }
 
-    @JsonProperty("kid")
+    @JsonbProperty("kid")
     public void setKid(String kid) {
     this.kid = kid;
     }
@@ -71,12 +68,12 @@ public class JWK   {
     }
 
     
-    @JsonProperty("kty")
+    @JsonbProperty("kty")
       public String getKty() {
     return kty;
     }
 
-    @JsonProperty("kty")
+    @JsonbProperty("kty")
     public void setKty(String kty) {
     this.kty = kty;
     }
@@ -89,12 +86,12 @@ public class JWK   {
     }
 
     
-    @JsonProperty("alg")
+    @JsonbProperty("alg")
       public String getAlg() {
     return alg;
     }
 
-    @JsonProperty("alg")
+    @JsonbProperty("alg")
     public void setAlg(String alg) {
     this.alg = alg;
     }
@@ -107,12 +104,12 @@ public class JWK   {
     }
 
     
-    @JsonProperty("use")
+    @JsonbProperty("use")
       public String getUse() {
     return use;
     }
 
-    @JsonProperty("use")
+    @JsonbProperty("use")
     public void setUse(String use) {
     this.use = use;
     }
@@ -125,12 +122,12 @@ public class JWK   {
     }
 
     
-    @JsonProperty("n")
+    @JsonbProperty("n")
       public String getN() {
     return n;
     }
 
-    @JsonProperty("n")
+    @JsonbProperty("n")
     public void setN(String n) {
     this.n = n;
     }
@@ -143,12 +140,12 @@ public class JWK   {
     }
 
     
-    @JsonProperty("e")
+    @JsonbProperty("e")
       public String getE() {
     return e;
     }
 
-    @JsonProperty("e")
+    @JsonbProperty("e")
     public void setE(String e) {
     this.e = e;
     }
@@ -161,12 +158,12 @@ public class JWK   {
     }
 
     
-    @JsonProperty("x5c")
+    @JsonbProperty("x5c")
       public List<String> getX5c() {
     return x5c;
     }
 
-    @JsonProperty("x5c")
+    @JsonbProperty("x5c")
     public void setX5c(List<String> x5c) {
     this.x5c = x5c;
     }
@@ -195,12 +192,12 @@ public class JWK   {
     }
 
     
-    @JsonProperty("x5t")
+    @JsonbProperty("x5t")
       public String getX5t() {
     return x5t;
     }
 
-    @JsonProperty("x5t")
+    @JsonbProperty("x5t")
     public void setX5t(String x5t) {
     this.x5t = x5t;
     }
@@ -213,12 +210,12 @@ public class JWK   {
     }
 
     
-    @JsonProperty("x5t#S256")
+    @JsonbProperty("x5t#S256")
       public String getX5tHashS256() {
     return x5tHashS256;
     }
 
-    @JsonProperty("x5t#S256")
+    @JsonbProperty("x5t#S256")
     public void setX5tHashS256(String x5tHashS256) {
     this.x5tHashS256 = x5tHashS256;
     }

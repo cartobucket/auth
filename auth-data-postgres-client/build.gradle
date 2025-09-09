@@ -1,6 +1,6 @@
 plugins {
     id 'java'
-    id 'org.jetbrains.kotlin.jvm' version '2.2.0'
+    id 'org.jetbrains.kotlin.jvm'
     id 'io.quarkus'
 }
 
@@ -19,7 +19,7 @@ dependencies {
     implementation project(path: ':auth-data')
 
     implementation 'org.apache.camel.quarkus:camel-quarkus-json-validator'
-    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+    implementation 'jakarta.json.bind:jakarta.json.bind-api:3.0.1'
 
     implementation 'io.quarkus:quarkus-arc'
     testImplementation 'io.quarkus:quarkus-junit5'

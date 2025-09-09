@@ -27,8 +27,11 @@ import com.cartobucket.auth.data.domain.Scope;
 import com.cartobucket.auth.data.domain.User;
 import com.cartobucket.auth.data.services.ApplicationService;
 import com.cartobucket.auth.data.services.ScopeService;
-import com.cartobucket.auth.generated.AuthorizationServerApi;
-import com.cartobucket.auth.model.generated.AccessTokenRequest;
+import com.cartobucket.auth.authorization.server.interfaces.AuthorizationServerApi;
+import com.cartobucket.auth.authorization.server.dto.AccessTokenRequest;
+import com.cartobucket.auth.authorization.server.dto.AccessTokenResponse;
+import com.cartobucket.auth.authorization.server.dto.WellKnown;
+import com.cartobucket.auth.authorization.server.dto.JWKS;
 import com.cartobucket.auth.data.services.AuthorizationServerService;
 import com.cartobucket.auth.data.services.ClientService;
 import com.cartobucket.auth.data.services.TemplateService;
@@ -74,7 +77,7 @@ public abstract class AuthorizationServer implements AuthorizationServerApi {
     }
 
     @Override
-    @Consumes({"*/*"})
+    @Consumes({"multipart/form-data", MediaType.APPLICATION_FORM_URLENCODED, MediaType.APPLICATION_JSON})
     public Response createAuthorizationCode(
             UUID authorizationServerId,
             String clientId,
@@ -193,7 +196,6 @@ public abstract class AuthorizationServer implements AuthorizationServerApi {
 
     @Path(".well-known/openid-configuration")
     @GET
-    @Consumes({"*/*"})
     public Response getOpenIdConfiguration(UUID authorizationServerId) {
         return getOpenIdConnectionWellKnown(authorizationServerId);
     }
@@ -201,7 +203,7 @@ public abstract class AuthorizationServer implements AuthorizationServerApi {
     @Override
     public Response getOpenIdConnectionWellKnown(UUID authorizationServerId) {
         final var authorizationServer = authorizationServerService.getAuthorizationServer(authorizationServerId);
-        var wellKnown = new com.cartobucket.auth.model.generated.WellKnown();
+        var wellKnown = new WellKnown();
         wellKnown.setIssuer(authorizationServer.getServerUrl() + "/" + authorizationServer.getId() + "/");
         wellKnown.setAuthorizationEndpoint(
                 authorizationServer.getServerUrl().toString() + "/"  + authorizationServer.getId() + "/authorization/");
@@ -214,23 +216,19 @@ public abstract class AuthorizationServer implements AuthorizationServerApi {
         wellKnown.setUserinfoEndpoint(
                 authorizationServer.getServerUrl().toString() + "/"  + authorizationServer.getId() + "/userinfo/");
         wellKnown.setTokenEndpointAuthMethodsSupported(
-                List.of(
-                        com.cartobucket.auth.model.generated.WellKnown.TokenEndpointAuthMethodsSupportedEnum.POST
-                )
+                List.of(WellKnown.TokenEndpointAuthMethodsSupportedEnum.POST.value())
         );
         wellKnown.setIdTokenSigningAlgValuesSupported(
-                List.of(
-                        com.cartobucket.auth.model.generated.WellKnown.IdTokenSigningAlgValuesSupportedEnum.RS256
-                )
+                List.of(WellKnown.IdTokenSigningAlgValuesSupportedEnum.RS256.value())
         );
         wellKnown.setResponseTypesSupported(
                 Arrays.asList(
-                        com.cartobucket.auth.model.generated.WellKnown.ResponseTypesSupportedEnum.CODE,
-                        com.cartobucket.auth.model.generated.WellKnown.ResponseTypesSupportedEnum.CODE_ID_TOKEN,
-                        com.cartobucket.auth.model.generated.WellKnown.ResponseTypesSupportedEnum.TOKEN
+                        WellKnown.ResponseTypesSupportedEnum.CODE.value(),
+                        WellKnown.ResponseTypesSupportedEnum.CODE_ID_TOKEN.value(),
+                        WellKnown.ResponseTypesSupportedEnum.TOKEN.value()
                 )
         );
-        wellKnown.setCodeChallengeMethodsSupported(List.of(com.cartobucket.auth.model.generated.WellKnown.CodeChallengeMethodsSupportedEnum.S256));
+        wellKnown.setCodeChallengeMethodsSupported(List.of(WellKnown.CodeChallengeMethodsSupportedEnum.S256.value()));
         wellKnown.setGrantTypesSupported(
                 Arrays.asList(
                         AccessTokenRequest.GrantTypeEnum.CLIENT_CREDENTIALS.value(),
@@ -254,7 +252,10 @@ public abstract class AuthorizationServer implements AuthorizationServerApi {
     }
 
     @Override
-    @Consumes({ "*/*" })
+    public Response getAuthorization(UUID authorizationServerId, String clientId, String responseType, String redirectUri, String scope, String state, String nonce, String codeChallenge, String codeChallengeMethod) {
+        return initiateAuthorization(authorizationServerId, clientId, responseType, codeChallenge, codeChallengeMethod, redirectUri, scope, state, nonce);
+    }
+    
     public Response initiateAuthorization(UUID authorizationServerId, String clientId, String responseType, String codeChallenge, String codeChallengeMethod, String redirectUri, String scope, String state, String nonce) {
         // Validate client_id first (OAuth2 spec: if invalid, don't redirect)
         if (clientId == null || clientId.isEmpty()) {
@@ -351,7 +352,7 @@ public abstract class AuthorizationServer implements AuthorizationServerApi {
 
     @POST
     @Path("/token/")
-    @Consumes({"application/x-www-form-urlencoded"})
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Response issueToken(
             UUID authorizationServerId,
             @FormParam("client_id") String clientId,
@@ -362,6 +363,29 @@ public abstract class AuthorizationServer implements AuthorizationServerApi {
             @FormParam("code_verifier") String codeVerifier,
             @FormParam("scope") String scope,
             @FormParam("refresh_token") String refreshToken) {
+        return postToken(authorizationServerId, grantType, clientId, clientSecret, code, redirectUri, codeVerifier, refreshToken, scope);
+    }
+
+    @Override
+    public Response postTokenJson(UUID authorizationServerId, AccessTokenRequest request) {
+        return postToken(
+            authorizationServerId,
+            request.getGrantType() != null ? request.getGrantType().value() : null,
+            request.getClientId(),
+            request.getClientSecret(),
+            request.getCode(),
+            request.getRedirectUri(),
+            request.getCodeVerifier(),
+            request.getRefreshToken(),
+            request.getScope()
+        );
+    }
+
+    @Override
+    public Response postToken(UUID authorizationServerId, String grantType, String clientId, String clientSecret, String code, String redirectUri, String codeVerifier, String refreshToken, String scope) {
+        final var authorizationServer = authorizationServerService.getAuthorizationServer(authorizationServerId);
+
+        // TODO: This stuff should be moved to a validator
         final var accessTokenRequest = new AccessTokenRequest();
         accessTokenRequest.setClientId(clientId);
         accessTokenRequest.setClientSecret(clientSecret);
@@ -371,14 +395,7 @@ public abstract class AuthorizationServer implements AuthorizationServerApi {
         accessTokenRequest.setCodeVerifier(codeVerifier);
         accessTokenRequest.setScope(scope != null ? scope : "");
         accessTokenRequest.setRefreshToken(refreshToken);
-        return issueToken(authorizationServerId, accessTokenRequest);
-    }
-
-    @Override
-    public Response issueToken(UUID authorizationServerId, AccessTokenRequest accessTokenRequest) {
-        final var authorizationServer = authorizationServerService.getAuthorizationServer(authorizationServerId);
-
-        // TODO: This stuff should be moved to a validator
+        
         switch (accessTokenRequest.getGrantType()) {
             case CLIENT_CREDENTIALS -> {
                 if (!applicationService.isApplicationSecretValid(
@@ -393,18 +410,20 @@ public abstract class AuthorizationServer implements AuthorizationServerApi {
                 final var scopes = scopeService.filterScopesForAuthorizationServerId(
                         authorizationServerId,
                         accessTokenRequest.getScope()
-                ).stream().filter(scope -> applicationSecret.getScopes().contains(scope)).toList();
+                ).stream().filter(requestedScope -> applicationSecret.getScopes().contains(requestedScope)).toList();
                 return Response
                         .ok()
                         .entity(
-                                authorizationServerService
-                                        .generateClientCredentialsAccessToken(
-                                                authorizationServerId,
-                                                applicationSecret.getApplicationId(),
-                                                String.valueOf(applicationSecret.getApplicationId()),
-                                                scopes,
-                                                authorizationServer.getClientCredentialsTokenExpiration()
-                                        )
+                                AccessTokenResponseMapper.toAccessTokenResponse(
+                                        authorizationServerService
+                                                .generateClientCredentialsAccessToken(
+                                                        authorizationServerId,
+                                                        applicationSecret.getApplicationId(),
+                                                        String.valueOf(applicationSecret.getApplicationId()),
+                                                        scopes,
+                                                        authorizationServer.getClientCredentialsTokenExpiration()
+                                                )
+                                )
                         )
                         .build();
             }

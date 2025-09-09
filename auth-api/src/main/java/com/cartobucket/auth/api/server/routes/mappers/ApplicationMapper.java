@@ -20,10 +20,10 @@
 package com.cartobucket.auth.api.server.routes.mappers;
 
 import com.cartobucket.auth.data.domain.*;
-import com.cartobucket.auth.model.generated.ApplicationRequest;
-import com.cartobucket.auth.model.generated.ApplicationResponse;
-import com.cartobucket.auth.model.generated.ApplicationSecretRequest;
-import com.cartobucket.auth.model.generated.ApplicationSecretResponse;
+import com.cartobucket.auth.api.dto.ApplicationRequest;
+import com.cartobucket.auth.api.dto.ApplicationResponse;
+import com.cartobucket.auth.api.dto.ApplicationSecretRequest;
+import com.cartobucket.auth.api.dto.ApplicationSecretResponse;
 
 import java.util.UUID;
 

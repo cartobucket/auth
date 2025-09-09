@@ -23,7 +23,7 @@ import com.cartobucket.auth.data.domain.IdentityProvider
 import com.cartobucket.auth.data.domain.WellKnownEndpoints
 import com.cartobucket.auth.data.exceptions.badrequests.WellKnownEndpointsFetchFailure
 import com.cartobucket.auth.data.exceptions.notfound.IdentityProviderNotFound
-import com.fasterxml.jackson.databind.ObjectMapper
+import jakarta.json.bind.JsonbBuilder
 import java.io.IOException
 import java.net.URI
 import java.net.http.HttpClient
@@ -61,7 +61,7 @@ interface IdentityProviderService {
                     throw WellKnownEndpointsFetchFailure(response.body())
                 }
 
-                ObjectMapper().readValue(response.body(), WellKnownEndpoints::class.java)
+                JsonbBuilder.create().fromJson(response.body(), WellKnownEndpoints::class.java)
             }
         } catch (e: IOException) {
             throw WellKnownEndpointsFetchFailure(e.message.toString())

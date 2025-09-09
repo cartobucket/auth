@@ -20,9 +20,9 @@ package com.cartobucket.auth.api.server.routes;
 
 import com.cartobucket.auth.api.server.routes.mappers.ApplicationMapper;
 import com.cartobucket.auth.data.services.ApplicationService;
-import com.cartobucket.auth.generated.ApplicationSecretsApi;
-import com.cartobucket.auth.model.generated.ApplicationSecretRequest;
-import com.cartobucket.auth.model.generated.ApplicationSecretsResponse;
+import com.cartobucket.auth.api.interfaces.ApplicationSecretsApi;
+import com.cartobucket.auth.api.dto.ApplicationSecretRequest;
+import com.cartobucket.auth.api.dto.ApplicationSecretsResponse;
 import jakarta.ws.rs.core.Response;
 
 import java.util.List;

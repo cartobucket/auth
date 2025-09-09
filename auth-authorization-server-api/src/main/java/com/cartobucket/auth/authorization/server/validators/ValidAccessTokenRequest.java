@@ -19,7 +19,7 @@
 
 package com.cartobucket.auth.authorization.server.validators;
 
-import com.cartobucket.auth.model.generated.AccessTokenRequest;
+import com.cartobucket.auth.authorization.server.dto.AccessTokenRequest;
 import jakarta.validation.Constraint;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;

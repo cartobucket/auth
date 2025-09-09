@@ -5,8 +5,8 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class Pagination {
-    public static com.cartobucket.auth.model.generated.Page getPage(String root, List<UUID> authorizationServerIds, Integer limit, Integer offset) {
-        var page = new com.cartobucket.auth.model.generated.Page();
+    public static com.cartobucket.auth.api.dto.Page getPage(String root, List<UUID> authorizationServerIds, Integer limit, Integer offset) {
+        var page = new com.cartobucket.auth.api.dto.Page();
         var authorizationServersParams = authorizationServerIds
                 .stream()
                 .map((UUID authorizationServerId) -> "&authorizationServerId=" + authorizationServerId)
