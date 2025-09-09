@@ -25,7 +25,10 @@ import com.cartobucket.auth.data.exceptions.notfound.ScopeNotFound
 import java.util.UUID
 
 interface ScopeService {
-    fun getScopes(authorizationServerIds: List<UUID>, page: Page): List<Scope>
+    fun getScopes(
+        authorizationServerIds: List<UUID>,
+        page: Page,
+    ): List<Scope>
 
     fun createScope(scope: Scope): Scope
 
@@ -36,7 +39,10 @@ interface ScopeService {
     fun getScope(scopeId: UUID): Scope
 
     // Takes in a list of scopes and filters those scopes based on what scopes are associated with the AS.
-    fun filterScopesForAuthorizationServerId(authorizationServerId: UUID, scopes: String): List<Scope>
+    fun filterScopesForAuthorizationServerId(
+        authorizationServerId: UUID,
+        scopes: String,
+    ): List<Scope>
 
     fun getScopesForResourceId(id: UUID): List<Scope>
 
@@ -55,12 +61,13 @@ interface ScopeService {
         }
 
         @JvmStatic
-        fun scopeListToScopeString(scopes: List<String>): String {
-            return scopes.joinToString(" ")
-        }
+        fun scopeListToScopeString(scopes: List<String>): String = scopes.joinToString(" ")
 
         @JvmStatic
-        fun filterScopesByList(scopes: String?, authorizationServerScopes: List<String>?): List<Scope> {
+        fun filterScopesByList(
+            scopes: String?,
+            authorizationServerScopes: List<String>?,
+        ): List<Scope> {
             if (scopes == null || authorizationServerScopes == null) {
                 return emptyList()
             }

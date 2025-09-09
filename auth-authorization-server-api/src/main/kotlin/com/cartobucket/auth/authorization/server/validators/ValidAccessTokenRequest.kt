@@ -40,68 +40,94 @@ import kotlin.reflect.KClass
     java.lang.annotation.ElementType.ANNOTATION_TYPE,
     java.lang.annotation.ElementType.CONSTRUCTOR,
     java.lang.annotation.ElementType.PARAMETER,
-    java.lang.annotation.ElementType.TYPE_USE
+    java.lang.annotation.ElementType.TYPE_USE,
 )
 @SupportedValidationTarget(ANNOTATED_ELEMENT)
 @Documented
 annotation class ValidAccessTokenRequest(
     val message: String = "The Access Token request is not valid",
     val payload: Array<KClass<out Payload>> = [],
-    val groups: Array<KClass<*>> = []
+    val groups: Array<KClass<*>> = [],
 ) {
     class Validator : ConstraintValidator<ValidAccessTokenRequest, AccessTokenRequest> {
         override fun initialize(constraintAnnotation: ValidAccessTokenRequest) {
             super.initialize(constraintAnnotation)
         }
 
-        override fun isValid(value: AccessTokenRequest?, context: ConstraintValidatorContext): Boolean {
+        override fun isValid(
+            value: AccessTokenRequest?,
+            context: ConstraintValidatorContext,
+        ): Boolean {
             if (value?.grantType == null) {
-                context.buildConstraintViolationWithTemplate("The Access Token request must contain a grant_type field.")
-                    .addPropertyNode("grant_type").addConstraintViolation()
+                context
+                    .buildConstraintViolationWithTemplate("The Access Token request must contain a grant_type field.")
+                    .addPropertyNode("grant_type")
+                    .addConstraintViolation()
                 return false
             }
 
             return when (value.grantType) {
                 AccessTokenRequest.GrantTypeEnum.CLIENT_CREDENTIALS -> {
                     if (value.clientId == null) {
-                        context.buildConstraintViolationWithTemplate("The Access Token request must contain a client_id field when using the client_credentials grant_type.")
-                            .addPropertyNode("client_id").addConstraintViolation()
+                        context
+                            .buildConstraintViolationWithTemplate(
+                                "The Access Token request must contain a client_id field when using the client_credentials grant_type.",
+                            ).addPropertyNode("client_id")
+                            .addConstraintViolation()
                         return false
                     }
                     if (value.clientSecret == null) {
-                        context.buildConstraintViolationWithTemplate("The Access Token request must contain a client_secret field when using the client_credentials grant_type.")
-                            .addPropertyNode("client_secret").addConstraintViolation()
+                        context
+                            .buildConstraintViolationWithTemplate(
+                                "The Access Token request must contain a client_secret field when using the client_credentials grant_type.",
+                            ).addPropertyNode("client_secret")
+                            .addConstraintViolation()
                         return false
                     }
                     true
                 }
                 AccessTokenRequest.GrantTypeEnum.AUTHORIZATION_CODE -> {
                     if (value.clientId == null) {
-                        context.buildConstraintViolationWithTemplate("The Access Token request must contain a client_id field when using the authorization_code grant_type.")
-                            .addPropertyNode("client_id").addConstraintViolation()
+                        context
+                            .buildConstraintViolationWithTemplate(
+                                "The Access Token request must contain a client_id field when using the authorization_code grant_type.",
+                            ).addPropertyNode("client_id")
+                            .addConstraintViolation()
                         return false
                     }
                     if (value.code == null) {
-                        context.buildConstraintViolationWithTemplate("The Access Token request must contain a code field when using the authorization_code grant_type.")
-                            .addPropertyNode("code").addConstraintViolation()
+                        context
+                            .buildConstraintViolationWithTemplate(
+                                "The Access Token request must contain a code field when using the authorization_code grant_type.",
+                            ).addPropertyNode("code")
+                            .addConstraintViolation()
                         return false
                     }
                     if (value.redirectUri == null) {
-                        context.buildConstraintViolationWithTemplate("The Access Token request must contain a redirect_uri field when using the authorization_code grant_type.")
-                            .addPropertyNode("redirect_uri").addConstraintViolation()
+                        context
+                            .buildConstraintViolationWithTemplate(
+                                "The Access Token request must contain a redirect_uri field when using the authorization_code grant_type.",
+                            ).addPropertyNode("redirect_uri")
+                            .addConstraintViolation()
                         return false
                     }
                     true
                 }
                 AccessTokenRequest.GrantTypeEnum.REFRESH_TOKEN -> {
                     if (value.refreshToken.isNullOrEmpty()) {
-                        context.buildConstraintViolationWithTemplate("The Access Token request must contain a refresh_token field when using the refresh_token grant_type.")
-                            .addPropertyNode("refresh_token").addConstraintViolation()
+                        context
+                            .buildConstraintViolationWithTemplate(
+                                "The Access Token request must contain a refresh_token field when using the refresh_token grant_type.",
+                            ).addPropertyNode("refresh_token")
+                            .addConstraintViolation()
                         return false
                     }
                     if (value.clientId == null) {
-                        context.buildConstraintViolationWithTemplate("The Access Token request must contain a client_id field when using the refresh_token grant_type.")
-                            .addPropertyNode("client_id").addConstraintViolation()
+                        context
+                            .buildConstraintViolationWithTemplate(
+                                "The Access Token request must contain a client_id field when using the refresh_token grant_type.",
+                            ).addPropertyNode("client_id")
+                            .addConstraintViolation()
                         return false
                     }
                     true

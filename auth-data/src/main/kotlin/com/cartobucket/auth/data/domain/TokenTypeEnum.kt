@@ -19,8 +19,11 @@
 
 package com.cartobucket.auth.data.domain
 
-enum class TokenTypeEnum(private val value: String) {
-    BEARER("Bearer");
+enum class TokenTypeEnum(
+    private val value: String,
+) {
+    BEARER("Bearer"),
+    ;
 
     fun value(): String = value
 
@@ -31,14 +34,12 @@ enum class TokenTypeEnum(private val value: String) {
          * Convert a String into String, as specified in the
          * [See JAX RS 2.0 Specification, section 3.2, p. 12](https://download.oracle.com/otndocs/jcp/jaxrs-2_0-fr-eval-spec/index.html)
          */
-        fun fromString(s: String): TokenTypeEnum {
-            return values().find { it.value == s }
+        fun fromString(s: String): TokenTypeEnum =
+            values().find { it.value == s }
                 ?: throw IllegalArgumentException("Unexpected string value '$s'")
-        }
 
-        fun fromValue(value: String): TokenTypeEnum {
-            return values().find { it.value == value }
+        fun fromValue(value: String): TokenTypeEnum =
+            values().find { it.value == value }
                 ?: throw IllegalArgumentException("Unexpected value '$value'")
-        }
     }
 }

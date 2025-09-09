@@ -20,7 +20,7 @@
 package com.cartobucket.auth.data.domain
 
 import java.time.OffsetDateTime
-import java.util.*
+import java.util.UUID
 
 data class User(
     var id: UUID? = null,
@@ -30,7 +30,7 @@ data class User(
     var email: String? = null,
     var metadata: Metadata? = null,
     var createdOn: OffsetDateTime? = null,
-    var updatedOn: OffsetDateTime? = null
+    var updatedOn: OffsetDateTime? = null,
 ) {
     fun getProfile(): Any? = null
 }

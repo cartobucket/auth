@@ -33,5 +33,5 @@ data class AuthorizationServer(
     var metadata: Metadata? = null,
     var scopes: List<Scope>? = null,
     var createdOn: OffsetDateTime? = null,
-    var updatedOn: OffsetDateTime? = null
+    var updatedOn: OffsetDateTime? = null,
 )

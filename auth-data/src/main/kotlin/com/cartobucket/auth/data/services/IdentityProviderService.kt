@@ -42,21 +42,26 @@ interface IdentityProviderService {
     fun createIdentityProvider(identityProvider: IdentityProvider): IdentityProvider
 
     @Throws(IdentityProviderNotFound::class)
-    fun updateIdentityProvider(identityProviderId: UUID, identityProvider: IdentityProvider): IdentityProvider
+    fun updateIdentityProvider(
+        identityProviderId: UUID,
+        identityProvider: IdentityProvider,
+    ): IdentityProvider
 
     @Throws(WellKnownEndpointsFetchFailure::class)
-    fun fetchWellKnownEndpoints(discoveryEndpoint: String): WellKnownEndpoints {
-        return try {
+    fun fetchWellKnownEndpoints(discoveryEndpoint: String): WellKnownEndpoints =
+        try {
             HttpClient.newBuilder().build().use { client ->
-                val response = client.send(
-                    HttpRequest.newBuilder()
-                        .GET()
-                        .uri(URI.create(discoveryEndpoint))
-                        .header("Accept", "application/json")
-                        .timeout(Duration.ofSeconds(60))
-                        .build(),
-                    HttpResponse.BodyHandlers.ofString()
-                )
+                val response =
+                    client.send(
+                        HttpRequest
+                            .newBuilder()
+                            .GET()
+                            .uri(URI.create(discoveryEndpoint))
+                            .header("Accept", "application/json")
+                            .timeout(Duration.ofSeconds(60))
+                            .build(),
+                        HttpResponse.BodyHandlers.ofString(),
+                    )
                 if (response.statusCode() != 200) {
                     throw WellKnownEndpointsFetchFailure(response.body())
                 }
@@ -68,5 +73,4 @@ interface IdentityProviderService {
         } catch (e: InterruptedException) {
             throw WellKnownEndpointsFetchFailure(e.message.toString())
         }
-    }
 }

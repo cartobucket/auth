@@ -34,5 +34,5 @@ data class IdentityProvider(
     var usePkce: Boolean? = null,
     var metadata: Metadata? = null,
     var createdOn: OffsetDateTime? = null,
-    var updatedOn: OffsetDateTime? = null
+    var updatedOn: OffsetDateTime? = null,
 )

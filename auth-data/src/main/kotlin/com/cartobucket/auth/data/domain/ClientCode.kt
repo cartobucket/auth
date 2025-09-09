@@ -34,5 +34,5 @@ data class ClientCode(
     var codeChallenge: String? = null,
     var codeChallengeMethod: String? = null,
     var userId: UUID? = null,
-    var nonce: String? = UUID.randomUUID().toString()
+    var nonce: String? = UUID.randomUUID().toString(),
 )

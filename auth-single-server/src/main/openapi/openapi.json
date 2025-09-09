@@ -1,27 +1,5 @@
 {
-  "openapi" : "3.0.3",
-  "info" : {
-    "title" : "Cartobucket Auth API",
-    "description" : "OAuth 2.1/OIDC Server API",
-    "termsOfService" : "https://cartobucket.com/terms",
-    "contact" : {
-      "name" : "Cartobucket",
-      "url" : "https://cartobucket.com",
-      "email" : "info@cartobucket.com"
-    },
-    "license" : {
-      "name" : "MIT",
-      "url" : "https://opensource.org/licenses/MIT"
-    },
-    "version" : "1.0.0"
-  },
-  "servers" : [ {
-    "url" : "http://localhost:5000",
-    "description" : "Auto generated value"
-  }, {
-    "url" : "http://0.0.0.0:5000",
-    "description" : "Auto generated value"
-  } ],
+  "openapi" : "3.1.0",
   "tags" : [ {
     "name" : "Application Secrets"
   }, {
@@ -41,20 +19,1005 @@
   }, {
     "name" : "Users"
   } ],
+  "components" : {
+    "schemas" : {
+      "AccessTokenRequest" : {
+        "type" : "object",
+        "required" : [ "client_id", "grant_type" ],
+        "properties" : {
+          "client_id" : {
+            "type" : [ "string", "null" ]
+          },
+          "client_secret" : {
+            "type" : [ "string", "null" ]
+          },
+          "grant_type" : {
+            "anyOf" : [ {
+              "$ref" : "#/components/schemas/GrantTypeEnum"
+            }, {
+              "type" : "null"
+            } ]
+          },
+          "code" : {
+            "type" : [ "string", "null" ]
+          },
+          "redirect_uri" : {
+            "type" : [ "string", "null" ]
+          },
+          "code_verifier" : {
+            "type" : [ "string", "null" ]
+          },
+          "refresh_token" : {
+            "type" : [ "string", "null" ]
+          },
+          "scope" : {
+            "type" : [ "string", "null" ]
+          }
+        }
+      },
+      "AccessTokenResponse" : {
+        "type" : "object",
+        "properties" : {
+          "access_token" : {
+            "type" : [ "string", "null" ]
+          },
+          "token_type" : {
+            "anyOf" : [ {
+              "$ref" : "#/components/schemas/TokenTypeEnum"
+            }, {
+              "type" : "null"
+            } ]
+          },
+          "expires_in" : {
+            "type" : [ "integer", "null" ],
+            "format" : "int32"
+          },
+          "refresh_token" : {
+            "type" : [ "string", "null" ]
+          },
+          "scope" : {
+            "type" : [ "string", "null" ]
+          },
+          "id_token" : {
+            "type" : [ "string", "null" ]
+          }
+        }
+      },
+      "ApplicationRequest" : {
+        "type" : "object",
+        "required" : [ "authorization_server_id", "name" ],
+        "properties" : {
+          "authorization_server_id" : {
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "client_id" : {
+            "type" : [ "string", "null" ]
+          },
+          "profile" : { },
+          "metadata" : {
+            "anyOf" : [ {
+              "$ref" : "#/components/schemas/Metadata"
+            }, {
+              "type" : "null"
+            } ]
+          },
+          "scopes" : {
+            "type" : [ "array", "null" ],
+            "items" : {
+              "type" : "string",
+              "format" : "uuid",
+              "pattern" : "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+            }
+          }
+        }
+      },
+      "ApplicationResponse" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : [ "string", "null" ]
+          },
+          "authorization_server_id" : {
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "name" : {
+            "type" : [ "string", "null" ]
+          },
+          "client_id" : {
+            "type" : [ "string", "null" ]
+          },
+          "client_secret" : {
+            "type" : [ "string", "null" ]
+          },
+          "profile" : { },
+          "created_on" : {
+            "anyOf" : [ {
+              "$ref" : "#/components/schemas/OffsetDateTime"
+            }, {
+              "type" : "null"
+            } ]
+          },
+          "updated_on" : {
+            "anyOf" : [ {
+              "$ref" : "#/components/schemas/OffsetDateTime"
+            }, {
+              "type" : "null"
+            } ]
+          },
+          "metadata" : {
+            "anyOf" : [ {
+              "$ref" : "#/components/schemas/Metadata"
+            }, {
+              "type" : "null"
+            } ]
+          },
+          "scopes" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/ScopeResponse"
+            }
+          }
+        },
+        "required" : [ "authorization_server_id", "scopes" ]
+      },
+      "ApplicationSecretRequest" : {
+        "type" : "object",
+        "required" : [ "application_id", "name", "scopes" ],
+        "properties" : {
+          "application_id" : {
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "scopes" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string",
+              "format" : "uuid",
+              "pattern" : "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+            }
+          },
+          "expires_in" : {
+            "type" : [ "integer", "null" ],
+            "format" : "int32"
+          }
+        }
+      },
+      "ApplicationSecretResponse" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "anyOf" : [ {
+              "$ref" : "#/components/schemas/UUID"
+            }, {
+              "type" : "null"
+            } ]
+          },
+          "client_secret" : {
+            "type" : [ "string", "null" ]
+          },
+          "name" : {
+            "type" : [ "string", "null" ]
+          },
+          "expires_in" : {
+            "type" : [ "integer", "null" ],
+            "format" : "int32"
+          },
+          "application_id" : {
+            "anyOf" : [ {
+              "$ref" : "#/components/schemas/UUID"
+            }, {
+              "type" : "null"
+            } ]
+          },
+          "authorization_server_id" : {
+            "anyOf" : [ {
+              "$ref" : "#/components/schemas/UUID"
+            }, {
+              "type" : "null"
+            } ]
+          },
+          "scopes" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/ScopeResponse"
+            }
+          },
+          "created_on" : {
+            "$ref" : "#/components/schemas/OffsetDateTime"
+          }
+        },
+        "required" : [ "scopes", "created_on" ]
+      },
+      "ApplicationSecretsResponse" : {
+        "type" : "object",
+        "properties" : {
+          "application_secrets" : {
+            "type" : [ "array", "null" ],
+            "items" : {
+              "$ref" : "#/components/schemas/ApplicationSecretResponse"
+            }
+          },
+          "page" : {
+            "$ref" : "#/components/schemas/Page"
+          }
+        },
+        "required" : [ "page" ]
+      },
+      "ApplicationsResponse" : {
+        "type" : "object",
+        "properties" : {
+          "applications" : {
+            "type" : [ "array", "null" ],
+            "items" : {
+              "$ref" : "#/components/schemas/ApplicationResponse"
+            }
+          },
+          "page" : {
+            "$ref" : "#/components/schemas/Page"
+          }
+        },
+        "required" : [ "page" ]
+      },
+      "AuthorizationServerRequest" : {
+        "type" : "object",
+        "properties" : {
+          "server_url" : {
+            "type" : [ "string", "null" ]
+          },
+          "audience" : {
+            "type" : [ "string", "null" ]
+          },
+          "client_credentials_token_expiration" : {
+            "type" : [ "integer", "null" ],
+            "format" : "int32"
+          },
+          "authorization_code_token_expiration" : {
+            "type" : [ "integer", "null" ],
+            "format" : "int32"
+          },
+          "name" : {
+            "type" : [ "string", "null" ]
+          },
+          "metadata" : {
+            "anyOf" : [ {
+              "$ref" : "#/components/schemas/Metadata"
+            }, {
+              "type" : "null"
+            } ]
+          }
+        }
+      },
+      "AuthorizationServerResponse" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : [ "string", "null" ]
+          },
+          "server_url" : {
+            "type" : [ "string", "null" ]
+          },
+          "audience" : {
+            "type" : [ "string", "null" ]
+          },
+          "client_credentials_token_expiration" : {
+            "type" : [ "integer", "null" ],
+            "format" : "int32"
+          },
+          "authorization_code_token_expiration" : {
+            "type" : [ "integer", "null" ],
+            "format" : "int32"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "created_on" : {
+            "anyOf" : [ {
+              "$ref" : "#/components/schemas/OffsetDateTime"
+            }, {
+              "type" : "null"
+            } ]
+          },
+          "updated_on" : {
+            "anyOf" : [ {
+              "$ref" : "#/components/schemas/OffsetDateTime"
+            }, {
+              "type" : "null"
+            } ]
+          },
+          "metadata" : {
+            "anyOf" : [ {
+              "$ref" : "#/components/schemas/Metadata"
+            }, {
+              "type" : "null"
+            } ]
+          },
+          "scopes" : {
+            "type" : [ "array", "null" ],
+            "items" : {
+              "$ref" : "#/components/schemas/ScopeResponse"
+            }
+          }
+        },
+        "required" : [ "name" ]
+      },
+      "AuthorizationServersResponse" : {
+        "type" : "object",
+        "properties" : {
+          "authorization_servers" : {
+            "type" : [ "array", "null" ],
+            "items" : {
+              "$ref" : "#/components/schemas/AuthorizationServerResponse"
+            }
+          },
+          "page" : {
+            "$ref" : "#/components/schemas/Page"
+          }
+        },
+        "required" : [ "page" ]
+      },
+      "ClientRequest" : {
+        "type" : "object",
+        "properties" : {
+          "name" : {
+            "type" : [ "string", "null" ]
+          },
+          "authorization_server_id" : {
+            "anyOf" : [ {
+              "$ref" : "#/components/schemas/UUID"
+            }, {
+              "type" : "null"
+            } ]
+          },
+          "redirect_uris" : {
+            "type" : [ "array", "null" ],
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "scopes" : {
+            "type" : [ "array", "null" ],
+            "items" : {
+              "type" : "string",
+              "format" : "uuid",
+              "pattern" : "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+            }
+          },
+          "metadata" : {
+            "anyOf" : [ {
+              "$ref" : "#/components/schemas/Metadata"
+            }, {
+              "type" : "null"
+            } ]
+          }
+        }
+      },
+      "ClientResponse" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : [ "string", "null" ]
+          },
+          "name" : {
+            "type" : [ "string", "null" ]
+          },
+          "authorization_server_id" : {
+            "anyOf" : [ {
+              "$ref" : "#/components/schemas/UUID"
+            }, {
+              "type" : "null"
+            } ]
+          },
+          "redirect_uris" : {
+            "type" : [ "array", "null" ],
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "created_on" : {
+            "anyOf" : [ {
+              "$ref" : "#/components/schemas/OffsetDateTime"
+            }, {
+              "type" : "null"
+            } ]
+          },
+          "updated_on" : {
+            "anyOf" : [ {
+              "$ref" : "#/components/schemas/OffsetDateTime"
+            }, {
+              "type" : "null"
+            } ]
+          },
+          "scopes" : {
+            "type" : [ "array", "null" ],
+            "items" : {
+              "$ref" : "#/components/schemas/ScopeResponse"
+            }
+          },
+          "metadata" : {
+            "anyOf" : [ {
+              "$ref" : "#/components/schemas/Metadata"
+            }, {
+              "type" : "null"
+            } ]
+          }
+        }
+      },
+      "ClientsResponse" : {
+        "type" : "object",
+        "properties" : {
+          "clients" : {
+            "type" : [ "array", "null" ],
+            "items" : {
+              "$ref" : "#/components/schemas/ClientResponse"
+            }
+          },
+          "page" : {
+            "$ref" : "#/components/schemas/Page"
+          }
+        },
+        "required" : [ "page" ]
+      },
+      "GrantTypeEnum" : {
+        "type" : "string",
+        "enum" : [ "CLIENT_CREDENTIALS", "AUTHORIZATION_CODE", "REFRESH_TOKEN" ]
+      },
+      "JWK" : {
+        "type" : "object",
+        "properties" : {
+          "kty" : {
+            "type" : [ "string", "null" ]
+          },
+          "use" : {
+            "type" : [ "string", "null" ]
+          },
+          "key_ops" : {
+            "type" : [ "array", "null" ],
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "alg" : {
+            "type" : [ "string", "null" ]
+          },
+          "kid" : {
+            "type" : [ "string", "null" ]
+          },
+          "x5c" : {
+            "type" : [ "array", "null" ],
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "x5t" : {
+            "type" : [ "string", "null" ]
+          },
+          "x5t#S256" : {
+            "type" : [ "string", "null" ]
+          },
+          "x5u" : {
+            "type" : [ "string", "null" ]
+          },
+          "n" : {
+            "type" : [ "string", "null" ]
+          },
+          "e" : {
+            "type" : [ "string", "null" ]
+          },
+          "d" : {
+            "type" : [ "string", "null" ]
+          },
+          "p" : {
+            "type" : [ "string", "null" ]
+          },
+          "q" : {
+            "type" : [ "string", "null" ]
+          },
+          "dp" : {
+            "type" : [ "string", "null" ]
+          },
+          "dq" : {
+            "type" : [ "string", "null" ]
+          },
+          "qi" : {
+            "type" : [ "string", "null" ]
+          }
+        }
+      },
+      "JWKS" : {
+        "type" : "object",
+        "properties" : {
+          "keys" : {
+            "type" : [ "array", "null" ],
+            "items" : {
+              "$ref" : "#/components/schemas/JWK"
+            }
+          }
+        }
+      },
+      "Metadata" : {
+        "type" : "object",
+        "properties" : {
+          "properties" : {
+            "type" : [ "object", "null" ],
+            "additionalProperties" : { }
+          },
+          "identifiers" : {
+            "type" : [ "array", "null" ],
+            "items" : {
+              "$ref" : "#/components/schemas/MetadataIdentifiersInner"
+            }
+          },
+          "schemaValidations" : {
+            "type" : [ "array", "null" ],
+            "items" : {
+              "$ref" : "#/components/schemas/MetadataSchemaValidationsInner"
+            }
+          }
+        }
+      },
+      "MetadataIdentifiersInner" : {
+        "type" : "object",
+        "properties" : {
+          "system" : {
+            "type" : [ "string", "null" ]
+          },
+          "value" : {
+            "type" : [ "string", "null" ]
+          }
+        }
+      },
+      "MetadataSchemaValidationsInner" : {
+        "type" : "object",
+        "properties" : {
+          "schemaId" : {
+            "anyOf" : [ {
+              "$ref" : "#/components/schemas/UUID"
+            }, {
+              "type" : "null"
+            } ]
+          },
+          "isValid" : {
+            "type" : [ "boolean", "null" ]
+          },
+          "validatedOn" : {
+            "anyOf" : [ {
+              "$ref" : "#/components/schemas/OffsetDateTime"
+            }, {
+              "type" : "null"
+            } ]
+          }
+        }
+      },
+      "OffsetDateTime" : {
+        "type" : "string",
+        "format" : "date-time",
+        "examples" : [ "2022-03-10T12:15:50-04:00" ]
+      },
+      "Page" : {
+        "type" : "object",
+        "properties" : {
+          "next" : {
+            "type" : [ "string", "null" ]
+          },
+          "previous" : {
+            "type" : [ "string", "null" ]
+          }
+        }
+      },
+      "SchemaRequest" : {
+        "type" : "object",
+        "required" : [ "authorization_server" ],
+        "properties" : {
+          "authorization_server" : {
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "name" : {
+            "type" : [ "string", "null" ]
+          },
+          "schema_version" : {
+            "type" : [ "string", "null" ]
+          },
+          "schema" : { },
+          "metadata" : {
+            "anyOf" : [ {
+              "$ref" : "#/components/schemas/Metadata"
+            }, {
+              "type" : "null"
+            } ]
+          }
+        }
+      },
+      "SchemaResponse" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "anyOf" : [ {
+              "$ref" : "#/components/schemas/UUID"
+            }, {
+              "type" : "null"
+            } ]
+          },
+          "authorization_server" : {
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "name" : {
+            "type" : [ "string", "null" ]
+          },
+          "schema_version" : {
+            "type" : [ "string", "null" ]
+          },
+          "schema" : { },
+          "metadata" : {
+            "anyOf" : [ {
+              "$ref" : "#/components/schemas/Metadata"
+            }, {
+              "type" : "null"
+            } ]
+          }
+        },
+        "required" : [ "authorization_server" ]
+      },
+      "SchemasResponse" : {
+        "type" : "object",
+        "properties" : {
+          "schemas" : {
+            "type" : [ "array", "null" ],
+            "items" : {
+              "$ref" : "#/components/schemas/SchemaResponse"
+            }
+          },
+          "page" : {
+            "$ref" : "#/components/schemas/Page"
+          }
+        },
+        "required" : [ "page" ]
+      },
+      "ScopeRequest" : {
+        "type" : "object",
+        "properties" : {
+          "authorization_server_id" : {
+            "anyOf" : [ {
+              "$ref" : "#/components/schemas/UUID"
+            }, {
+              "type" : "null"
+            } ]
+          },
+          "name" : {
+            "type" : [ "string", "null" ]
+          },
+          "metadata" : {
+            "anyOf" : [ {
+              "$ref" : "#/components/schemas/Metadata"
+            }, {
+              "type" : "null"
+            } ]
+          }
+        }
+      },
+      "ScopeResponse" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : [ "string", "null" ]
+          },
+          "authorizationServerId" : {
+            "anyOf" : [ {
+              "$ref" : "#/components/schemas/UUID"
+            }, {
+              "type" : "null"
+            } ]
+          },
+          "createdOn" : {
+            "anyOf" : [ {
+              "$ref" : "#/components/schemas/OffsetDateTime"
+            }, {
+              "type" : "null"
+            } ]
+          },
+          "updatedOn" : {
+            "anyOf" : [ {
+              "$ref" : "#/components/schemas/OffsetDateTime"
+            }, {
+              "type" : "null"
+            } ]
+          },
+          "name" : {
+            "type" : [ "string", "null" ]
+          },
+          "metadata" : {
+            "anyOf" : [ {
+              "$ref" : "#/components/schemas/Metadata"
+            }, {
+              "type" : "null"
+            } ]
+          }
+        }
+      },
+      "ScopesResponse" : {
+        "type" : "object",
+        "properties" : {
+          "scopes" : {
+            "type" : [ "array", "null" ],
+            "items" : {
+              "$ref" : "#/components/schemas/ScopeResponse"
+            }
+          },
+          "page" : {
+            "$ref" : "#/components/schemas/Page"
+          }
+        },
+        "required" : [ "page" ]
+      },
+      "TemplateRequest" : {
+        "type" : "object",
+        "properties" : {
+          "authorization_server_id" : {
+            "anyOf" : [ {
+              "$ref" : "#/components/schemas/UUID"
+            }, {
+              "type" : "null"
+            } ]
+          },
+          "template_type" : {
+            "type" : [ "string", "null" ]
+          },
+          "template" : {
+            "type" : [ "string", "null" ]
+          },
+          "metadata" : {
+            "anyOf" : [ {
+              "$ref" : "#/components/schemas/Metadata"
+            }, {
+              "type" : "null"
+            } ]
+          }
+        }
+      },
+      "TemplateResponse" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : [ "string", "null" ]
+          },
+          "authorization_server_id" : {
+            "anyOf" : [ {
+              "$ref" : "#/components/schemas/UUID"
+            }, {
+              "type" : "null"
+            } ]
+          },
+          "template_type" : {
+            "type" : [ "string", "null" ]
+          },
+          "template" : {
+            "type" : [ "string", "null" ]
+          },
+          "created_on" : {
+            "anyOf" : [ {
+              "$ref" : "#/components/schemas/OffsetDateTime"
+            }, {
+              "type" : "null"
+            } ]
+          },
+          "updated_on" : {
+            "anyOf" : [ {
+              "$ref" : "#/components/schemas/OffsetDateTime"
+            }, {
+              "type" : "null"
+            } ]
+          },
+          "metadata" : {
+            "anyOf" : [ {
+              "$ref" : "#/components/schemas/Metadata"
+            }, {
+              "type" : "null"
+            } ]
+          }
+        }
+      },
+      "TemplatesResponse" : {
+        "type" : "object",
+        "properties" : {
+          "templates" : {
+            "type" : [ "array", "null" ],
+            "items" : {
+              "$ref" : "#/components/schemas/TemplateResponse"
+            }
+          },
+          "page" : {
+            "$ref" : "#/components/schemas/Page"
+          }
+        },
+        "required" : [ "page" ]
+      },
+      "TokenTypeEnum" : {
+        "type" : "string",
+        "enum" : [ "BEARER" ]
+      },
+      "UUID" : {
+        "type" : "string",
+        "format" : "uuid",
+        "pattern" : "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+      },
+      "UserRequest" : {
+        "type" : "object",
+        "properties" : {
+          "authorization_server_id" : {
+            "anyOf" : [ {
+              "$ref" : "#/components/schemas/UUID"
+            }, {
+              "type" : "null"
+            } ]
+          },
+          "username" : {
+            "type" : [ "string", "null" ]
+          },
+          "email" : {
+            "type" : [ "string", "null" ]
+          },
+          "profile" : { },
+          "password" : {
+            "type" : [ "string", "null" ]
+          },
+          "metadata" : {
+            "anyOf" : [ {
+              "$ref" : "#/components/schemas/Metadata"
+            }, {
+              "type" : "null"
+            } ]
+          }
+        }
+      },
+      "UserResponse" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : [ "string", "null" ]
+          },
+          "authorization_server_id" : {
+            "anyOf" : [ {
+              "$ref" : "#/components/schemas/UUID"
+            }, {
+              "type" : "null"
+            } ]
+          },
+          "username" : {
+            "type" : [ "string", "null" ]
+          },
+          "email" : {
+            "type" : [ "string", "null" ]
+          },
+          "profile" : { },
+          "created_on" : {
+            "anyOf" : [ {
+              "$ref" : "#/components/schemas/OffsetDateTime"
+            }, {
+              "type" : "null"
+            } ]
+          },
+          "updated_on" : {
+            "anyOf" : [ {
+              "$ref" : "#/components/schemas/OffsetDateTime"
+            }, {
+              "type" : "null"
+            } ]
+          },
+          "metadata" : {
+            "anyOf" : [ {
+              "$ref" : "#/components/schemas/Metadata"
+            }, {
+              "type" : "null"
+            } ]
+          }
+        }
+      },
+      "UsersResponse" : {
+        "type" : "object",
+        "properties" : {
+          "users" : {
+            "type" : [ "array", "null" ],
+            "items" : {
+              "$ref" : "#/components/schemas/UserResponse"
+            }
+          },
+          "page" : {
+            "$ref" : "#/components/schemas/Page"
+          }
+        },
+        "required" : [ "page" ]
+      },
+      "WellKnown" : {
+        "type" : "object",
+        "properties" : {
+          "issuer" : {
+            "type" : [ "string", "null" ]
+          },
+          "authorization_endpoint" : {
+            "type" : [ "string", "null" ]
+          },
+          "token_endpoint" : {
+            "type" : [ "string", "null" ]
+          },
+          "userinfo_endpoint" : {
+            "type" : [ "string", "null" ]
+          },
+          "jwks_uri" : {
+            "type" : [ "string", "null" ]
+          },
+          "revocation_endpoint" : {
+            "type" : [ "string", "null" ]
+          },
+          "scopes_supported" : {
+            "type" : [ "array", "null" ],
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "response_types_supported" : {
+            "type" : [ "array", "null" ],
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "grant_types_supported" : {
+            "type" : [ "array", "null" ],
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "subject_types_supported" : {
+            "type" : [ "array", "null" ],
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "id_token_signing_alg_values_supported" : {
+            "type" : [ "array", "null" ],
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "token_endpoint_auth_methods_supported" : {
+            "type" : [ "array", "null" ],
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "claims_supported" : {
+            "type" : [ "array", "null" ],
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "code_challenge_methods_supported" : {
+            "type" : [ "array", "null" ],
+            "items" : {
+              "type" : "string"
+            }
+          }
+        }
+      }
+    }
+  },
   "paths" : {
     "/applicationSecrets" : {
       "get" : {
-        "tags" : [ "Application Secrets" ],
         "summary" : "List application secrets with optional filtering by application IDs",
+        "tags" : [ "Application Secrets" ],
         "parameters" : [ {
           "name" : "applicationIds",
           "in" : "query",
           "schema" : {
-            "type" : "array",
+            "type" : [ "array", "null" ],
             "items" : {
+              "type" : "string",
               "format" : "uuid",
-              "pattern" : "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}",
-              "type" : "string"
+              "pattern" : "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
             }
           }
         } ],
@@ -72,8 +1035,8 @@
         }
       },
       "post" : {
-        "tags" : [ "Application Secrets" ],
         "summary" : "Create a new application secret",
+        "tags" : [ "Application Secrets" ],
         "requestBody" : {
           "content" : {
             "application/json" : {
@@ -81,7 +1044,8 @@
                 "$ref" : "#/components/schemas/ApplicationSecretRequest"
               }
             }
-          }
+          },
+          "required" : true
         },
         "responses" : {
           "200" : {
@@ -102,8 +1066,8 @@
     },
     "/applicationSecrets/{secretId}" : {
       "delete" : {
-        "tags" : [ "Application Secrets" ],
         "summary" : "Delete an application secret by ID",
+        "tags" : [ "Application Secrets" ],
         "parameters" : [ {
           "name" : "secretId",
           "in" : "path",
@@ -124,32 +1088,32 @@
     },
     "/applications" : {
       "get" : {
-        "tags" : [ "Applications" ],
         "summary" : "List applications",
+        "tags" : [ "Applications" ],
         "parameters" : [ {
           "name" : "authorizationServerIds",
           "in" : "query",
           "schema" : {
-            "type" : "array",
+            "type" : [ "array", "null" ],
             "items" : {
+              "type" : "string",
               "format" : "uuid",
-              "pattern" : "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}",
-              "type" : "string"
+              "pattern" : "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
             }
           }
         }, {
           "name" : "limit",
           "in" : "query",
           "schema" : {
-            "format" : "int32",
-            "type" : "integer"
+            "type" : [ "integer", "null" ],
+            "format" : "int32"
           }
         }, {
           "name" : "offset",
           "in" : "query",
           "schema" : {
-            "format" : "int32",
-            "type" : "integer"
+            "type" : [ "integer", "null" ],
+            "format" : "int32"
           }
         } ],
         "responses" : {
@@ -166,8 +1130,8 @@
         }
       },
       "post" : {
-        "tags" : [ "Applications" ],
         "summary" : "Create a new application",
+        "tags" : [ "Applications" ],
         "requestBody" : {
           "content" : {
             "application/json" : {
@@ -175,7 +1139,8 @@
                 "$ref" : "#/components/schemas/ApplicationRequest"
               }
             }
-          }
+          },
+          "required" : true
         },
         "responses" : {
           "200" : {
@@ -196,8 +1161,8 @@
     },
     "/applications/{applicationId}" : {
       "get" : {
-        "tags" : [ "Applications" ],
         "summary" : "Get an application by ID",
+        "tags" : [ "Applications" ],
         "parameters" : [ {
           "name" : "applicationId",
           "in" : "path",
@@ -223,8 +1188,8 @@
         }
       },
       "delete" : {
-        "tags" : [ "Applications" ],
         "summary" : "Delete an application",
+        "tags" : [ "Applications" ],
         "parameters" : [ {
           "name" : "applicationId",
           "in" : "path",
@@ -245,21 +1210,21 @@
     },
     "/authorizationServers" : {
       "get" : {
-        "tags" : [ "Authorization Servers" ],
         "summary" : "List authorization servers with optional pagination",
+        "tags" : [ "Authorization Servers" ],
         "parameters" : [ {
           "name" : "limit",
           "in" : "query",
           "schema" : {
-            "format" : "int32",
-            "type" : "integer"
+            "type" : [ "integer", "null" ],
+            "format" : "int32"
           }
         }, {
           "name" : "offset",
           "in" : "query",
           "schema" : {
-            "format" : "int32",
-            "type" : "integer"
+            "type" : [ "integer", "null" ],
+            "format" : "int32"
           }
         } ],
         "responses" : {
@@ -276,8 +1241,8 @@
         }
       },
       "post" : {
-        "tags" : [ "Authorization Servers" ],
         "summary" : "Create a new authorization server",
+        "tags" : [ "Authorization Servers" ],
         "requestBody" : {
           "content" : {
             "application/json" : {
@@ -285,7 +1250,8 @@
                 "$ref" : "#/components/schemas/AuthorizationServerRequest"
               }
             }
-          }
+          },
+          "required" : true
         },
         "responses" : {
           "200" : {
@@ -305,9 +1271,46 @@
       }
     },
     "/authorizationServers/{authorizationServerId}" : {
-      "get" : {
+      "put" : {
+        "summary" : "Update an authorization server by ID",
         "tags" : [ "Authorization Servers" ],
+        "parameters" : [ {
+          "name" : "authorizationServerId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/AuthorizationServerRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "Authorization server updated successfully",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/AuthorizationServerResponse"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Authorization server not found"
+          }
+        }
+      },
+      "get" : {
         "summary" : "Get an authorization server by ID",
+        "tags" : [ "Authorization Servers" ],
         "parameters" : [ {
           "name" : "authorizationServerId",
           "in" : "path",
@@ -332,45 +1335,9 @@
           }
         }
       },
-      "put" : {
-        "tags" : [ "Authorization Servers" ],
-        "summary" : "Update an authorization server by ID",
-        "parameters" : [ {
-          "name" : "authorizationServerId",
-          "in" : "path",
-          "required" : true,
-          "schema" : {
-            "$ref" : "#/components/schemas/UUID"
-          }
-        } ],
-        "requestBody" : {
-          "content" : {
-            "application/json" : {
-              "schema" : {
-                "$ref" : "#/components/schemas/AuthorizationServerRequest"
-              }
-            }
-          }
-        },
-        "responses" : {
-          "200" : {
-            "description" : "Authorization server updated successfully",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/AuthorizationServerResponse"
-                }
-              }
-            }
-          },
-          "404" : {
-            "description" : "Authorization server not found"
-          }
-        }
-      },
       "delete" : {
-        "tags" : [ "Authorization Servers" ],
         "summary" : "Delete an authorization server by ID",
+        "tags" : [ "Authorization Servers" ],
         "parameters" : [ {
           "name" : "authorizationServerId",
           "in" : "path",
@@ -391,32 +1358,32 @@
     },
     "/clients" : {
       "get" : {
-        "tags" : [ "Clients" ],
         "summary" : "List clients",
+        "tags" : [ "Clients" ],
         "parameters" : [ {
           "name" : "authorizationServerIds",
           "in" : "query",
           "schema" : {
-            "type" : "array",
+            "type" : [ "array", "null" ],
             "items" : {
+              "type" : "string",
               "format" : "uuid",
-              "pattern" : "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}",
-              "type" : "string"
+              "pattern" : "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
             }
           }
         }, {
           "name" : "limit",
           "in" : "query",
           "schema" : {
-            "format" : "int32",
-            "type" : "integer"
+            "type" : [ "integer", "null" ],
+            "format" : "int32"
           }
         }, {
           "name" : "offset",
           "in" : "query",
           "schema" : {
-            "format" : "int32",
-            "type" : "integer"
+            "type" : [ "integer", "null" ],
+            "format" : "int32"
           }
         } ],
         "responses" : {
@@ -433,8 +1400,8 @@
         }
       },
       "post" : {
-        "tags" : [ "Clients" ],
         "summary" : "Create a new client",
+        "tags" : [ "Clients" ],
         "requestBody" : {
           "content" : {
             "application/json" : {
@@ -442,7 +1409,8 @@
                 "$ref" : "#/components/schemas/ClientRequest"
               }
             }
-          }
+          },
+          "required" : true
         },
         "responses" : {
           "200" : {
@@ -462,9 +1430,46 @@
       }
     },
     "/clients/{clientId}" : {
-      "get" : {
+      "put" : {
+        "summary" : "Update a client",
         "tags" : [ "Clients" ],
+        "parameters" : [ {
+          "name" : "clientId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/ClientRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "Client updated successfully",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ClientResponse"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Client not found"
+          }
+        }
+      },
+      "get" : {
         "summary" : "Get a client by ID",
+        "tags" : [ "Clients" ],
         "parameters" : [ {
           "name" : "clientId",
           "in" : "path",
@@ -489,45 +1494,9 @@
           }
         }
       },
-      "put" : {
-        "tags" : [ "Clients" ],
-        "summary" : "Update a client",
-        "parameters" : [ {
-          "name" : "clientId",
-          "in" : "path",
-          "required" : true,
-          "schema" : {
-            "$ref" : "#/components/schemas/UUID"
-          }
-        } ],
-        "requestBody" : {
-          "content" : {
-            "application/json" : {
-              "schema" : {
-                "$ref" : "#/components/schemas/ClientRequest"
-              }
-            }
-          }
-        },
-        "responses" : {
-          "200" : {
-            "description" : "Client updated successfully",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/ClientResponse"
-                }
-              }
-            }
-          },
-          "404" : {
-            "description" : "Client not found"
-          }
-        }
-      },
       "delete" : {
-        "tags" : [ "Clients" ],
         "summary" : "Delete a client",
+        "tags" : [ "Clients" ],
         "parameters" : [ {
           "name" : "clientId",
           "in" : "path",
@@ -548,32 +1517,32 @@
     },
     "/schemas" : {
       "get" : {
-        "tags" : [ "Schemas" ],
         "summary" : "List schemas with optional filtering",
+        "tags" : [ "Schemas" ],
         "parameters" : [ {
           "name" : "authorizationServerIds",
           "in" : "query",
           "schema" : {
-            "type" : "array",
+            "type" : [ "array", "null" ],
             "items" : {
+              "type" : "string",
               "format" : "uuid",
-              "pattern" : "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}",
-              "type" : "string"
+              "pattern" : "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
             }
           }
         }, {
           "name" : "limit",
           "in" : "query",
           "schema" : {
-            "format" : "int32",
-            "type" : "integer"
+            "type" : [ "integer", "null" ],
+            "format" : "int32"
           }
         }, {
           "name" : "offset",
           "in" : "query",
           "schema" : {
-            "format" : "int32",
-            "type" : "integer"
+            "type" : [ "integer", "null" ],
+            "format" : "int32"
           }
         } ],
         "responses" : {
@@ -590,8 +1559,8 @@
         }
       },
       "post" : {
-        "tags" : [ "Schemas" ],
         "summary" : "Create a new schema",
+        "tags" : [ "Schemas" ],
         "requestBody" : {
           "content" : {
             "application/json" : {
@@ -599,7 +1568,8 @@
                 "$ref" : "#/components/schemas/SchemaRequest"
               }
             }
-          }
+          },
+          "required" : true
         },
         "responses" : {
           "200" : {
@@ -619,9 +1589,46 @@
       }
     },
     "/schemas/{schemaId}" : {
-      "get" : {
+      "put" : {
+        "summary" : "Update a schema by ID",
         "tags" : [ "Schemas" ],
+        "parameters" : [ {
+          "name" : "schemaId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/SchemaRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "Schema updated successfully",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/SchemaResponse"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Schema not found"
+          }
+        }
+      },
+      "get" : {
         "summary" : "Get a schema by ID",
+        "tags" : [ "Schemas" ],
         "parameters" : [ {
           "name" : "schemaId",
           "in" : "path",
@@ -646,45 +1653,9 @@
           }
         }
       },
-      "put" : {
-        "tags" : [ "Schemas" ],
-        "summary" : "Update a schema by ID",
-        "parameters" : [ {
-          "name" : "schemaId",
-          "in" : "path",
-          "required" : true,
-          "schema" : {
-            "$ref" : "#/components/schemas/UUID"
-          }
-        } ],
-        "requestBody" : {
-          "content" : {
-            "application/json" : {
-              "schema" : {
-                "$ref" : "#/components/schemas/SchemaRequest"
-              }
-            }
-          }
-        },
-        "responses" : {
-          "200" : {
-            "description" : "Schema updated successfully",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/SchemaResponse"
-                }
-              }
-            }
-          },
-          "404" : {
-            "description" : "Schema not found"
-          }
-        }
-      },
       "delete" : {
-        "tags" : [ "Schemas" ],
         "summary" : "Delete a schema by ID",
+        "tags" : [ "Schemas" ],
         "parameters" : [ {
           "name" : "schemaId",
           "in" : "path",
@@ -705,32 +1676,32 @@
     },
     "/scopes" : {
       "get" : {
-        "tags" : [ "Scopes" ],
         "summary" : "List scopes with optional filtering",
+        "tags" : [ "Scopes" ],
         "parameters" : [ {
           "name" : "authorizationServerIds",
           "in" : "query",
           "schema" : {
-            "type" : "array",
+            "type" : [ "array", "null" ],
             "items" : {
+              "type" : "string",
               "format" : "uuid",
-              "pattern" : "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}",
-              "type" : "string"
+              "pattern" : "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
             }
           }
         }, {
           "name" : "limit",
           "in" : "query",
           "schema" : {
-            "format" : "int32",
-            "type" : "integer"
+            "type" : [ "integer", "null" ],
+            "format" : "int32"
           }
         }, {
           "name" : "offset",
           "in" : "query",
           "schema" : {
-            "format" : "int32",
-            "type" : "integer"
+            "type" : [ "integer", "null" ],
+            "format" : "int32"
           }
         } ],
         "responses" : {
@@ -747,8 +1718,8 @@
         }
       },
       "post" : {
-        "tags" : [ "Scopes" ],
         "summary" : "Create a new scope",
+        "tags" : [ "Scopes" ],
         "requestBody" : {
           "content" : {
             "application/json" : {
@@ -756,7 +1727,8 @@
                 "$ref" : "#/components/schemas/ScopeRequest"
               }
             }
-          }
+          },
+          "required" : true
         },
         "responses" : {
           "200" : {
@@ -776,9 +1748,46 @@
       }
     },
     "/scopes/{scopeId}" : {
-      "get" : {
+      "put" : {
+        "summary" : "Update a scope by ID",
         "tags" : [ "Scopes" ],
+        "parameters" : [ {
+          "name" : "scopeId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/ScopeRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "Scope updated successfully",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ScopeResponse"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Scope not found"
+          }
+        }
+      },
+      "get" : {
         "summary" : "Get a scope by ID",
+        "tags" : [ "Scopes" ],
         "parameters" : [ {
           "name" : "scopeId",
           "in" : "path",
@@ -803,45 +1812,9 @@
           }
         }
       },
-      "put" : {
-        "tags" : [ "Scopes" ],
-        "summary" : "Update a scope by ID",
-        "parameters" : [ {
-          "name" : "scopeId",
-          "in" : "path",
-          "required" : true,
-          "schema" : {
-            "$ref" : "#/components/schemas/UUID"
-          }
-        } ],
-        "requestBody" : {
-          "content" : {
-            "application/json" : {
-              "schema" : {
-                "$ref" : "#/components/schemas/ScopeRequest"
-              }
-            }
-          }
-        },
-        "responses" : {
-          "200" : {
-            "description" : "Scope updated successfully",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/ScopeResponse"
-                }
-              }
-            }
-          },
-          "404" : {
-            "description" : "Scope not found"
-          }
-        }
-      },
       "delete" : {
-        "tags" : [ "Scopes" ],
         "summary" : "Delete a scope by ID",
+        "tags" : [ "Scopes" ],
         "parameters" : [ {
           "name" : "scopeId",
           "in" : "path",
@@ -862,32 +1835,32 @@
     },
     "/templates" : {
       "get" : {
-        "tags" : [ "Templates" ],
         "summary" : "List templates with optional filtering",
+        "tags" : [ "Templates" ],
         "parameters" : [ {
           "name" : "authorizationServerIds",
           "in" : "query",
           "schema" : {
-            "type" : "array",
+            "type" : [ "array", "null" ],
             "items" : {
+              "type" : "string",
               "format" : "uuid",
-              "pattern" : "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}",
-              "type" : "string"
+              "pattern" : "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
             }
           }
         }, {
           "name" : "limit",
           "in" : "query",
           "schema" : {
-            "format" : "int32",
-            "type" : "integer"
+            "type" : [ "integer", "null" ],
+            "format" : "int32"
           }
         }, {
           "name" : "offset",
           "in" : "query",
           "schema" : {
-            "format" : "int32",
-            "type" : "integer"
+            "type" : [ "integer", "null" ],
+            "format" : "int32"
           }
         } ],
         "responses" : {
@@ -904,8 +1877,8 @@
         }
       },
       "post" : {
-        "tags" : [ "Templates" ],
         "summary" : "Create a new template",
+        "tags" : [ "Templates" ],
         "requestBody" : {
           "content" : {
             "application/json" : {
@@ -913,7 +1886,8 @@
                 "$ref" : "#/components/schemas/TemplateRequest"
               }
             }
-          }
+          },
+          "required" : true
         },
         "responses" : {
           "200" : {
@@ -933,9 +1907,46 @@
       }
     },
     "/templates/{templateId}" : {
-      "get" : {
+      "put" : {
+        "summary" : "Update a template by ID",
         "tags" : [ "Templates" ],
+        "parameters" : [ {
+          "name" : "templateId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/TemplateRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "Template updated successfully",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/TemplateResponse"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Template not found"
+          }
+        }
+      },
+      "get" : {
         "summary" : "Get a template by ID",
+        "tags" : [ "Templates" ],
         "parameters" : [ {
           "name" : "templateId",
           "in" : "path",
@@ -960,45 +1971,9 @@
           }
         }
       },
-      "put" : {
-        "tags" : [ "Templates" ],
-        "summary" : "Update a template by ID",
-        "parameters" : [ {
-          "name" : "templateId",
-          "in" : "path",
-          "required" : true,
-          "schema" : {
-            "$ref" : "#/components/schemas/UUID"
-          }
-        } ],
-        "requestBody" : {
-          "content" : {
-            "application/json" : {
-              "schema" : {
-                "$ref" : "#/components/schemas/TemplateRequest"
-              }
-            }
-          }
-        },
-        "responses" : {
-          "200" : {
-            "description" : "Template updated successfully",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/TemplateResponse"
-                }
-              }
-            }
-          },
-          "404" : {
-            "description" : "Template not found"
-          }
-        }
-      },
       "delete" : {
-        "tags" : [ "Templates" ],
         "summary" : "Delete a template by ID",
+        "tags" : [ "Templates" ],
         "parameters" : [ {
           "name" : "templateId",
           "in" : "path",
@@ -1019,32 +1994,32 @@
     },
     "/users" : {
       "get" : {
-        "tags" : [ "Users" ],
         "summary" : "List users with optional filtering",
+        "tags" : [ "Users" ],
         "parameters" : [ {
           "name" : "authorizationServerIds",
           "in" : "query",
           "schema" : {
-            "type" : "array",
+            "type" : [ "array", "null" ],
             "items" : {
+              "type" : "string",
               "format" : "uuid",
-              "pattern" : "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}",
-              "type" : "string"
+              "pattern" : "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
             }
           }
         }, {
           "name" : "limit",
           "in" : "query",
           "schema" : {
-            "format" : "int32",
-            "type" : "integer"
+            "type" : [ "integer", "null" ],
+            "format" : "int32"
           }
         }, {
           "name" : "offset",
           "in" : "query",
           "schema" : {
-            "format" : "int32",
-            "type" : "integer"
+            "type" : [ "integer", "null" ],
+            "format" : "int32"
           }
         } ],
         "responses" : {
@@ -1061,8 +2036,8 @@
         }
       },
       "post" : {
-        "tags" : [ "Users" ],
         "summary" : "Create a new user",
+        "tags" : [ "Users" ],
         "requestBody" : {
           "content" : {
             "application/json" : {
@@ -1070,7 +2045,8 @@
                 "$ref" : "#/components/schemas/UserRequest"
               }
             }
-          }
+          },
+          "required" : true
         },
         "responses" : {
           "200" : {
@@ -1090,9 +2066,46 @@
       }
     },
     "/users/{userId}" : {
-      "get" : {
+      "put" : {
+        "summary" : "Update a user by ID",
         "tags" : [ "Users" ],
+        "parameters" : [ {
+          "name" : "userId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/UserRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "User updated successfully",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/UserResponse"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "User not found"
+          }
+        }
+      },
+      "get" : {
         "summary" : "Get a user by ID",
+        "tags" : [ "Users" ],
         "parameters" : [ {
           "name" : "userId",
           "in" : "path",
@@ -1117,45 +2130,9 @@
           }
         }
       },
-      "put" : {
-        "tags" : [ "Users" ],
-        "summary" : "Update a user by ID",
-        "parameters" : [ {
-          "name" : "userId",
-          "in" : "path",
-          "required" : true,
-          "schema" : {
-            "$ref" : "#/components/schemas/UUID"
-          }
-        } ],
-        "requestBody" : {
-          "content" : {
-            "application/json" : {
-              "schema" : {
-                "$ref" : "#/components/schemas/UserRequest"
-              }
-            }
-          }
-        },
-        "responses" : {
-          "200" : {
-            "description" : "User updated successfully",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/UserResponse"
-                }
-              }
-            }
-          },
-          "404" : {
-            "description" : "User not found"
-          }
-        }
-      },
       "delete" : {
-        "tags" : [ "Users" ],
         "summary" : "Delete a user by ID",
+        "tags" : [ "Users" ],
         "parameters" : [ {
           "name" : "userId",
           "in" : "path",
@@ -1176,14 +2153,14 @@
     },
     "/{authorizationServerId}/.well-known/openid-connect" : {
       "get" : {
-        "tags" : [ "Authorization Server" ],
         "summary" : "Well Known Endpoint",
         "description" : "Returns the OpenID Connect Well-Known configuration",
+        "tags" : [ "Authorization Server" ],
         "parameters" : [ {
-          "name" : "authorizationServerId",
-          "in" : "path",
           "description" : "Authorization Server ID",
           "required" : true,
+          "name" : "authorizationServerId",
+          "in" : "path",
           "schema" : {
             "$ref" : "#/components/schemas/UUID"
           }
@@ -1204,74 +2181,74 @@
     },
     "/{authorizationServerId}/authorization" : {
       "get" : {
-        "tags" : [ "Authorization Server" ],
         "summary" : "Authorization Endpoint",
         "description" : "OAuth2/OIDC authorization endpoint",
+        "tags" : [ "Authorization Server" ],
         "parameters" : [ {
-          "name" : "authorizationServerId",
-          "in" : "path",
           "description" : "Authorization Server ID",
           "required" : true,
+          "name" : "authorizationServerId",
+          "in" : "path",
           "schema" : {
             "$ref" : "#/components/schemas/UUID"
           }
         }, {
-          "name" : "client_id",
-          "in" : "query",
           "description" : "Client identifier",
           "required" : true,
+          "name" : "client_id",
+          "in" : "query",
           "schema" : {
-            "type" : "string"
+            "type" : [ "string", "null" ]
           }
         }, {
+          "description" : "PKCE code challenge",
           "name" : "code_challenge",
           "in" : "query",
-          "description" : "PKCE code challenge",
           "schema" : {
-            "type" : "string"
+            "type" : [ "string", "null" ]
           }
         }, {
+          "description" : "PKCE code challenge method",
           "name" : "code_challenge_method",
           "in" : "query",
-          "description" : "PKCE code challenge method",
           "schema" : {
-            "type" : "string"
+            "type" : [ "string", "null" ]
           }
         }, {
+          "description" : "Nonce for ID token",
           "name" : "nonce",
           "in" : "query",
-          "description" : "Nonce for ID token",
           "schema" : {
-            "type" : "string"
+            "type" : [ "string", "null" ]
           }
         }, {
+          "description" : "Redirect URI",
           "name" : "redirect_uri",
           "in" : "query",
-          "description" : "Redirect URI",
           "schema" : {
-            "type" : "string"
+            "type" : [ "string", "null" ]
           }
         }, {
-          "name" : "response_type",
-          "in" : "query",
           "description" : "Response type",
           "required" : true,
+          "name" : "response_type",
+          "in" : "query",
           "schema" : {
-            "type" : "string"
+            "type" : [ "string", "null" ]
           }
         }, {
+          "description" : "Requested scopes",
           "name" : "scope",
           "in" : "query",
-          "description" : "Requested scopes",
           "schema" : {
-            "type" : "string"
+            "type" : [ "string", "null" ]
           }
         }, {
+          "description" : "State parameter",
           "name" : "state",
           "in" : "query",
-          "description" : "State parameter",
           "schema" : {
-            "type" : "string"
+            "type" : [ "string", "null" ]
           }
         } ],
         "responses" : {
@@ -1284,74 +2261,74 @@
         }
       },
       "post" : {
-        "tags" : [ "Authorization Server" ],
         "summary" : "Process Authorization",
         "description" : "Process authorization with credentials",
+        "tags" : [ "Authorization Server" ],
         "parameters" : [ {
-          "name" : "authorizationServerId",
-          "in" : "path",
           "description" : "Authorization Server ID",
           "required" : true,
+          "name" : "authorizationServerId",
+          "in" : "path",
           "schema" : {
             "$ref" : "#/components/schemas/UUID"
           }
         }, {
-          "name" : "client_id",
-          "in" : "query",
           "description" : "Client identifier",
           "required" : true,
+          "name" : "client_id",
+          "in" : "query",
           "schema" : {
-            "type" : "string"
+            "type" : [ "string", "null" ]
           }
         }, {
+          "description" : "PKCE code challenge",
           "name" : "code_challenge",
           "in" : "query",
-          "description" : "PKCE code challenge",
           "schema" : {
-            "type" : "string"
+            "type" : [ "string", "null" ]
           }
         }, {
+          "description" : "PKCE code challenge method",
           "name" : "code_challenge_method",
           "in" : "query",
-          "description" : "PKCE code challenge method",
           "schema" : {
-            "type" : "string"
+            "type" : [ "string", "null" ]
           }
         }, {
+          "description" : "Nonce for ID token",
           "name" : "nonce",
           "in" : "query",
-          "description" : "Nonce for ID token",
           "schema" : {
-            "type" : "string"
+            "type" : [ "string", "null" ]
           }
         }, {
+          "description" : "Redirect URI",
           "name" : "redirect_uri",
           "in" : "query",
-          "description" : "Redirect URI",
           "schema" : {
-            "type" : "string"
+            "type" : [ "string", "null" ]
           }
         }, {
-          "name" : "response_type",
-          "in" : "query",
           "description" : "Response type",
           "required" : true,
+          "name" : "response_type",
+          "in" : "query",
           "schema" : {
-            "type" : "string"
+            "type" : [ "string", "null" ]
           }
         }, {
+          "description" : "Requested scopes",
           "name" : "scope",
           "in" : "query",
-          "description" : "Requested scopes",
           "schema" : {
-            "type" : "string"
+            "type" : [ "string", "null" ]
           }
         }, {
+          "description" : "State parameter",
           "name" : "state",
           "in" : "query",
-          "description" : "State parameter",
           "schema" : {
-            "type" : "string"
+            "type" : [ "string", "null" ]
           }
         } ],
         "requestBody" : {
@@ -1361,10 +2338,10 @@
                 "type" : "object",
                 "properties" : {
                   "username" : {
-                    "type" : "string"
+                    "type" : [ "string", "null" ]
                   },
                   "password" : {
-                    "type" : "string"
+                    "type" : [ "string", "null" ]
                   }
                 }
               }
@@ -1374,10 +2351,10 @@
                 "type" : "object",
                 "properties" : {
                   "username" : {
-                    "type" : "string"
+                    "type" : [ "string", "null" ]
                   },
                   "password" : {
-                    "type" : "string"
+                    "type" : [ "string", "null" ]
                   }
                 }
               }
@@ -1387,15 +2364,16 @@
                 "type" : "object",
                 "properties" : {
                   "username" : {
-                    "type" : "string"
+                    "type" : [ "string", "null" ]
                   },
                   "password" : {
-                    "type" : "string"
+                    "type" : [ "string", "null" ]
                   }
                 }
               }
             }
-          }
+          },
+          "required" : true
         },
         "responses" : {
           "200" : {
@@ -1409,14 +2387,14 @@
     },
     "/{authorizationServerId}/jwks" : {
       "get" : {
-        "tags" : [ "Authorization Server" ],
         "summary" : "JWKS Endpoint",
         "description" : "JSON Web Key Set endpoint",
+        "tags" : [ "Authorization Server" ],
         "parameters" : [ {
-          "name" : "authorizationServerId",
-          "in" : "path",
           "description" : "Authorization Server ID",
           "required" : true,
+          "name" : "authorizationServerId",
+          "in" : "path",
           "schema" : {
             "$ref" : "#/components/schemas/UUID"
           }
@@ -1437,14 +2415,14 @@
     },
     "/{authorizationServerId}/token" : {
       "post" : {
-        "tags" : [ "Authorization Server" ],
         "summary" : "Token Endpoint (Form Data)",
         "description" : "OAuth2/OIDC token endpoint with form data",
+        "tags" : [ "Authorization Server" ],
         "parameters" : [ {
-          "name" : "authorizationServerId",
-          "in" : "path",
           "description" : "Authorization Server ID",
           "required" : true,
+          "name" : "authorizationServerId",
+          "in" : "path",
           "schema" : {
             "$ref" : "#/components/schemas/UUID"
           }
@@ -1461,33 +2439,34 @@
                 "type" : "object",
                 "properties" : {
                   "grant_type" : {
-                    "type" : "string"
+                    "type" : [ "string", "null" ]
                   },
                   "client_id" : {
-                    "type" : "string"
+                    "type" : [ "string", "null" ]
                   },
                   "client_secret" : {
-                    "type" : "string"
+                    "type" : [ "string", "null" ]
                   },
                   "code" : {
-                    "type" : "string"
+                    "type" : [ "string", "null" ]
                   },
                   "redirect_uri" : {
-                    "type" : "string"
+                    "type" : [ "string", "null" ]
                   },
                   "code_verifier" : {
-                    "type" : "string"
+                    "type" : [ "string", "null" ]
                   },
                   "refresh_token" : {
-                    "type" : "string"
+                    "type" : [ "string", "null" ]
                   },
                   "scope" : {
-                    "type" : "string"
+                    "type" : [ "string", "null" ]
                   }
                 }
               }
             }
-          }
+          },
+          "required" : true
         },
         "responses" : {
           "200" : {
@@ -1511,14 +2490,14 @@
     },
     "/{authorizationServerId}/userinfo" : {
       "get" : {
-        "tags" : [ "Authorization Server" ],
         "summary" : "User Info",
         "description" : "OpenID Connect UserInfo endpoint",
+        "tags" : [ "Authorization Server" ],
         "parameters" : [ {
-          "name" : "authorizationServerId",
-          "in" : "path",
           "description" : "Authorization Server ID",
           "required" : true,
+          "name" : "authorizationServerId",
+          "in" : "path",
           "schema" : {
             "$ref" : "#/components/schemas/UUID"
           }
@@ -1534,821 +2513,26 @@
       }
     }
   },
-  "components" : {
-    "schemas" : {
-      "AccessTokenRequest" : {
-        "required" : [ "client_id", "grant_type" ],
-        "type" : "object",
-        "properties" : {
-          "client_id" : {
-            "type" : "string"
-          },
-          "client_secret" : {
-            "type" : "string"
-          },
-          "grant_type" : {
-            "$ref" : "#/components/schemas/GrantTypeEnum"
-          },
-          "code" : {
-            "type" : "string"
-          },
-          "redirect_uri" : {
-            "type" : "string"
-          },
-          "code_verifier" : {
-            "type" : "string"
-          },
-          "refresh_token" : {
-            "type" : "string"
-          },
-          "scope" : {
-            "type" : "string"
-          }
-        }
-      },
-      "AccessTokenResponse" : {
-        "type" : "object",
-        "properties" : {
-          "access_token" : {
-            "type" : "string"
-          },
-          "token_type" : {
-            "$ref" : "#/components/schemas/TokenTypeEnum"
-          },
-          "expires_in" : {
-            "format" : "int32",
-            "type" : "integer"
-          },
-          "refresh_token" : {
-            "type" : "string"
-          },
-          "scope" : {
-            "type" : "string"
-          },
-          "id_token" : {
-            "type" : "string"
-          }
-        }
-      },
-      "ApplicationRequest" : {
-        "required" : [ "authorization_server_id", "name" ],
-        "type" : "object",
-        "properties" : {
-          "authorization_server_id" : {
-            "$ref" : "#/components/schemas/UUID"
-          },
-          "name" : {
-            "type" : "string"
-          },
-          "client_id" : {
-            "type" : "string"
-          },
-          "profile" : { },
-          "metadata" : {
-            "$ref" : "#/components/schemas/Metadata"
-          },
-          "scopes" : {
-            "type" : "array",
-            "items" : {
-              "format" : "uuid",
-              "pattern" : "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}",
-              "type" : "string"
-            }
-          }
-        }
-      },
-      "ApplicationResponse" : {
-        "required" : [ "authorization_server_id", "scopes" ],
-        "type" : "object",
-        "properties" : {
-          "id" : {
-            "type" : "string"
-          },
-          "authorization_server_id" : {
-            "$ref" : "#/components/schemas/UUID"
-          },
-          "name" : {
-            "type" : "string"
-          },
-          "client_id" : {
-            "type" : "string"
-          },
-          "client_secret" : {
-            "type" : "string"
-          },
-          "profile" : { },
-          "created_on" : {
-            "$ref" : "#/components/schemas/OffsetDateTime"
-          },
-          "updated_on" : {
-            "$ref" : "#/components/schemas/OffsetDateTime"
-          },
-          "metadata" : {
-            "$ref" : "#/components/schemas/Metadata"
-          },
-          "scopes" : {
-            "type" : "array",
-            "items" : {
-              "$ref" : "#/components/schemas/ScopeResponse"
-            }
-          }
-        }
-      },
-      "ApplicationSecretRequest" : {
-        "required" : [ "application_id", "name", "scopes" ],
-        "type" : "object",
-        "properties" : {
-          "application_id" : {
-            "$ref" : "#/components/schemas/UUID"
-          },
-          "name" : {
-            "type" : "string"
-          },
-          "scopes" : {
-            "type" : "array",
-            "items" : {
-              "format" : "uuid",
-              "pattern" : "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}",
-              "type" : "string"
-            }
-          },
-          "expires_in" : {
-            "format" : "int32",
-            "type" : "integer"
-          }
-        }
-      },
-      "ApplicationSecretResponse" : {
-        "required" : [ "scopes", "created_on" ],
-        "type" : "object",
-        "properties" : {
-          "id" : {
-            "$ref" : "#/components/schemas/UUID"
-          },
-          "client_secret" : {
-            "type" : "string"
-          },
-          "name" : {
-            "type" : "string"
-          },
-          "expires_in" : {
-            "format" : "int32",
-            "type" : "integer"
-          },
-          "application_id" : {
-            "$ref" : "#/components/schemas/UUID"
-          },
-          "authorization_server_id" : {
-            "$ref" : "#/components/schemas/UUID"
-          },
-          "scopes" : {
-            "type" : "array",
-            "items" : {
-              "$ref" : "#/components/schemas/ScopeResponse"
-            }
-          },
-          "created_on" : {
-            "$ref" : "#/components/schemas/OffsetDateTime"
-          }
-        }
-      },
-      "ApplicationSecretsResponse" : {
-        "required" : [ "page" ],
-        "type" : "object",
-        "properties" : {
-          "application_secrets" : {
-            "type" : "array",
-            "items" : {
-              "$ref" : "#/components/schemas/ApplicationSecretResponse"
-            }
-          },
-          "page" : {
-            "$ref" : "#/components/schemas/Page"
-          }
-        }
-      },
-      "ApplicationsResponse" : {
-        "required" : [ "page" ],
-        "type" : "object",
-        "properties" : {
-          "applications" : {
-            "type" : "array",
-            "items" : {
-              "$ref" : "#/components/schemas/ApplicationResponse"
-            }
-          },
-          "page" : {
-            "$ref" : "#/components/schemas/Page"
-          }
-        }
-      },
-      "AuthorizationServerRequest" : {
-        "type" : "object",
-        "properties" : {
-          "server_url" : {
-            "type" : "string"
-          },
-          "audience" : {
-            "type" : "string"
-          },
-          "client_credentials_token_expiration" : {
-            "format" : "int32",
-            "type" : "integer"
-          },
-          "authorization_code_token_expiration" : {
-            "format" : "int32",
-            "type" : "integer"
-          },
-          "name" : {
-            "type" : "string"
-          },
-          "metadata" : {
-            "$ref" : "#/components/schemas/Metadata"
-          }
-        }
-      },
-      "AuthorizationServerResponse" : {
-        "required" : [ "name" ],
-        "type" : "object",
-        "properties" : {
-          "id" : {
-            "type" : "string"
-          },
-          "server_url" : {
-            "type" : "string"
-          },
-          "audience" : {
-            "type" : "string"
-          },
-          "client_credentials_token_expiration" : {
-            "format" : "int32",
-            "type" : "integer"
-          },
-          "authorization_code_token_expiration" : {
-            "format" : "int32",
-            "type" : "integer"
-          },
-          "name" : {
-            "type" : "string"
-          },
-          "created_on" : {
-            "$ref" : "#/components/schemas/OffsetDateTime"
-          },
-          "updated_on" : {
-            "$ref" : "#/components/schemas/OffsetDateTime"
-          },
-          "metadata" : {
-            "$ref" : "#/components/schemas/Metadata"
-          },
-          "scopes" : {
-            "type" : "array",
-            "items" : {
-              "$ref" : "#/components/schemas/ScopeResponse"
-            }
-          }
-        }
-      },
-      "AuthorizationServersResponse" : {
-        "required" : [ "page" ],
-        "type" : "object",
-        "properties" : {
-          "authorization_servers" : {
-            "type" : "array",
-            "items" : {
-              "$ref" : "#/components/schemas/AuthorizationServerResponse"
-            }
-          },
-          "page" : {
-            "$ref" : "#/components/schemas/Page"
-          }
-        }
-      },
-      "ClientRequest" : {
-        "type" : "object",
-        "properties" : {
-          "name" : {
-            "type" : "string"
-          },
-          "authorization_server_id" : {
-            "$ref" : "#/components/schemas/UUID"
-          },
-          "redirect_uris" : {
-            "type" : "array",
-            "items" : {
-              "type" : "string"
-            }
-          },
-          "scopes" : {
-            "type" : "array",
-            "items" : {
-              "format" : "uuid",
-              "pattern" : "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}",
-              "type" : "string"
-            }
-          },
-          "metadata" : {
-            "$ref" : "#/components/schemas/Metadata"
-          }
-        }
-      },
-      "ClientResponse" : {
-        "type" : "object",
-        "properties" : {
-          "id" : {
-            "type" : "string"
-          },
-          "name" : {
-            "type" : "string"
-          },
-          "authorization_server_id" : {
-            "$ref" : "#/components/schemas/UUID"
-          },
-          "redirect_uris" : {
-            "type" : "array",
-            "items" : {
-              "type" : "string"
-            }
-          },
-          "created_on" : {
-            "$ref" : "#/components/schemas/OffsetDateTime"
-          },
-          "updated_on" : {
-            "$ref" : "#/components/schemas/OffsetDateTime"
-          },
-          "scopes" : {
-            "type" : "array",
-            "items" : {
-              "$ref" : "#/components/schemas/ScopeResponse"
-            }
-          },
-          "metadata" : {
-            "$ref" : "#/components/schemas/Metadata"
-          }
-        }
-      },
-      "ClientsResponse" : {
-        "required" : [ "page" ],
-        "type" : "object",
-        "properties" : {
-          "clients" : {
-            "type" : "array",
-            "items" : {
-              "$ref" : "#/components/schemas/ClientResponse"
-            }
-          },
-          "page" : {
-            "$ref" : "#/components/schemas/Page"
-          }
-        }
-      },
-      "GrantTypeEnum" : {
-        "enum" : [ "CLIENT_CREDENTIALS", "AUTHORIZATION_CODE", "REFRESH_TOKEN" ],
-        "type" : "string"
-      },
-      "JWK" : {
-        "type" : "object",
-        "properties" : {
-          "kty" : {
-            "type" : "string"
-          },
-          "use" : {
-            "type" : "string"
-          },
-          "key_ops" : {
-            "type" : "array",
-            "items" : {
-              "type" : "string"
-            }
-          },
-          "alg" : {
-            "type" : "string"
-          },
-          "kid" : {
-            "type" : "string"
-          },
-          "x5c" : {
-            "type" : "array",
-            "items" : {
-              "type" : "string"
-            }
-          },
-          "x5t" : {
-            "type" : "string"
-          },
-          "x5t#S256" : {
-            "type" : "string"
-          },
-          "x5u" : {
-            "type" : "string"
-          },
-          "n" : {
-            "type" : "string"
-          },
-          "e" : {
-            "type" : "string"
-          },
-          "d" : {
-            "type" : "string"
-          },
-          "p" : {
-            "type" : "string"
-          },
-          "q" : {
-            "type" : "string"
-          },
-          "dp" : {
-            "type" : "string"
-          },
-          "dq" : {
-            "type" : "string"
-          },
-          "qi" : {
-            "type" : "string"
-          }
-        }
-      },
-      "JWKS" : {
-        "type" : "object",
-        "properties" : {
-          "keys" : {
-            "type" : "array",
-            "items" : {
-              "$ref" : "#/components/schemas/JWK"
-            }
-          }
-        }
-      },
-      "Metadata" : {
-        "type" : "object",
-        "properties" : {
-          "properties" : {
-            "type" : "object",
-            "additionalProperties" : { }
-          },
-          "identifiers" : {
-            "type" : "array",
-            "items" : {
-              "$ref" : "#/components/schemas/MetadataIdentifiersInner"
-            }
-          },
-          "schemaValidations" : {
-            "type" : "array",
-            "items" : {
-              "$ref" : "#/components/schemas/MetadataSchemaValidationsInner"
-            }
-          }
-        }
-      },
-      "MetadataIdentifiersInner" : {
-        "type" : "object",
-        "properties" : {
-          "system" : {
-            "type" : "string"
-          },
-          "value" : {
-            "type" : "string"
-          }
-        }
-      },
-      "MetadataSchemaValidationsInner" : {
-        "type" : "object",
-        "properties" : {
-          "schemaId" : {
-            "$ref" : "#/components/schemas/UUID"
-          },
-          "isValid" : {
-            "type" : "boolean"
-          },
-          "validatedOn" : {
-            "$ref" : "#/components/schemas/OffsetDateTime"
-          }
-        }
-      },
-      "OffsetDateTime" : {
-        "format" : "date-time",
-        "type" : "string",
-        "example" : "2022-03-10T12:15:50-04:00"
-      },
-      "Page" : {
-        "type" : "object",
-        "properties" : {
-          "next" : {
-            "type" : "string"
-          },
-          "previous" : {
-            "type" : "string"
-          }
-        }
-      },
-      "SchemaRequest" : {
-        "required" : [ "authorization_server" ],
-        "type" : "object",
-        "properties" : {
-          "authorization_server" : {
-            "$ref" : "#/components/schemas/UUID"
-          },
-          "name" : {
-            "type" : "string"
-          },
-          "schema_version" : {
-            "type" : "string"
-          },
-          "schema" : { },
-          "metadata" : {
-            "$ref" : "#/components/schemas/Metadata"
-          }
-        }
-      },
-      "SchemaResponse" : {
-        "required" : [ "authorization_server" ],
-        "type" : "object",
-        "properties" : {
-          "id" : {
-            "$ref" : "#/components/schemas/UUID"
-          },
-          "authorization_server" : {
-            "$ref" : "#/components/schemas/UUID"
-          },
-          "name" : {
-            "type" : "string"
-          },
-          "schema_version" : {
-            "type" : "string"
-          },
-          "schema" : { },
-          "metadata" : {
-            "$ref" : "#/components/schemas/Metadata"
-          }
-        }
-      },
-      "SchemasResponse" : {
-        "required" : [ "page" ],
-        "type" : "object",
-        "properties" : {
-          "schemas" : {
-            "type" : "array",
-            "items" : {
-              "$ref" : "#/components/schemas/SchemaResponse"
-            }
-          },
-          "page" : {
-            "$ref" : "#/components/schemas/Page"
-          }
-        }
-      },
-      "ScopeRequest" : {
-        "type" : "object",
-        "properties" : {
-          "authorization_server_id" : {
-            "$ref" : "#/components/schemas/UUID"
-          },
-          "name" : {
-            "type" : "string"
-          },
-          "metadata" : {
-            "$ref" : "#/components/schemas/Metadata"
-          }
-        }
-      },
-      "ScopeResponse" : {
-        "type" : "object",
-        "properties" : {
-          "id" : {
-            "type" : "string"
-          },
-          "authorizationServerId" : {
-            "$ref" : "#/components/schemas/UUID"
-          },
-          "createdOn" : {
-            "$ref" : "#/components/schemas/OffsetDateTime"
-          },
-          "updatedOn" : {
-            "$ref" : "#/components/schemas/OffsetDateTime"
-          },
-          "name" : {
-            "type" : "string"
-          },
-          "metadata" : {
-            "$ref" : "#/components/schemas/Metadata"
-          }
-        }
-      },
-      "ScopesResponse" : {
-        "required" : [ "page" ],
-        "type" : "object",
-        "properties" : {
-          "scopes" : {
-            "type" : "array",
-            "items" : {
-              "$ref" : "#/components/schemas/ScopeResponse"
-            }
-          },
-          "page" : {
-            "$ref" : "#/components/schemas/Page"
-          }
-        }
-      },
-      "TemplateRequest" : {
-        "type" : "object",
-        "properties" : {
-          "authorization_server_id" : {
-            "$ref" : "#/components/schemas/UUID"
-          },
-          "template_type" : {
-            "type" : "string"
-          },
-          "template" : {
-            "type" : "string"
-          },
-          "metadata" : {
-            "$ref" : "#/components/schemas/Metadata"
-          }
-        }
-      },
-      "TemplateResponse" : {
-        "type" : "object",
-        "properties" : {
-          "id" : {
-            "type" : "string"
-          },
-          "authorization_server_id" : {
-            "$ref" : "#/components/schemas/UUID"
-          },
-          "template_type" : {
-            "type" : "string"
-          },
-          "template" : {
-            "type" : "string"
-          },
-          "created_on" : {
-            "$ref" : "#/components/schemas/OffsetDateTime"
-          },
-          "updated_on" : {
-            "$ref" : "#/components/schemas/OffsetDateTime"
-          },
-          "metadata" : {
-            "$ref" : "#/components/schemas/Metadata"
-          }
-        }
-      },
-      "TemplatesResponse" : {
-        "required" : [ "page" ],
-        "type" : "object",
-        "properties" : {
-          "templates" : {
-            "type" : "array",
-            "items" : {
-              "$ref" : "#/components/schemas/TemplateResponse"
-            }
-          },
-          "page" : {
-            "$ref" : "#/components/schemas/Page"
-          }
-        }
-      },
-      "TokenTypeEnum" : {
-        "enum" : [ "BEARER" ],
-        "type" : "string"
-      },
-      "UUID" : {
-        "format" : "uuid",
-        "pattern" : "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}",
-        "type" : "string"
-      },
-      "UserRequest" : {
-        "type" : "object",
-        "properties" : {
-          "authorization_server_id" : {
-            "$ref" : "#/components/schemas/UUID"
-          },
-          "username" : {
-            "type" : "string"
-          },
-          "email" : {
-            "type" : "string"
-          },
-          "profile" : { },
-          "password" : {
-            "type" : "string"
-          },
-          "metadata" : {
-            "$ref" : "#/components/schemas/Metadata"
-          }
-        }
-      },
-      "UserResponse" : {
-        "type" : "object",
-        "properties" : {
-          "id" : {
-            "type" : "string"
-          },
-          "authorization_server_id" : {
-            "$ref" : "#/components/schemas/UUID"
-          },
-          "username" : {
-            "type" : "string"
-          },
-          "email" : {
-            "type" : "string"
-          },
-          "profile" : { },
-          "created_on" : {
-            "$ref" : "#/components/schemas/OffsetDateTime"
-          },
-          "updated_on" : {
-            "$ref" : "#/components/schemas/OffsetDateTime"
-          },
-          "metadata" : {
-            "$ref" : "#/components/schemas/Metadata"
-          }
-        }
-      },
-      "UsersResponse" : {
-        "required" : [ "page" ],
-        "type" : "object",
-        "properties" : {
-          "users" : {
-            "type" : "array",
-            "items" : {
-              "$ref" : "#/components/schemas/UserResponse"
-            }
-          },
-          "page" : {
-            "$ref" : "#/components/schemas/Page"
-          }
-        }
-      },
-      "WellKnown" : {
-        "type" : "object",
-        "properties" : {
-          "issuer" : {
-            "type" : "string"
-          },
-          "authorization_endpoint" : {
-            "type" : "string"
-          },
-          "token_endpoint" : {
-            "type" : "string"
-          },
-          "userinfo_endpoint" : {
-            "type" : "string"
-          },
-          "jwks_uri" : {
-            "type" : "string"
-          },
-          "revocation_endpoint" : {
-            "type" : "string"
-          },
-          "scopes_supported" : {
-            "type" : "array",
-            "items" : {
-              "type" : "string"
-            }
-          },
-          "response_types_supported" : {
-            "type" : "array",
-            "items" : {
-              "type" : "string"
-            }
-          },
-          "grant_types_supported" : {
-            "type" : "array",
-            "items" : {
-              "type" : "string"
-            }
-          },
-          "subject_types_supported" : {
-            "type" : "array",
-            "items" : {
-              "type" : "string"
-            }
-          },
-          "id_token_signing_alg_values_supported" : {
-            "type" : "array",
-            "items" : {
-              "type" : "string"
-            }
-          },
-          "token_endpoint_auth_methods_supported" : {
-            "type" : "array",
-            "items" : {
-              "type" : "string"
-            }
-          },
-          "claims_supported" : {
-            "type" : "array",
-            "items" : {
-              "type" : "string"
-            }
-          },
-          "code_challenge_methods_supported" : {
-            "type" : "array",
-            "items" : {
-              "type" : "string"
-            }
-          }
-        }
-      }
+  "info" : {
+    "title" : "Cartobucket Auth API",
+    "version" : "1.0.0",
+    "description" : "OAuth 2.1/OIDC Server API",
+    "termsOfService" : "https://cartobucket.com/terms",
+    "contact" : {
+      "name" : "Cartobucket",
+      "email" : "info@cartobucket.com",
+      "url" : "https://cartobucket.com"
+    },
+    "license" : {
+      "name" : "MIT",
+      "url" : "https://opensource.org/licenses/MIT"
     }
-  }
+  },
+  "servers" : [ {
+    "url" : "http://localhost:5000",
+    "description" : "Auto generated value"
+  }, {
+    "url" : "http://0.0.0.0:5000",
+    "description" : "Auto generated value"
+  } ]
 }

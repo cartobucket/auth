@@ -28,7 +28,7 @@ data class JWK(
     var e: String? = null,
     var x5c: MutableList<String>? = null,
     var x5t: String? = null,
-    var x5tHashS256: String? = null
+    var x5tHashS256: String? = null,
 ) {
     fun addX5cItem(x5cItem: String): JWK {
         if (this.x5c == null) {

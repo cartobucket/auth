@@ -1,22 +1,5 @@
 ---
-openapi: 3.0.3
-info:
-  title: Cartobucket Auth API
-  description: OAuth 2.1/OIDC Server API
-  termsOfService: https://cartobucket.com/terms
-  contact:
-    name: Cartobucket
-    url: https://cartobucket.com
-    email: info@cartobucket.com
-  license:
-    name: MIT
-    url: https://opensource.org/licenses/MIT
-  version: 1.0.0
-servers:
-- url: http://localhost:5000
-  description: Auto generated value
-- url: http://0.0.0.0:5000
-  description: Auto generated value
+openapi: 3.1.0
 tags:
 - name: Application Secrets
 - name: Applications
@@ -27,57 +10,930 @@ tags:
 - name: Scopes
 - name: Templates
 - name: Users
+components:
+  schemas:
+    AccessTokenRequest:
+      type: object
+      required:
+      - client_id
+      - grant_type
+      properties:
+        client_id:
+          type:
+          - string
+          - "null"
+        client_secret:
+          type:
+          - string
+          - "null"
+        grant_type:
+          anyOf:
+          - $ref: "#/components/schemas/GrantTypeEnum"
+          - type: "null"
+        code:
+          type:
+          - string
+          - "null"
+        redirect_uri:
+          type:
+          - string
+          - "null"
+        code_verifier:
+          type:
+          - string
+          - "null"
+        refresh_token:
+          type:
+          - string
+          - "null"
+        scope:
+          type:
+          - string
+          - "null"
+    AccessTokenResponse:
+      type: object
+      properties:
+        access_token:
+          type:
+          - string
+          - "null"
+        token_type:
+          anyOf:
+          - $ref: "#/components/schemas/TokenTypeEnum"
+          - type: "null"
+        expires_in:
+          type:
+          - integer
+          - "null"
+          format: int32
+        refresh_token:
+          type:
+          - string
+          - "null"
+        scope:
+          type:
+          - string
+          - "null"
+        id_token:
+          type:
+          - string
+          - "null"
+    ApplicationRequest:
+      type: object
+      required:
+      - authorization_server_id
+      - name
+      properties:
+        authorization_server_id:
+          $ref: "#/components/schemas/UUID"
+        name:
+          type: string
+        client_id:
+          type:
+          - string
+          - "null"
+        profile: {}
+        metadata:
+          anyOf:
+          - $ref: "#/components/schemas/Metadata"
+          - type: "null"
+        scopes:
+          type:
+          - array
+          - "null"
+          items:
+            type: string
+            format: uuid
+            pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+    ApplicationResponse:
+      type: object
+      properties:
+        id:
+          type:
+          - string
+          - "null"
+        authorization_server_id:
+          $ref: "#/components/schemas/UUID"
+        name:
+          type:
+          - string
+          - "null"
+        client_id:
+          type:
+          - string
+          - "null"
+        client_secret:
+          type:
+          - string
+          - "null"
+        profile: {}
+        created_on:
+          anyOf:
+          - $ref: "#/components/schemas/OffsetDateTime"
+          - type: "null"
+        updated_on:
+          anyOf:
+          - $ref: "#/components/schemas/OffsetDateTime"
+          - type: "null"
+        metadata:
+          anyOf:
+          - $ref: "#/components/schemas/Metadata"
+          - type: "null"
+        scopes:
+          type: array
+          items:
+            $ref: "#/components/schemas/ScopeResponse"
+      required:
+      - authorization_server_id
+      - scopes
+    ApplicationSecretRequest:
+      type: object
+      required:
+      - application_id
+      - name
+      - scopes
+      properties:
+        application_id:
+          $ref: "#/components/schemas/UUID"
+        name:
+          type: string
+        scopes:
+          type: array
+          items:
+            type: string
+            format: uuid
+            pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+        expires_in:
+          type:
+          - integer
+          - "null"
+          format: int32
+    ApplicationSecretResponse:
+      type: object
+      properties:
+        id:
+          anyOf:
+          - $ref: "#/components/schemas/UUID"
+          - type: "null"
+        client_secret:
+          type:
+          - string
+          - "null"
+        name:
+          type:
+          - string
+          - "null"
+        expires_in:
+          type:
+          - integer
+          - "null"
+          format: int32
+        application_id:
+          anyOf:
+          - $ref: "#/components/schemas/UUID"
+          - type: "null"
+        authorization_server_id:
+          anyOf:
+          - $ref: "#/components/schemas/UUID"
+          - type: "null"
+        scopes:
+          type: array
+          items:
+            $ref: "#/components/schemas/ScopeResponse"
+        created_on:
+          $ref: "#/components/schemas/OffsetDateTime"
+      required:
+      - scopes
+      - created_on
+    ApplicationSecretsResponse:
+      type: object
+      properties:
+        application_secrets:
+          type:
+          - array
+          - "null"
+          items:
+            $ref: "#/components/schemas/ApplicationSecretResponse"
+        page:
+          $ref: "#/components/schemas/Page"
+      required:
+      - page
+    ApplicationsResponse:
+      type: object
+      properties:
+        applications:
+          type:
+          - array
+          - "null"
+          items:
+            $ref: "#/components/schemas/ApplicationResponse"
+        page:
+          $ref: "#/components/schemas/Page"
+      required:
+      - page
+    AuthorizationServerRequest:
+      type: object
+      properties:
+        server_url:
+          type:
+          - string
+          - "null"
+        audience:
+          type:
+          - string
+          - "null"
+        client_credentials_token_expiration:
+          type:
+          - integer
+          - "null"
+          format: int32
+        authorization_code_token_expiration:
+          type:
+          - integer
+          - "null"
+          format: int32
+        name:
+          type:
+          - string
+          - "null"
+        metadata:
+          anyOf:
+          - $ref: "#/components/schemas/Metadata"
+          - type: "null"
+    AuthorizationServerResponse:
+      type: object
+      properties:
+        id:
+          type:
+          - string
+          - "null"
+        server_url:
+          type:
+          - string
+          - "null"
+        audience:
+          type:
+          - string
+          - "null"
+        client_credentials_token_expiration:
+          type:
+          - integer
+          - "null"
+          format: int32
+        authorization_code_token_expiration:
+          type:
+          - integer
+          - "null"
+          format: int32
+        name:
+          type: string
+        created_on:
+          anyOf:
+          - $ref: "#/components/schemas/OffsetDateTime"
+          - type: "null"
+        updated_on:
+          anyOf:
+          - $ref: "#/components/schemas/OffsetDateTime"
+          - type: "null"
+        metadata:
+          anyOf:
+          - $ref: "#/components/schemas/Metadata"
+          - type: "null"
+        scopes:
+          type:
+          - array
+          - "null"
+          items:
+            $ref: "#/components/schemas/ScopeResponse"
+      required:
+      - name
+    AuthorizationServersResponse:
+      type: object
+      properties:
+        authorization_servers:
+          type:
+          - array
+          - "null"
+          items:
+            $ref: "#/components/schemas/AuthorizationServerResponse"
+        page:
+          $ref: "#/components/schemas/Page"
+      required:
+      - page
+    ClientRequest:
+      type: object
+      properties:
+        name:
+          type:
+          - string
+          - "null"
+        authorization_server_id:
+          anyOf:
+          - $ref: "#/components/schemas/UUID"
+          - type: "null"
+        redirect_uris:
+          type:
+          - array
+          - "null"
+          items:
+            type: string
+        scopes:
+          type:
+          - array
+          - "null"
+          items:
+            type: string
+            format: uuid
+            pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+        metadata:
+          anyOf:
+          - $ref: "#/components/schemas/Metadata"
+          - type: "null"
+    ClientResponse:
+      type: object
+      properties:
+        id:
+          type:
+          - string
+          - "null"
+        name:
+          type:
+          - string
+          - "null"
+        authorization_server_id:
+          anyOf:
+          - $ref: "#/components/schemas/UUID"
+          - type: "null"
+        redirect_uris:
+          type:
+          - array
+          - "null"
+          items:
+            type: string
+        created_on:
+          anyOf:
+          - $ref: "#/components/schemas/OffsetDateTime"
+          - type: "null"
+        updated_on:
+          anyOf:
+          - $ref: "#/components/schemas/OffsetDateTime"
+          - type: "null"
+        scopes:
+          type:
+          - array
+          - "null"
+          items:
+            $ref: "#/components/schemas/ScopeResponse"
+        metadata:
+          anyOf:
+          - $ref: "#/components/schemas/Metadata"
+          - type: "null"
+    ClientsResponse:
+      type: object
+      properties:
+        clients:
+          type:
+          - array
+          - "null"
+          items:
+            $ref: "#/components/schemas/ClientResponse"
+        page:
+          $ref: "#/components/schemas/Page"
+      required:
+      - page
+    GrantTypeEnum:
+      type: string
+      enum:
+      - CLIENT_CREDENTIALS
+      - AUTHORIZATION_CODE
+      - REFRESH_TOKEN
+    JWK:
+      type: object
+      properties:
+        kty:
+          type:
+          - string
+          - "null"
+        use:
+          type:
+          - string
+          - "null"
+        key_ops:
+          type:
+          - array
+          - "null"
+          items:
+            type: string
+        alg:
+          type:
+          - string
+          - "null"
+        kid:
+          type:
+          - string
+          - "null"
+        x5c:
+          type:
+          - array
+          - "null"
+          items:
+            type: string
+        x5t:
+          type:
+          - string
+          - "null"
+        x5t#S256:
+          type:
+          - string
+          - "null"
+        x5u:
+          type:
+          - string
+          - "null"
+        "n":
+          type:
+          - string
+          - "null"
+        e:
+          type:
+          - string
+          - "null"
+        d:
+          type:
+          - string
+          - "null"
+        p:
+          type:
+          - string
+          - "null"
+        q:
+          type:
+          - string
+          - "null"
+        dp:
+          type:
+          - string
+          - "null"
+        dq:
+          type:
+          - string
+          - "null"
+        qi:
+          type:
+          - string
+          - "null"
+    JWKS:
+      type: object
+      properties:
+        keys:
+          type:
+          - array
+          - "null"
+          items:
+            $ref: "#/components/schemas/JWK"
+    Metadata:
+      type: object
+      properties:
+        properties:
+          type:
+          - object
+          - "null"
+          additionalProperties: {}
+        identifiers:
+          type:
+          - array
+          - "null"
+          items:
+            $ref: "#/components/schemas/MetadataIdentifiersInner"
+        schemaValidations:
+          type:
+          - array
+          - "null"
+          items:
+            $ref: "#/components/schemas/MetadataSchemaValidationsInner"
+    MetadataIdentifiersInner:
+      type: object
+      properties:
+        system:
+          type:
+          - string
+          - "null"
+        value:
+          type:
+          - string
+          - "null"
+    MetadataSchemaValidationsInner:
+      type: object
+      properties:
+        schemaId:
+          anyOf:
+          - $ref: "#/components/schemas/UUID"
+          - type: "null"
+        isValid:
+          type:
+          - boolean
+          - "null"
+        validatedOn:
+          anyOf:
+          - $ref: "#/components/schemas/OffsetDateTime"
+          - type: "null"
+    OffsetDateTime:
+      type: string
+      format: date-time
+      examples:
+      - 2022-03-10T12:15:50-04:00
+    Page:
+      type: object
+      properties:
+        next:
+          type:
+          - string
+          - "null"
+        previous:
+          type:
+          - string
+          - "null"
+    SchemaRequest:
+      type: object
+      required:
+      - authorization_server
+      properties:
+        authorization_server:
+          $ref: "#/components/schemas/UUID"
+        name:
+          type:
+          - string
+          - "null"
+        schema_version:
+          type:
+          - string
+          - "null"
+        schema: {}
+        metadata:
+          anyOf:
+          - $ref: "#/components/schemas/Metadata"
+          - type: "null"
+    SchemaResponse:
+      type: object
+      properties:
+        id:
+          anyOf:
+          - $ref: "#/components/schemas/UUID"
+          - type: "null"
+        authorization_server:
+          $ref: "#/components/schemas/UUID"
+        name:
+          type:
+          - string
+          - "null"
+        schema_version:
+          type:
+          - string
+          - "null"
+        schema: {}
+        metadata:
+          anyOf:
+          - $ref: "#/components/schemas/Metadata"
+          - type: "null"
+      required:
+      - authorization_server
+    SchemasResponse:
+      type: object
+      properties:
+        schemas:
+          type:
+          - array
+          - "null"
+          items:
+            $ref: "#/components/schemas/SchemaResponse"
+        page:
+          $ref: "#/components/schemas/Page"
+      required:
+      - page
+    ScopeRequest:
+      type: object
+      properties:
+        authorization_server_id:
+          anyOf:
+          - $ref: "#/components/schemas/UUID"
+          - type: "null"
+        name:
+          type:
+          - string
+          - "null"
+        metadata:
+          anyOf:
+          - $ref: "#/components/schemas/Metadata"
+          - type: "null"
+    ScopeResponse:
+      type: object
+      properties:
+        id:
+          type:
+          - string
+          - "null"
+        authorizationServerId:
+          anyOf:
+          - $ref: "#/components/schemas/UUID"
+          - type: "null"
+        createdOn:
+          anyOf:
+          - $ref: "#/components/schemas/OffsetDateTime"
+          - type: "null"
+        updatedOn:
+          anyOf:
+          - $ref: "#/components/schemas/OffsetDateTime"
+          - type: "null"
+        name:
+          type:
+          - string
+          - "null"
+        metadata:
+          anyOf:
+          - $ref: "#/components/schemas/Metadata"
+          - type: "null"
+    ScopesResponse:
+      type: object
+      properties:
+        scopes:
+          type:
+          - array
+          - "null"
+          items:
+            $ref: "#/components/schemas/ScopeResponse"
+        page:
+          $ref: "#/components/schemas/Page"
+      required:
+      - page
+    TemplateRequest:
+      type: object
+      properties:
+        authorization_server_id:
+          anyOf:
+          - $ref: "#/components/schemas/UUID"
+          - type: "null"
+        template_type:
+          type:
+          - string
+          - "null"
+        template:
+          type:
+          - string
+          - "null"
+        metadata:
+          anyOf:
+          - $ref: "#/components/schemas/Metadata"
+          - type: "null"
+    TemplateResponse:
+      type: object
+      properties:
+        id:
+          type:
+          - string
+          - "null"
+        authorization_server_id:
+          anyOf:
+          - $ref: "#/components/schemas/UUID"
+          - type: "null"
+        template_type:
+          type:
+          - string
+          - "null"
+        template:
+          type:
+          - string
+          - "null"
+        created_on:
+          anyOf:
+          - $ref: "#/components/schemas/OffsetDateTime"
+          - type: "null"
+        updated_on:
+          anyOf:
+          - $ref: "#/components/schemas/OffsetDateTime"
+          - type: "null"
+        metadata:
+          anyOf:
+          - $ref: "#/components/schemas/Metadata"
+          - type: "null"
+    TemplatesResponse:
+      type: object
+      properties:
+        templates:
+          type:
+          - array
+          - "null"
+          items:
+            $ref: "#/components/schemas/TemplateResponse"
+        page:
+          $ref: "#/components/schemas/Page"
+      required:
+      - page
+    TokenTypeEnum:
+      type: string
+      enum:
+      - BEARER
+    UUID:
+      type: string
+      format: uuid
+      pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+    UserRequest:
+      type: object
+      properties:
+        authorization_server_id:
+          anyOf:
+          - $ref: "#/components/schemas/UUID"
+          - type: "null"
+        username:
+          type:
+          - string
+          - "null"
+        email:
+          type:
+          - string
+          - "null"
+        profile: {}
+        password:
+          type:
+          - string
+          - "null"
+        metadata:
+          anyOf:
+          - $ref: "#/components/schemas/Metadata"
+          - type: "null"
+    UserResponse:
+      type: object
+      properties:
+        id:
+          type:
+          - string
+          - "null"
+        authorization_server_id:
+          anyOf:
+          - $ref: "#/components/schemas/UUID"
+          - type: "null"
+        username:
+          type:
+          - string
+          - "null"
+        email:
+          type:
+          - string
+          - "null"
+        profile: {}
+        created_on:
+          anyOf:
+          - $ref: "#/components/schemas/OffsetDateTime"
+          - type: "null"
+        updated_on:
+          anyOf:
+          - $ref: "#/components/schemas/OffsetDateTime"
+          - type: "null"
+        metadata:
+          anyOf:
+          - $ref: "#/components/schemas/Metadata"
+          - type: "null"
+    UsersResponse:
+      type: object
+      properties:
+        users:
+          type:
+          - array
+          - "null"
+          items:
+            $ref: "#/components/schemas/UserResponse"
+        page:
+          $ref: "#/components/schemas/Page"
+      required:
+      - page
+    WellKnown:
+      type: object
+      properties:
+        issuer:
+          type:
+          - string
+          - "null"
+        authorization_endpoint:
+          type:
+          - string
+          - "null"
+        token_endpoint:
+          type:
+          - string
+          - "null"
+        userinfo_endpoint:
+          type:
+          - string
+          - "null"
+        jwks_uri:
+          type:
+          - string
+          - "null"
+        revocation_endpoint:
+          type:
+          - string
+          - "null"
+        scopes_supported:
+          type:
+          - array
+          - "null"
+          items:
+            type: string
+        response_types_supported:
+          type:
+          - array
+          - "null"
+          items:
+            type: string
+        grant_types_supported:
+          type:
+          - array
+          - "null"
+          items:
+            type: string
+        subject_types_supported:
+          type:
+          - array
+          - "null"
+          items:
+            type: string
+        id_token_signing_alg_values_supported:
+          type:
+          - array
+          - "null"
+          items:
+            type: string
+        token_endpoint_auth_methods_supported:
+          type:
+          - array
+          - "null"
+          items:
+            type: string
+        claims_supported:
+          type:
+          - array
+          - "null"
+          items:
+            type: string
+        code_challenge_methods_supported:
+          type:
+          - array
+          - "null"
+          items:
+            type: string
 paths:
   /applicationSecrets:
     get:
+      summary: List application secrets with optional filtering by application IDs
       tags:
       - Application Secrets
-      summary: List application secrets with optional filtering by application IDs
       parameters:
       - name: applicationIds
         in: query
         schema:
-          type: array
+          type:
+          - array
+          - "null"
           items:
+            type: string
             format: uuid
             pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
-            type: string
       responses:
         "200":
           description: Application secrets retrieved successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ApplicationSecretsResponse'
+                $ref: "#/components/schemas/ApplicationSecretsResponse"
     post:
+      summary: Create a new application secret
       tags:
       - Application Secrets
-      summary: Create a new application secret
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ApplicationSecretRequest'
+              $ref: "#/components/schemas/ApplicationSecretRequest"
+        required: true
       responses:
         "200":
           description: Application secret created successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ApplicationSecretResponse'
+                $ref: "#/components/schemas/ApplicationSecretResponse"
         "400":
           description: Invalid request
   /applicationSecrets/{secretId}:
     delete:
+      summary: Delete an application secret by ID
       tags:
       - Application Secrets
-      summary: Delete an application secret by ID
       parameters:
       - name: secretId
         in: path
         required: true
         schema:
-          $ref: '#/components/schemas/UUID'
+          $ref: "#/components/schemas/UUID"
       responses:
         "204":
           description: Application secret deleted successfully
@@ -85,83 +941,90 @@ paths:
           description: Application secret not found
   /applications:
     get:
+      summary: List applications
       tags:
       - Applications
-      summary: List applications
       parameters:
       - name: authorizationServerIds
         in: query
         schema:
-          type: array
+          type:
+          - array
+          - "null"
           items:
+            type: string
             format: uuid
             pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
-            type: string
       - name: limit
         in: query
         schema:
+          type:
+          - integer
+          - "null"
           format: int32
-          type: integer
       - name: offset
         in: query
         schema:
+          type:
+          - integer
+          - "null"
           format: int32
-          type: integer
       responses:
         "200":
           description: List of applications
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ApplicationsResponse'
+                $ref: "#/components/schemas/ApplicationsResponse"
     post:
+      summary: Create a new application
       tags:
       - Applications
-      summary: Create a new application
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ApplicationRequest'
+              $ref: "#/components/schemas/ApplicationRequest"
+        required: true
       responses:
         "200":
           description: Application created successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ApplicationResponse'
+                $ref: "#/components/schemas/ApplicationResponse"
         "400":
           description: Invalid request
   /applications/{applicationId}:
     get:
+      summary: Get an application by ID
       tags:
       - Applications
-      summary: Get an application by ID
       parameters:
       - name: applicationId
         in: path
         required: true
         schema:
-          $ref: '#/components/schemas/UUID'
+          $ref: "#/components/schemas/UUID"
       responses:
         "200":
           description: Application found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ApplicationResponse'
+                $ref: "#/components/schemas/ApplicationResponse"
         "404":
           description: Application not found
     delete:
+      summary: Delete an application
       tags:
       - Applications
-      summary: Delete an application
       parameters:
       - name: applicationId
         in: path
         required: true
         schema:
-          $ref: '#/components/schemas/UUID'
+          $ref: "#/components/schemas/UUID"
       responses:
         "204":
           description: Application deleted successfully
@@ -169,99 +1032,105 @@ paths:
           description: Application not found
   /authorizationServers:
     get:
+      summary: List authorization servers with optional pagination
       tags:
       - Authorization Servers
-      summary: List authorization servers with optional pagination
       parameters:
       - name: limit
         in: query
         schema:
+          type:
+          - integer
+          - "null"
           format: int32
-          type: integer
       - name: offset
         in: query
         schema:
+          type:
+          - integer
+          - "null"
           format: int32
-          type: integer
       responses:
         "200":
           description: Authorization servers retrieved successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AuthorizationServersResponse'
+                $ref: "#/components/schemas/AuthorizationServersResponse"
     post:
+      summary: Create a new authorization server
       tags:
       - Authorization Servers
-      summary: Create a new authorization server
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AuthorizationServerRequest'
+              $ref: "#/components/schemas/AuthorizationServerRequest"
+        required: true
       responses:
         "200":
           description: Authorization server created successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AuthorizationServerResponse'
+                $ref: "#/components/schemas/AuthorizationServerResponse"
         "400":
           description: Invalid request
   /authorizationServers/{authorizationServerId}:
-    get:
-      tags:
-      - Authorization Servers
-      summary: Get an authorization server by ID
-      parameters:
-      - name: authorizationServerId
-        in: path
-        required: true
-        schema:
-          $ref: '#/components/schemas/UUID'
-      responses:
-        "200":
-          description: Authorization server found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AuthorizationServerResponse'
-        "404":
-          description: Authorization server not found
     put:
+      summary: Update an authorization server by ID
       tags:
       - Authorization Servers
-      summary: Update an authorization server by ID
       parameters:
       - name: authorizationServerId
         in: path
         required: true
         schema:
-          $ref: '#/components/schemas/UUID'
+          $ref: "#/components/schemas/UUID"
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AuthorizationServerRequest'
+              $ref: "#/components/schemas/AuthorizationServerRequest"
+        required: true
       responses:
         "200":
           description: Authorization server updated successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AuthorizationServerResponse'
+                $ref: "#/components/schemas/AuthorizationServerResponse"
         "404":
           description: Authorization server not found
-    delete:
+    get:
+      summary: Get an authorization server by ID
       tags:
       - Authorization Servers
-      summary: Delete an authorization server by ID
       parameters:
       - name: authorizationServerId
         in: path
         required: true
         schema:
-          $ref: '#/components/schemas/UUID'
+          $ref: "#/components/schemas/UUID"
+      responses:
+        "200":
+          description: Authorization server found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthorizationServerResponse"
+        "404":
+          description: Authorization server not found
+    delete:
+      summary: Delete an authorization server by ID
+      tags:
+      - Authorization Servers
+      parameters:
+      - name: authorizationServerId
+        in: path
+        required: true
+        schema:
+          $ref: "#/components/schemas/UUID"
       responses:
         "204":
           description: Authorization server deleted successfully
@@ -269,107 +1138,115 @@ paths:
           description: Authorization server not found
   /clients:
     get:
+      summary: List clients
       tags:
       - Clients
-      summary: List clients
       parameters:
       - name: authorizationServerIds
         in: query
         schema:
-          type: array
+          type:
+          - array
+          - "null"
           items:
+            type: string
             format: uuid
             pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
-            type: string
       - name: limit
         in: query
         schema:
+          type:
+          - integer
+          - "null"
           format: int32
-          type: integer
       - name: offset
         in: query
         schema:
+          type:
+          - integer
+          - "null"
           format: int32
-          type: integer
       responses:
         "200":
           description: List of clients
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ClientsResponse'
+                $ref: "#/components/schemas/ClientsResponse"
     post:
+      summary: Create a new client
       tags:
       - Clients
-      summary: Create a new client
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ClientRequest'
+              $ref: "#/components/schemas/ClientRequest"
+        required: true
       responses:
         "200":
           description: Client created successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ClientResponse'
+                $ref: "#/components/schemas/ClientResponse"
         "400":
           description: Invalid request
   /clients/{clientId}:
-    get:
-      tags:
-      - Clients
-      summary: Get a client by ID
-      parameters:
-      - name: clientId
-        in: path
-        required: true
-        schema:
-          $ref: '#/components/schemas/UUID'
-      responses:
-        "200":
-          description: Client found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ClientResponse'
-        "404":
-          description: Client not found
     put:
+      summary: Update a client
       tags:
       - Clients
-      summary: Update a client
       parameters:
       - name: clientId
         in: path
         required: true
         schema:
-          $ref: '#/components/schemas/UUID'
+          $ref: "#/components/schemas/UUID"
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ClientRequest'
+              $ref: "#/components/schemas/ClientRequest"
+        required: true
       responses:
         "200":
           description: Client updated successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ClientResponse'
+                $ref: "#/components/schemas/ClientResponse"
         "404":
           description: Client not found
-    delete:
+    get:
+      summary: Get a client by ID
       tags:
       - Clients
-      summary: Delete a client
       parameters:
       - name: clientId
         in: path
         required: true
         schema:
-          $ref: '#/components/schemas/UUID'
+          $ref: "#/components/schemas/UUID"
+      responses:
+        "200":
+          description: Client found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClientResponse"
+        "404":
+          description: Client not found
+    delete:
+      summary: Delete a client
+      tags:
+      - Clients
+      parameters:
+      - name: clientId
+        in: path
+        required: true
+        schema:
+          $ref: "#/components/schemas/UUID"
       responses:
         "204":
           description: Client deleted successfully
@@ -377,107 +1254,115 @@ paths:
           description: Client not found
   /schemas:
     get:
+      summary: List schemas with optional filtering
       tags:
       - Schemas
-      summary: List schemas with optional filtering
       parameters:
       - name: authorizationServerIds
         in: query
         schema:
-          type: array
+          type:
+          - array
+          - "null"
           items:
+            type: string
             format: uuid
             pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
-            type: string
       - name: limit
         in: query
         schema:
+          type:
+          - integer
+          - "null"
           format: int32
-          type: integer
       - name: offset
         in: query
         schema:
+          type:
+          - integer
+          - "null"
           format: int32
-          type: integer
       responses:
         "200":
           description: Schemas retrieved successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SchemasResponse'
+                $ref: "#/components/schemas/SchemasResponse"
     post:
+      summary: Create a new schema
       tags:
       - Schemas
-      summary: Create a new schema
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SchemaRequest'
+              $ref: "#/components/schemas/SchemaRequest"
+        required: true
       responses:
         "200":
           description: Schema created successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SchemaResponse'
+                $ref: "#/components/schemas/SchemaResponse"
         "400":
           description: Invalid request
   /schemas/{schemaId}:
-    get:
-      tags:
-      - Schemas
-      summary: Get a schema by ID
-      parameters:
-      - name: schemaId
-        in: path
-        required: true
-        schema:
-          $ref: '#/components/schemas/UUID'
-      responses:
-        "200":
-          description: Schema found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/SchemaResponse'
-        "404":
-          description: Schema not found
     put:
+      summary: Update a schema by ID
       tags:
       - Schemas
-      summary: Update a schema by ID
       parameters:
       - name: schemaId
         in: path
         required: true
         schema:
-          $ref: '#/components/schemas/UUID'
+          $ref: "#/components/schemas/UUID"
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SchemaRequest'
+              $ref: "#/components/schemas/SchemaRequest"
+        required: true
       responses:
         "200":
           description: Schema updated successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SchemaResponse'
+                $ref: "#/components/schemas/SchemaResponse"
         "404":
           description: Schema not found
-    delete:
+    get:
+      summary: Get a schema by ID
       tags:
       - Schemas
-      summary: Delete a schema by ID
       parameters:
       - name: schemaId
         in: path
         required: true
         schema:
-          $ref: '#/components/schemas/UUID'
+          $ref: "#/components/schemas/UUID"
+      responses:
+        "200":
+          description: Schema found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SchemaResponse"
+        "404":
+          description: Schema not found
+    delete:
+      summary: Delete a schema by ID
+      tags:
+      - Schemas
+      parameters:
+      - name: schemaId
+        in: path
+        required: true
+        schema:
+          $ref: "#/components/schemas/UUID"
       responses:
         "204":
           description: Schema deleted successfully
@@ -485,107 +1370,115 @@ paths:
           description: Schema not found
   /scopes:
     get:
+      summary: List scopes with optional filtering
       tags:
       - Scopes
-      summary: List scopes with optional filtering
       parameters:
       - name: authorizationServerIds
         in: query
         schema:
-          type: array
+          type:
+          - array
+          - "null"
           items:
+            type: string
             format: uuid
             pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
-            type: string
       - name: limit
         in: query
         schema:
+          type:
+          - integer
+          - "null"
           format: int32
-          type: integer
       - name: offset
         in: query
         schema:
+          type:
+          - integer
+          - "null"
           format: int32
-          type: integer
       responses:
         "200":
           description: Scopes retrieved successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ScopesResponse'
+                $ref: "#/components/schemas/ScopesResponse"
     post:
+      summary: Create a new scope
       tags:
       - Scopes
-      summary: Create a new scope
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ScopeRequest'
+              $ref: "#/components/schemas/ScopeRequest"
+        required: true
       responses:
         "200":
           description: Scope created successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ScopeResponse'
+                $ref: "#/components/schemas/ScopeResponse"
         "400":
           description: Invalid request
   /scopes/{scopeId}:
-    get:
-      tags:
-      - Scopes
-      summary: Get a scope by ID
-      parameters:
-      - name: scopeId
-        in: path
-        required: true
-        schema:
-          $ref: '#/components/schemas/UUID'
-      responses:
-        "200":
-          description: Scope found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ScopeResponse'
-        "404":
-          description: Scope not found
     put:
+      summary: Update a scope by ID
       tags:
       - Scopes
-      summary: Update a scope by ID
       parameters:
       - name: scopeId
         in: path
         required: true
         schema:
-          $ref: '#/components/schemas/UUID'
+          $ref: "#/components/schemas/UUID"
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ScopeRequest'
+              $ref: "#/components/schemas/ScopeRequest"
+        required: true
       responses:
         "200":
           description: Scope updated successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ScopeResponse'
+                $ref: "#/components/schemas/ScopeResponse"
         "404":
           description: Scope not found
-    delete:
+    get:
+      summary: Get a scope by ID
       tags:
       - Scopes
-      summary: Delete a scope by ID
       parameters:
       - name: scopeId
         in: path
         required: true
         schema:
-          $ref: '#/components/schemas/UUID'
+          $ref: "#/components/schemas/UUID"
+      responses:
+        "200":
+          description: Scope found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ScopeResponse"
+        "404":
+          description: Scope not found
+    delete:
+      summary: Delete a scope by ID
+      tags:
+      - Scopes
+      parameters:
+      - name: scopeId
+        in: path
+        required: true
+        schema:
+          $ref: "#/components/schemas/UUID"
       responses:
         "204":
           description: Scope deleted successfully
@@ -593,107 +1486,115 @@ paths:
           description: Scope not found
   /templates:
     get:
+      summary: List templates with optional filtering
       tags:
       - Templates
-      summary: List templates with optional filtering
       parameters:
       - name: authorizationServerIds
         in: query
         schema:
-          type: array
+          type:
+          - array
+          - "null"
           items:
+            type: string
             format: uuid
             pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
-            type: string
       - name: limit
         in: query
         schema:
+          type:
+          - integer
+          - "null"
           format: int32
-          type: integer
       - name: offset
         in: query
         schema:
+          type:
+          - integer
+          - "null"
           format: int32
-          type: integer
       responses:
         "200":
           description: Templates retrieved successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TemplatesResponse'
+                $ref: "#/components/schemas/TemplatesResponse"
     post:
+      summary: Create a new template
       tags:
       - Templates
-      summary: Create a new template
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/TemplateRequest'
+              $ref: "#/components/schemas/TemplateRequest"
+        required: true
       responses:
         "200":
           description: Template created successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TemplateResponse'
+                $ref: "#/components/schemas/TemplateResponse"
         "400":
           description: Invalid request
   /templates/{templateId}:
-    get:
-      tags:
-      - Templates
-      summary: Get a template by ID
-      parameters:
-      - name: templateId
-        in: path
-        required: true
-        schema:
-          $ref: '#/components/schemas/UUID'
-      responses:
-        "200":
-          description: Template found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/TemplateResponse'
-        "404":
-          description: Template not found
     put:
+      summary: Update a template by ID
       tags:
       - Templates
-      summary: Update a template by ID
       parameters:
       - name: templateId
         in: path
         required: true
         schema:
-          $ref: '#/components/schemas/UUID'
+          $ref: "#/components/schemas/UUID"
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/TemplateRequest'
+              $ref: "#/components/schemas/TemplateRequest"
+        required: true
       responses:
         "200":
           description: Template updated successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TemplateResponse'
+                $ref: "#/components/schemas/TemplateResponse"
         "404":
           description: Template not found
-    delete:
+    get:
+      summary: Get a template by ID
       tags:
       - Templates
-      summary: Delete a template by ID
       parameters:
       - name: templateId
         in: path
         required: true
         schema:
-          $ref: '#/components/schemas/UUID'
+          $ref: "#/components/schemas/UUID"
+      responses:
+        "200":
+          description: Template found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TemplateResponse"
+        "404":
+          description: Template not found
+    delete:
+      summary: Delete a template by ID
+      tags:
+      - Templates
+      parameters:
+      - name: templateId
+        in: path
+        required: true
+        schema:
+          $ref: "#/components/schemas/UUID"
       responses:
         "204":
           description: Template deleted successfully
@@ -701,107 +1602,115 @@ paths:
           description: Template not found
   /users:
     get:
+      summary: List users with optional filtering
       tags:
       - Users
-      summary: List users with optional filtering
       parameters:
       - name: authorizationServerIds
         in: query
         schema:
-          type: array
+          type:
+          - array
+          - "null"
           items:
+            type: string
             format: uuid
             pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
-            type: string
       - name: limit
         in: query
         schema:
+          type:
+          - integer
+          - "null"
           format: int32
-          type: integer
       - name: offset
         in: query
         schema:
+          type:
+          - integer
+          - "null"
           format: int32
-          type: integer
       responses:
         "200":
           description: Users retrieved successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UsersResponse'
+                $ref: "#/components/schemas/UsersResponse"
     post:
+      summary: Create a new user
       tags:
       - Users
-      summary: Create a new user
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UserRequest'
+              $ref: "#/components/schemas/UserRequest"
+        required: true
       responses:
         "200":
           description: User created successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserResponse'
+                $ref: "#/components/schemas/UserResponse"
         "400":
           description: Invalid request
   /users/{userId}:
-    get:
-      tags:
-      - Users
-      summary: Get a user by ID
-      parameters:
-      - name: userId
-        in: path
-        required: true
-        schema:
-          $ref: '#/components/schemas/UUID'
-      responses:
-        "200":
-          description: User found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UserResponse'
-        "404":
-          description: User not found
     put:
+      summary: Update a user by ID
       tags:
       - Users
-      summary: Update a user by ID
       parameters:
       - name: userId
         in: path
         required: true
         schema:
-          $ref: '#/components/schemas/UUID'
+          $ref: "#/components/schemas/UUID"
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UserRequest'
+              $ref: "#/components/schemas/UserRequest"
+        required: true
       responses:
         "200":
           description: User updated successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserResponse'
+                $ref: "#/components/schemas/UserResponse"
         "404":
           description: User not found
-    delete:
+    get:
+      summary: Get a user by ID
       tags:
       - Users
-      summary: Delete a user by ID
       parameters:
       - name: userId
         in: path
         required: true
         schema:
-          $ref: '#/components/schemas/UUID'
+          $ref: "#/components/schemas/UUID"
+      responses:
+        "200":
+          description: User found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserResponse"
+        "404":
+          description: User not found
+    delete:
+      summary: Delete a user by ID
+      tags:
+      - Users
+      parameters:
+      - name: userId
+        in: path
+        required: true
+        schema:
+          $ref: "#/components/schemas/UUID"
       responses:
         "204":
           description: User deleted successfully
@@ -809,138 +1718,170 @@ paths:
           description: User not found
   /{authorizationServerId}/.well-known/openid-connect:
     get:
-      tags:
-      - Authorization Server
       summary: Well Known Endpoint
       description: Returns the OpenID Connect Well-Known configuration
+      tags:
+      - Authorization Server
       parameters:
-      - name: authorizationServerId
-        in: path
-        description: Authorization Server ID
+      - description: Authorization Server ID
         required: true
+        name: authorizationServerId
+        in: path
         schema:
-          $ref: '#/components/schemas/UUID'
+          $ref: "#/components/schemas/UUID"
       responses:
         "200":
           description: Returns a well-known configuration object
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/WellKnown'
+                $ref: "#/components/schemas/WellKnown"
   /{authorizationServerId}/authorization:
     get:
-      tags:
-      - Authorization Server
       summary: Authorization Endpoint
       description: OAuth2/OIDC authorization endpoint
+      tags:
+      - Authorization Server
       parameters:
-      - name: authorizationServerId
+      - description: Authorization Server ID
+        required: true
+        name: authorizationServerId
         in: path
-        description: Authorization Server ID
+        schema:
+          $ref: "#/components/schemas/UUID"
+      - description: Client identifier
         required: true
-        schema:
-          $ref: '#/components/schemas/UUID'
-      - name: client_id
+        name: client_id
         in: query
-        description: Client identifier
+        schema:
+          type:
+          - string
+          - "null"
+      - description: PKCE code challenge
+        name: code_challenge
+        in: query
+        schema:
+          type:
+          - string
+          - "null"
+      - description: PKCE code challenge method
+        name: code_challenge_method
+        in: query
+        schema:
+          type:
+          - string
+          - "null"
+      - description: Nonce for ID token
+        name: nonce
+        in: query
+        schema:
+          type:
+          - string
+          - "null"
+      - description: Redirect URI
+        name: redirect_uri
+        in: query
+        schema:
+          type:
+          - string
+          - "null"
+      - description: Response type
         required: true
-        schema:
-          type: string
-      - name: code_challenge
+        name: response_type
         in: query
-        description: PKCE code challenge
         schema:
-          type: string
-      - name: code_challenge_method
+          type:
+          - string
+          - "null"
+      - description: Requested scopes
+        name: scope
         in: query
-        description: PKCE code challenge method
         schema:
-          type: string
-      - name: nonce
+          type:
+          - string
+          - "null"
+      - description: State parameter
+        name: state
         in: query
-        description: Nonce for ID token
         schema:
-          type: string
-      - name: redirect_uri
-        in: query
-        description: Redirect URI
-        schema:
-          type: string
-      - name: response_type
-        in: query
-        description: Response type
-        required: true
-        schema:
-          type: string
-      - name: scope
-        in: query
-        description: Requested scopes
-        schema:
-          type: string
-      - name: state
-        in: query
-        description: State parameter
-        schema:
-          type: string
+          type:
+          - string
+          - "null"
       responses:
         "200":
           description: Returns authorization form
         "302":
           description: Redirect to client with authorization code
     post:
-      tags:
-      - Authorization Server
       summary: Process Authorization
       description: Process authorization with credentials
+      tags:
+      - Authorization Server
       parameters:
-      - name: authorizationServerId
+      - description: Authorization Server ID
+        required: true
+        name: authorizationServerId
         in: path
-        description: Authorization Server ID
+        schema:
+          $ref: "#/components/schemas/UUID"
+      - description: Client identifier
         required: true
-        schema:
-          $ref: '#/components/schemas/UUID'
-      - name: client_id
+        name: client_id
         in: query
-        description: Client identifier
+        schema:
+          type:
+          - string
+          - "null"
+      - description: PKCE code challenge
+        name: code_challenge
+        in: query
+        schema:
+          type:
+          - string
+          - "null"
+      - description: PKCE code challenge method
+        name: code_challenge_method
+        in: query
+        schema:
+          type:
+          - string
+          - "null"
+      - description: Nonce for ID token
+        name: nonce
+        in: query
+        schema:
+          type:
+          - string
+          - "null"
+      - description: Redirect URI
+        name: redirect_uri
+        in: query
+        schema:
+          type:
+          - string
+          - "null"
+      - description: Response type
         required: true
-        schema:
-          type: string
-      - name: code_challenge
+        name: response_type
         in: query
-        description: PKCE code challenge
         schema:
-          type: string
-      - name: code_challenge_method
+          type:
+          - string
+          - "null"
+      - description: Requested scopes
+        name: scope
         in: query
-        description: PKCE code challenge method
         schema:
-          type: string
-      - name: nonce
+          type:
+          - string
+          - "null"
+      - description: State parameter
+        name: state
         in: query
-        description: Nonce for ID token
         schema:
-          type: string
-      - name: redirect_uri
-        in: query
-        description: Redirect URI
-        schema:
-          type: string
-      - name: response_type
-        in: query
-        description: Response type
-        required: true
-        schema:
-          type: string
-      - name: scope
-        in: query
-        description: Requested scopes
-        schema:
-          type: string
-      - name: state
-        in: query
-        description: State parameter
-        schema:
-          type: string
+          type:
+          - string
+          - "null"
       requestBody:
         content:
           multipart/form-data:
@@ -948,25 +1889,38 @@ paths:
               type: object
               properties:
                 username:
-                  type: string
+                  type:
+                  - string
+                  - "null"
                 password:
-                  type: string
+                  type:
+                  - string
+                  - "null"
           application/x-www-form-urlencoded:
             schema:
               type: object
               properties:
                 username:
-                  type: string
+                  type:
+                  - string
+                  - "null"
                 password:
-                  type: string
+                  type:
+                  - string
+                  - "null"
           application/json:
             schema:
               type: object
               properties:
                 username:
-                  type: string
+                  type:
+                  - string
+                  - "null"
                 password:
-                  type: string
+                  type:
+                  - string
+                  - "null"
+        required: true
       responses:
         "200":
           description: Rerender the form when the user does not provide valid credentials
@@ -974,661 +1928,122 @@ paths:
           description: Redirect the user back to the redirect uri on success
   /{authorizationServerId}/jwks:
     get:
-      tags:
-      - Authorization Server
       summary: JWKS Endpoint
       description: JSON Web Key Set endpoint
+      tags:
+      - Authorization Server
       parameters:
-      - name: authorizationServerId
-        in: path
-        description: Authorization Server ID
+      - description: Authorization Server ID
         required: true
+        name: authorizationServerId
+        in: path
         schema:
-          $ref: '#/components/schemas/UUID'
+          $ref: "#/components/schemas/UUID"
       responses:
         "200":
           description: Returns JWKS
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/JWKS'
+                $ref: "#/components/schemas/JWKS"
   /{authorizationServerId}/token:
     post:
-      tags:
-      - Authorization Server
       summary: Token Endpoint (Form Data)
       description: OAuth2/OIDC token endpoint with form data
+      tags:
+      - Authorization Server
       parameters:
-      - name: authorizationServerId
-        in: path
-        description: Authorization Server ID
+      - description: Authorization Server ID
         required: true
+        name: authorizationServerId
+        in: path
         schema:
-          $ref: '#/components/schemas/UUID'
+          $ref: "#/components/schemas/UUID"
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AccessTokenRequest'
+              $ref: "#/components/schemas/AccessTokenRequest"
           application/x-www-form-urlencoded:
             schema:
               type: object
               properties:
                 grant_type:
-                  type: string
+                  type:
+                  - string
+                  - "null"
                 client_id:
-                  type: string
+                  type:
+                  - string
+                  - "null"
                 client_secret:
-                  type: string
+                  type:
+                  - string
+                  - "null"
                 code:
-                  type: string
+                  type:
+                  - string
+                  - "null"
                 redirect_uri:
-                  type: string
+                  type:
+                  - string
+                  - "null"
                 code_verifier:
-                  type: string
+                  type:
+                  - string
+                  - "null"
                 refresh_token:
-                  type: string
+                  type:
+                  - string
+                  - "null"
                 scope:
-                  type: string
+                  type:
+                  - string
+                  - "null"
+        required: true
       responses:
         "200":
           description: Returns access token
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AccessTokenResponse'
+                $ref: "#/components/schemas/AccessTokenResponse"
         "400":
           description: Invalid request
         "401":
           description: Invalid client credentials
   /{authorizationServerId}/userinfo:
     get:
-      tags:
-      - Authorization Server
       summary: User Info
       description: OpenID Connect UserInfo endpoint
+      tags:
+      - Authorization Server
       parameters:
-      - name: authorizationServerId
-        in: path
-        description: Authorization Server ID
+      - description: Authorization Server ID
         required: true
+        name: authorizationServerId
+        in: path
         schema:
-          $ref: '#/components/schemas/UUID'
+          $ref: "#/components/schemas/UUID"
       responses:
         "200":
           description: Returns user information
         "401":
           description: Unauthorized
-components:
-  schemas:
-    AccessTokenRequest:
-      required:
-      - client_id
-      - grant_type
-      type: object
-      properties:
-        client_id:
-          type: string
-        client_secret:
-          type: string
-        grant_type:
-          $ref: '#/components/schemas/GrantTypeEnum'
-        code:
-          type: string
-        redirect_uri:
-          type: string
-        code_verifier:
-          type: string
-        refresh_token:
-          type: string
-        scope:
-          type: string
-    AccessTokenResponse:
-      type: object
-      properties:
-        access_token:
-          type: string
-        token_type:
-          $ref: '#/components/schemas/TokenTypeEnum'
-        expires_in:
-          format: int32
-          type: integer
-        refresh_token:
-          type: string
-        scope:
-          type: string
-        id_token:
-          type: string
-    ApplicationRequest:
-      required:
-      - authorization_server_id
-      - name
-      type: object
-      properties:
-        authorization_server_id:
-          $ref: '#/components/schemas/UUID'
-        name:
-          type: string
-        client_id:
-          type: string
-        profile: {}
-        metadata:
-          $ref: '#/components/schemas/Metadata'
-        scopes:
-          type: array
-          items:
-            format: uuid
-            pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
-            type: string
-    ApplicationResponse:
-      required:
-      - authorization_server_id
-      - scopes
-      type: object
-      properties:
-        id:
-          type: string
-        authorization_server_id:
-          $ref: '#/components/schemas/UUID'
-        name:
-          type: string
-        client_id:
-          type: string
-        client_secret:
-          type: string
-        profile: {}
-        created_on:
-          $ref: '#/components/schemas/OffsetDateTime'
-        updated_on:
-          $ref: '#/components/schemas/OffsetDateTime'
-        metadata:
-          $ref: '#/components/schemas/Metadata'
-        scopes:
-          type: array
-          items:
-            $ref: '#/components/schemas/ScopeResponse'
-    ApplicationSecretRequest:
-      required:
-      - application_id
-      - name
-      - scopes
-      type: object
-      properties:
-        application_id:
-          $ref: '#/components/schemas/UUID'
-        name:
-          type: string
-        scopes:
-          type: array
-          items:
-            format: uuid
-            pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
-            type: string
-        expires_in:
-          format: int32
-          type: integer
-    ApplicationSecretResponse:
-      required:
-      - scopes
-      - created_on
-      type: object
-      properties:
-        id:
-          $ref: '#/components/schemas/UUID'
-        client_secret:
-          type: string
-        name:
-          type: string
-        expires_in:
-          format: int32
-          type: integer
-        application_id:
-          $ref: '#/components/schemas/UUID'
-        authorization_server_id:
-          $ref: '#/components/schemas/UUID'
-        scopes:
-          type: array
-          items:
-            $ref: '#/components/schemas/ScopeResponse'
-        created_on:
-          $ref: '#/components/schemas/OffsetDateTime'
-    ApplicationSecretsResponse:
-      required:
-      - page
-      type: object
-      properties:
-        application_secrets:
-          type: array
-          items:
-            $ref: '#/components/schemas/ApplicationSecretResponse'
-        page:
-          $ref: '#/components/schemas/Page'
-    ApplicationsResponse:
-      required:
-      - page
-      type: object
-      properties:
-        applications:
-          type: array
-          items:
-            $ref: '#/components/schemas/ApplicationResponse'
-        page:
-          $ref: '#/components/schemas/Page'
-    AuthorizationServerRequest:
-      type: object
-      properties:
-        server_url:
-          type: string
-        audience:
-          type: string
-        client_credentials_token_expiration:
-          format: int32
-          type: integer
-        authorization_code_token_expiration:
-          format: int32
-          type: integer
-        name:
-          type: string
-        metadata:
-          $ref: '#/components/schemas/Metadata'
-    AuthorizationServerResponse:
-      required:
-      - name
-      type: object
-      properties:
-        id:
-          type: string
-        server_url:
-          type: string
-        audience:
-          type: string
-        client_credentials_token_expiration:
-          format: int32
-          type: integer
-        authorization_code_token_expiration:
-          format: int32
-          type: integer
-        name:
-          type: string
-        created_on:
-          $ref: '#/components/schemas/OffsetDateTime'
-        updated_on:
-          $ref: '#/components/schemas/OffsetDateTime'
-        metadata:
-          $ref: '#/components/schemas/Metadata'
-        scopes:
-          type: array
-          items:
-            $ref: '#/components/schemas/ScopeResponse'
-    AuthorizationServersResponse:
-      required:
-      - page
-      type: object
-      properties:
-        authorization_servers:
-          type: array
-          items:
-            $ref: '#/components/schemas/AuthorizationServerResponse'
-        page:
-          $ref: '#/components/schemas/Page'
-    ClientRequest:
-      type: object
-      properties:
-        name:
-          type: string
-        authorization_server_id:
-          $ref: '#/components/schemas/UUID'
-        redirect_uris:
-          type: array
-          items:
-            type: string
-        scopes:
-          type: array
-          items:
-            format: uuid
-            pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
-            type: string
-        metadata:
-          $ref: '#/components/schemas/Metadata'
-    ClientResponse:
-      type: object
-      properties:
-        id:
-          type: string
-        name:
-          type: string
-        authorization_server_id:
-          $ref: '#/components/schemas/UUID'
-        redirect_uris:
-          type: array
-          items:
-            type: string
-        created_on:
-          $ref: '#/components/schemas/OffsetDateTime'
-        updated_on:
-          $ref: '#/components/schemas/OffsetDateTime'
-        scopes:
-          type: array
-          items:
-            $ref: '#/components/schemas/ScopeResponse'
-        metadata:
-          $ref: '#/components/schemas/Metadata'
-    ClientsResponse:
-      required:
-      - page
-      type: object
-      properties:
-        clients:
-          type: array
-          items:
-            $ref: '#/components/schemas/ClientResponse'
-        page:
-          $ref: '#/components/schemas/Page'
-    GrantTypeEnum:
-      enum:
-      - CLIENT_CREDENTIALS
-      - AUTHORIZATION_CODE
-      - REFRESH_TOKEN
-      type: string
-    JWK:
-      type: object
-      properties:
-        kty:
-          type: string
-        use:
-          type: string
-        key_ops:
-          type: array
-          items:
-            type: string
-        alg:
-          type: string
-        kid:
-          type: string
-        x5c:
-          type: array
-          items:
-            type: string
-        x5t:
-          type: string
-        x5t#S256:
-          type: string
-        x5u:
-          type: string
-        "n":
-          type: string
-        e:
-          type: string
-        d:
-          type: string
-        p:
-          type: string
-        q:
-          type: string
-        dp:
-          type: string
-        dq:
-          type: string
-        qi:
-          type: string
-    JWKS:
-      type: object
-      properties:
-        keys:
-          type: array
-          items:
-            $ref: '#/components/schemas/JWK'
-    Metadata:
-      type: object
-      properties:
-        properties:
-          type: object
-          additionalProperties: {}
-        identifiers:
-          type: array
-          items:
-            $ref: '#/components/schemas/MetadataIdentifiersInner'
-        schemaValidations:
-          type: array
-          items:
-            $ref: '#/components/schemas/MetadataSchemaValidationsInner'
-    MetadataIdentifiersInner:
-      type: object
-      properties:
-        system:
-          type: string
-        value:
-          type: string
-    MetadataSchemaValidationsInner:
-      type: object
-      properties:
-        schemaId:
-          $ref: '#/components/schemas/UUID'
-        isValid:
-          type: boolean
-        validatedOn:
-          $ref: '#/components/schemas/OffsetDateTime'
-    OffsetDateTime:
-      format: date-time
-      type: string
-      example: 2022-03-10T12:15:50-04:00
-    Page:
-      type: object
-      properties:
-        next:
-          type: string
-        previous:
-          type: string
-    SchemaRequest:
-      required:
-      - authorization_server
-      type: object
-      properties:
-        authorization_server:
-          $ref: '#/components/schemas/UUID'
-        name:
-          type: string
-        schema_version:
-          type: string
-        schema: {}
-        metadata:
-          $ref: '#/components/schemas/Metadata'
-    SchemaResponse:
-      required:
-      - authorization_server
-      type: object
-      properties:
-        id:
-          $ref: '#/components/schemas/UUID'
-        authorization_server:
-          $ref: '#/components/schemas/UUID'
-        name:
-          type: string
-        schema_version:
-          type: string
-        schema: {}
-        metadata:
-          $ref: '#/components/schemas/Metadata'
-    SchemasResponse:
-      required:
-      - page
-      type: object
-      properties:
-        schemas:
-          type: array
-          items:
-            $ref: '#/components/schemas/SchemaResponse'
-        page:
-          $ref: '#/components/schemas/Page'
-    ScopeRequest:
-      type: object
-      properties:
-        authorization_server_id:
-          $ref: '#/components/schemas/UUID'
-        name:
-          type: string
-        metadata:
-          $ref: '#/components/schemas/Metadata'
-    ScopeResponse:
-      type: object
-      properties:
-        id:
-          type: string
-        authorizationServerId:
-          $ref: '#/components/schemas/UUID'
-        createdOn:
-          $ref: '#/components/schemas/OffsetDateTime'
-        updatedOn:
-          $ref: '#/components/schemas/OffsetDateTime'
-        name:
-          type: string
-        metadata:
-          $ref: '#/components/schemas/Metadata'
-    ScopesResponse:
-      required:
-      - page
-      type: object
-      properties:
-        scopes:
-          type: array
-          items:
-            $ref: '#/components/schemas/ScopeResponse'
-        page:
-          $ref: '#/components/schemas/Page'
-    TemplateRequest:
-      type: object
-      properties:
-        authorization_server_id:
-          $ref: '#/components/schemas/UUID'
-        template_type:
-          type: string
-        template:
-          type: string
-        metadata:
-          $ref: '#/components/schemas/Metadata'
-    TemplateResponse:
-      type: object
-      properties:
-        id:
-          type: string
-        authorization_server_id:
-          $ref: '#/components/schemas/UUID'
-        template_type:
-          type: string
-        template:
-          type: string
-        created_on:
-          $ref: '#/components/schemas/OffsetDateTime'
-        updated_on:
-          $ref: '#/components/schemas/OffsetDateTime'
-        metadata:
-          $ref: '#/components/schemas/Metadata'
-    TemplatesResponse:
-      required:
-      - page
-      type: object
-      properties:
-        templates:
-          type: array
-          items:
-            $ref: '#/components/schemas/TemplateResponse'
-        page:
-          $ref: '#/components/schemas/Page'
-    TokenTypeEnum:
-      enum:
-      - BEARER
-      type: string
-    UUID:
-      format: uuid
-      pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
-      type: string
-    UserRequest:
-      type: object
-      properties:
-        authorization_server_id:
-          $ref: '#/components/schemas/UUID'
-        username:
-          type: string
-        email:
-          type: string
-        profile: {}
-        password:
-          type: string
-        metadata:
-          $ref: '#/components/schemas/Metadata'
-    UserResponse:
-      type: object
-      properties:
-        id:
-          type: string
-        authorization_server_id:
-          $ref: '#/components/schemas/UUID'
-        username:
-          type: string
-        email:
-          type: string
-        profile: {}
-        created_on:
-          $ref: '#/components/schemas/OffsetDateTime'
-        updated_on:
-          $ref: '#/components/schemas/OffsetDateTime'
-        metadata:
-          $ref: '#/components/schemas/Metadata'
-    UsersResponse:
-      required:
-      - page
-      type: object
-      properties:
-        users:
-          type: array
-          items:
-            $ref: '#/components/schemas/UserResponse'
-        page:
-          $ref: '#/components/schemas/Page'
-    WellKnown:
-      type: object
-      properties:
-        issuer:
-          type: string
-        authorization_endpoint:
-          type: string
-        token_endpoint:
-          type: string
-        userinfo_endpoint:
-          type: string
-        jwks_uri:
-          type: string
-        revocation_endpoint:
-          type: string
-        scopes_supported:
-          type: array
-          items:
-            type: string
-        response_types_supported:
-          type: array
-          items:
-            type: string
-        grant_types_supported:
-          type: array
-          items:
-            type: string
-        subject_types_supported:
-          type: array
-          items:
-            type: string
-        id_token_signing_alg_values_supported:
-          type: array
-          items:
-            type: string
-        token_endpoint_auth_methods_supported:
-          type: array
-          items:
-            type: string
-        claims_supported:
-          type: array
-          items:
-            type: string
-        code_challenge_methods_supported:
-          type: array
-          items:
-            type: string
+info:
+  title: Cartobucket Auth API
+  version: 1.0.0
+  description: OAuth 2.1/OIDC Server API
+  termsOfService: https://cartobucket.com/terms
+  contact:
+    name: Cartobucket
+    email: info@cartobucket.com
+    url: https://cartobucket.com
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+servers:
+- url: http://localhost:5000
+  description: Auto generated value
+- url: http://0.0.0.0:5000
+  description: Auto generated value

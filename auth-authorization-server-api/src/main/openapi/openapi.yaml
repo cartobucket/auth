@@ -1,7 +1,9 @@
 ---
-openapi: 3.0.3
+openapi: 3.1.0
+paths: {}
 info:
   title: Cartobucket Auth Authorization Server API
+  version: 1.0.0
   description: OAuth2/OpenID Connect Authorization Server API
   contact:
     name: Cartobucket
@@ -9,10 +11,8 @@ info:
   license:
     name: MIT
     url: https://opensource.org/licenses/MIT
-  version: 1.0.0
 servers:
 - url: http://localhost:8080
   description: Auto generated value
 - url: http://0.0.0.0:8080
   description: Auto generated value
-paths: {}

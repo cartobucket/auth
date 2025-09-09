@@ -19,23 +19,24 @@
 
 package com.cartobucket.auth.data.domain
 
-enum class DiscoveryMethodEnum(private val value: String) {
+enum class DiscoveryMethodEnum(
+    private val value: String,
+) {
     MANUAL("manual"),
-    WELL_KNOWN("well-known");
+    WELL_KNOWN("well-known"),
+    ;
 
     fun value(): String = value
 
     override fun toString(): String = value
 
     companion object {
-        fun fromString(s: String): DiscoveryMethodEnum {
-            return values().find { it.value == s }
+        fun fromString(s: String): DiscoveryMethodEnum =
+            values().find { it.value == s }
                 ?: throw IllegalArgumentException("Unexpected string value '$s'")
-        }
 
-        fun fromValue(value: String): DiscoveryMethodEnum {
-            return values().find { it.value == value }
+        fun fromValue(value: String): DiscoveryMethodEnum =
+            values().find { it.value == value }
                 ?: throw IllegalArgumentException("Unexpected value '$value'")
-        }
     }
 }

@@ -32,7 +32,7 @@ import java.lang.annotation.Documented
 import java.lang.annotation.Retention
 import java.lang.annotation.RetentionPolicy
 import java.lang.annotation.Target
-import java.util.*
+import java.util.UUID
 import kotlin.reflect.KClass
 
 @Retention(RetentionPolicy.RUNTIME)
@@ -43,14 +43,14 @@ import kotlin.reflect.KClass
     java.lang.annotation.ElementType.ANNOTATION_TYPE,
     java.lang.annotation.ElementType.CONSTRUCTOR,
     java.lang.annotation.ElementType.PARAMETER,
-    java.lang.annotation.ElementType.TYPE_USE
+    java.lang.annotation.ElementType.TYPE_USE,
 )
 @SupportedValidationTarget(ANNOTATED_ELEMENT)
 @Documented
 annotation class ValidAuthorizationServer(
     val message: String = "The Authorization Server was not found",
     val payload: Array<KClass<out Payload>> = [],
-    val groups: Array<KClass<*>> = []
+    val groups: Array<KClass<*>> = [],
 ) {
     class Validator : ConstraintValidator<ValidAuthorizationServer, UUID> {
         @Inject
@@ -60,9 +60,12 @@ annotation class ValidAuthorizationServer(
             super.initialize(constraintAnnotation)
         }
 
-        override fun isValid(value: UUID?, context: ConstraintValidatorContext): Boolean {
+        override fun isValid(
+            value: UUID?,
+            context: ConstraintValidatorContext,
+        ): Boolean {
             if (value == null) return true
-            
+
             return try {
                 applicationService.getAuthorizationServer(value)
                 true

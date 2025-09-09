@@ -32,15 +32,24 @@ interface ClientService {
     @Throws(ClientNotFound::class)
     fun getClient(clientId: String): Client
 
-    fun getClients(authorizationServerIds: List<UUID>, page: Page): List<Client>
+    fun getClients(
+        authorizationServerIds: List<UUID>,
+        page: Page,
+    ): List<Client>
 
     @Throws(ClientNotFound::class)
     fun deleteClient(clientId: UUID)
 
     @Throws(ClientNotFound::class)
-    fun updateClient(clientId: UUID, client: Client): Client
+    fun updateClient(
+        clientId: UUID,
+        client: Client,
+    ): Client
 
-    fun createClientCode(authorizationServerId: UUID, clientCode: ClientCode): ClientCode
+    fun createClientCode(
+        authorizationServerId: UUID,
+        clientCode: ClientCode,
+    ): ClientCode
 
     @Throws(ClientCodeNotFound::class)
     fun getClientCode(clientCode: String): ClientCode

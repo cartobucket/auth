@@ -20,7 +20,7 @@
 package com.cartobucket.auth.data.domain
 
 import java.time.OffsetDateTime
-import java.util.*
+import java.util.UUID
 
 data class Application(
     var id: UUID? = null,
@@ -30,5 +30,5 @@ data class Application(
     var scopes: List<Scope>? = null,
     var metadata: Metadata? = null,
     var createdOn: OffsetDateTime? = null,
-    var updatedOn: OffsetDateTime? = null
+    var updatedOn: OffsetDateTime? = null,
 )

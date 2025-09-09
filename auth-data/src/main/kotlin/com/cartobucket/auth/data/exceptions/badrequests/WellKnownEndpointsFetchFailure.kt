@@ -19,4 +19,6 @@
 
 package com.cartobucket.auth.data.exceptions.badrequests
 
-class WellKnownEndpointsFetchFailure(message: String) : Exception(message)
+class WellKnownEndpointsFetchFailure(
+    message: String,
+) : Exception(message)

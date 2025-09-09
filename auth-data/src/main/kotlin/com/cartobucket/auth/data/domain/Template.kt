@@ -29,5 +29,5 @@ data class Template(
     var template: ByteArray? = null,
     var metadata: Metadata? = null,
     var createdOn: OffsetDateTime? = null,
-    var updatedOn: OffsetDateTime? = null
+    var updatedOn: OffsetDateTime? = null,
 )

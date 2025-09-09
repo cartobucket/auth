@@ -19,22 +19,23 @@
 
 package com.cartobucket.auth.data.domain
 
-enum class TemplateTypeEnum(private val value: String) {
-    LOGIN("login");
+enum class TemplateTypeEnum(
+    private val value: String,
+) {
+    LOGIN("login"),
+    ;
 
     fun value(): String = value
 
     override fun toString(): String = value
 
     companion object {
-        fun fromString(s: String): TemplateTypeEnum {
-            return values().find { it.value == s }
+        fun fromString(s: String): TemplateTypeEnum =
+            values().find { it.value == s }
                 ?: throw IllegalArgumentException("Unexpected string value '$s'")
-        }
 
-        fun fromValue(value: String): TemplateTypeEnum {
-            return values().find { it.value == value }
+        fun fromValue(value: String): TemplateTypeEnum =
+            values().find { it.value == value }
                 ?: throw IllegalArgumentException("Unexpected value '$value'")
-        }
     }
 }

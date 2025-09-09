@@ -25,7 +25,10 @@ import com.cartobucket.auth.data.exceptions.notfound.TemplateNotFound
 import java.util.UUID
 
 interface TemplateService {
-    fun getTemplates(authorizationServerIds: List<UUID>, page: Page): List<Template>
+    fun getTemplates(
+        authorizationServerIds: List<UUID>,
+        page: Page,
+    ): List<Template>
 
     fun createTemplate(template: Template): Template
 
@@ -38,5 +41,8 @@ interface TemplateService {
     //    fun getTemplateForAuthorizationServer(authorizationServer: UUID, templateType: TemplateTypeEnum): Template
 
     @Throws(TemplateNotFound::class)
-    fun updateTemplate(templateId: UUID, template: Template): Template
+    fun updateTemplate(
+        templateId: UUID,
+        template: Template,
+    ): Template
 }

@@ -19,26 +19,28 @@
 
 package com.cartobucket.auth.data.services
 
+import com.cartobucket.auth.data.domain.Application
+import com.cartobucket.auth.data.domain.ApplicationSecret
 import com.cartobucket.auth.data.domain.Page
 import com.cartobucket.auth.data.domain.Pair
+import com.cartobucket.auth.data.domain.Profile
 import com.cartobucket.auth.data.exceptions.badrequests.ApplicationSecretNoApplicationBadData
 import com.cartobucket.auth.data.exceptions.notfound.ApplicationNotFound
 import com.cartobucket.auth.data.exceptions.notfound.ApplicationSecretNotFound
 import com.cartobucket.auth.data.exceptions.notfound.ProfileNotFound
-import com.cartobucket.auth.data.domain.Application
-import com.cartobucket.auth.data.domain.ApplicationSecret
-import com.cartobucket.auth.data.domain.Profile
-import java.util.*
+import java.util.UUID
 
 interface ApplicationService {
-
     @Throws(ApplicationNotFound::class)
     fun deleteApplication(applicationId: UUID)
 
     @Throws(ApplicationNotFound::class, ProfileNotFound::class)
     fun getApplication(applicationId: UUID): Pair<Application, Profile>
 
-    fun createApplication(application: Application, profile: Profile): Pair<Application, Profile>
+    fun createApplication(
+        application: Application,
+        profile: Profile,
+    ): Pair<Application, Profile>
 
     @Throws(ApplicationNotFound::class)
     fun getApplicationSecrets(applicationId: List<UUID>): List<ApplicationSecret>
@@ -49,9 +51,16 @@ interface ApplicationService {
     @Throws(ApplicationSecretNoApplicationBadData::class, ApplicationSecretNotFound::class)
     fun deleteApplicationSecret(secretId: UUID)
 
-    fun getApplications(authorizationServerIds: List<UUID>, page: Page): List<Application>
+    fun getApplications(
+        authorizationServerIds: List<UUID>,
+        page: Page,
+    ): List<Application>
 
-    fun isApplicationSecretValid(authorizationServerId: UUID, applicationSecretId: UUID, applicationSecret: String): Boolean
-    
+    fun isApplicationSecretValid(
+        authorizationServerId: UUID,
+        applicationSecretId: UUID,
+        applicationSecret: String,
+    ): Boolean
+
     fun getApplicationSecret(applicationSecretId: String): ApplicationSecret
 }

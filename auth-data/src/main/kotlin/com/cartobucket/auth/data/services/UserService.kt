@@ -26,20 +26,16 @@ import com.cartobucket.auth.data.domain.SchemaValidation
 import com.cartobucket.auth.data.domain.User
 import com.cartobucket.auth.data.exceptions.notfound.ProfileNotFound
 import com.cartobucket.auth.data.exceptions.notfound.UserNotFound
-import java.util.*
+import java.util.UUID
 
 interface UserService {
     data class Page(
         val limit: Int,
-        val offset: Int
+        val offset: Int,
     ) {
-        fun offset(): Int {
-            return offset
-        }
+        fun offset(): Int = offset
 
-        fun limit(): Int {
-            return limit
-        }
+        fun limit(): Int = limit
     }
 
     data class UserQuery(
@@ -48,36 +44,27 @@ interface UserService {
         val emails: List<String>,
         val identifiers: List<Identifier>,
         val schemaValidations: List<SchemaValidation>,
-        val page: Page
+        val page: Page,
     ) {
-        fun userIds(): List<UUID> {
-            return userIds
-        }
+        fun userIds(): List<UUID> = userIds
 
-        fun emails(): List<String> {
-            return emails
-        }
+        fun emails(): List<String> = emails
 
-        fun identifiers(): List<Identifier> {
-            return identifiers
-        }
+        fun identifiers(): List<Identifier> = identifiers
 
-        fun schemaValidations(): List<SchemaValidation> {
-            return schemaValidations
-        }
+        fun schemaValidations(): List<SchemaValidation> = schemaValidations
 
-        fun page(): Page {
-            return page
-        }
+        fun page(): Page = page
 
-        fun authorizationServerIds(): List<UUID> {
-            return authorizationServerIds
-        }
+        fun authorizationServerIds(): List<UUID> = authorizationServerIds
     }
 
     fun query(query: UserQuery): List<User>
 
-    fun getUsers(authorizationServerIds: List<UUID>, page: com.cartobucket.auth.data.domain.Page): List<User>
+    fun getUsers(
+        authorizationServerIds: List<UUID>,
+        page: com.cartobucket.auth.data.domain.Page,
+    ): List<User>
 
     fun createUser(userProfilePair: Pair<User, Profile>): Pair<User, Profile>
 
@@ -90,9 +77,18 @@ interface UserService {
     fun getUser(username: String): Pair<User, Profile>
 
     @Throws(UserNotFound::class, ProfileNotFound::class)
-    fun updateUser(userId: UUID, userProfilePair: Pair<User, Profile>): Pair<User, Profile>
+    fun updateUser(
+        userId: UUID,
+        userProfilePair: Pair<User, Profile>,
+    ): Pair<User, Profile>
 
-    fun setPassword(user: User, password: String)
+    fun setPassword(
+        user: User,
+        password: String,
+    )
 
-    fun validatePassword(userId: UUID, password: String): Boolean
+    fun validatePassword(
+        userId: UUID,
+        password: String,
+    ): Boolean
 }

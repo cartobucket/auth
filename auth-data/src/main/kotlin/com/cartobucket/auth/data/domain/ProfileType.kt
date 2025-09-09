@@ -21,5 +21,5 @@ package com.cartobucket.auth.data.domain
 
 enum class ProfileType {
     User,
-    Application
+    Application,
 }

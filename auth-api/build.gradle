@@ -28,8 +28,8 @@ dependencies {
     testImplementation 'io.quarkus:quarkus-junit5'
 }
 
-group 'com.cartobucket.auth'
-version '1.0-SNAPSHOT'
+group = 'com.cartobucket.auth'
+version = '1.0-SNAPSHOT'
 
 java {
     sourceCompatibility = JavaVersion.VERSION_21
@@ -48,11 +48,13 @@ compileTestJava {
     options.encoding = 'UTF-8'
 }
 
+// Handle duplicate META-INF/beans.xml files
+processResources {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
 sourceSets {
     main {
-        java {
-            srcDirs "$projectDir/src/main/java"
-        }
         kotlin {
             srcDirs "$projectDir/src/main/kotlin"
         }

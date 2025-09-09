@@ -30,7 +30,7 @@ data class SigningKey(
     var publicKey: String? = null,
     var createdOn: OffsetDateTime? = null,
     var updatedOn: OffsetDateTime? = null,
-    var metadata: HashMap<String, Any>? = null
+    var metadata: HashMap<String, Any>? = null,
 ) {
     fun getAlgorithm(): String = "RS256"
 }

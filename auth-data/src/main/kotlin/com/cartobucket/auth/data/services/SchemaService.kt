@@ -26,7 +26,10 @@ import com.cartobucket.auth.data.exceptions.notfound.SchemaNotFound
 import java.util.UUID
 
 interface SchemaService {
-    fun validateProfileAgainstSchema(profile: Profile, schema: Schema): Set<String>
+    fun validateProfileAgainstSchema(
+        profile: Profile,
+        schema: Schema,
+    ): Set<String>
 
     fun createSchema(schema: Schema): Schema
 
@@ -36,10 +39,19 @@ interface SchemaService {
     @Throws(SchemaNotFound::class)
     fun getSchema(schemaId: UUID): Schema
 
-    fun getSchemas(authorizationServerIds: List<UUID>, page: Page): List<Schema>
+    fun getSchemas(
+        authorizationServerIds: List<UUID>,
+        page: Page,
+    ): List<Schema>
 
-    fun getSchemaByNameAndAuthorizationServerId(name: String, authorizationServerId: UUID): Schema?
+    fun getSchemaByNameAndAuthorizationServerId(
+        name: String,
+        authorizationServerId: UUID,
+    ): Schema?
 
     @Throws(SchemaNotFound::class)
-    fun updateSchema(schemaId: UUID, schema: Schema): Schema
+    fun updateSchema(
+        schemaId: UUID,
+        schema: Schema,
+    ): Schema
 }

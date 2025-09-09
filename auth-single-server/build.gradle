@@ -17,9 +17,9 @@ dependencies {
 
     implementation enforcedPlatform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}")
     implementation 'io.quarkus:quarkus-arc'
-    implementation 'io.quarkus:quarkus-resteasy-reactive'
-    implementation 'io.quarkus:quarkus-resteasy-reactive-jsonb'
-    implementation 'io.quarkus:quarkus-resteasy-reactive-qute'
+    implementation 'io.quarkus:quarkus-rest'
+    implementation 'io.quarkus:quarkus-rest-jsonb'
+    implementation 'io.quarkus:quarkus-qute'
     implementation 'io.quarkus:quarkus-smallrye-openapi'
 
     implementation project(':auth-api')
@@ -29,8 +29,8 @@ dependencies {
     testImplementation 'io.quarkus:quarkus-junit5'
 }
 
-group 'com.cartobucket.auth'
-version '1.0-SNAPSHOT'
+group = 'com.cartobucket.auth'
+version = '1.0-SNAPSHOT'
 
 java {
     sourceCompatibility = JavaVersion.VERSION_21

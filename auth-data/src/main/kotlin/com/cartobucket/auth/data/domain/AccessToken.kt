@@ -25,5 +25,5 @@ data class AccessToken(
     var refreshToken: String? = null,
     var expiresIn: Int? = null,
     var idToken: String? = null,
-    var scope: String? = null
+    var scope: String? = null,
 )

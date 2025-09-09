@@ -45,11 +45,13 @@ package com.cartobucket.auth.data.domain
  *
  * @since 19.0
  */
-data class Pair<L, R>(val left: L?, val right: R?) {
-    
+data class Pair<L, R>(
+    val left: L?,
+    val right: R?,
+) {
     companion object {
         private val EMPTY: Pair<Any?, Any?> = Pair(null, null)
-        
+
         /**
          * Returns an empty pair.
          *
@@ -57,7 +59,7 @@ data class Pair<L, R>(val left: L?, val right: R?) {
          */
         @Suppress("UNCHECKED_CAST")
         fun <L, R> empty(): Pair<L, R> = EMPTY as Pair<L, R>
-        
+
         /**
          * Constructs a pair with its left value being [left], or returns an empty pair if
          * [left] is null.
@@ -65,9 +67,8 @@ data class Pair<L, R>(val left: L?, val right: R?) {
          * @return the constructed pair or an empty pair if [left] is null.
          * @since 19.0
          */
-        fun <L, R> createLeft(left: L?): Pair<L, R> =
-            if (left == null) empty() else Pair(left, null)
-        
+        fun <L, R> createLeft(left: L?): Pair<L, R> = if (left == null) empty() else Pair(left, null)
+
         /**
          * Constructs a pair with its right value being [right], or returns an empty pair if
          * [right] is null.
@@ -75,9 +76,8 @@ data class Pair<L, R>(val left: L?, val right: R?) {
          * @return the constructed pair or an empty pair if [right] is null.
          * @since 19.0
          */
-        fun <L, R> createRight(right: R?): Pair<L, R> =
-            if (right == null) empty() else Pair(null, right)
-        
+        fun <L, R> createRight(right: R?): Pair<L, R> = if (right == null) empty() else Pair(null, right)
+
         /**
          * Constructs a pair with its left value being [left], and its right value being
          * [right], or returns an empty pair if both inputs are null.
@@ -85,9 +85,11 @@ data class Pair<L, R>(val left: L?, val right: R?) {
          * @return the constructed pair or an empty pair if both inputs are null.
          * @since 19.0
          */
-        fun <L, R> create(left: L?, right: R?): Pair<L, R> =
-            if (left == null && right == null) empty() else Pair(left, right)
+        fun <L, R> create(
+            left: L?,
+            right: R?,
+        ): Pair<L, R> = if (left == null && right == null) empty() else Pair(left, right)
     }
-    
+
     override fun toString(): String = "($left, $right)"
 }

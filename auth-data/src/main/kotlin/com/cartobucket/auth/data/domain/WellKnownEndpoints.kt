@@ -22,17 +22,13 @@ package com.cartobucket.auth.data.domain
 import jakarta.json.bind.annotation.JsonbProperty
 
 data class WellKnownEndpoints(
-    @JsonbProperty("authorization_endpoint")
+    @field:JsonbProperty("authorization_endpoint")
     var authorizationEndpoint: String? = null,
-    
-    @JsonbProperty("token_endpoint")
+    @field:JsonbProperty("token_endpoint")
     var tokenEndpoint: String? = null,
-    
-    @JsonbProperty("userinfo_endpoint")
+    @field:JsonbProperty("userinfo_endpoint")
     var userInfoEndpoint: String? = null,
-    
     var issuer: String? = null,
-    
-    @JsonbProperty("jwks_uri")
-    var jwksEndpoint: String? = null
+    @field:JsonbProperty("jwks_uri")
+    var jwksEndpoint: String? = null,
 )

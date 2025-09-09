@@ -56,11 +56,8 @@ public class WellKnownEndpointsTests {
         }
     }
 
-    @Mock
-    HttpClient client;
-
-    @Mock
-    HttpResponse<String> response;
+    // Note: These are not CDI beans, so they shouldn't be mocked with @Mock
+    // If needed for testing, they should be mocked with Mockito or similar
 
     @Test
     public void WellKnownEndpointTests() throws WellKnownEndpointsFetchFailure {

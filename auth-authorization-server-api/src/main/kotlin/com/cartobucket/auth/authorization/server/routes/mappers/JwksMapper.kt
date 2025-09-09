@@ -23,15 +23,15 @@ import com.cartobucket.auth.authorization.server.dto.JWK
 import com.cartobucket.auth.authorization.server.dto.JWKS
 
 object JwksMapper {
-    fun com.cartobucket.auth.data.domain.JWK.toDto(): JWK = JWK(
-        alg = this.alg,
-        e = this.e,
-        kid = this.kid,
-        kty = this.kty,
-        n = this.n,
-        use = this.use
-    )
+    fun com.cartobucket.auth.data.domain.JWK.toDto(): JWK =
+        JWK(
+            alg = this.alg,
+            e = this.e,
+            kid = this.kid,
+            kty = this.kty,
+            n = this.n,
+            use = this.use,
+        )
 
-    fun List<com.cartobucket.auth.data.domain.JWK>.toJwksResponse(): JWKS = 
-        JWKS(keys = this.map { it.toDto() })
+    fun List<com.cartobucket.auth.data.domain.JWK>.toJwksResponse(): JWKS = JWKS(keys = this.map { it.toDto() })
 }

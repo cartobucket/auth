@@ -10,5 +10,5 @@ enum class ResourceType {
     SCOPE,
     SIGNING_KEY,
     TEMPLATE,
-    USER
+    USER,
 }

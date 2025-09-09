@@ -37,7 +37,10 @@ interface AuthorizationServerService {
     fun createAuthorizationServer(authorizationServer: AuthorizationServer): AuthorizationServer
 
     @Throws(AuthorizationServerNotFound::class)
-    fun updateAuthorizationServer(authorizationServerId: UUID, authorizationServer: AuthorizationServer): AuthorizationServer
+    fun updateAuthorizationServer(
+        authorizationServerId: UUID,
+        authorizationServer: AuthorizationServer,
+    ): AuthorizationServer
 
     fun getAuthorizationServers(page: Page): List<AuthorizationServer>
 
@@ -47,7 +50,10 @@ interface AuthorizationServerService {
     fun getSigningKeysForAuthorizationServer(authorizationServerId: UUID): SigningKey
 
     @Throws(NotAuthorized::class)
-    fun validateJwtForAuthorizationServer(authorizationServerId: UUID, jwt: String): Map<String, Any>
+    fun validateJwtForAuthorizationServer(
+        authorizationServerId: UUID,
+        jwt: String,
+    ): Map<String, Any>
 
     fun getJwksForAuthorizationServer(authorizationServerId: UUID): List<JWK>
 
@@ -56,9 +62,9 @@ interface AuthorizationServerService {
         applicationId: UUID,
         subject: String,
         scopes: List<Scope>,
-        expiresInSeconds: Long
+        expiresInSeconds: Long,
     ): AccessToken
-    
+
     fun generateAuthorizationCodeFlowAccessToken(
         authorizationServerId: UUID,
         userId: UUID,
@@ -66,12 +72,12 @@ interface AuthorizationServerService {
         clientId: String,
         scopes: List<Scope>,
         expiresInSeconds: Long,
-        nonce: String?
+        nonce: String?,
     ): AccessToken
-    
+
     fun refreshAccessToken(
         authorizationServerId: UUID,
         refreshToken: String,
-        clientId: String
+        clientId: String,
     ): AccessToken
 }

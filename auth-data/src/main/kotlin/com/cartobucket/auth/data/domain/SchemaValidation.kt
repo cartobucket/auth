@@ -6,5 +6,5 @@ import java.util.UUID
 data class SchemaValidation(
     var schemaId: UUID? = null,
     var isValid: Boolean = false,
-    var validatedOn: OffsetDateTime? = null
+    var validatedOn: OffsetDateTime? = null,
 )

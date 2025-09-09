@@ -19,4 +19,6 @@
 
 package com.cartobucket.auth.data.exceptions.badrequests
 
-class CodeChallengeBadData(message: String) : RuntimeException(message)
+class CodeChallengeBadData(
+    message: String,
+) : RuntimeException(message)
