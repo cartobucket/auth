@@ -44,6 +44,10 @@ java {
     targetCompatibility = JavaVersion.VERSION_21
 }
 
+kotlin {
+    jvmToolchain(21)
+}
+
 test {
     systemProperty "java.util.logging.manager", "org.jboss.logmanager.LogManager"
 }
@@ -51,6 +55,13 @@ test {
 compileJava {
     options.encoding = 'UTF-8'
     options.compilerArgs << '-parameters'
+}
+
+compileKotlin {
+    kotlinOptions {
+        javaParameters = true
+        freeCompilerArgs += ["-Xjsr305=strict"]
+    }
 }
 
 compileTestJava {

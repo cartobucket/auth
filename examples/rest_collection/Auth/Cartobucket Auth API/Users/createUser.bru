@@ -5,32 +5,27 @@ meta {
 }
 
 post {
-  url: {{baseUrl}}/users/
+  url: https://auth.cartobucket.com/users/
   body: json
   auth: none
 }
 
 body:json {
   {
-    "authorizationServerId": "",
-    "username": "",
-    "email": "",
-    "profile": {},
-    "password": "",
+    "authorizationServerId": "ef00f143-f2fb-47e0-ad80-0f4a42581090",
+    "username": "bgroff@hawaii.edu",
+    "email": "bgroff@hawaii.edu",
+    "profile": {
+      "firstName": "Bryce",
+      "lastName": "Groff",
+      "name": "Bryce Groff"
+    },
+    "password": "maddog",
     "metadata": {
       "properties": {},
       "identifiers": [
-        {
-          "system": "",
-          "value": ""
-        }
       ],
       "schemaValidations": [
-        {
-          "schemaId": "",
-          "isValid": "",
-          "validatedOn": ""
-        }
       ]
     }
   }

@@ -231,6 +231,30 @@ components:
           $ref: "#/components/schemas/Page"
       required:
       - page
+    AtomicLong:
+      type: object
+      properties:
+        value:
+          type: integer
+          format: int64
+        andIncrement:
+          type: integer
+          format: int64
+        andDecrement:
+          type: integer
+          format: int64
+        plain:
+          type: integer
+          format: int64
+        opaque:
+          type: integer
+          format: int64
+        acquire:
+          type: integer
+          format: int64
+        release:
+          type: integer
+          format: int64
     AuthorizationServerRequest:
       type: object
       properties:
@@ -320,6 +344,22 @@ components:
           $ref: "#/components/schemas/Page"
       required:
       - page
+    Charset:
+      type: object
+      properties:
+        name:
+          type: string
+        aliases:
+          type: array
+          items:
+            type: string
+        aliasSet:
+          type: array
+          uniqueItems: true
+          items:
+            type: string
+        registered:
+          type: boolean
     ClientRequest:
       type: object
       properties:
@@ -401,12 +441,100 @@ components:
           $ref: "#/components/schemas/Page"
       required:
       - page
+    EngineImpl:
+      type: object
+      properties:
+        sectionHelperFactories:
+          type: object
+          additionalProperties:
+            type: object
+            properties:
+              defaultAliases:
+                type: array
+                items:
+                  type: string
+              parameters:
+                $ref: "#/components/schemas/ParametersInfo"
+              blockLabels:
+                type: array
+                items:
+                  type: string
+        sectionHelperFunc:
+          $ref: "#/components/schemas/FunctionStringSectionHelperFactoryObject"
+        valueResolvers:
+          type: array
+          items:
+            $ref: "#/components/schemas/ValueResolver"
+        namespaceResolvers:
+          type: array
+          items:
+            $ref: "#/components/schemas/NamespaceResolver"
+        evaluator:
+          $ref: "#/components/schemas/Evaluator"
+        templates:
+          type: object
+          additionalProperties:
+            $ref: "#/components/schemas/Template"
+        locators:
+          type: array
+          items:
+            $ref: "#/components/schemas/TemplateLocator"
+        resultMappers:
+          type: array
+          items:
+            $ref: "#/components/schemas/ResultMapper"
+        idGenerator:
+          $ref: "#/components/schemas/AtomicLong"
+        parserHooks:
+          type: array
+          items:
+            $ref: "#/components/schemas/ParserHook"
+        initializers:
+          type: array
+          items:
+            $ref: "#/components/schemas/Initializer"
+        removeStandaloneLines:
+          type: boolean
+        timeout:
+          type: integer
+          format: int64
+        useAsyncTimeout:
+          type: boolean
+        traceManager:
+          $ref: "#/components/schemas/TraceManagerImpl"
+        templateInstanceInitializers:
+          type: array
+          items:
+            $ref: "#/components/schemas/Initializer"
+    Evaluator:
+      type: object
+    Expression:
+      type: object
+      properties:
+        namespace:
+          type: string
+        parts:
+          type: array
+          items:
+            $ref: "#/components/schemas/Part"
+        literal:
+          type: boolean
+        literalValue: {}
+        origin:
+          $ref: "#/components/schemas/Origin"
+        generatedId:
+          type: integer
+          format: int32
+    FunctionStringSectionHelperFactoryObject:
+      type: object
     GrantTypeEnum:
       type: string
       enum:
       - CLIENT_CREDENTIALS
       - AUTHORIZATION_CODE
       - REFRESH_TOKEN
+    Initializer:
+      type: object
     JWK:
       type: object
       properties:
@@ -491,6 +619,47 @@ components:
           - "null"
           items:
             $ref: "#/components/schemas/JWK"
+    Locale:
+      type: object
+      properties:
+        language:
+          type: string
+        script:
+          type: string
+        country:
+          type: string
+        variant:
+          type: string
+        extensionKeys:
+          type: array
+          uniqueItems: true
+          items:
+            type: string
+            format: char
+        unicodeLocaleAttributes:
+          type: array
+          uniqueItems: true
+          items:
+            type: string
+        unicodeLocaleKeys:
+          type: array
+          uniqueItems: true
+          items:
+            type: string
+        iSO3Language:
+          type: string
+        iSO3Country:
+          type: string
+        displayLanguage:
+          type: string
+        displayScript:
+          type: string
+        displayCountry:
+          type: string
+        displayVariant:
+          type: string
+        displayName:
+          type: string
     Metadata:
       type: object
       properties:
@@ -537,11 +706,41 @@ components:
           anyOf:
           - $ref: "#/components/schemas/OffsetDateTime"
           - type: "null"
+    NamespaceResolver:
+      type: object
+      properties:
+        priority:
+          type: integer
+          format: int32
+        namespace:
+          type: string
     OffsetDateTime:
       type: string
       format: date-time
       examples:
       - 2022-03-10T12:15:50-04:00
+    Origin:
+      type: object
+      properties:
+        line:
+          type: integer
+          format: int32
+        lineCharacterStart:
+          type: integer
+          format: int32
+        lineCharacterEnd:
+          type: integer
+          format: int32
+        templateId:
+          type: string
+        templateGeneratedId:
+          type: string
+        variant:
+          anyOf:
+          - $ref: "#/components/schemas/Variant"
+          - type: "null"
+        synthetic:
+          type: boolean
     Page:
       type: object
       properties:
@@ -553,6 +752,53 @@ components:
           type:
           - string
           - "null"
+    Parameter:
+      type: object
+      properties:
+        name:
+          type: string
+        defaultValue:
+          type: string
+        optional:
+          type: boolean
+        valuePredicate:
+          $ref: "#/components/schemas/PredicateString"
+    ParameterDeclaration:
+      type: object
+      properties:
+        typeInfo:
+          type: string
+        key:
+          type: string
+        defaultValue:
+          $ref: "#/components/schemas/Expression"
+        origin:
+          $ref: "#/components/schemas/Origin"
+    ParametersInfo:
+      type: array
+      items:
+        type: array
+        items:
+          $ref: "#/components/schemas/Parameter"
+    ParserHook:
+      type: object
+    Part:
+      type: object
+      properties:
+        name:
+          type: string
+        typeInfo:
+          type: string
+        virtualMethod:
+          type: boolean
+    PredicateString:
+      type: object
+    ResultMapper:
+      type: object
+      properties:
+        priority:
+          type: integer
+          format: int32
     SchemaRequest:
       type: object
       required:
@@ -665,6 +911,139 @@ components:
           $ref: "#/components/schemas/Page"
       required:
       - page
+    SectionBlock:
+      type: object
+      properties:
+        origin:
+          $ref: "#/components/schemas/Origin"
+        id:
+          type: string
+        label:
+          type: string
+        parameters:
+          type: object
+          additionalProperties:
+            type: string
+        expressions:
+          type: object
+          additionalProperties:
+            $ref: "#/components/schemas/Expression"
+        nodes:
+          type: array
+          items:
+            $ref: "#/components/schemas/TemplateNode"
+        positionalParameters:
+          type: array
+          items:
+            type: string
+        empty:
+          type: boolean
+        paramDeclarations:
+          type: array
+          items:
+            $ref: "#/components/schemas/ParameterDeclaration"
+    SectionHelper:
+      type: object
+    SectionNode:
+      type: object
+      properties:
+        constant:
+          type: boolean
+        section:
+          type: boolean
+        text:
+          type: boolean
+        expression:
+          type: boolean
+        name:
+          type: string
+        blocks:
+          type: array
+          items:
+            $ref: "#/components/schemas/SectionBlock"
+        helper:
+          $ref: "#/components/schemas/SectionHelper"
+        origin:
+          $ref: "#/components/schemas/Origin"
+        traceLevel:
+          type: boolean
+        engine:
+          $ref: "#/components/schemas/EngineImpl"
+        expressions:
+          type: array
+          items:
+            $ref: "#/components/schemas/Expression"
+        parameterDeclarations:
+          type: array
+          items:
+            $ref: "#/components/schemas/ParameterDeclaration"
+    Template:
+      type: object
+      properties:
+        expressions:
+          type: array
+          items:
+            $ref: "#/components/schemas/Expression"
+        generatedId:
+          type: string
+        id:
+          type: string
+        variant:
+          anyOf:
+          - $ref: "#/components/schemas/Variant"
+          - type: "null"
+        parameterDeclarations:
+          type: array
+          items:
+            $ref: "#/components/schemas/ParameterDeclaration"
+        fragmentIds:
+          type: array
+          uniqueItems: true
+          items:
+            type: string
+        fragment:
+          type: boolean
+        nodes:
+          type: array
+          items:
+            $ref: "#/components/schemas/TemplateNode"
+        rootNode:
+          $ref: "#/components/schemas/SectionNode"
+    TemplateInstance:
+      type: object
+      properties:
+        timeout:
+          type: integer
+          format: int64
+        template:
+          $ref: "#/components/schemas/Template"
+    TemplateLocator:
+      type: object
+      properties:
+        priority:
+          type: integer
+          format: int32
+    TemplateNode:
+      type: object
+      properties:
+        expressions:
+          type: array
+          items:
+            $ref: "#/components/schemas/Expression"
+        parameterDeclarations:
+          type: array
+          items:
+            $ref: "#/components/schemas/ParameterDeclaration"
+        origin:
+          $ref: "#/components/schemas/Origin"
+        constant:
+          type: boolean
+        section:
+          type: boolean
+        text:
+          type: boolean
+        expression:
+          type: boolean
     TemplateRequest:
       type: object
       properties:
@@ -732,6 +1111,15 @@ components:
       type: string
       enum:
       - BEARER
+    TraceListener:
+      type: object
+    TraceManagerImpl:
+      type: object
+      properties:
+        listeners:
+          type: array
+          items:
+            $ref: "#/components/schemas/TraceListener"
     UUID:
       type: string
       format: uuid
@@ -805,6 +1193,28 @@ components:
           $ref: "#/components/schemas/Page"
       required:
       - page
+    ValueResolver:
+      type: object
+      properties:
+        priority:
+          type: integer
+          format: int32
+    Variant:
+      type: object
+      properties:
+        locale:
+          $ref: "#/components/schemas/Locale"
+        contentType:
+          type: string
+        encoding:
+          $ref: "#/components/schemas/Charset"
+        hashCode:
+          type: integer
+          format: int32
+        mediaType:
+          type: string
+        charset:
+          $ref: "#/components/schemas/Charset"
     WellKnown:
       type: object
       properties:
@@ -881,6 +1291,18 @@ components:
           items:
             type: string
 paths:
+  /:
+    get:
+      responses:
+        "200":
+          description: OK
+          content:
+            text/html:
+              schema:
+                $ref: "#/components/schemas/TemplateInstance"
+      summary: Get Home Page
+      tags:
+      - Home Page
   /applicationSecrets:
     get:
       summary: List application secrets with optional filtering by application IDs

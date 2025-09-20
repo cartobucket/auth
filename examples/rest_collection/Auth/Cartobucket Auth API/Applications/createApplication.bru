@@ -5,32 +5,25 @@ meta {
 }
 
 post {
-  url: {{baseUrl}}/applications/
+  url: https://auth.cartobucket.com/applications/
   body: json
   auth: none
 }
 
 body:json {
   {
-    "name": "",
-    "clientId": "",
-    "clientSecret": "",
-    "profile": {},
-    "authorizationServerId": "",
+    "name": "Test Application",
+    "profile": {
+      "firstName": "Bryce",
+      "lastName": "Groff",
+      "name": "Bryce Groff"
+    },
+    "authorizationServerId": "ef00f143-f2fb-47e0-ad80-0f4a42581090",
     "metadata": {
       "properties": {},
       "identifiers": [
-        {
-          "system": "",
-          "value": ""
-        }
       ],
       "schemaValidations": [
-        {
-          "schemaId": "",
-          "isValid": "",
-          "validatedOn": ""
-        }
       ]
     },
     "scopes": []

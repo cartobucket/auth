@@ -46,6 +46,12 @@ interface ScopeService {
 
     fun getScopesForResourceId(id: UUID): List<Scope>
 
+    // Get scopes by authorization server IDs and specific scope IDs
+    fun getScopes(
+        authorizationServerIds: List<UUID>,
+        scopeIds: List<UUID>,
+    ): List<Scope>
+
     companion object {
         @JvmStatic
         fun scopeStringToScopeList(scopes: String?): List<Scope> {
