@@ -19,7 +19,7 @@
 
 package com.cartobucket.auth.postgres.client.repositories;
 
-import com.cartobucket.auth.data.domain.ProfileType;
+import com.revethq.iam.user.domain.ProfileType;
 import com.cartobucket.auth.postgres.client.entities.Profile;
 import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
 import jakarta.enterprise.context.ApplicationScoped;

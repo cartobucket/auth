@@ -22,7 +22,7 @@ package com.cartobucket.auth.postgres.client.services;
 import com.cartobucket.auth.data.domain.AccessToken;
 import com.cartobucket.auth.data.domain.AuthorizationServer;
 import com.cartobucket.auth.data.domain.JWK;
-import com.cartobucket.auth.data.domain.Metadata;
+import com.revethq.core.Metadata;
 import com.cartobucket.auth.data.domain.Page;
 import com.cartobucket.auth.data.domain.Profile;
 import com.cartobucket.auth.data.domain.Schema;
@@ -532,9 +532,7 @@ public class AuthorizationServerService implements com.cartobucket.auth.data.ser
             var scope = new Scope();
             scope.setName(scopeName);
             scope.setAuthorizationServer(authorizationServer);
-            var metadata = new Metadata();
-            metadata.setIdentifiers(Collections.emptyList());
-            metadata.setProperties(Collections.emptyMap());
+            var metadata = new Metadata(Collections.emptyList(), null, Collections.emptyMap());
             scope.setMetadata(metadata);
             scopeService.createScope(scope);
         }
@@ -549,9 +547,7 @@ public class AuthorizationServerService implements com.cartobucket.auth.data.ser
                 template.setTemplate(Base64.getEncoder().encode(contents.getBytes()));
                 template.setTemplateType(TemplateTypeEnum.LOGIN);
                 template.setAuthorizationServerId(authorizationServer.getId());
-                var metadata = new Metadata();
-                metadata.setIdentifiers(Collections.emptyList());
-                metadata.setProperties(Collections.emptyMap());
+                var metadata = new Metadata(Collections.emptyList(), null, Collections.emptyMap());
                 template.setMetadata(metadata);
                 var _template = templateService.createTemplate(template);
                 eventRepository.createTemplateEvent(
@@ -580,10 +576,8 @@ public class AuthorizationServerService implements com.cartobucket.auth.data.ser
                     schema.setSchema(schemaMap);
                     schema.setCreatedOn(OffsetDateTime.now());
                     schema.setUpdatedOn(OffsetDateTime.now());
-                    
-                    var metadata = new Metadata();
-                    metadata.setIdentifiers(Collections.emptyList());
-                    metadata.setProperties(Collections.emptyMap());
+
+                    var metadata = new Metadata(Collections.emptyList(), null, Collections.emptyMap());
                     schema.setMetadata(metadata);
                     
                     schemaService.createSchema(schema);

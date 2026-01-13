@@ -19,7 +19,7 @@
 
 package com.cartobucket.auth.postgres.client.entities;
 
-import com.cartobucket.auth.data.domain.ProfileType;
+import com.revethq.iam.user.domain.ProfileType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;

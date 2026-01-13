@@ -5,6 +5,8 @@ import com.cartobucket.auth.data.domain.Application;
 import com.cartobucket.auth.data.domain.AuthorizationServer;
 import com.cartobucket.auth.data.domain.Client;
 import com.cartobucket.auth.data.domain.ClientCode;
+import com.cartobucket.auth.data.domain.Group;
+import com.cartobucket.auth.data.domain.GroupMember;
 import com.cartobucket.auth.data.domain.Profile;
 import com.cartobucket.auth.data.domain.ResourceType;
 import com.cartobucket.auth.data.domain.Schema;
@@ -182,7 +184,41 @@ public class EventRepository implements PanacheRepositoryBase<Event, UUID> {
         persist(event);
         return event;
     }
-    
+
+    public Event createGroupEvent(Group group, EventType eventType) {
+        Event event = new Event();
+        event.setEventType(eventType);
+        event.setAuthorizationServerId(group.getAuthorizationServerId());
+        event.setResourceType(ResourceType.GROUP);
+        event.setResourceId(group.getId());
+        event.setCreatedOn(OffsetDateTime.now());
+        Map<String, Object> resource = convertToMap(group);
+
+        event.setResource(
+                Map.of("group", resource)
+        );
+
+        persist(event);
+        return event;
+    }
+
+    public Event createGroupMemberEvent(GroupMember groupMember, EventType eventType) {
+        Event event = new Event();
+        event.setEventType(eventType);
+        event.setAuthorizationServerId(groupMember.getAuthorizationServerId());
+        event.setResourceType(ResourceType.GROUP_MEMBER);
+        event.setResourceId(groupMember.getId());
+        event.setCreatedOn(OffsetDateTime.now());
+        Map<String, Object> resource = convertToMap(groupMember);
+
+        event.setResource(
+                Map.of("groupMember", resource)
+        );
+
+        persist(event);
+        return event;
+    }
+
     @SuppressWarnings("unchecked")
     private Map<String, Object> convertToMap(Object obj) {
         // For event logging, we'll just store the object's toString representation

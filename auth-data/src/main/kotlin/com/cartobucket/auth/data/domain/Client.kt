@@ -19,6 +19,7 @@
 
 package com.cartobucket.auth.data.domain
 
+import com.revethq.core.Metadata
 import java.net.URI
 import java.time.OffsetDateTime
 import java.util.*

@@ -20,7 +20,7 @@
 package com.cartobucket.auth.postgres.client.entities;
 
 import com.cartobucket.auth.data.domain.DiscoveryMethodEnum;
-import com.cartobucket.auth.data.domain.Metadata;
+import com.revethq.core.Metadata;
 import com.cartobucket.auth.data.domain.WellKnownEndpoints;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

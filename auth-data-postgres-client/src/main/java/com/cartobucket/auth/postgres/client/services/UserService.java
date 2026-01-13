@@ -21,11 +21,11 @@ package com.cartobucket.auth.postgres.client.services;
 
 import com.cartobucket.auth.data.domain.Pair;
 import com.cartobucket.auth.data.domain.Profile;
-import com.cartobucket.auth.data.domain.ProfileType;
+import com.revethq.iam.user.domain.ProfileType;
 import com.cartobucket.auth.data.domain.Schema;
-import com.cartobucket.auth.data.domain.SchemaValidation;
+import com.revethq.core.SchemaValidation;
 import com.cartobucket.auth.data.domain.User;
-import com.cartobucket.auth.data.domain.Metadata;
+import com.revethq.core.Metadata;
 import com.cartobucket.auth.data.exceptions.notfound.ProfileNotFound;
 import com.cartobucket.auth.data.exceptions.notfound.UserNotFound;
 import com.cartobucket.auth.postgres.client.repositories.EventRepository;
@@ -260,33 +260,32 @@ public class UserService implements com.cartobucket.auth.data.services.UserServi
                 var validationErrors = schemaService.validateProfileAgainstSchema(profile, oidcSchema);
                 
                 // Create schema validation result
-                var schemaValidation = new SchemaValidation();
-                schemaValidation.setSchemaId(oidcSchema.getId());
-                schemaValidation.setValid(validationErrors.isEmpty());
-                schemaValidation.setValidatedOn(OffsetDateTime.now());
-                
-                // Initialize user metadata if needed
-                if (user.getMetadata() == null) {
-                    user.setMetadata(new Metadata());
-                }
-                
-                // Initialize schema validations list if needed
-                if (user.getMetadata().getSchemaValidations() == null) {
-                    user.getMetadata().setSchemaValidations(new java.util.ArrayList<>());
-                } else {
-                    // Make sure we have a mutable list
-                    user.getMetadata().setSchemaValidations(
-                        new java.util.ArrayList<>(user.getMetadata().getSchemaValidations())
-                    );
-                }
-                
-                // Remove any existing validation for this schema
-                user.getMetadata().getSchemaValidations().removeIf(
-                    sv -> oidcSchema.getId().equals(sv.getSchemaId())
+                var schemaValidation = new SchemaValidation(
+                    oidcSchema.getId(),
+                    validationErrors.isEmpty(),
+                    OffsetDateTime.now()
                 );
-                
+
+                // Build the updated schema validations list
+                var existingValidations = user.getMetadata() != null &&
+                    user.getMetadata().getSchemaValidations() != null
+                    ? new java.util.ArrayList<>(user.getMetadata().getSchemaValidations())
+                    : new java.util.ArrayList<SchemaValidation>();
+
+                // Remove any existing validation for this schema
+                existingValidations.removeIf(sv -> oidcSchema.getId().equals(sv.getSchemaId()));
+
                 // Add the new validation result
-                user.getMetadata().getSchemaValidations().add(schemaValidation);
+                existingValidations.add(schemaValidation);
+
+                // Create new metadata with updated schema validations
+                var existingMetadata = user.getMetadata();
+                var newMetadata = new Metadata(
+                    existingMetadata != null ? existingMetadata.getIdentifiers() : null,
+                    existingValidations,
+                    existingMetadata != null ? existingMetadata.getProperties() : null
+                );
+                user.setMetadata(newMetadata);
             }
         } catch (Exception e) {
             // Log warning but don't fail user creation if validation fails

@@ -1,0 +1,27 @@
+meta {
+  name: Auth Request
+  type: http
+  seq: 9
+}
+
+get {
+  url: http://localhost:5000/f3cbf16c-8ba9-467c-8e70-67a868a58299/authorization?client_id=fbb1c380-218e-43a8-ad0a-d54ca3c14e00&redirect_uri=https%3A%2F%2Foidcdebugger.com%2Fdebug&scope=openid%20email%20offline_access&response_type=code&response_mode=form_post&code_challenge_method=S256&code_challenge=3dbtWW8NE4ok_jetw-ETb_c3SAWoIYkJ2gOeBWTpFsE&state=zg3v34qt1l&nonce=6mzxcaks2xq
+  body: none
+  auth: inherit
+}
+
+params:query {
+  client_id: fbb1c380-218e-43a8-ad0a-d54ca3c14e00
+  redirect_uri: https%3A%2F%2Foidcdebugger.com%2Fdebug
+  scope: openid%20email%20offline_access
+  response_type: code
+  response_mode: form_post
+  code_challenge_method: S256
+  code_challenge: 3dbtWW8NE4ok_jetw-ETb_c3SAWoIYkJ2gOeBWTpFsE
+  state: zg3v34qt1l
+  nonce: 6mzxcaks2xq
+}
+
+settings {
+  encodeUrl: true
+}

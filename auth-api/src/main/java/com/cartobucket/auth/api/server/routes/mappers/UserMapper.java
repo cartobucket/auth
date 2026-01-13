@@ -19,7 +19,10 @@
 
 package com.cartobucket.auth.api.server.routes.mappers;
 
-import com.cartobucket.auth.data.domain.*;
+import com.cartobucket.auth.data.domain.Pair;
+import com.cartobucket.auth.data.domain.Profile;
+import com.cartobucket.auth.data.domain.User;
+import com.revethq.iam.user.domain.ProfileType;
 import com.cartobucket.auth.api.dto.UserRequest;
 import com.cartobucket.auth.api.dto.UserResponse;
 

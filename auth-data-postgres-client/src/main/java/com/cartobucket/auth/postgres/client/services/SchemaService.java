@@ -35,6 +35,7 @@ import jakarta.transaction.Transactional;
 import org.jboss.logging.Logger;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.JsonValidationService;
+import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemHandler;
 
 import java.io.StringReader;
@@ -84,8 +85,8 @@ public class SchemaService implements com.cartobucket.auth.data.services.SchemaS
             String profileJson = jsonb.toJson(profile.getProfile());
 
             // Create a problem handler that collects errors
-            List<String> problems = new ArrayList<>();
-            ProblemHandler handler = ProblemHandler.collectingTo(problems, problem -> problem.getMessage());
+            List<Problem> problems = new ArrayList<>();
+            ProblemHandler handler = ProblemHandler.collectingTo(problems);
 
             // Validate the profile against the schema
             try (JsonReader reader = jsonValidationService.createReader(
@@ -95,7 +96,10 @@ public class SchemaService implements com.cartobucket.auth.data.services.SchemaS
                 reader.readValue();
             }
 
-            errors.addAll(problems);
+            // Convert Problem objects to error messages
+            for (Problem problem : problems) {
+                errors.add(problem.getMessage());
+            }
 
         } catch (Exception e) {
             LOG.warn("Error validating profile against schema: " + e.getMessage(), e);

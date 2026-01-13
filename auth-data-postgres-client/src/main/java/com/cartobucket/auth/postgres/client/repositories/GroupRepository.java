@@ -17,9 +17,24 @@
  * THE SOFTWARE.
  */
 
-package com.cartobucket.auth.data.domain
+package com.cartobucket.auth.postgres.client.repositories;
 
-enum class ProfileType {
-    User,
-    Application
+import com.cartobucket.auth.postgres.client.entities.Group;
+import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
+import jakarta.enterprise.context.ApplicationScoped;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
+@ApplicationScoped
+public class GroupRepository implements PanacheRepositoryBase<Group, UUID> {
+
+    public Optional<Group> findByDisplayNameAndAuthorizationServerId(String displayName, UUID authorizationServerId) {
+        return find("displayName = ?1 and authorizationServerId = ?2", displayName, authorizationServerId).firstResultOptional();
+    }
+
+    public List<Group> findAllByAuthorizationServerIdIn(List<UUID> authorizationServerIds) {
+        return list("authorizationServerId in ?1", authorizationServerIds);
+    }
 }

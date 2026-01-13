@@ -20,8 +20,8 @@
 package com.cartobucket.auth.api.server.routes.mappers;
 
 import com.cartobucket.auth.data.domain.Profile;
-import com.cartobucket.auth.data.domain.ProfileType;
 import com.cartobucket.auth.data.domain.User;
+import com.revethq.iam.user.domain.ProfileType;
 
 import java.util.Map;
 

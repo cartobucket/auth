@@ -19,7 +19,7 @@
 
 package com.cartobucket.auth.postgres.client.entities;
 
-import com.cartobucket.auth.data.domain.Metadata;
+import com.revethq.core.Metadata;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.ConstraintMode;
 import jakarta.persistence.Entity;

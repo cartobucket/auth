@@ -10,5 +10,8 @@ enum class ResourceType {
     SCOPE,
     SIGNING_KEY,
     TEMPLATE,
-    USER
+    USER,
+    // New types added at the end to preserve ordinal compatibility
+    GROUP,
+    GROUP_MEMBER
 }
