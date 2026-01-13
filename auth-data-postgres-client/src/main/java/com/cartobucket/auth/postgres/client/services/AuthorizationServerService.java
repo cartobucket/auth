@@ -576,7 +576,7 @@ public class AuthorizationServerService implements com.cartobucket.auth.data.ser
                     var schema = new Schema();
                     schema.setName("oidc-userinfo-claims");
                     schema.setAuthorizationServerId(authorizationServer.getId());
-                    schema.setJsonSchemaVersion("https://json-schema.org/draft/2020-12/schema");
+                    schema.setJsonSchemaVersion("V202012");
                     schema.setSchema(schemaMap);
                     schema.setCreatedOn(OffsetDateTime.now());
                     schema.setUpdatedOn(OffsetDateTime.now());

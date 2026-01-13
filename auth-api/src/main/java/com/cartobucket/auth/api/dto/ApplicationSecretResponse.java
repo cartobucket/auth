@@ -1,6 +1,5 @@
 package com.cartobucket.auth.api.dto;
 
-import jakarta.json.bind.annotation.JsonbProperty;
 import jakarta.json.bind.annotation.JsonbNillable;
 import jakarta.validation.constraints.NotNull;
 import java.time.OffsetDateTime;
@@ -10,30 +9,15 @@ import java.util.List;
 
 @JsonbNillable(false)
 public class ApplicationSecretResponse {
-    
-    @JsonbProperty("id")
+
     private UUID id;
-    
-    @JsonbProperty("client_secret")
     private String clientSecret;
-    
-    @JsonbProperty("name")
     private String name;
-    
-    @JsonbProperty("expires_in")
     private Integer expiresIn;
-    
-    @JsonbProperty("application_id")
     private UUID applicationId;
-    
-    @JsonbProperty("authorization_server_id")
     private UUID authorizationServerId;
-    
-    @JsonbProperty("scopes")
     @NotNull
     private List<ScopeResponse> scopes;
-    
-    @JsonbProperty("created_on")
     @NotNull
     private OffsetDateTime createdOn;
 

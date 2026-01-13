@@ -1,6 +1,5 @@
 package com.cartobucket.auth.api.dto;
 
-import jakarta.json.bind.annotation.JsonbProperty;
 import jakarta.json.bind.annotation.JsonbNillable;
 import java.util.List;
 import java.util.Objects;
@@ -8,8 +7,7 @@ import java.util.UUID;
 
 @JsonbNillable(false)
 public class ScopeRequestFilter {
-    
-    @JsonbProperty("authorization_server_ids")
+
     private List<UUID> authorizationServerIds;
 
     public ScopeRequestFilter() {}

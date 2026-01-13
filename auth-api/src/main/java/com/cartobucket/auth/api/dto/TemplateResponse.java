@@ -1,6 +1,5 @@
 package com.cartobucket.auth.api.dto;
 
-import jakarta.json.bind.annotation.JsonbProperty;
 import jakarta.json.bind.annotation.JsonbNillable;
 import java.time.OffsetDateTime;
 import java.util.Objects;
@@ -8,26 +7,13 @@ import java.util.UUID;
 
 @JsonbNillable(false)
 public class TemplateResponse {
-    
-    @JsonbProperty("id")
+
     private String id;
-    
-    @JsonbProperty("authorization_server_id")
     private UUID authorizationServerId;
-    
-    @JsonbProperty("template_type")
     private String templateType;
-    
-    @JsonbProperty("template")
     private String template;
-    
-    @JsonbProperty("created_on")
     private OffsetDateTime createdOn;
-    
-    @JsonbProperty("updated_on")
     private OffsetDateTime updatedOn;
-    
-    @JsonbProperty("metadata")
     private Metadata metadata;
 
     public TemplateResponse() {}

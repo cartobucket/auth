@@ -13,13 +13,14 @@ dependencies {
     implementation 'io.quarkus:quarkus-container-image-jib'
     implementation 'io.quarkus:quarkus-kotlin'
     implementation 'org.jetbrains.kotlin:kotlin-stdlib'
-    implementation enforcedPlatform("${quarkusPlatformGroupId}:quarkus-camel-bom:${quarkusPlatformVersion}")
     implementation enforcedPlatform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}")
 
     implementation project(path: ':auth-data')
 
-    implementation 'org.apache.camel.quarkus:camel-quarkus-json-validator'
     implementation 'jakarta.json.bind:jakarta.json.bind-api:3.0.1'
+
+    // JSON Schema validation (uses Jakarta JSON-P, no Jackson dependency)
+    implementation 'org.leadpony.justify:justify:3.1.0'
 
     implementation 'io.quarkus:quarkus-arc'
     testImplementation 'io.quarkus:quarkus-junit5'

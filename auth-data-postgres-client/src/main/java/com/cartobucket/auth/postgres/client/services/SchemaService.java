@@ -29,18 +29,29 @@ import com.cartobucket.auth.postgres.client.entities.EventType;
 import com.cartobucket.auth.postgres.client.entities.mappers.SchemaMapper;
 import io.quarkus.panache.common.Sort;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.json.JsonReader;
+import jakarta.json.bind.JsonbBuilder;
 import jakarta.transaction.Transactional;
+import org.jboss.logging.Logger;
+import org.leadpony.justify.api.JsonSchema;
+import org.leadpony.justify.api.JsonValidationService;
+import org.leadpony.justify.api.ProblemHandler;
 
+import java.io.StringReader;
 import java.time.OffsetDateTime;
-import java.util.Collections;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
 @ApplicationScoped
 public class SchemaService implements com.cartobucket.auth.data.services.SchemaService {
+    private static final Logger LOG = Logger.getLogger(SchemaService.class);
+
     final EventRepository eventRepository;
     final SchemaRepository schemaRepository;
+    final JsonValidationService jsonValidationService;
 
     public SchemaService(
             EventRepository eventRepository,
@@ -48,14 +59,50 @@ public class SchemaService implements com.cartobucket.auth.data.services.SchemaS
     ) {
         this.eventRepository = eventRepository;
         this.schemaRepository = schemaRepository;
+        this.jsonValidationService = JsonValidationService.newInstance();
     }
 
     @Override
     public Set<String> validateProfileAgainstSchema(Profile profile, Schema schema) {
-        // TODO: Schema validation temporarily disabled to remove Jackson dependency
-        // The networknt schema library requires Jackson's JsonNode
-        // Need to find an alternative JSON Schema validator that works without Jackson
-        return Collections.emptySet(); // Return empty set = no validation errors
+        Set<String> errors = new HashSet<>();
+
+        if (profile == null || profile.getProfile() == null) {
+            return errors; // Nothing to validate
+        }
+
+        if (schema == null || schema.getSchema() == null) {
+            return errors; // No schema to validate against
+        }
+
+        try {
+            // Convert schema Map to JSON string, then parse as JsonSchema
+            var jsonb = JsonbBuilder.create();
+            String schemaJson = jsonb.toJson(schema.getSchema());
+            JsonSchema jsonSchema = jsonValidationService.readSchema(new StringReader(schemaJson));
+
+            // Convert profile Map to JSON string
+            String profileJson = jsonb.toJson(profile.getProfile());
+
+            // Create a problem handler that collects errors
+            List<String> problems = new ArrayList<>();
+            ProblemHandler handler = ProblemHandler.collectingTo(problems, problem -> problem.getMessage());
+
+            // Validate the profile against the schema
+            try (JsonReader reader = jsonValidationService.createReader(
+                    new StringReader(profileJson),
+                    jsonSchema,
+                    handler)) {
+                reader.readValue();
+            }
+
+            errors.addAll(problems);
+
+        } catch (Exception e) {
+            LOG.warn("Error validating profile against schema: " + e.getMessage(), e);
+            errors.add("Schema validation error: " + e.getMessage());
+        }
+
+        return errors;
     }
 
     @Override

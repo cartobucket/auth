@@ -1,6 +1,5 @@
 package com.cartobucket.auth.api.dto;
 
-import jakarta.json.bind.annotation.JsonbProperty;
 import jakarta.json.bind.annotation.JsonbNillable;
 import jakarta.validation.constraints.NotNull;
 import java.util.Objects;
@@ -9,20 +8,13 @@ import java.util.List;
 
 @JsonbNillable(false)
 public class ApplicationSecretRequest {
-    
-    @JsonbProperty("application_id")
+
     @NotNull
     private UUID applicationId;
-    
-    @JsonbProperty("name")
     @NotNull
     private String name;
-    
-    @JsonbProperty("scopes")
     @NotNull
     private List<UUID> scopes;
-    
-    @JsonbProperty("expires_in")
     private Integer expiresIn;
 
     public ApplicationSecretRequest() {}

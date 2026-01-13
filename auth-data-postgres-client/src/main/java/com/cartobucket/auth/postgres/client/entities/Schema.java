@@ -20,7 +20,6 @@
 package com.cartobucket.auth.postgres.client.entities;
 
 import com.cartobucket.auth.data.domain.Metadata;
-import com.networknt.schema.SpecVersion;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -44,7 +43,7 @@ public class Schema {
 
     private UUID authorizationServerId;
     private String name;
-    private SpecVersion.VersionFlag jsonSchemaVersion;
+    private String jsonSchemaVersion;
     @JdbcTypeCode(SqlTypes.JSON)
     private Map<String, Object> schema;
     @JdbcTypeCode(SqlTypes.JSON)
@@ -100,11 +99,11 @@ public class Schema {
     }
 
     public String getJsonSchemaVersion() {
-        return jsonSchemaVersion.name();
+        return jsonSchemaVersion;
     }
 
     public void setJsonSchemaVersion(String jsonSchemaVersion) {
-        this.jsonSchemaVersion = SpecVersion.VersionFlag.valueOf(jsonSchemaVersion);
+        this.jsonSchemaVersion = jsonSchemaVersion;
     }
 
     public Metadata getMetadata() {

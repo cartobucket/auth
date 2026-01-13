@@ -381,7 +381,7 @@ paths:
       - Schemas
       summary: List schemas with optional filtering
       parameters:
-      - name: authorizationServerIds
+      - name: authorizationServerId
         in: query
         schema:
           type: array
@@ -1101,15 +1101,15 @@ components:
           type: string
     ApplicationRequest:
       required:
-      - authorization_server_id
+      - authorizationServerId
       - name
       type: object
       properties:
-        authorization_server_id:
+        authorizationServerId:
           $ref: '#/components/schemas/UUID'
         name:
           type: string
-        client_id:
+        clientId:
           type: string
         profile: {}
         metadata:
@@ -1122,24 +1122,24 @@ components:
             type: string
     ApplicationResponse:
       required:
-      - authorization_server_id
+      - authorizationServerId
       - scopes
       type: object
       properties:
         id:
           type: string
-        authorization_server_id:
+        authorizationServerId:
           $ref: '#/components/schemas/UUID'
         name:
           type: string
-        client_id:
+        clientId:
           type: string
-        client_secret:
+        clientSecret:
           type: string
         profile: {}
-        created_on:
+        createdOn:
           $ref: '#/components/schemas/OffsetDateTime'
-        updated_on:
+        updatedOn:
           $ref: '#/components/schemas/OffsetDateTime'
         metadata:
           $ref: '#/components/schemas/Metadata'
@@ -1149,12 +1149,12 @@ components:
             $ref: '#/components/schemas/ScopeResponse'
     ApplicationSecretRequest:
       required:
-      - application_id
+      - applicationId
       - name
       - scopes
       type: object
       properties:
-        application_id:
+        applicationId:
           $ref: '#/components/schemas/UUID'
         name:
           type: string
@@ -1164,40 +1164,40 @@ components:
             format: uuid
             pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
             type: string
-        expires_in:
+        expiresIn:
           format: int32
           type: integer
     ApplicationSecretResponse:
       required:
       - scopes
-      - created_on
+      - createdOn
       type: object
       properties:
         id:
           $ref: '#/components/schemas/UUID'
-        client_secret:
+        clientSecret:
           type: string
         name:
           type: string
-        expires_in:
+        expiresIn:
           format: int32
           type: integer
-        application_id:
+        applicationId:
           $ref: '#/components/schemas/UUID'
-        authorization_server_id:
+        authorizationServerId:
           $ref: '#/components/schemas/UUID'
         scopes:
           type: array
           items:
             $ref: '#/components/schemas/ScopeResponse'
-        created_on:
+        createdOn:
           $ref: '#/components/schemas/OffsetDateTime'
     ApplicationSecretsResponse:
       required:
       - page
       type: object
       properties:
-        application_secrets:
+        applicationSecrets:
           type: array
           items:
             $ref: '#/components/schemas/ApplicationSecretResponse'
@@ -1217,14 +1217,14 @@ components:
     AuthorizationServerRequest:
       type: object
       properties:
-        server_url:
+        serverUrl:
           type: string
         audience:
           type: string
-        client_credentials_token_expiration:
+        clientCredentialsTokenExpiration:
           format: int32
           type: integer
-        authorization_code_token_expiration:
+        authorizationCodeTokenExpiration:
           format: int32
           type: integer
         name:
@@ -1238,21 +1238,21 @@ components:
       properties:
         id:
           type: string
-        server_url:
+        serverUrl:
           type: string
         audience:
           type: string
-        client_credentials_token_expiration:
+        clientCredentialsTokenExpiration:
           format: int32
           type: integer
-        authorization_code_token_expiration:
+        authorizationCodeTokenExpiration:
           format: int32
           type: integer
         name:
           type: string
-        created_on:
+        createdOn:
           $ref: '#/components/schemas/OffsetDateTime'
-        updated_on:
+        updatedOn:
           $ref: '#/components/schemas/OffsetDateTime'
         metadata:
           $ref: '#/components/schemas/Metadata'
@@ -1265,7 +1265,7 @@ components:
       - page
       type: object
       properties:
-        authorization_servers:
+        authorizationServers:
           type: array
           items:
             $ref: '#/components/schemas/AuthorizationServerResponse'
@@ -1276,9 +1276,9 @@ components:
       properties:
         name:
           type: string
-        authorization_server_id:
+        authorizationServerId:
           $ref: '#/components/schemas/UUID'
-        redirect_uris:
+        redirectUris:
           type: array
           items:
             type: string
@@ -1297,15 +1297,15 @@ components:
           type: string
         name:
           type: string
-        authorization_server_id:
+        authorizationServerId:
           $ref: '#/components/schemas/UUID'
-        redirect_uris:
+        redirectUris:
           type: array
           items:
             type: string
-        created_on:
+        createdOn:
           $ref: '#/components/schemas/OffsetDateTime'
-        updated_on:
+        updatedOn:
           $ref: '#/components/schemas/OffsetDateTime'
         scopes:
           type: array
@@ -1421,30 +1421,30 @@ components:
           type: string
     SchemaRequest:
       required:
-      - authorization_server
+      - authorizationServerId
       type: object
       properties:
-        authorization_server:
+        authorizationServerId:
           $ref: '#/components/schemas/UUID'
         name:
           type: string
-        schema_version:
+        schemaVersion:
           type: string
         schema: {}
         metadata:
           $ref: '#/components/schemas/Metadata'
     SchemaResponse:
       required:
-      - authorization_server
+      - authorizationServerId
       type: object
       properties:
         id:
           $ref: '#/components/schemas/UUID'
-        authorization_server:
+        authorizationServerId:
           $ref: '#/components/schemas/UUID'
         name:
           type: string
-        schema_version:
+        schemaVersion:
           type: string
         schema: {}
         metadata:
@@ -1463,7 +1463,7 @@ components:
     ScopeRequest:
       type: object
       properties:
-        authorization_server_id:
+        authorizationServerId:
           $ref: '#/components/schemas/UUID'
         name:
           type: string
@@ -1498,9 +1498,9 @@ components:
     TemplateRequest:
       type: object
       properties:
-        authorization_server_id:
+        authorizationServerId:
           $ref: '#/components/schemas/UUID'
-        template_type:
+        templateType:
           type: string
         template:
           type: string
@@ -1511,15 +1511,15 @@ components:
       properties:
         id:
           type: string
-        authorization_server_id:
+        authorizationServerId:
           $ref: '#/components/schemas/UUID'
-        template_type:
+        templateType:
           type: string
         template:
           type: string
-        created_on:
+        createdOn:
           $ref: '#/components/schemas/OffsetDateTime'
-        updated_on:
+        updatedOn:
           $ref: '#/components/schemas/OffsetDateTime'
         metadata:
           $ref: '#/components/schemas/Metadata'
@@ -1545,7 +1545,7 @@ components:
     UserRequest:
       type: object
       properties:
-        authorization_server_id:
+        authorizationServerId:
           $ref: '#/components/schemas/UUID'
         username:
           type: string
@@ -1561,16 +1561,16 @@ components:
       properties:
         id:
           type: string
-        authorization_server_id:
+        authorizationServerId:
           $ref: '#/components/schemas/UUID'
         username:
           type: string
         email:
           type: string
         profile: {}
-        created_on:
+        createdOn:
           $ref: '#/components/schemas/OffsetDateTime'
-        updated_on:
+        updatedOn:
           $ref: '#/components/schemas/OffsetDateTime'
         metadata:
           $ref: '#/components/schemas/Metadata'

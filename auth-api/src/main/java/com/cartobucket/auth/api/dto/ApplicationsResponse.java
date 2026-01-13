@@ -1,6 +1,5 @@
 package com.cartobucket.auth.api.dto;
 
-import jakarta.json.bind.annotation.JsonbProperty;
 import jakarta.json.bind.annotation.JsonbNillable;
 import jakarta.validation.constraints.NotNull;
 import java.util.List;
@@ -8,11 +7,8 @@ import java.util.Objects;
 
 @JsonbNillable(false)
 public class ApplicationsResponse {
-    
-    @JsonbProperty("applications")
+
     private List<ApplicationResponse> applications;
-    
-    @JsonbProperty("page")
     @NotNull
     private Page page;
 

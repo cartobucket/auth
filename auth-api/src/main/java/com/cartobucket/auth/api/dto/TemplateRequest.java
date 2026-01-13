@@ -1,23 +1,15 @@
 package com.cartobucket.auth.api.dto;
 
-import jakarta.json.bind.annotation.JsonbProperty;
 import jakarta.json.bind.annotation.JsonbNillable;
 import java.util.Objects;
 import java.util.UUID;
 
 @JsonbNillable(false)
 public class TemplateRequest {
-    
-    @JsonbProperty("authorization_server_id")
+
     private UUID authorizationServerId;
-    
-    @JsonbProperty("template_type")
     private String templateType;
-    
-    @JsonbProperty("template")
     private String template;
-    
-    @JsonbProperty("metadata")
     private Metadata metadata;
 
     public TemplateRequest() {}

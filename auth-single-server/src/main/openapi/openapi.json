@@ -551,7 +551,7 @@
         "tags" : [ "Schemas" ],
         "summary" : "List schemas with optional filtering",
         "parameters" : [ {
-          "name" : "authorizationServerIds",
+          "name" : "authorizationServerId",
           "in" : "query",
           "schema" : {
             "type" : "array",
@@ -1591,16 +1591,16 @@
         }
       },
       "ApplicationRequest" : {
-        "required" : [ "authorization_server_id", "name" ],
+        "required" : [ "authorizationServerId", "name" ],
         "type" : "object",
         "properties" : {
-          "authorization_server_id" : {
+          "authorizationServerId" : {
             "$ref" : "#/components/schemas/UUID"
           },
           "name" : {
             "type" : "string"
           },
-          "client_id" : {
+          "clientId" : {
             "type" : "string"
           },
           "profile" : { },
@@ -1618,29 +1618,29 @@
         }
       },
       "ApplicationResponse" : {
-        "required" : [ "authorization_server_id", "scopes" ],
+        "required" : [ "authorizationServerId", "scopes" ],
         "type" : "object",
         "properties" : {
           "id" : {
             "type" : "string"
           },
-          "authorization_server_id" : {
+          "authorizationServerId" : {
             "$ref" : "#/components/schemas/UUID"
           },
           "name" : {
             "type" : "string"
           },
-          "client_id" : {
+          "clientId" : {
             "type" : "string"
           },
-          "client_secret" : {
+          "clientSecret" : {
             "type" : "string"
           },
           "profile" : { },
-          "created_on" : {
+          "createdOn" : {
             "$ref" : "#/components/schemas/OffsetDateTime"
           },
-          "updated_on" : {
+          "updatedOn" : {
             "$ref" : "#/components/schemas/OffsetDateTime"
           },
           "metadata" : {
@@ -1655,10 +1655,10 @@
         }
       },
       "ApplicationSecretRequest" : {
-        "required" : [ "application_id", "name", "scopes" ],
+        "required" : [ "applicationId", "name", "scopes" ],
         "type" : "object",
         "properties" : {
-          "application_id" : {
+          "applicationId" : {
             "$ref" : "#/components/schemas/UUID"
           },
           "name" : {
@@ -1672,33 +1672,33 @@
               "type" : "string"
             }
           },
-          "expires_in" : {
+          "expiresIn" : {
             "format" : "int32",
             "type" : "integer"
           }
         }
       },
       "ApplicationSecretResponse" : {
-        "required" : [ "scopes", "created_on" ],
+        "required" : [ "scopes", "createdOn" ],
         "type" : "object",
         "properties" : {
           "id" : {
             "$ref" : "#/components/schemas/UUID"
           },
-          "client_secret" : {
+          "clientSecret" : {
             "type" : "string"
           },
           "name" : {
             "type" : "string"
           },
-          "expires_in" : {
+          "expiresIn" : {
             "format" : "int32",
             "type" : "integer"
           },
-          "application_id" : {
+          "applicationId" : {
             "$ref" : "#/components/schemas/UUID"
           },
-          "authorization_server_id" : {
+          "authorizationServerId" : {
             "$ref" : "#/components/schemas/UUID"
           },
           "scopes" : {
@@ -1707,7 +1707,7 @@
               "$ref" : "#/components/schemas/ScopeResponse"
             }
           },
-          "created_on" : {
+          "createdOn" : {
             "$ref" : "#/components/schemas/OffsetDateTime"
           }
         }
@@ -1716,7 +1716,7 @@
         "required" : [ "page" ],
         "type" : "object",
         "properties" : {
-          "application_secrets" : {
+          "applicationSecrets" : {
             "type" : "array",
             "items" : {
               "$ref" : "#/components/schemas/ApplicationSecretResponse"
@@ -1745,17 +1745,17 @@
       "AuthorizationServerRequest" : {
         "type" : "object",
         "properties" : {
-          "server_url" : {
+          "serverUrl" : {
             "type" : "string"
           },
           "audience" : {
             "type" : "string"
           },
-          "client_credentials_token_expiration" : {
+          "clientCredentialsTokenExpiration" : {
             "format" : "int32",
             "type" : "integer"
           },
-          "authorization_code_token_expiration" : {
+          "authorizationCodeTokenExpiration" : {
             "format" : "int32",
             "type" : "integer"
           },
@@ -1774,27 +1774,27 @@
           "id" : {
             "type" : "string"
           },
-          "server_url" : {
+          "serverUrl" : {
             "type" : "string"
           },
           "audience" : {
             "type" : "string"
           },
-          "client_credentials_token_expiration" : {
+          "clientCredentialsTokenExpiration" : {
             "format" : "int32",
             "type" : "integer"
           },
-          "authorization_code_token_expiration" : {
+          "authorizationCodeTokenExpiration" : {
             "format" : "int32",
             "type" : "integer"
           },
           "name" : {
             "type" : "string"
           },
-          "created_on" : {
+          "createdOn" : {
             "$ref" : "#/components/schemas/OffsetDateTime"
           },
-          "updated_on" : {
+          "updatedOn" : {
             "$ref" : "#/components/schemas/OffsetDateTime"
           },
           "metadata" : {
@@ -1812,7 +1812,7 @@
         "required" : [ "page" ],
         "type" : "object",
         "properties" : {
-          "authorization_servers" : {
+          "authorizationServers" : {
             "type" : "array",
             "items" : {
               "$ref" : "#/components/schemas/AuthorizationServerResponse"
@@ -1829,10 +1829,10 @@
           "name" : {
             "type" : "string"
           },
-          "authorization_server_id" : {
+          "authorizationServerId" : {
             "$ref" : "#/components/schemas/UUID"
           },
-          "redirect_uris" : {
+          "redirectUris" : {
             "type" : "array",
             "items" : {
               "type" : "string"
@@ -1860,19 +1860,19 @@
           "name" : {
             "type" : "string"
           },
-          "authorization_server_id" : {
+          "authorizationServerId" : {
             "$ref" : "#/components/schemas/UUID"
           },
-          "redirect_uris" : {
+          "redirectUris" : {
             "type" : "array",
             "items" : {
               "type" : "string"
             }
           },
-          "created_on" : {
+          "createdOn" : {
             "$ref" : "#/components/schemas/OffsetDateTime"
           },
-          "updated_on" : {
+          "updatedOn" : {
             "$ref" : "#/components/schemas/OffsetDateTime"
           },
           "scopes" : {
@@ -2041,16 +2041,16 @@
         }
       },
       "SchemaRequest" : {
-        "required" : [ "authorization_server" ],
+        "required" : [ "authorizationServerId" ],
         "type" : "object",
         "properties" : {
-          "authorization_server" : {
+          "authorizationServerId" : {
             "$ref" : "#/components/schemas/UUID"
           },
           "name" : {
             "type" : "string"
           },
-          "schema_version" : {
+          "schemaVersion" : {
             "type" : "string"
           },
           "schema" : { },
@@ -2060,19 +2060,19 @@
         }
       },
       "SchemaResponse" : {
-        "required" : [ "authorization_server" ],
+        "required" : [ "authorizationServerId" ],
         "type" : "object",
         "properties" : {
           "id" : {
             "$ref" : "#/components/schemas/UUID"
           },
-          "authorization_server" : {
+          "authorizationServerId" : {
             "$ref" : "#/components/schemas/UUID"
           },
           "name" : {
             "type" : "string"
           },
-          "schema_version" : {
+          "schemaVersion" : {
             "type" : "string"
           },
           "schema" : { },
@@ -2099,7 +2099,7 @@
       "ScopeRequest" : {
         "type" : "object",
         "properties" : {
-          "authorization_server_id" : {
+          "authorizationServerId" : {
             "$ref" : "#/components/schemas/UUID"
           },
           "name" : {
@@ -2151,10 +2151,10 @@
       "TemplateRequest" : {
         "type" : "object",
         "properties" : {
-          "authorization_server_id" : {
+          "authorizationServerId" : {
             "$ref" : "#/components/schemas/UUID"
           },
-          "template_type" : {
+          "templateType" : {
             "type" : "string"
           },
           "template" : {
@@ -2171,19 +2171,19 @@
           "id" : {
             "type" : "string"
           },
-          "authorization_server_id" : {
+          "authorizationServerId" : {
             "$ref" : "#/components/schemas/UUID"
           },
-          "template_type" : {
+          "templateType" : {
             "type" : "string"
           },
           "template" : {
             "type" : "string"
           },
-          "created_on" : {
+          "createdOn" : {
             "$ref" : "#/components/schemas/OffsetDateTime"
           },
-          "updated_on" : {
+          "updatedOn" : {
             "$ref" : "#/components/schemas/OffsetDateTime"
           },
           "metadata" : {
@@ -2218,7 +2218,7 @@
       "UserRequest" : {
         "type" : "object",
         "properties" : {
-          "authorization_server_id" : {
+          "authorizationServerId" : {
             "$ref" : "#/components/schemas/UUID"
           },
           "username" : {
@@ -2242,7 +2242,7 @@
           "id" : {
             "type" : "string"
           },
-          "authorization_server_id" : {
+          "authorizationServerId" : {
             "$ref" : "#/components/schemas/UUID"
           },
           "username" : {
@@ -2252,10 +2252,10 @@
             "type" : "string"
           },
           "profile" : { },
-          "created_on" : {
+          "createdOn" : {
             "$ref" : "#/components/schemas/OffsetDateTime"
           },
-          "updated_on" : {
+          "updatedOn" : {
             "$ref" : "#/components/schemas/OffsetDateTime"
           },
           "metadata" : {

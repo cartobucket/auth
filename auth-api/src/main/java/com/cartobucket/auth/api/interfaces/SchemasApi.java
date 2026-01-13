@@ -60,7 +60,7 @@ public interface SchemasApi {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     Response listSchemas(
-        @QueryParam("authorizationServerIds") List<UUID> authorizationServerIds,
+        @QueryParam("authorizationServerId") List<UUID> authorizationServerIds,
         @QueryParam("limit") Integer limit,
         @QueryParam("offset") Integer offset
     );

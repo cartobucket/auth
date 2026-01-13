@@ -1,6 +1,5 @@
 package com.cartobucket.auth.api.dto;
 
-import jakarta.json.bind.annotation.JsonbProperty;
 import jakarta.json.bind.annotation.JsonbNillable;
 import jakarta.validation.constraints.NotNull;
 import java.util.Objects;
@@ -9,25 +8,14 @@ import java.util.List;
 
 @JsonbNillable(false)
 public class ApplicationRequest {
-    
-    @JsonbProperty("authorization_server_id")
+
     @NotNull
     private UUID authorizationServerId;
-    
-    @JsonbProperty("name")
     @NotNull
     private String name;
-    
-    @JsonbProperty("client_id")
     private String clientId;
-    
-    @JsonbProperty("profile")
     private Object profile;
-    
-    @JsonbProperty("metadata")
     private Metadata metadata;
-    
-    @JsonbProperty("scopes")
     private List<UUID> scopes;
 
     public ApplicationRequest() {}

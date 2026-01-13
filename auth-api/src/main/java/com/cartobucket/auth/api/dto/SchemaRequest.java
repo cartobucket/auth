@@ -1,6 +1,5 @@
 package com.cartobucket.auth.api.dto;
 
-import jakarta.json.bind.annotation.JsonbProperty;
 import jakarta.json.bind.annotation.JsonbNillable;
 import jakarta.validation.constraints.NotNull;
 import java.util.Objects;
@@ -8,36 +7,27 @@ import java.util.UUID;
 
 @JsonbNillable(false)
 public class SchemaRequest {
-    
-    @JsonbProperty("authorization_server")
+
     @NotNull
-    private UUID authorizationServer;
-    
-    @JsonbProperty("name")
+    private UUID authorizationServerId;
     private String name;
-    
-    @JsonbProperty("schema_version")
     private String schemaVersion;
-    
-    @JsonbProperty("schema")
     private Object schema;
-    
-    @JsonbProperty("metadata")
     private Metadata metadata;
 
     public SchemaRequest() {}
 
-    public SchemaRequest authorizationServer(UUID authorizationServer) {
-        this.authorizationServer = authorizationServer;
+    public SchemaRequest authorizationServerId(UUID authorizationServerId) {
+        this.authorizationServerId = authorizationServerId;
         return this;
     }
 
-    public UUID getAuthorizationServer() {
-        return authorizationServer;
+    public UUID getAuthorizationServerId() {
+        return authorizationServerId;
     }
 
-    public void setAuthorizationServer(UUID authorizationServer) {
-        this.authorizationServer = authorizationServer;
+    public void setAuthorizationServerId(UUID authorizationServerId) {
+        this.authorizationServerId = authorizationServerId;
     }
 
     public SchemaRequest name(String name) {
@@ -97,7 +87,7 @@ public class SchemaRequest {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         SchemaRequest that = (SchemaRequest) o;
-        return Objects.equals(authorizationServer, that.authorizationServer) &&
+        return Objects.equals(authorizationServerId, that.authorizationServerId) &&
                 Objects.equals(name, that.name) &&
                 Objects.equals(schemaVersion, that.schemaVersion) &&
                 Objects.equals(schema, that.schema) &&
@@ -106,13 +96,13 @@ public class SchemaRequest {
 
     @Override
     public int hashCode() {
-        return Objects.hash(authorizationServer, name, schemaVersion, schema, metadata);
+        return Objects.hash(authorizationServerId, name, schemaVersion, schema, metadata);
     }
 
     @Override
     public String toString() {
         return "SchemaRequest{" +
-                "authorizationServer=" + authorizationServer +
+                "authorizationServerId=" + authorizationServerId +
                 ", name='" + name + '\'' +
                 ", schemaVersion='" + schemaVersion + '\'' +
                 ", schema=" + schema +

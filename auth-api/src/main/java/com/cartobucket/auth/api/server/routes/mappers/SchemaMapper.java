@@ -32,7 +32,7 @@ public class SchemaMapper {
         schemaResponse.setSchemaVersion(schema.getJsonSchemaVersion());
         schemaResponse.setId(schema.getId());
         schemaResponse.setName(schema.getName());
-        schemaResponse.setAuthorizationServer(schema.getAuthorizationServerId());
+        schemaResponse.setAuthorizationServerId(schema.getAuthorizationServerId());
         schemaResponse.setMetadata(MetadataMapper.to(schema.getMetadata()));
         return schemaResponse;
     }
@@ -42,7 +42,7 @@ public class SchemaMapper {
         schema.setSchema((Map<String, Object>) schemaRequest.getSchema());
         schema.setJsonSchemaVersion(schemaRequest.getSchemaVersion());
         schema.setName(schemaRequest.getName());
-        schema.setAuthorizationServerId(schemaRequest.getAuthorizationServer());
+        schema.setAuthorizationServerId(schemaRequest.getAuthorizationServerId());
         schema.setMetadata(MetadataMapper.from(schemaRequest.getMetadata()));
         return schema;
     }
