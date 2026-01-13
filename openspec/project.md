@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Cartobucket Auth is an opinionated OAuth 2.1 and OpenID Connect (OIDC) implementation designed as an educational and practical platform for developers to understand and explore OAuth/OIDC concepts. This project is **NOT production-ready** and serves as both a learning tool and a functional authorization server environment.
+Revet Auth is an opinionated OAuth 2.1 and OpenID Connect (OIDC) implementation designed as an educational and practical platform for developers to understand and explore OAuth/OIDC concepts. This project is **NOT production-ready** and serves as both a learning tool and a functional authorization server environment.
 
 **Key capabilities:**
 - OAuth 2.1 Authorization Code Flow (for clients/users)
@@ -49,25 +49,27 @@ Cartobucket Auth is an opinionated OAuth 2.1 and OpenID Connect (OIDC) implement
 - Automatic formatting on changed files (ratchets from `origin/main`)
 
 **Naming Conventions:**
-- Package structure: `com.cartobucket.auth.<module>.<layer>`
+- Package structure: `com.revethq.auth.<module>.<layer>`
 - Classes: PascalCase (e.g., `ApplicationService`, `UserRepository`)
 - Constants: UPPER_SNAKE_CASE
 - Methods: camelCase
 
 **Language Split:**
-- Kotlin: Domain models and service interfaces (`auth-data` module)
-- Java: Persistence layer, repositories, mappers, REST controllers
+- Kotlin: Domain models, service interfaces, DTOs, persistence layer, and REST routes
 
 ### Architecture Patterns
 
 **Multi-Module Gradle Structure:**
 ```
-auth-single-server        # Main executable Quarkus app
-├── auth-api              # REST API definitions & DTOs
-├── auth-authorization-server-api  # OAuth/OIDC protocol layer
-├── auth-data             # Core domain models & service interfaces (Kotlin)
-└── auth-data-postgres-client      # PostgreSQL persistence implementation
+web           # Main executable Quarkus app - REST routes, validators, application config
+├── persistence   # PostgreSQL persistence - JPA entities, repositories, service implementations
+└── core          # Core domain - domain models, service interfaces, DTOs, API interfaces
 ```
+
+**Module Responsibilities:**
+- **core**: Technology-agnostic domain classes, service interfaces, DTOs, and JAX-RS API interfaces
+- **persistence**: Database-specific implementation with JPA entities, Panache repositories, and service implementations
+- **web**: HTTP/REST concerns including route implementations, validators, and the main application entry point
 
 **Layered Architecture:**
 ```
@@ -81,9 +83,9 @@ JPA Entities (persistence)
 ```
 
 **Key Patterns:**
-- **Mapper Pattern**: Domain models (Kotlin) separate from JPA entities (Java), with mappers converting between layers
+- **Mapper Pattern**: Domain models separate from JPA entities, with mappers converting between layers
 - **Repository Pattern**: Quarkus Panache DAO pattern with HQL/JPQL queries
-- **Service Layer**: Abstract interfaces in `auth-data`, concrete implementations in `auth-data-postgres-client`
+- **Service Layer**: Abstract interfaces in `core`, concrete implementations in `persistence`
 - **Dependency Injection**: Quarkus Arc (CDI)
 
 ### Testing Strategy
@@ -128,7 +130,7 @@ JPA Entities (persistence)
 - **Not Production Ready**: This is an educational project; do not use in production environments
 - **PostgreSQL Required**: The application requires a PostgreSQL database
 - **Java 21**: Minimum JDK version requirement
-- **Single Deployment Model**: The `auth-single-server` module bundles all components
+- **Single Deployment Model**: The `web` module bundles all components as the main application
 
 ## External Dependencies
 
@@ -137,7 +139,7 @@ JPA Entities (persistence)
 
 **Environment Variables:**
 ```
-CB_AUTH_DATABASE_USERNAME   # Default: auth/cartobucket-auth
+CB_AUTH_DATABASE_USERNAME   # Default: auth/revet-auth
 CB_AUTH_DATABASE_PASSWORD   # Default: auth/notsecure
 CB_AUTH_DATABASE_JDBC_URL   # Default: jdbc:postgresql://localhost:5432/auth
 CB_AUTH_LOG_SQL             # Default: false

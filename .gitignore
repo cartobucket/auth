@@ -2,6 +2,9 @@
 .gradle/
 build/
 
+# Kotlin
+.kotlin/
+
 # Eclipse
 .project
 .classpath
@@ -39,5 +42,5 @@ nb-configuration.xml
 login/node_modules
 
 # Files in examples that need to be excluded.
-examples/oidc_test/db.sqlite3
-examples/oidc_test/oidc_test/__pycache__/
+web/examples/oidc_test/db.sqlite3
+web/examples/oidc_test/oidc_test/__pycache__/

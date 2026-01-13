@@ -6,10 +6,10 @@ services:
     ports:
       - "5432:5432"
     environment:
-      - POSTGRES_USER=cartobucket-auth
+      - POSTGRES_USER=revet-auth
       - POSTGRES_PASSWORD=notsecure
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U cartobucket-auth"]
+      test: ["CMD-SHELL", "pg_isready -U revet-auth"]
       interval: 5s
       timeout: 5s
       retries: 6

@@ -1,0 +1,90 @@
+plugins {
+    id 'java'
+    id 'org.jetbrains.kotlin.jvm'
+    id 'io.quarkus'
+}
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+}
+
+dependencies {
+    implementation 'io.quarkus:quarkus-container-image-jib'
+    implementation 'io.quarkus:quarkus-kotlin'
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib'
+    implementation 'io.quarkus:quarkus-hibernate-validator'
+
+    implementation enforcedPlatform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}")
+    implementation 'io.quarkus:quarkus-arc'
+    implementation 'io.quarkus:quarkus-resteasy-reactive'
+    implementation 'io.quarkus:quarkus-resteasy-reactive-jsonb'
+    implementation 'io.quarkus:quarkus-resteasy-reactive-qute'
+    implementation 'io.quarkus:quarkus-smallrye-openapi'
+
+    // OpenAPI support
+    implementation 'org.eclipse.microprofile.openapi:microprofile-openapi-api:3.1.1'
+
+    // Jakarta APIs
+    implementation 'jakarta.json.bind:jakarta.json.bind-api:3.0.1'
+    implementation 'jakarta.validation:jakarta.validation-api:3.1.0'
+    implementation 'jakarta.ws.rs:jakarta.ws.rs-api:4.0.0'
+    implementation 'jakarta.inject:jakarta.inject-api:2.0.1'
+    implementation 'jakarta.annotation:jakarta.annotation-api:3.0.0'
+
+    implementation project(':core')
+    implementation project(':persistence')
+
+    testImplementation 'io.quarkus:quarkus-junit5'
+}
+
+group 'com.revethq.auth'
+version '1.0-SNAPSHOT'
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
+}
+
+kotlin {
+    jvmToolchain(21)
+}
+
+sourceSets {
+    main {
+        kotlin {
+            srcDirs = ['src/main/kotlin']
+        }
+        java {
+            srcDirs = ['src/main/java']
+        }
+        resources {
+            srcDir 'src/main/resources'
+        }
+    }
+    test {
+        kotlin {
+            srcDirs = ['src/test/kotlin']
+        }
+        java {
+            srcDirs = ['src/test/java']
+        }
+    }
+}
+
+test {
+    systemProperty "java.util.logging.manager", "org.jboss.logmanager.LogManager"
+}
+compileJava {
+    options.encoding = 'UTF-8'
+    options.compilerArgs << '-parameters'
+}
+
+compileTestJava {
+    options.encoding = 'UTF-8'
+}
+
+// Handle duplicate META-INF/beans.xml files
+processResources {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}

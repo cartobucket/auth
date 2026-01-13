@@ -1,4 +1,4 @@
-# Cartobucket Auth
+# Revet Auth
 
 ** WARNING - NOT PRODUCTION READY **
 

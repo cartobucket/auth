@@ -10,8 +10,6 @@ pluginManagement {
 	}
 }
 rootProject.name='auth'
-include 'auth-api'
-include 'auth-authorization-server-api'
-include 'auth-data'
-include 'auth-data-postgres-client'
-include 'auth-single-server'
+include 'core'
+include 'persistence'
+include 'web'
