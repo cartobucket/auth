@@ -17,29 +17,43 @@
  * THE SOFTWARE.
  */
 
-package com.cartobucket.auth.authorization.server.routes.mappers;
+package com.cartobucket.auth.authorization.server.dto
 
+import jakarta.json.bind.annotation.JsonbNillable
+import jakarta.json.bind.annotation.JsonbProperty
+import jakarta.validation.constraints.NotNull
 
-import com.cartobucket.auth.authorization.server.dto.JWK;
-import com.cartobucket.auth.authorization.server.dto.JWKS;
+@JsonbNillable(false)
+data class AuthorizationRequest(
+    @field:JsonbProperty("client_id")
+    @field:NotNull
+    var clientId: String? = null,
 
-import java.util.List;
+    @field:JsonbProperty("response_type")
+    @field:NotNull
+    var responseType: String? = null,
 
-public class JwksMapper {
-    public static JWK to(com.cartobucket.auth.data.domain.JWK jwk) {
-        var jwkModel = new JWK();
-        jwkModel.setAlg(jwk.getAlg());
-        jwkModel.setE(jwk.getE());
-        jwkModel.setKid(jwk.getKid());
-        jwkModel.setKty(jwk.getKty());
-        jwkModel.setN(jwk.getN());
-        jwkModel.setUse(jwk.getUse());
-        return jwkModel;
-    }
+    @field:JsonbProperty("redirect_uri")
+    var redirectUri: String? = null,
 
-    public static JWKS toJwksResponse(List<com.cartobucket.auth.data.domain.JWK> jwksForAuthorizationServer) {
-        var jwks = new JWKS();
-        jwks.setKeys(jwksForAuthorizationServer.stream().map(JwksMapper::to).toList());
-        return jwks;
-    }
-}
+    @field:JsonbProperty("scope")
+    var scope: String? = null,
+
+    @field:JsonbProperty("state")
+    var state: String? = null,
+
+    @field:JsonbProperty("nonce")
+    var nonce: String? = null,
+
+    @field:JsonbProperty("code_challenge")
+    var codeChallenge: String? = null,
+
+    @field:JsonbProperty("code_challenge_method")
+    var codeChallengeMethod: String? = null,
+
+    @field:JsonbProperty("username")
+    var username: String? = null,
+
+    @field:JsonbProperty("password")
+    var password: String? = null
+)

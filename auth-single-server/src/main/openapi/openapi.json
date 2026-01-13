@@ -1527,35 +1527,40 @@
           "description" : "Client identifier",
           "required" : true,
           "schema" : {
-            "type" : "string"
+            "type" : "string",
+            "nullable" : true
           }
         }, {
           "name" : "code_challenge",
           "in" : "query",
           "description" : "PKCE code challenge",
           "schema" : {
-            "type" : "string"
+            "type" : "string",
+            "nullable" : true
           }
         }, {
           "name" : "code_challenge_method",
           "in" : "query",
           "description" : "PKCE code challenge method",
           "schema" : {
-            "type" : "string"
+            "type" : "string",
+            "nullable" : true
           }
         }, {
           "name" : "nonce",
           "in" : "query",
           "description" : "Nonce for ID token",
           "schema" : {
-            "type" : "string"
+            "type" : "string",
+            "nullable" : true
           }
         }, {
           "name" : "redirect_uri",
           "in" : "query",
           "description" : "Redirect URI",
           "schema" : {
-            "type" : "string"
+            "type" : "string",
+            "nullable" : true
           }
         }, {
           "name" : "response_type",
@@ -1563,21 +1568,24 @@
           "description" : "Response type",
           "required" : true,
           "schema" : {
-            "type" : "string"
+            "type" : "string",
+            "nullable" : true
           }
         }, {
           "name" : "scope",
           "in" : "query",
           "description" : "Requested scopes",
           "schema" : {
-            "type" : "string"
+            "type" : "string",
+            "nullable" : true
           }
         }, {
           "name" : "state",
           "in" : "query",
           "description" : "State parameter",
           "schema" : {
-            "type" : "string"
+            "type" : "string",
+            "nullable" : true
           }
         } ],
         "responses" : {
@@ -1607,35 +1615,40 @@
           "description" : "Client identifier",
           "required" : true,
           "schema" : {
-            "type" : "string"
+            "type" : "string",
+            "nullable" : true
           }
         }, {
           "name" : "code_challenge",
           "in" : "query",
           "description" : "PKCE code challenge",
           "schema" : {
-            "type" : "string"
+            "type" : "string",
+            "nullable" : true
           }
         }, {
           "name" : "code_challenge_method",
           "in" : "query",
           "description" : "PKCE code challenge method",
           "schema" : {
-            "type" : "string"
+            "type" : "string",
+            "nullable" : true
           }
         }, {
           "name" : "nonce",
           "in" : "query",
           "description" : "Nonce for ID token",
           "schema" : {
-            "type" : "string"
+            "type" : "string",
+            "nullable" : true
           }
         }, {
           "name" : "redirect_uri",
           "in" : "query",
           "description" : "Redirect URI",
           "schema" : {
-            "type" : "string"
+            "type" : "string",
+            "nullable" : true
           }
         }, {
           "name" : "response_type",
@@ -1643,21 +1656,24 @@
           "description" : "Response type",
           "required" : true,
           "schema" : {
-            "type" : "string"
+            "type" : "string",
+            "nullable" : true
           }
         }, {
           "name" : "scope",
           "in" : "query",
           "description" : "Requested scopes",
           "schema" : {
-            "type" : "string"
+            "type" : "string",
+            "nullable" : true
           }
         }, {
           "name" : "state",
           "in" : "query",
           "description" : "State parameter",
           "schema" : {
-            "type" : "string"
+            "type" : "string",
+            "nullable" : true
           }
         } ],
         "requestBody" : {
@@ -1667,10 +1683,12 @@
                 "type" : "object",
                 "properties" : {
                   "username" : {
-                    "type" : "string"
+                    "type" : "string",
+                    "nullable" : true
                   },
                   "password" : {
-                    "type" : "string"
+                    "type" : "string",
+                    "nullable" : true
                   }
                 }
               }
@@ -1680,10 +1698,12 @@
                 "type" : "object",
                 "properties" : {
                   "username" : {
-                    "type" : "string"
+                    "type" : "string",
+                    "nullable" : true
                   },
                   "password" : {
-                    "type" : "string"
+                    "type" : "string",
+                    "nullable" : true
                   }
                 }
               }
@@ -1693,10 +1713,12 @@
                 "type" : "object",
                 "properties" : {
                   "username" : {
-                    "type" : "string"
+                    "type" : "string",
+                    "nullable" : true
                   },
                   "password" : {
-                    "type" : "string"
+                    "type" : "string",
+                    "nullable" : true
                   }
                 }
               }
@@ -1767,28 +1789,36 @@
                 "type" : "object",
                 "properties" : {
                   "grant_type" : {
-                    "type" : "string"
+                    "type" : "string",
+                    "nullable" : true
                   },
                   "client_id" : {
-                    "type" : "string"
+                    "type" : "string",
+                    "nullable" : true
                   },
                   "client_secret" : {
-                    "type" : "string"
+                    "type" : "string",
+                    "nullable" : true
                   },
                   "code" : {
-                    "type" : "string"
+                    "type" : "string",
+                    "nullable" : true
                   },
                   "redirect_uri" : {
-                    "type" : "string"
+                    "type" : "string",
+                    "nullable" : true
                   },
                   "code_verifier" : {
-                    "type" : "string"
+                    "type" : "string",
+                    "nullable" : true
                   },
                   "refresh_token" : {
-                    "type" : "string"
+                    "type" : "string",
+                    "nullable" : true
                   },
                   "scope" : {
-                    "type" : "string"
+                    "type" : "string",
+                    "nullable" : true
                   }
                 }
               }
@@ -1847,28 +1877,39 @@
         "type" : "object",
         "properties" : {
           "client_id" : {
-            "type" : "string"
+            "type" : "string",
+            "nullable" : true
           },
           "client_secret" : {
-            "type" : "string"
+            "type" : "string",
+            "nullable" : true
           },
           "grant_type" : {
-            "$ref" : "#/components/schemas/GrantTypeEnum"
+            "type" : "string",
+            "allOf" : [ {
+              "$ref" : "#/components/schemas/GrantTypeEnum"
+            } ],
+            "nullable" : true
           },
           "code" : {
-            "type" : "string"
+            "type" : "string",
+            "nullable" : true
           },
           "redirect_uri" : {
-            "type" : "string"
+            "type" : "string",
+            "nullable" : true
           },
           "code_verifier" : {
-            "type" : "string"
+            "type" : "string",
+            "nullable" : true
           },
           "refresh_token" : {
-            "type" : "string"
+            "type" : "string",
+            "nullable" : true
           },
           "scope" : {
-            "type" : "string"
+            "type" : "string",
+            "nullable" : true
           }
         }
       },
@@ -1876,23 +1917,32 @@
         "type" : "object",
         "properties" : {
           "access_token" : {
-            "type" : "string"
+            "type" : "string",
+            "nullable" : true
           },
           "token_type" : {
-            "$ref" : "#/components/schemas/TokenTypeEnum"
+            "type" : "string",
+            "allOf" : [ {
+              "$ref" : "#/components/schemas/TokenTypeEnum"
+            } ],
+            "nullable" : true
           },
           "expires_in" : {
             "format" : "int32",
-            "type" : "integer"
+            "type" : "integer",
+            "nullable" : true
           },
           "refresh_token" : {
-            "type" : "string"
+            "type" : "string",
+            "nullable" : true
           },
           "scope" : {
-            "type" : "string"
+            "type" : "string",
+            "nullable" : true
           },
           "id_token" : {
-            "type" : "string"
+            "type" : "string",
+            "nullable" : true
           }
         }
       },
@@ -2325,61 +2375,78 @@
         "type" : "object",
         "properties" : {
           "kty" : {
-            "type" : "string"
+            "type" : "string",
+            "nullable" : true
           },
           "use" : {
-            "type" : "string"
+            "type" : "string",
+            "nullable" : true
           },
           "key_ops" : {
             "type" : "array",
             "items" : {
               "type" : "string"
-            }
+            },
+            "nullable" : true
           },
           "alg" : {
-            "type" : "string"
+            "type" : "string",
+            "nullable" : true
           },
           "kid" : {
-            "type" : "string"
+            "type" : "string",
+            "nullable" : true
           },
           "x5c" : {
             "type" : "array",
             "items" : {
               "type" : "string"
-            }
+            },
+            "nullable" : true
           },
           "x5t" : {
-            "type" : "string"
+            "type" : "string",
+            "nullable" : true
           },
           "x5t#S256" : {
-            "type" : "string"
+            "type" : "string",
+            "nullable" : true
           },
           "x5u" : {
-            "type" : "string"
+            "type" : "string",
+            "nullable" : true
           },
           "n" : {
-            "type" : "string"
+            "type" : "string",
+            "nullable" : true
           },
           "e" : {
-            "type" : "string"
+            "type" : "string",
+            "nullable" : true
           },
           "d" : {
-            "type" : "string"
+            "type" : "string",
+            "nullable" : true
           },
           "p" : {
-            "type" : "string"
+            "type" : "string",
+            "nullable" : true
           },
           "q" : {
-            "type" : "string"
+            "type" : "string",
+            "nullable" : true
           },
           "dp" : {
-            "type" : "string"
+            "type" : "string",
+            "nullable" : true
           },
           "dq" : {
-            "type" : "string"
+            "type" : "string",
+            "nullable" : true
           },
           "qi" : {
-            "type" : "string"
+            "type" : "string",
+            "nullable" : true
           }
         }
       },
@@ -2390,7 +2457,8 @@
             "type" : "array",
             "items" : {
               "$ref" : "#/components/schemas/JWK"
-            }
+            },
+            "nullable" : true
           }
         }
       },
@@ -2702,70 +2770,84 @@
         "type" : "object",
         "properties" : {
           "issuer" : {
-            "type" : "string"
+            "type" : "string",
+            "nullable" : true
           },
           "authorization_endpoint" : {
-            "type" : "string"
+            "type" : "string",
+            "nullable" : true
           },
           "token_endpoint" : {
-            "type" : "string"
+            "type" : "string",
+            "nullable" : true
           },
           "userinfo_endpoint" : {
-            "type" : "string"
+            "type" : "string",
+            "nullable" : true
           },
           "jwks_uri" : {
-            "type" : "string"
+            "type" : "string",
+            "nullable" : true
           },
           "revocation_endpoint" : {
-            "type" : "string"
+            "type" : "string",
+            "nullable" : true
           },
           "scopes_supported" : {
             "type" : "array",
             "items" : {
               "type" : "string"
-            }
+            },
+            "nullable" : true
           },
           "response_types_supported" : {
             "type" : "array",
             "items" : {
               "type" : "string"
-            }
+            },
+            "nullable" : true
           },
           "grant_types_supported" : {
             "type" : "array",
             "items" : {
               "type" : "string"
-            }
+            },
+            "nullable" : true
           },
           "subject_types_supported" : {
             "type" : "array",
             "items" : {
               "type" : "string"
-            }
+            },
+            "nullable" : true
           },
           "id_token_signing_alg_values_supported" : {
             "type" : "array",
             "items" : {
               "type" : "string"
-            }
+            },
+            "nullable" : true
           },
           "token_endpoint_auth_methods_supported" : {
             "type" : "array",
             "items" : {
               "type" : "string"
-            }
+            },
+            "nullable" : true
           },
           "claims_supported" : {
             "type" : "array",
             "items" : {
               "type" : "string"
-            }
+            },
+            "nullable" : true
           },
           "code_challenge_methods_supported" : {
             "type" : "array",
             "items" : {
               "type" : "string"
-            }
+            },
+            "nullable" : true
           }
         }
       }

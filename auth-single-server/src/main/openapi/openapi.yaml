@@ -1057,42 +1057,50 @@ paths:
         required: true
         schema:
           type: string
+          nullable: true
       - name: code_challenge
         in: query
         description: PKCE code challenge
         schema:
           type: string
+          nullable: true
       - name: code_challenge_method
         in: query
         description: PKCE code challenge method
         schema:
           type: string
+          nullable: true
       - name: nonce
         in: query
         description: Nonce for ID token
         schema:
           type: string
+          nullable: true
       - name: redirect_uri
         in: query
         description: Redirect URI
         schema:
           type: string
+          nullable: true
       - name: response_type
         in: query
         description: Response type
         required: true
         schema:
           type: string
+          nullable: true
       - name: scope
         in: query
         description: Requested scopes
         schema:
           type: string
+          nullable: true
       - name: state
         in: query
         description: State parameter
         schema:
           type: string
+          nullable: true
       responses:
         "200":
           description: Returns authorization form
@@ -1116,42 +1124,50 @@ paths:
         required: true
         schema:
           type: string
+          nullable: true
       - name: code_challenge
         in: query
         description: PKCE code challenge
         schema:
           type: string
+          nullable: true
       - name: code_challenge_method
         in: query
         description: PKCE code challenge method
         schema:
           type: string
+          nullable: true
       - name: nonce
         in: query
         description: Nonce for ID token
         schema:
           type: string
+          nullable: true
       - name: redirect_uri
         in: query
         description: Redirect URI
         schema:
           type: string
+          nullable: true
       - name: response_type
         in: query
         description: Response type
         required: true
         schema:
           type: string
+          nullable: true
       - name: scope
         in: query
         description: Requested scopes
         schema:
           type: string
+          nullable: true
       - name: state
         in: query
         description: State parameter
         schema:
           type: string
+          nullable: true
       requestBody:
         content:
           multipart/form-data:
@@ -1160,24 +1176,30 @@ paths:
               properties:
                 username:
                   type: string
+                  nullable: true
                 password:
                   type: string
+                  nullable: true
           application/x-www-form-urlencoded:
             schema:
               type: object
               properties:
                 username:
                   type: string
+                  nullable: true
                 password:
                   type: string
+                  nullable: true
           application/json:
             schema:
               type: object
               properties:
                 username:
                   type: string
+                  nullable: true
                 password:
                   type: string
+                  nullable: true
       responses:
         "200":
           description: Rerender the form when the user does not provide valid credentials
@@ -1227,20 +1249,28 @@ paths:
               properties:
                 grant_type:
                   type: string
+                  nullable: true
                 client_id:
                   type: string
+                  nullable: true
                 client_secret:
                   type: string
+                  nullable: true
                 code:
                   type: string
+                  nullable: true
                 redirect_uri:
                   type: string
+                  nullable: true
                 code_verifier:
                   type: string
+                  nullable: true
                 refresh_token:
                   type: string
+                  nullable: true
                 scope:
                   type: string
+                  nullable: true
       responses:
         "200":
           description: Returns access token
@@ -1280,36 +1310,54 @@ components:
       properties:
         client_id:
           type: string
+          nullable: true
         client_secret:
           type: string
+          nullable: true
         grant_type:
-          $ref: '#/components/schemas/GrantTypeEnum'
+          type: string
+          allOf:
+          - $ref: '#/components/schemas/GrantTypeEnum'
+          nullable: true
         code:
           type: string
+          nullable: true
         redirect_uri:
           type: string
+          nullable: true
         code_verifier:
           type: string
+          nullable: true
         refresh_token:
           type: string
+          nullable: true
         scope:
           type: string
+          nullable: true
     AccessTokenResponse:
       type: object
       properties:
         access_token:
           type: string
+          nullable: true
         token_type:
-          $ref: '#/components/schemas/TokenTypeEnum'
+          type: string
+          allOf:
+          - $ref: '#/components/schemas/TokenTypeEnum'
+          nullable: true
         expires_in:
           format: int32
           type: integer
+          nullable: true
         refresh_token:
           type: string
+          nullable: true
         scope:
           type: string
+          nullable: true
         id_token:
           type: string
+          nullable: true
     ApplicationRequest:
       required:
       - authorizationServerId
@@ -1620,42 +1668,59 @@ components:
       properties:
         kty:
           type: string
+          nullable: true
         use:
           type: string
+          nullable: true
         key_ops:
           type: array
           items:
             type: string
+          nullable: true
         alg:
           type: string
+          nullable: true
         kid:
           type: string
+          nullable: true
         x5c:
           type: array
           items:
             type: string
+          nullable: true
         x5t:
           type: string
+          nullable: true
         x5t#S256:
           type: string
+          nullable: true
         x5u:
           type: string
+          nullable: true
         "n":
           type: string
+          nullable: true
         e:
           type: string
+          nullable: true
         d:
           type: string
+          nullable: true
         p:
           type: string
+          nullable: true
         q:
           type: string
+          nullable: true
         dp:
           type: string
+          nullable: true
         dq:
           type: string
+          nullable: true
         qi:
           type: string
+          nullable: true
     JWKS:
       type: object
       properties:
@@ -1663,6 +1728,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/JWK'
+          nullable: true
     MemberType:
       enum:
       - USER
@@ -1880,45 +1946,59 @@ components:
       properties:
         issuer:
           type: string
+          nullable: true
         authorization_endpoint:
           type: string
+          nullable: true
         token_endpoint:
           type: string
+          nullable: true
         userinfo_endpoint:
           type: string
+          nullable: true
         jwks_uri:
           type: string
+          nullable: true
         revocation_endpoint:
           type: string
+          nullable: true
         scopes_supported:
           type: array
           items:
             type: string
+          nullable: true
         response_types_supported:
           type: array
           items:
             type: string
+          nullable: true
         grant_types_supported:
           type: array
           items:
             type: string
+          nullable: true
         subject_types_supported:
           type: array
           items:
             type: string
+          nullable: true
         id_token_signing_alg_values_supported:
           type: array
           items:
             type: string
+          nullable: true
         token_endpoint_auth_methods_supported:
           type: array
           items:
             type: string
+          nullable: true
         claims_supported:
           type: array
           items:
             type: string
+          nullable: true
         code_challenge_methods_supported:
           type: array
           items:
             type: string
+          nullable: true
