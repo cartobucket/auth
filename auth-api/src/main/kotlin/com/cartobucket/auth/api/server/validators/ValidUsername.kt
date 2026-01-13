@@ -60,9 +60,10 @@ annotation class ValidUsername(
                 return false
             }
             return try {
-                userService.getUser(value) == null
+                userService.getUser(value)
+                false  // User exists, username is taken
             } catch (e: UserNotFound) {
-                true
+                true   // User doesn't exist, username is available
             }
         }
     }
