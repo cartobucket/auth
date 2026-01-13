@@ -44,6 +44,7 @@ paths:
             format: uuid
             pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
             type: string
+          nullable: true
       responses:
         "200":
           description: Application secrets retrieved successfully
@@ -99,16 +100,19 @@ paths:
             format: uuid
             pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
             type: string
+          nullable: true
       - name: limit
         in: query
         schema:
           format: int32
           type: integer
+          nullable: true
       - name: offset
         in: query
         schema:
           format: int32
           type: integer
+          nullable: true
       responses:
         "200":
           description: List of applications
@@ -180,11 +184,13 @@ paths:
         schema:
           format: int32
           type: integer
+          nullable: true
       - name: offset
         in: query
         schema:
           format: int32
           type: integer
+          nullable: true
       responses:
         "200":
           description: Authorization servers retrieved successfully
@@ -283,16 +289,19 @@ paths:
             format: uuid
             pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
             type: string
+          nullable: true
       - name: limit
         in: query
         schema:
           format: int32
           type: integer
+          nullable: true
       - name: offset
         in: query
         schema:
           format: int32
           type: integer
+          nullable: true
       responses:
         "200":
           description: List of clients
@@ -391,16 +400,19 @@ paths:
             format: uuid
             pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
             type: string
+          nullable: true
       - name: limit
         in: query
         schema:
           format: int32
           type: integer
+          nullable: true
       - name: offset
         in: query
         schema:
           format: int32
           type: integer
+          nullable: true
       responses:
         "200":
           description: Groups retrieved successfully
@@ -501,11 +513,13 @@ paths:
         schema:
           format: int32
           type: integer
+          nullable: true
       - name: offset
         in: query
         schema:
           format: int32
           type: integer
+          nullable: true
       responses:
         "200":
           description: Group members retrieved successfully
@@ -600,16 +614,19 @@ paths:
             format: uuid
             pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
             type: string
+          nullable: true
       - name: limit
         in: query
         schema:
           format: int32
           type: integer
+          nullable: true
       - name: offset
         in: query
         schema:
           format: int32
           type: integer
+          nullable: true
       responses:
         "200":
           description: Schemas retrieved successfully
@@ -708,16 +725,19 @@ paths:
             format: uuid
             pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
             type: string
+          nullable: true
       - name: limit
         in: query
         schema:
           format: int32
           type: integer
+          nullable: true
       - name: offset
         in: query
         schema:
           format: int32
           type: integer
+          nullable: true
       responses:
         "200":
           description: Scopes retrieved successfully
@@ -816,16 +836,19 @@ paths:
             format: uuid
             pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
             type: string
+          nullable: true
       - name: limit
         in: query
         schema:
           format: int32
           type: integer
+          nullable: true
       - name: offset
         in: query
         schema:
           format: int32
           type: integer
+          nullable: true
       responses:
         "200":
           description: Templates retrieved successfully
@@ -924,16 +947,19 @@ paths:
             format: uuid
             pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
             type: string
+          nullable: true
       - name: limit
         in: query
         schema:
           format: int32
           type: integer
+          nullable: true
       - name: offset
         in: query
         schema:
           format: int32
           type: integer
+          nullable: true
       responses:
         "200":
           description: Users retrieved successfully
@@ -1365,20 +1391,29 @@ components:
       type: object
       properties:
         authorizationServerId:
-          $ref: '#/components/schemas/UUID'
+          type: string
+          allOf:
+          - $ref: '#/components/schemas/UUID'
+          nullable: true
         name:
           type: string
+          nullable: true
         clientId:
           type: string
+          nullable: true
         profile: {}
         metadata:
-          $ref: '#/components/schemas/Metadata'
+          type: object
+          allOf:
+          - $ref: '#/components/schemas/Metadata'
+          nullable: true
         scopes:
           type: array
           items:
             format: uuid
             pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
             type: string
+          nullable: true
     ApplicationResponse:
       required:
       - authorizationServerId
@@ -1387,25 +1422,42 @@ components:
       properties:
         id:
           type: string
+          nullable: true
         authorizationServerId:
-          $ref: '#/components/schemas/UUID'
+          type: string
+          allOf:
+          - $ref: '#/components/schemas/UUID'
+          nullable: true
         name:
           type: string
+          nullable: true
         clientId:
           type: string
+          nullable: true
         clientSecret:
           type: string
+          nullable: true
         profile: {}
         createdOn:
-          $ref: '#/components/schemas/OffsetDateTime'
+          type: string
+          allOf:
+          - $ref: '#/components/schemas/OffsetDateTime'
+          nullable: true
         updatedOn:
-          $ref: '#/components/schemas/OffsetDateTime'
+          type: string
+          allOf:
+          - $ref: '#/components/schemas/OffsetDateTime'
+          nullable: true
         metadata:
-          $ref: '#/components/schemas/Metadata'
+          type: object
+          allOf:
+          - $ref: '#/components/schemas/Metadata'
+          nullable: true
         scopes:
           type: array
           items:
             $ref: '#/components/schemas/ScopeResponse'
+          nullable: true
     ApplicationSecretRequest:
       required:
       - applicationId
@@ -1414,18 +1466,24 @@ components:
       type: object
       properties:
         applicationId:
-          $ref: '#/components/schemas/UUID'
+          type: string
+          allOf:
+          - $ref: '#/components/schemas/UUID'
+          nullable: true
         name:
           type: string
+          nullable: true
         scopes:
           type: array
           items:
             format: uuid
             pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
             type: string
+          nullable: true
         expiresIn:
           format: int32
           type: integer
+          nullable: true
     ApplicationSecretResponse:
       required:
       - scopes
@@ -1433,24 +1491,40 @@ components:
       type: object
       properties:
         id:
-          $ref: '#/components/schemas/UUID'
+          type: string
+          allOf:
+          - $ref: '#/components/schemas/UUID'
+          nullable: true
         clientSecret:
           type: string
+          nullable: true
         name:
           type: string
+          nullable: true
         expiresIn:
           format: int32
           type: integer
+          nullable: true
         applicationId:
-          $ref: '#/components/schemas/UUID'
+          type: string
+          allOf:
+          - $ref: '#/components/schemas/UUID'
+          nullable: true
         authorizationServerId:
-          $ref: '#/components/schemas/UUID'
+          type: string
+          allOf:
+          - $ref: '#/components/schemas/UUID'
+          nullable: true
         scopes:
           type: array
           items:
             $ref: '#/components/schemas/ScopeResponse'
+          nullable: true
         createdOn:
-          $ref: '#/components/schemas/OffsetDateTime'
+          type: string
+          allOf:
+          - $ref: '#/components/schemas/OffsetDateTime'
+          nullable: true
     ApplicationSecretsResponse:
       required:
       - page
@@ -1460,8 +1534,12 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ApplicationSecretResponse'
+          nullable: true
         page:
-          $ref: '#/components/schemas/Page'
+          type: object
+          allOf:
+          - $ref: '#/components/schemas/Page'
+          nullable: true
     ApplicationsResponse:
       required:
       - page
@@ -1471,25 +1549,37 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ApplicationResponse'
+          nullable: true
         page:
-          $ref: '#/components/schemas/Page'
+          type: object
+          allOf:
+          - $ref: '#/components/schemas/Page'
+          nullable: true
     AuthorizationServerRequest:
       type: object
       properties:
         serverUrl:
           type: string
+          nullable: true
         audience:
           type: string
+          nullable: true
         clientCredentialsTokenExpiration:
           format: int32
           type: integer
+          nullable: true
         authorizationCodeTokenExpiration:
           format: int32
           type: integer
+          nullable: true
         name:
           type: string
+          nullable: true
         metadata:
-          $ref: '#/components/schemas/Metadata'
+          type: object
+          allOf:
+          - $ref: '#/components/schemas/Metadata'
+          nullable: true
     AuthorizationServerResponse:
       required:
       - name
@@ -1497,28 +1587,44 @@ components:
       properties:
         id:
           type: string
+          nullable: true
         serverUrl:
           type: string
+          nullable: true
         audience:
           type: string
+          nullable: true
         clientCredentialsTokenExpiration:
           format: int32
           type: integer
+          nullable: true
         authorizationCodeTokenExpiration:
           format: int32
           type: integer
+          nullable: true
         name:
           type: string
+          nullable: true
         createdOn:
-          $ref: '#/components/schemas/OffsetDateTime'
+          type: string
+          allOf:
+          - $ref: '#/components/schemas/OffsetDateTime'
+          nullable: true
         updatedOn:
-          $ref: '#/components/schemas/OffsetDateTime'
+          type: string
+          allOf:
+          - $ref: '#/components/schemas/OffsetDateTime'
+          nullable: true
         metadata:
-          $ref: '#/components/schemas/Metadata'
+          type: object
+          allOf:
+          - $ref: '#/components/schemas/Metadata'
+          nullable: true
         scopes:
           type: array
           items:
             $ref: '#/components/schemas/ScopeResponse'
+          nullable: true
     AuthorizationServersResponse:
       required:
       - page
@@ -1528,50 +1634,79 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/AuthorizationServerResponse'
+          nullable: true
         page:
-          $ref: '#/components/schemas/Page'
+          type: object
+          allOf:
+          - $ref: '#/components/schemas/Page'
+          nullable: true
     ClientRequest:
       type: object
       properties:
         name:
           type: string
+          nullable: true
         authorizationServerId:
-          $ref: '#/components/schemas/UUID'
+          type: string
+          allOf:
+          - $ref: '#/components/schemas/UUID'
+          nullable: true
         redirectUris:
           type: array
           items:
             type: string
+          nullable: true
         scopes:
           type: array
           items:
             format: uuid
             pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
             type: string
+          nullable: true
         metadata:
-          $ref: '#/components/schemas/Metadata'
+          type: object
+          allOf:
+          - $ref: '#/components/schemas/Metadata'
+          nullable: true
     ClientResponse:
       type: object
       properties:
         id:
           type: string
+          nullable: true
         name:
           type: string
+          nullable: true
         authorizationServerId:
-          $ref: '#/components/schemas/UUID'
+          type: string
+          allOf:
+          - $ref: '#/components/schemas/UUID'
+          nullable: true
         redirectUris:
           type: array
           items:
             type: string
+          nullable: true
         createdOn:
-          $ref: '#/components/schemas/OffsetDateTime'
+          type: string
+          allOf:
+          - $ref: '#/components/schemas/OffsetDateTime'
+          nullable: true
         updatedOn:
-          $ref: '#/components/schemas/OffsetDateTime'
+          type: string
+          allOf:
+          - $ref: '#/components/schemas/OffsetDateTime'
+          nullable: true
         scopes:
           type: array
           items:
             $ref: '#/components/schemas/ScopeResponse'
+          nullable: true
         metadata:
-          $ref: '#/components/schemas/Metadata'
+          type: object
+          allOf:
+          - $ref: '#/components/schemas/Metadata'
+          nullable: true
     ClientsResponse:
       required:
       - page
@@ -1581,8 +1716,12 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ClientResponse'
+          nullable: true
         page:
-          $ref: '#/components/schemas/Page'
+          type: object
+          allOf:
+          - $ref: '#/components/schemas/Page'
+          nullable: true
     GrantTypeEnum:
       enum:
       - CLIENT_CREDENTIALS
@@ -1593,26 +1732,51 @@ components:
       type: object
       properties:
         authorizationServerId:
-          $ref: '#/components/schemas/UUID'
+          type: string
+          allOf:
+          - $ref: '#/components/schemas/UUID'
+          nullable: true
         memberId:
-          $ref: '#/components/schemas/UUID'
+          type: string
+          allOf:
+          - $ref: '#/components/schemas/UUID'
+          nullable: true
         memberType:
-          $ref: '#/components/schemas/MemberType'
+          type: string
+          allOf:
+          - $ref: '#/components/schemas/MemberType'
+          nullable: true
     GroupMemberResponse:
       type: object
       properties:
         id:
           type: string
+          nullable: true
         authorizationServerId:
-          $ref: '#/components/schemas/UUID'
+          type: string
+          allOf:
+          - $ref: '#/components/schemas/UUID'
+          nullable: true
         groupId:
-          $ref: '#/components/schemas/UUID'
+          type: string
+          allOf:
+          - $ref: '#/components/schemas/UUID'
+          nullable: true
         memberId:
-          $ref: '#/components/schemas/UUID'
+          type: string
+          allOf:
+          - $ref: '#/components/schemas/UUID'
+          nullable: true
         memberType:
-          $ref: '#/components/schemas/MemberType'
+          type: string
+          allOf:
+          - $ref: '#/components/schemas/MemberType'
+          nullable: true
         createdOn:
-          $ref: '#/components/schemas/OffsetDateTime'
+          type: string
+          allOf:
+          - $ref: '#/components/schemas/OffsetDateTime'
+          nullable: true
     GroupMembersResponse:
       required:
       - page
@@ -1622,36 +1786,63 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/GroupMemberResponse'
+          nullable: true
         page:
-          $ref: '#/components/schemas/Page'
+          type: object
+          allOf:
+          - $ref: '#/components/schemas/Page'
+          nullable: true
     GroupRequest:
       type: object
       properties:
         authorizationServerId:
-          $ref: '#/components/schemas/UUID'
+          type: string
+          allOf:
+          - $ref: '#/components/schemas/UUID'
+          nullable: true
         displayName:
           type: string
+          nullable: true
         externalId:
           type: string
+          nullable: true
         metadata:
-          $ref: '#/components/schemas/Metadata'
+          type: object
+          allOf:
+          - $ref: '#/components/schemas/Metadata'
+          nullable: true
     GroupResponse:
       type: object
       properties:
         id:
           type: string
+          nullable: true
         authorizationServerId:
-          $ref: '#/components/schemas/UUID'
+          type: string
+          allOf:
+          - $ref: '#/components/schemas/UUID'
+          nullable: true
         displayName:
           type: string
+          nullable: true
         externalId:
           type: string
+          nullable: true
         metadata:
-          $ref: '#/components/schemas/Metadata'
+          type: object
+          allOf:
+          - $ref: '#/components/schemas/Metadata'
+          nullable: true
         createdOn:
-          $ref: '#/components/schemas/OffsetDateTime'
+          type: string
+          allOf:
+          - $ref: '#/components/schemas/OffsetDateTime'
+          nullable: true
         updatedOn:
-          $ref: '#/components/schemas/OffsetDateTime'
+          type: string
+          allOf:
+          - $ref: '#/components/schemas/OffsetDateTime'
+          nullable: true
     GroupsResponse:
       required:
       - page
@@ -1661,8 +1852,12 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/GroupResponse'
+          nullable: true
         page:
-          $ref: '#/components/schemas/Page'
+          type: object
+          allOf:
+          - $ref: '#/components/schemas/Page'
+          nullable: true
     JWK:
       type: object
       properties:
@@ -1740,30 +1935,42 @@ components:
         properties:
           type: object
           additionalProperties: {}
+          nullable: true
         identifiers:
           type: array
           items:
             $ref: '#/components/schemas/MetadataIdentifiersInner'
+          nullable: true
         schemaValidations:
           type: array
           items:
             $ref: '#/components/schemas/MetadataSchemaValidationsInner'
+          nullable: true
     MetadataIdentifiersInner:
       type: object
       properties:
         system:
           type: string
+          nullable: true
         value:
           type: string
+          nullable: true
     MetadataSchemaValidationsInner:
       type: object
       properties:
         schemaId:
-          $ref: '#/components/schemas/UUID'
+          type: string
+          allOf:
+          - $ref: '#/components/schemas/UUID'
+          nullable: true
         isValid:
           type: boolean
+          nullable: true
         validatedOn:
-          $ref: '#/components/schemas/OffsetDateTime'
+          type: string
+          allOf:
+          - $ref: '#/components/schemas/OffsetDateTime'
+          nullable: true
     OffsetDateTime:
       format: date-time
       type: string
@@ -1773,38 +1980,59 @@ components:
       properties:
         next:
           type: string
+          nullable: true
         previous:
           type: string
+          nullable: true
     SchemaRequest:
       required:
       - authorizationServerId
       type: object
       properties:
         authorizationServerId:
-          $ref: '#/components/schemas/UUID'
+          type: string
+          allOf:
+          - $ref: '#/components/schemas/UUID'
+          nullable: true
         name:
           type: string
+          nullable: true
         schemaVersion:
           type: string
+          nullable: true
         schema: {}
         metadata:
-          $ref: '#/components/schemas/Metadata'
+          type: object
+          allOf:
+          - $ref: '#/components/schemas/Metadata'
+          nullable: true
     SchemaResponse:
       required:
       - authorizationServerId
       type: object
       properties:
         id:
-          $ref: '#/components/schemas/UUID'
+          type: string
+          allOf:
+          - $ref: '#/components/schemas/UUID'
+          nullable: true
         authorizationServerId:
-          $ref: '#/components/schemas/UUID'
+          type: string
+          allOf:
+          - $ref: '#/components/schemas/UUID'
+          nullable: true
         name:
           type: string
+          nullable: true
         schemaVersion:
           type: string
+          nullable: true
         schema: {}
         metadata:
-          $ref: '#/components/schemas/Metadata'
+          type: object
+          allOf:
+          - $ref: '#/components/schemas/Metadata'
+          nullable: true
     SchemasResponse:
       required:
       - page
@@ -1814,32 +2042,60 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/SchemaResponse'
+          nullable: true
         page:
-          $ref: '#/components/schemas/Page'
+          type: object
+          allOf:
+          - $ref: '#/components/schemas/Page'
+          nullable: true
     ScopeRequest:
+      required:
+      - authorizationServerId
+      - name
       type: object
       properties:
         authorizationServerId:
-          $ref: '#/components/schemas/UUID'
+          type: string
+          allOf:
+          - $ref: '#/components/schemas/UUID'
+          nullable: true
         name:
           type: string
+          nullable: true
         metadata:
-          $ref: '#/components/schemas/Metadata'
+          type: object
+          allOf:
+          - $ref: '#/components/schemas/Metadata'
+          nullable: true
     ScopeResponse:
       type: object
       properties:
         id:
           type: string
+          nullable: true
         authorizationServerId:
-          $ref: '#/components/schemas/UUID'
+          type: string
+          allOf:
+          - $ref: '#/components/schemas/UUID'
+          nullable: true
         createdOn:
-          $ref: '#/components/schemas/OffsetDateTime'
+          type: string
+          allOf:
+          - $ref: '#/components/schemas/OffsetDateTime'
+          nullable: true
         updatedOn:
-          $ref: '#/components/schemas/OffsetDateTime'
+          type: string
+          allOf:
+          - $ref: '#/components/schemas/OffsetDateTime'
+          nullable: true
         name:
           type: string
+          nullable: true
         metadata:
-          $ref: '#/components/schemas/Metadata'
+          type: object
+          allOf:
+          - $ref: '#/components/schemas/Metadata'
+          nullable: true
     ScopesResponse:
       required:
       - page
@@ -1849,36 +2105,63 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ScopeResponse'
+          nullable: true
         page:
-          $ref: '#/components/schemas/Page'
+          type: object
+          allOf:
+          - $ref: '#/components/schemas/Page'
+          nullable: true
     TemplateRequest:
       type: object
       properties:
         authorizationServerId:
-          $ref: '#/components/schemas/UUID'
+          type: string
+          allOf:
+          - $ref: '#/components/schemas/UUID'
+          nullable: true
         templateType:
           type: string
+          nullable: true
         template:
           type: string
+          nullable: true
         metadata:
-          $ref: '#/components/schemas/Metadata'
+          type: object
+          allOf:
+          - $ref: '#/components/schemas/Metadata'
+          nullable: true
     TemplateResponse:
       type: object
       properties:
         id:
           type: string
+          nullable: true
         authorizationServerId:
-          $ref: '#/components/schemas/UUID'
+          type: string
+          allOf:
+          - $ref: '#/components/schemas/UUID'
+          nullable: true
         templateType:
           type: string
+          nullable: true
         template:
           type: string
+          nullable: true
         createdOn:
-          $ref: '#/components/schemas/OffsetDateTime'
+          type: string
+          allOf:
+          - $ref: '#/components/schemas/OffsetDateTime'
+          nullable: true
         updatedOn:
-          $ref: '#/components/schemas/OffsetDateTime'
+          type: string
+          allOf:
+          - $ref: '#/components/schemas/OffsetDateTime'
+          nullable: true
         metadata:
-          $ref: '#/components/schemas/Metadata'
+          type: object
+          allOf:
+          - $ref: '#/components/schemas/Metadata'
+          nullable: true
     TemplatesResponse:
       required:
       - page
@@ -1888,8 +2171,12 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/TemplateResponse'
+          nullable: true
         page:
-          $ref: '#/components/schemas/Page'
+          type: object
+          allOf:
+          - $ref: '#/components/schemas/Page'
+          nullable: true
     TokenTypeEnum:
       enum:
       - BEARER
@@ -1902,34 +2189,58 @@ components:
       type: object
       properties:
         authorizationServerId:
-          $ref: '#/components/schemas/UUID'
+          type: string
+          allOf:
+          - $ref: '#/components/schemas/UUID'
+          nullable: true
         username:
           type: string
+          nullable: true
         email:
           type: string
+          nullable: true
         profile: {}
         password:
           type: string
+          nullable: true
         metadata:
-          $ref: '#/components/schemas/Metadata'
+          type: object
+          allOf:
+          - $ref: '#/components/schemas/Metadata'
+          nullable: true
     UserResponse:
       type: object
       properties:
         id:
           type: string
+          nullable: true
         authorizationServerId:
-          $ref: '#/components/schemas/UUID'
+          type: string
+          allOf:
+          - $ref: '#/components/schemas/UUID'
+          nullable: true
         username:
           type: string
+          nullable: true
         email:
           type: string
+          nullable: true
         profile: {}
         createdOn:
-          $ref: '#/components/schemas/OffsetDateTime'
+          type: string
+          allOf:
+          - $ref: '#/components/schemas/OffsetDateTime'
+          nullable: true
         updatedOn:
-          $ref: '#/components/schemas/OffsetDateTime'
+          type: string
+          allOf:
+          - $ref: '#/components/schemas/OffsetDateTime'
+          nullable: true
         metadata:
-          $ref: '#/components/schemas/Metadata'
+          type: object
+          allOf:
+          - $ref: '#/components/schemas/Metadata'
+          nullable: true
     UsersResponse:
       required:
       - page
@@ -1939,8 +2250,12 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/UserResponse'
+          nullable: true
         page:
-          $ref: '#/components/schemas/Page'
+          type: object
+          allOf:
+          - $ref: '#/components/schemas/Page'
+          nullable: true
     WellKnown:
       type: object
       properties:

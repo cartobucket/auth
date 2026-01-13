@@ -59,7 +59,8 @@
               "format" : "uuid",
               "pattern" : "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}",
               "type" : "string"
-            }
+            },
+            "nullable" : true
           }
         } ],
         "responses" : {
@@ -139,21 +140,24 @@
               "format" : "uuid",
               "pattern" : "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}",
               "type" : "string"
-            }
+            },
+            "nullable" : true
           }
         }, {
           "name" : "limit",
           "in" : "query",
           "schema" : {
             "format" : "int32",
-            "type" : "integer"
+            "type" : "integer",
+            "nullable" : true
           }
         }, {
           "name" : "offset",
           "in" : "query",
           "schema" : {
             "format" : "int32",
-            "type" : "integer"
+            "type" : "integer",
+            "nullable" : true
           }
         } ],
         "responses" : {
@@ -256,14 +260,16 @@
           "in" : "query",
           "schema" : {
             "format" : "int32",
-            "type" : "integer"
+            "type" : "integer",
+            "nullable" : true
           }
         }, {
           "name" : "offset",
           "in" : "query",
           "schema" : {
             "format" : "int32",
-            "type" : "integer"
+            "type" : "integer",
+            "nullable" : true
           }
         } ],
         "responses" : {
@@ -406,21 +412,24 @@
               "format" : "uuid",
               "pattern" : "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}",
               "type" : "string"
-            }
+            },
+            "nullable" : true
           }
         }, {
           "name" : "limit",
           "in" : "query",
           "schema" : {
             "format" : "int32",
-            "type" : "integer"
+            "type" : "integer",
+            "nullable" : true
           }
         }, {
           "name" : "offset",
           "in" : "query",
           "schema" : {
             "format" : "int32",
-            "type" : "integer"
+            "type" : "integer",
+            "nullable" : true
           }
         } ],
         "responses" : {
@@ -563,21 +572,24 @@
               "format" : "uuid",
               "pattern" : "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}",
               "type" : "string"
-            }
+            },
+            "nullable" : true
           }
         }, {
           "name" : "limit",
           "in" : "query",
           "schema" : {
             "format" : "int32",
-            "type" : "integer"
+            "type" : "integer",
+            "nullable" : true
           }
         }, {
           "name" : "offset",
           "in" : "query",
           "schema" : {
             "format" : "int32",
-            "type" : "integer"
+            "type" : "integer",
+            "nullable" : true
           }
         } ],
         "responses" : {
@@ -723,14 +735,16 @@
           "in" : "query",
           "schema" : {
             "format" : "int32",
-            "type" : "integer"
+            "type" : "integer",
+            "nullable" : true
           }
         }, {
           "name" : "offset",
           "in" : "query",
           "schema" : {
             "format" : "int32",
-            "type" : "integer"
+            "type" : "integer",
+            "nullable" : true
           }
         } ],
         "responses" : {
@@ -865,21 +879,24 @@
               "format" : "uuid",
               "pattern" : "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}",
               "type" : "string"
-            }
+            },
+            "nullable" : true
           }
         }, {
           "name" : "limit",
           "in" : "query",
           "schema" : {
             "format" : "int32",
-            "type" : "integer"
+            "type" : "integer",
+            "nullable" : true
           }
         }, {
           "name" : "offset",
           "in" : "query",
           "schema" : {
             "format" : "int32",
-            "type" : "integer"
+            "type" : "integer",
+            "nullable" : true
           }
         } ],
         "responses" : {
@@ -1022,21 +1039,24 @@
               "format" : "uuid",
               "pattern" : "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}",
               "type" : "string"
-            }
+            },
+            "nullable" : true
           }
         }, {
           "name" : "limit",
           "in" : "query",
           "schema" : {
             "format" : "int32",
-            "type" : "integer"
+            "type" : "integer",
+            "nullable" : true
           }
         }, {
           "name" : "offset",
           "in" : "query",
           "schema" : {
             "format" : "int32",
-            "type" : "integer"
+            "type" : "integer",
+            "nullable" : true
           }
         } ],
         "responses" : {
@@ -1179,21 +1199,24 @@
               "format" : "uuid",
               "pattern" : "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}",
               "type" : "string"
-            }
+            },
+            "nullable" : true
           }
         }, {
           "name" : "limit",
           "in" : "query",
           "schema" : {
             "format" : "int32",
-            "type" : "integer"
+            "type" : "integer",
+            "nullable" : true
           }
         }, {
           "name" : "offset",
           "in" : "query",
           "schema" : {
             "format" : "int32",
-            "type" : "integer"
+            "type" : "integer",
+            "nullable" : true
           }
         } ],
         "responses" : {
@@ -1336,21 +1359,24 @@
               "format" : "uuid",
               "pattern" : "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}",
               "type" : "string"
-            }
+            },
+            "nullable" : true
           }
         }, {
           "name" : "limit",
           "in" : "query",
           "schema" : {
             "format" : "int32",
-            "type" : "integer"
+            "type" : "integer",
+            "nullable" : true
           }
         }, {
           "name" : "offset",
           "in" : "query",
           "schema" : {
             "format" : "int32",
-            "type" : "integer"
+            "type" : "integer",
+            "nullable" : true
           }
         } ],
         "responses" : {
@@ -1951,17 +1977,27 @@
         "type" : "object",
         "properties" : {
           "authorizationServerId" : {
-            "$ref" : "#/components/schemas/UUID"
+            "type" : "string",
+            "allOf" : [ {
+              "$ref" : "#/components/schemas/UUID"
+            } ],
+            "nullable" : true
           },
           "name" : {
-            "type" : "string"
+            "type" : "string",
+            "nullable" : true
           },
           "clientId" : {
-            "type" : "string"
+            "type" : "string",
+            "nullable" : true
           },
           "profile" : { },
           "metadata" : {
-            "$ref" : "#/components/schemas/Metadata"
+            "type" : "object",
+            "allOf" : [ {
+              "$ref" : "#/components/schemas/Metadata"
+            } ],
+            "nullable" : true
           },
           "scopes" : {
             "type" : "array",
@@ -1969,7 +2005,8 @@
               "format" : "uuid",
               "pattern" : "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}",
               "type" : "string"
-            }
+            },
+            "nullable" : true
           }
         }
       },
@@ -1978,35 +2015,56 @@
         "type" : "object",
         "properties" : {
           "id" : {
-            "type" : "string"
+            "type" : "string",
+            "nullable" : true
           },
           "authorizationServerId" : {
-            "$ref" : "#/components/schemas/UUID"
+            "type" : "string",
+            "allOf" : [ {
+              "$ref" : "#/components/schemas/UUID"
+            } ],
+            "nullable" : true
           },
           "name" : {
-            "type" : "string"
+            "type" : "string",
+            "nullable" : true
           },
           "clientId" : {
-            "type" : "string"
+            "type" : "string",
+            "nullable" : true
           },
           "clientSecret" : {
-            "type" : "string"
+            "type" : "string",
+            "nullable" : true
           },
           "profile" : { },
           "createdOn" : {
-            "$ref" : "#/components/schemas/OffsetDateTime"
+            "type" : "string",
+            "allOf" : [ {
+              "$ref" : "#/components/schemas/OffsetDateTime"
+            } ],
+            "nullable" : true
           },
           "updatedOn" : {
-            "$ref" : "#/components/schemas/OffsetDateTime"
+            "type" : "string",
+            "allOf" : [ {
+              "$ref" : "#/components/schemas/OffsetDateTime"
+            } ],
+            "nullable" : true
           },
           "metadata" : {
-            "$ref" : "#/components/schemas/Metadata"
+            "type" : "object",
+            "allOf" : [ {
+              "$ref" : "#/components/schemas/Metadata"
+            } ],
+            "nullable" : true
           },
           "scopes" : {
             "type" : "array",
             "items" : {
               "$ref" : "#/components/schemas/ScopeResponse"
-            }
+            },
+            "nullable" : true
           }
         }
       },
@@ -2015,10 +2073,15 @@
         "type" : "object",
         "properties" : {
           "applicationId" : {
-            "$ref" : "#/components/schemas/UUID"
+            "type" : "string",
+            "allOf" : [ {
+              "$ref" : "#/components/schemas/UUID"
+            } ],
+            "nullable" : true
           },
           "name" : {
-            "type" : "string"
+            "type" : "string",
+            "nullable" : true
           },
           "scopes" : {
             "type" : "array",
@@ -2026,11 +2089,13 @@
               "format" : "uuid",
               "pattern" : "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}",
               "type" : "string"
-            }
+            },
+            "nullable" : true
           },
           "expiresIn" : {
             "format" : "int32",
-            "type" : "integer"
+            "type" : "integer",
+            "nullable" : true
           }
         }
       },
@@ -2039,32 +2104,52 @@
         "type" : "object",
         "properties" : {
           "id" : {
-            "$ref" : "#/components/schemas/UUID"
+            "type" : "string",
+            "allOf" : [ {
+              "$ref" : "#/components/schemas/UUID"
+            } ],
+            "nullable" : true
           },
           "clientSecret" : {
-            "type" : "string"
+            "type" : "string",
+            "nullable" : true
           },
           "name" : {
-            "type" : "string"
+            "type" : "string",
+            "nullable" : true
           },
           "expiresIn" : {
             "format" : "int32",
-            "type" : "integer"
+            "type" : "integer",
+            "nullable" : true
           },
           "applicationId" : {
-            "$ref" : "#/components/schemas/UUID"
+            "type" : "string",
+            "allOf" : [ {
+              "$ref" : "#/components/schemas/UUID"
+            } ],
+            "nullable" : true
           },
           "authorizationServerId" : {
-            "$ref" : "#/components/schemas/UUID"
+            "type" : "string",
+            "allOf" : [ {
+              "$ref" : "#/components/schemas/UUID"
+            } ],
+            "nullable" : true
           },
           "scopes" : {
             "type" : "array",
             "items" : {
               "$ref" : "#/components/schemas/ScopeResponse"
-            }
+            },
+            "nullable" : true
           },
           "createdOn" : {
-            "$ref" : "#/components/schemas/OffsetDateTime"
+            "type" : "string",
+            "allOf" : [ {
+              "$ref" : "#/components/schemas/OffsetDateTime"
+            } ],
+            "nullable" : true
           }
         }
       },
@@ -2076,10 +2161,15 @@
             "type" : "array",
             "items" : {
               "$ref" : "#/components/schemas/ApplicationSecretResponse"
-            }
+            },
+            "nullable" : true
           },
           "page" : {
-            "$ref" : "#/components/schemas/Page"
+            "type" : "object",
+            "allOf" : [ {
+              "$ref" : "#/components/schemas/Page"
+            } ],
+            "nullable" : true
           }
         }
       },
@@ -2091,10 +2181,15 @@
             "type" : "array",
             "items" : {
               "$ref" : "#/components/schemas/ApplicationResponse"
-            }
+            },
+            "nullable" : true
           },
           "page" : {
-            "$ref" : "#/components/schemas/Page"
+            "type" : "object",
+            "allOf" : [ {
+              "$ref" : "#/components/schemas/Page"
+            } ],
+            "nullable" : true
           }
         }
       },
@@ -2102,24 +2197,33 @@
         "type" : "object",
         "properties" : {
           "serverUrl" : {
-            "type" : "string"
+            "type" : "string",
+            "nullable" : true
           },
           "audience" : {
-            "type" : "string"
+            "type" : "string",
+            "nullable" : true
           },
           "clientCredentialsTokenExpiration" : {
             "format" : "int32",
-            "type" : "integer"
+            "type" : "integer",
+            "nullable" : true
           },
           "authorizationCodeTokenExpiration" : {
             "format" : "int32",
-            "type" : "integer"
+            "type" : "integer",
+            "nullable" : true
           },
           "name" : {
-            "type" : "string"
+            "type" : "string",
+            "nullable" : true
           },
           "metadata" : {
-            "$ref" : "#/components/schemas/Metadata"
+            "type" : "object",
+            "allOf" : [ {
+              "$ref" : "#/components/schemas/Metadata"
+            } ],
+            "nullable" : true
           }
         }
       },
@@ -2128,39 +2232,58 @@
         "type" : "object",
         "properties" : {
           "id" : {
-            "type" : "string"
+            "type" : "string",
+            "nullable" : true
           },
           "serverUrl" : {
-            "type" : "string"
+            "type" : "string",
+            "nullable" : true
           },
           "audience" : {
-            "type" : "string"
+            "type" : "string",
+            "nullable" : true
           },
           "clientCredentialsTokenExpiration" : {
             "format" : "int32",
-            "type" : "integer"
+            "type" : "integer",
+            "nullable" : true
           },
           "authorizationCodeTokenExpiration" : {
             "format" : "int32",
-            "type" : "integer"
+            "type" : "integer",
+            "nullable" : true
           },
           "name" : {
-            "type" : "string"
+            "type" : "string",
+            "nullable" : true
           },
           "createdOn" : {
-            "$ref" : "#/components/schemas/OffsetDateTime"
+            "type" : "string",
+            "allOf" : [ {
+              "$ref" : "#/components/schemas/OffsetDateTime"
+            } ],
+            "nullable" : true
           },
           "updatedOn" : {
-            "$ref" : "#/components/schemas/OffsetDateTime"
+            "type" : "string",
+            "allOf" : [ {
+              "$ref" : "#/components/schemas/OffsetDateTime"
+            } ],
+            "nullable" : true
           },
           "metadata" : {
-            "$ref" : "#/components/schemas/Metadata"
+            "type" : "object",
+            "allOf" : [ {
+              "$ref" : "#/components/schemas/Metadata"
+            } ],
+            "nullable" : true
           },
           "scopes" : {
             "type" : "array",
             "items" : {
               "$ref" : "#/components/schemas/ScopeResponse"
-            }
+            },
+            "nullable" : true
           }
         }
       },
@@ -2172,10 +2295,15 @@
             "type" : "array",
             "items" : {
               "$ref" : "#/components/schemas/AuthorizationServerResponse"
-            }
+            },
+            "nullable" : true
           },
           "page" : {
-            "$ref" : "#/components/schemas/Page"
+            "type" : "object",
+            "allOf" : [ {
+              "$ref" : "#/components/schemas/Page"
+            } ],
+            "nullable" : true
           }
         }
       },
@@ -2183,16 +2311,22 @@
         "type" : "object",
         "properties" : {
           "name" : {
-            "type" : "string"
+            "type" : "string",
+            "nullable" : true
           },
           "authorizationServerId" : {
-            "$ref" : "#/components/schemas/UUID"
+            "type" : "string",
+            "allOf" : [ {
+              "$ref" : "#/components/schemas/UUID"
+            } ],
+            "nullable" : true
           },
           "redirectUris" : {
             "type" : "array",
             "items" : {
               "type" : "string"
-            }
+            },
+            "nullable" : true
           },
           "scopes" : {
             "type" : "array",
@@ -2200,10 +2334,15 @@
               "format" : "uuid",
               "pattern" : "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}",
               "type" : "string"
-            }
+            },
+            "nullable" : true
           },
           "metadata" : {
-            "$ref" : "#/components/schemas/Metadata"
+            "type" : "object",
+            "allOf" : [ {
+              "$ref" : "#/components/schemas/Metadata"
+            } ],
+            "nullable" : true
           }
         }
       },
@@ -2211,34 +2350,54 @@
         "type" : "object",
         "properties" : {
           "id" : {
-            "type" : "string"
+            "type" : "string",
+            "nullable" : true
           },
           "name" : {
-            "type" : "string"
+            "type" : "string",
+            "nullable" : true
           },
           "authorizationServerId" : {
-            "$ref" : "#/components/schemas/UUID"
+            "type" : "string",
+            "allOf" : [ {
+              "$ref" : "#/components/schemas/UUID"
+            } ],
+            "nullable" : true
           },
           "redirectUris" : {
             "type" : "array",
             "items" : {
               "type" : "string"
-            }
+            },
+            "nullable" : true
           },
           "createdOn" : {
-            "$ref" : "#/components/schemas/OffsetDateTime"
+            "type" : "string",
+            "allOf" : [ {
+              "$ref" : "#/components/schemas/OffsetDateTime"
+            } ],
+            "nullable" : true
           },
           "updatedOn" : {
-            "$ref" : "#/components/schemas/OffsetDateTime"
+            "type" : "string",
+            "allOf" : [ {
+              "$ref" : "#/components/schemas/OffsetDateTime"
+            } ],
+            "nullable" : true
           },
           "scopes" : {
             "type" : "array",
             "items" : {
               "$ref" : "#/components/schemas/ScopeResponse"
-            }
+            },
+            "nullable" : true
           },
           "metadata" : {
-            "$ref" : "#/components/schemas/Metadata"
+            "type" : "object",
+            "allOf" : [ {
+              "$ref" : "#/components/schemas/Metadata"
+            } ],
+            "nullable" : true
           }
         }
       },
@@ -2250,10 +2409,15 @@
             "type" : "array",
             "items" : {
               "$ref" : "#/components/schemas/ClientResponse"
-            }
+            },
+            "nullable" : true
           },
           "page" : {
-            "$ref" : "#/components/schemas/Page"
+            "type" : "object",
+            "allOf" : [ {
+              "$ref" : "#/components/schemas/Page"
+            } ],
+            "nullable" : true
           }
         }
       },
@@ -2265,13 +2429,25 @@
         "type" : "object",
         "properties" : {
           "authorizationServerId" : {
-            "$ref" : "#/components/schemas/UUID"
+            "type" : "string",
+            "allOf" : [ {
+              "$ref" : "#/components/schemas/UUID"
+            } ],
+            "nullable" : true
           },
           "memberId" : {
-            "$ref" : "#/components/schemas/UUID"
+            "type" : "string",
+            "allOf" : [ {
+              "$ref" : "#/components/schemas/UUID"
+            } ],
+            "nullable" : true
           },
           "memberType" : {
-            "$ref" : "#/components/schemas/MemberType"
+            "type" : "string",
+            "allOf" : [ {
+              "$ref" : "#/components/schemas/MemberType"
+            } ],
+            "nullable" : true
           }
         }
       },
@@ -2279,22 +2455,43 @@
         "type" : "object",
         "properties" : {
           "id" : {
-            "type" : "string"
+            "type" : "string",
+            "nullable" : true
           },
           "authorizationServerId" : {
-            "$ref" : "#/components/schemas/UUID"
+            "type" : "string",
+            "allOf" : [ {
+              "$ref" : "#/components/schemas/UUID"
+            } ],
+            "nullable" : true
           },
           "groupId" : {
-            "$ref" : "#/components/schemas/UUID"
+            "type" : "string",
+            "allOf" : [ {
+              "$ref" : "#/components/schemas/UUID"
+            } ],
+            "nullable" : true
           },
           "memberId" : {
-            "$ref" : "#/components/schemas/UUID"
+            "type" : "string",
+            "allOf" : [ {
+              "$ref" : "#/components/schemas/UUID"
+            } ],
+            "nullable" : true
           },
           "memberType" : {
-            "$ref" : "#/components/schemas/MemberType"
+            "type" : "string",
+            "allOf" : [ {
+              "$ref" : "#/components/schemas/MemberType"
+            } ],
+            "nullable" : true
           },
           "createdOn" : {
-            "$ref" : "#/components/schemas/OffsetDateTime"
+            "type" : "string",
+            "allOf" : [ {
+              "$ref" : "#/components/schemas/OffsetDateTime"
+            } ],
+            "nullable" : true
           }
         }
       },
@@ -2306,10 +2503,15 @@
             "type" : "array",
             "items" : {
               "$ref" : "#/components/schemas/GroupMemberResponse"
-            }
+            },
+            "nullable" : true
           },
           "page" : {
-            "$ref" : "#/components/schemas/Page"
+            "type" : "object",
+            "allOf" : [ {
+              "$ref" : "#/components/schemas/Page"
+            } ],
+            "nullable" : true
           }
         }
       },
@@ -2317,16 +2519,26 @@
         "type" : "object",
         "properties" : {
           "authorizationServerId" : {
-            "$ref" : "#/components/schemas/UUID"
+            "type" : "string",
+            "allOf" : [ {
+              "$ref" : "#/components/schemas/UUID"
+            } ],
+            "nullable" : true
           },
           "displayName" : {
-            "type" : "string"
+            "type" : "string",
+            "nullable" : true
           },
           "externalId" : {
-            "type" : "string"
+            "type" : "string",
+            "nullable" : true
           },
           "metadata" : {
-            "$ref" : "#/components/schemas/Metadata"
+            "type" : "object",
+            "allOf" : [ {
+              "$ref" : "#/components/schemas/Metadata"
+            } ],
+            "nullable" : true
           }
         }
       },
@@ -2334,25 +2546,44 @@
         "type" : "object",
         "properties" : {
           "id" : {
-            "type" : "string"
+            "type" : "string",
+            "nullable" : true
           },
           "authorizationServerId" : {
-            "$ref" : "#/components/schemas/UUID"
+            "type" : "string",
+            "allOf" : [ {
+              "$ref" : "#/components/schemas/UUID"
+            } ],
+            "nullable" : true
           },
           "displayName" : {
-            "type" : "string"
+            "type" : "string",
+            "nullable" : true
           },
           "externalId" : {
-            "type" : "string"
+            "type" : "string",
+            "nullable" : true
           },
           "metadata" : {
-            "$ref" : "#/components/schemas/Metadata"
+            "type" : "object",
+            "allOf" : [ {
+              "$ref" : "#/components/schemas/Metadata"
+            } ],
+            "nullable" : true
           },
           "createdOn" : {
-            "$ref" : "#/components/schemas/OffsetDateTime"
+            "type" : "string",
+            "allOf" : [ {
+              "$ref" : "#/components/schemas/OffsetDateTime"
+            } ],
+            "nullable" : true
           },
           "updatedOn" : {
-            "$ref" : "#/components/schemas/OffsetDateTime"
+            "type" : "string",
+            "allOf" : [ {
+              "$ref" : "#/components/schemas/OffsetDateTime"
+            } ],
+            "nullable" : true
           }
         }
       },
@@ -2364,10 +2595,15 @@
             "type" : "array",
             "items" : {
               "$ref" : "#/components/schemas/GroupResponse"
-            }
+            },
+            "nullable" : true
           },
           "page" : {
-            "$ref" : "#/components/schemas/Page"
+            "type" : "object",
+            "allOf" : [ {
+              "$ref" : "#/components/schemas/Page"
+            } ],
+            "nullable" : true
           }
         }
       },
@@ -2471,19 +2707,22 @@
         "properties" : {
           "properties" : {
             "type" : "object",
-            "additionalProperties" : { }
+            "additionalProperties" : { },
+            "nullable" : true
           },
           "identifiers" : {
             "type" : "array",
             "items" : {
               "$ref" : "#/components/schemas/MetadataIdentifiersInner"
-            }
+            },
+            "nullable" : true
           },
           "schemaValidations" : {
             "type" : "array",
             "items" : {
               "$ref" : "#/components/schemas/MetadataSchemaValidationsInner"
-            }
+            },
+            "nullable" : true
           }
         }
       },
@@ -2491,10 +2730,12 @@
         "type" : "object",
         "properties" : {
           "system" : {
-            "type" : "string"
+            "type" : "string",
+            "nullable" : true
           },
           "value" : {
-            "type" : "string"
+            "type" : "string",
+            "nullable" : true
           }
         }
       },
@@ -2502,13 +2743,22 @@
         "type" : "object",
         "properties" : {
           "schemaId" : {
-            "$ref" : "#/components/schemas/UUID"
+            "type" : "string",
+            "allOf" : [ {
+              "$ref" : "#/components/schemas/UUID"
+            } ],
+            "nullable" : true
           },
           "isValid" : {
-            "type" : "boolean"
+            "type" : "boolean",
+            "nullable" : true
           },
           "validatedOn" : {
-            "$ref" : "#/components/schemas/OffsetDateTime"
+            "type" : "string",
+            "allOf" : [ {
+              "$ref" : "#/components/schemas/OffsetDateTime"
+            } ],
+            "nullable" : true
           }
         }
       },
@@ -2521,10 +2771,12 @@
         "type" : "object",
         "properties" : {
           "next" : {
-            "type" : "string"
+            "type" : "string",
+            "nullable" : true
           },
           "previous" : {
-            "type" : "string"
+            "type" : "string",
+            "nullable" : true
           }
         }
       },
@@ -2533,17 +2785,27 @@
         "type" : "object",
         "properties" : {
           "authorizationServerId" : {
-            "$ref" : "#/components/schemas/UUID"
+            "type" : "string",
+            "allOf" : [ {
+              "$ref" : "#/components/schemas/UUID"
+            } ],
+            "nullable" : true
           },
           "name" : {
-            "type" : "string"
+            "type" : "string",
+            "nullable" : true
           },
           "schemaVersion" : {
-            "type" : "string"
+            "type" : "string",
+            "nullable" : true
           },
           "schema" : { },
           "metadata" : {
-            "$ref" : "#/components/schemas/Metadata"
+            "type" : "object",
+            "allOf" : [ {
+              "$ref" : "#/components/schemas/Metadata"
+            } ],
+            "nullable" : true
           }
         }
       },
@@ -2552,20 +2814,34 @@
         "type" : "object",
         "properties" : {
           "id" : {
-            "$ref" : "#/components/schemas/UUID"
+            "type" : "string",
+            "allOf" : [ {
+              "$ref" : "#/components/schemas/UUID"
+            } ],
+            "nullable" : true
           },
           "authorizationServerId" : {
-            "$ref" : "#/components/schemas/UUID"
+            "type" : "string",
+            "allOf" : [ {
+              "$ref" : "#/components/schemas/UUID"
+            } ],
+            "nullable" : true
           },
           "name" : {
-            "type" : "string"
+            "type" : "string",
+            "nullable" : true
           },
           "schemaVersion" : {
-            "type" : "string"
+            "type" : "string",
+            "nullable" : true
           },
           "schema" : { },
           "metadata" : {
-            "$ref" : "#/components/schemas/Metadata"
+            "type" : "object",
+            "allOf" : [ {
+              "$ref" : "#/components/schemas/Metadata"
+            } ],
+            "nullable" : true
           }
         }
       },
@@ -2577,24 +2853,39 @@
             "type" : "array",
             "items" : {
               "$ref" : "#/components/schemas/SchemaResponse"
-            }
+            },
+            "nullable" : true
           },
           "page" : {
-            "$ref" : "#/components/schemas/Page"
+            "type" : "object",
+            "allOf" : [ {
+              "$ref" : "#/components/schemas/Page"
+            } ],
+            "nullable" : true
           }
         }
       },
       "ScopeRequest" : {
+        "required" : [ "authorizationServerId", "name" ],
         "type" : "object",
         "properties" : {
           "authorizationServerId" : {
-            "$ref" : "#/components/schemas/UUID"
+            "type" : "string",
+            "allOf" : [ {
+              "$ref" : "#/components/schemas/UUID"
+            } ],
+            "nullable" : true
           },
           "name" : {
-            "type" : "string"
+            "type" : "string",
+            "nullable" : true
           },
           "metadata" : {
-            "$ref" : "#/components/schemas/Metadata"
+            "type" : "object",
+            "allOf" : [ {
+              "$ref" : "#/components/schemas/Metadata"
+            } ],
+            "nullable" : true
           }
         }
       },
@@ -2602,22 +2893,40 @@
         "type" : "object",
         "properties" : {
           "id" : {
-            "type" : "string"
+            "type" : "string",
+            "nullable" : true
           },
           "authorizationServerId" : {
-            "$ref" : "#/components/schemas/UUID"
+            "type" : "string",
+            "allOf" : [ {
+              "$ref" : "#/components/schemas/UUID"
+            } ],
+            "nullable" : true
           },
           "createdOn" : {
-            "$ref" : "#/components/schemas/OffsetDateTime"
+            "type" : "string",
+            "allOf" : [ {
+              "$ref" : "#/components/schemas/OffsetDateTime"
+            } ],
+            "nullable" : true
           },
           "updatedOn" : {
-            "$ref" : "#/components/schemas/OffsetDateTime"
+            "type" : "string",
+            "allOf" : [ {
+              "$ref" : "#/components/schemas/OffsetDateTime"
+            } ],
+            "nullable" : true
           },
           "name" : {
-            "type" : "string"
+            "type" : "string",
+            "nullable" : true
           },
           "metadata" : {
-            "$ref" : "#/components/schemas/Metadata"
+            "type" : "object",
+            "allOf" : [ {
+              "$ref" : "#/components/schemas/Metadata"
+            } ],
+            "nullable" : true
           }
         }
       },
@@ -2629,10 +2938,15 @@
             "type" : "array",
             "items" : {
               "$ref" : "#/components/schemas/ScopeResponse"
-            }
+            },
+            "nullable" : true
           },
           "page" : {
-            "$ref" : "#/components/schemas/Page"
+            "type" : "object",
+            "allOf" : [ {
+              "$ref" : "#/components/schemas/Page"
+            } ],
+            "nullable" : true
           }
         }
       },
@@ -2640,16 +2954,26 @@
         "type" : "object",
         "properties" : {
           "authorizationServerId" : {
-            "$ref" : "#/components/schemas/UUID"
+            "type" : "string",
+            "allOf" : [ {
+              "$ref" : "#/components/schemas/UUID"
+            } ],
+            "nullable" : true
           },
           "templateType" : {
-            "type" : "string"
+            "type" : "string",
+            "nullable" : true
           },
           "template" : {
-            "type" : "string"
+            "type" : "string",
+            "nullable" : true
           },
           "metadata" : {
-            "$ref" : "#/components/schemas/Metadata"
+            "type" : "object",
+            "allOf" : [ {
+              "$ref" : "#/components/schemas/Metadata"
+            } ],
+            "nullable" : true
           }
         }
       },
@@ -2657,25 +2981,44 @@
         "type" : "object",
         "properties" : {
           "id" : {
-            "type" : "string"
+            "type" : "string",
+            "nullable" : true
           },
           "authorizationServerId" : {
-            "$ref" : "#/components/schemas/UUID"
+            "type" : "string",
+            "allOf" : [ {
+              "$ref" : "#/components/schemas/UUID"
+            } ],
+            "nullable" : true
           },
           "templateType" : {
-            "type" : "string"
+            "type" : "string",
+            "nullable" : true
           },
           "template" : {
-            "type" : "string"
+            "type" : "string",
+            "nullable" : true
           },
           "createdOn" : {
-            "$ref" : "#/components/schemas/OffsetDateTime"
+            "type" : "string",
+            "allOf" : [ {
+              "$ref" : "#/components/schemas/OffsetDateTime"
+            } ],
+            "nullable" : true
           },
           "updatedOn" : {
-            "$ref" : "#/components/schemas/OffsetDateTime"
+            "type" : "string",
+            "allOf" : [ {
+              "$ref" : "#/components/schemas/OffsetDateTime"
+            } ],
+            "nullable" : true
           },
           "metadata" : {
-            "$ref" : "#/components/schemas/Metadata"
+            "type" : "object",
+            "allOf" : [ {
+              "$ref" : "#/components/schemas/Metadata"
+            } ],
+            "nullable" : true
           }
         }
       },
@@ -2687,10 +3030,15 @@
             "type" : "array",
             "items" : {
               "$ref" : "#/components/schemas/TemplateResponse"
-            }
+            },
+            "nullable" : true
           },
           "page" : {
-            "$ref" : "#/components/schemas/Page"
+            "type" : "object",
+            "allOf" : [ {
+              "$ref" : "#/components/schemas/Page"
+            } ],
+            "nullable" : true
           }
         }
       },
@@ -2707,20 +3055,31 @@
         "type" : "object",
         "properties" : {
           "authorizationServerId" : {
-            "$ref" : "#/components/schemas/UUID"
+            "type" : "string",
+            "allOf" : [ {
+              "$ref" : "#/components/schemas/UUID"
+            } ],
+            "nullable" : true
           },
           "username" : {
-            "type" : "string"
+            "type" : "string",
+            "nullable" : true
           },
           "email" : {
-            "type" : "string"
+            "type" : "string",
+            "nullable" : true
           },
           "profile" : { },
           "password" : {
-            "type" : "string"
+            "type" : "string",
+            "nullable" : true
           },
           "metadata" : {
-            "$ref" : "#/components/schemas/Metadata"
+            "type" : "object",
+            "allOf" : [ {
+              "$ref" : "#/components/schemas/Metadata"
+            } ],
+            "nullable" : true
           }
         }
       },
@@ -2728,26 +3087,45 @@
         "type" : "object",
         "properties" : {
           "id" : {
-            "type" : "string"
+            "type" : "string",
+            "nullable" : true
           },
           "authorizationServerId" : {
-            "$ref" : "#/components/schemas/UUID"
+            "type" : "string",
+            "allOf" : [ {
+              "$ref" : "#/components/schemas/UUID"
+            } ],
+            "nullable" : true
           },
           "username" : {
-            "type" : "string"
+            "type" : "string",
+            "nullable" : true
           },
           "email" : {
-            "type" : "string"
+            "type" : "string",
+            "nullable" : true
           },
           "profile" : { },
           "createdOn" : {
-            "$ref" : "#/components/schemas/OffsetDateTime"
+            "type" : "string",
+            "allOf" : [ {
+              "$ref" : "#/components/schemas/OffsetDateTime"
+            } ],
+            "nullable" : true
           },
           "updatedOn" : {
-            "$ref" : "#/components/schemas/OffsetDateTime"
+            "type" : "string",
+            "allOf" : [ {
+              "$ref" : "#/components/schemas/OffsetDateTime"
+            } ],
+            "nullable" : true
           },
           "metadata" : {
-            "$ref" : "#/components/schemas/Metadata"
+            "type" : "object",
+            "allOf" : [ {
+              "$ref" : "#/components/schemas/Metadata"
+            } ],
+            "nullable" : true
           }
         }
       },
@@ -2759,10 +3137,15 @@
             "type" : "array",
             "items" : {
               "$ref" : "#/components/schemas/UserResponse"
-            }
+            },
+            "nullable" : true
           },
           "page" : {
-            "$ref" : "#/components/schemas/Page"
+            "type" : "object",
+            "allOf" : [ {
+              "$ref" : "#/components/schemas/Page"
+            } ],
+            "nullable" : true
           }
         }
       },

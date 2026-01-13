@@ -46,133 +46,133 @@ Smallest module - establish conversion patterns here first.
 
 ---
 
-## Phase 3: auth-api (106 files)
+## Phase 3: auth-api (106 files) ✅ COMPLETED
 
 Largest module - break into sub-phases.
 
-### 3.1 DTOs - Request/Response Classes (32 files)
-- [ ] Convert `ApplicationRequest.java`
-- [ ] Convert `ApplicationRequestFilter.java`
-- [ ] Convert `ApplicationResponse.java`
-- [ ] Convert `ApplicationsResponse.java`
-- [ ] Convert `ApplicationSecretRequest.java`
-- [ ] Convert `ApplicationSecretResponse.java`
-- [ ] Convert `ApplicationSecretsResponse.java`
-- [ ] Convert `AuthorizationServerRequest.java`
-- [ ] Convert `AuthorizationServerResponse.java`
-- [ ] Convert `AuthorizationServersResponse.java`
-- [ ] Convert `ClientRequest.java`
-- [ ] Convert `ClientRequestFilter.java`
-- [ ] Convert `ClientResponse.java`
-- [ ] Convert `ClientsResponse.java`
-- [ ] Convert `GroupRequest.java`
-- [ ] Convert `GroupRequestFilter.java`
-- [ ] Convert `GroupResponse.java`
-- [ ] Convert `GroupsResponse.java`
-- [ ] Convert `GroupMemberRequest.java`
-- [ ] Convert `GroupMemberResponse.java`
-- [ ] Convert `GroupMembersResponse.java`
-- [ ] Convert `SchemaRequest.java`
-- [ ] Convert `SchemaRequestFilter.java`
-- [ ] Convert `SchemaResponse.java`
-- [ ] Convert `SchemasResponse.java`
-- [ ] Convert `ScopeRequest.java`
-- [ ] Convert `ScopeRequestFilter.java`
-- [ ] Convert `ScopeResponse.java`
-- [ ] Convert `ScopesResponse.java`
-- [ ] Convert `TemplateRequest.java`
-- [ ] Convert `TemplateRequestFilter.java`
-- [ ] Convert `TemplateResponse.java`
-- [ ] Convert `TemplatesResponse.java`
-- [ ] Convert `UserRequest.java`
-- [ ] Convert `UserRequestFilter.java`
-- [ ] Convert `UserResponse.java`
-- [ ] Convert `UsersResponse.java`
+### 3.1 DTOs - Request/Response Classes (32 files) ✅
+- [x] Convert `ApplicationRequest.java`
+- [x] Convert `ApplicationRequestFilter.java`
+- [x] Convert `ApplicationResponse.java`
+- [x] Convert `ApplicationsResponse.java`
+- [x] Convert `ApplicationSecretRequest.java`
+- [x] Convert `ApplicationSecretResponse.java`
+- [x] Convert `ApplicationSecretsResponse.java`
+- [x] Convert `AuthorizationServerRequest.java`
+- [x] Convert `AuthorizationServerResponse.java`
+- [x] Convert `AuthorizationServersResponse.java`
+- [x] Convert `ClientRequest.java`
+- [x] Convert `ClientRequestFilter.java`
+- [x] Convert `ClientResponse.java`
+- [x] Convert `ClientsResponse.java`
+- [x] Convert `GroupRequest.java`
+- [x] Convert `GroupRequestFilter.java`
+- [x] Convert `GroupResponse.java`
+- [x] Convert `GroupsResponse.java`
+- [x] Convert `GroupMemberRequest.java`
+- [x] Convert `GroupMemberResponse.java`
+- [x] Convert `GroupMembersResponse.java`
+- [x] Convert `SchemaRequest.java`
+- [x] Convert `SchemaRequestFilter.java`
+- [x] Convert `SchemaResponse.java`
+- [x] Convert `SchemasResponse.java`
+- [x] Convert `ScopeRequest.java`
+- [x] Convert `ScopeRequestFilter.java`
+- [x] Convert `ScopeResponse.java`
+- [x] Convert `ScopesResponse.java`
+- [x] Convert `TemplateRequest.java`
+- [x] Convert `TemplateRequestFilter.java`
+- [x] Convert `TemplateResponse.java`
+- [x] Convert `TemplatesResponse.java`
+- [x] Convert `UserRequest.java`
+- [x] Convert `UserRequestFilter.java`
+- [x] Convert `UserResponse.java`
+- [x] Convert `UsersResponse.java`
 
-### 3.2 DTOs - Utility Classes (6 files)
-- [ ] Convert `Metadata.java`
-- [ ] Convert `MetadataIdentifiersInner.java`
-- [ ] Convert `MetadataSchemaValidationsInner.java`
-- [ ] Convert `Page.java`
-- [ ] Convert `TemplateTypeEnum.java`
+### 3.2 DTOs - Utility Classes (6 files) ✅
+- [x] Convert `Metadata.java`
+- [x] Convert `MetadataIdentifiersInner.java`
+- [x] Convert `MetadataSchemaValidationsInner.java`
+- [x] Convert `Page.java`
+- [x] Convert `TemplateTypeEnum.java`
 
-### 3.3 API Interfaces (9 files)
-- [ ] Convert `ApplicationsApi.java`
-- [ ] Convert `ApplicationSecretsApi.java`
-- [ ] Convert `AuthorizationServersApi.java`
-- [ ] Convert `ClientsApi.java`
-- [ ] Convert `GroupsApi.java`
-- [ ] Convert `GroupMembersApi.java`
-- [ ] Convert `SchemasApi.java`
-- [ ] Convert `ScopesApi.java`
-- [ ] Convert `TemplatesApi.java`
-- [ ] Convert `UsersApi.java`
+### 3.3 API Interfaces (9 files) ✅
+- [x] Convert `ApplicationsApi.java`
+- [x] Convert `ApplicationSecretsApi.java`
+- [x] Convert `AuthorizationServersApi.java`
+- [x] Convert `ClientsApi.java`
+- [x] Convert `GroupsApi.java`
+- [x] Convert `GroupMembersApi.java`
+- [x] Convert `SchemasApi.java`
+- [x] Convert `ScopesApi.java`
+- [x] Convert `TemplatesApi.java`
+- [x] Convert `UsersApi.java`
 
-### 3.4 Routes (12 files)
-- [ ] Convert `Applications.java`
-- [ ] Convert `ApplicationSecrets.java`
-- [ ] Convert `AuthorizationServers.java`
-- [ ] Convert `Clients.java`
-- [ ] Convert `Groups.java`
-- [ ] Convert `GroupMembers.java`
-- [ ] Convert `Schemas.java`
-- [ ] Convert `Scopes.java`
-- [ ] Convert `Templates.java`
-- [ ] Convert `Users.java`
-- [ ] Convert `Constants.java`
-- [ ] Convert `Pagination.java`
+### 3.4 Routes (12 files) ✅
+- [x] Convert `Applications.java`
+- [x] Convert `ApplicationSecrets.java`
+- [x] Convert `AuthorizationServers.java`
+- [x] Convert `Clients.java`
+- [x] Convert `Groups.java`
+- [x] Convert `GroupMembers.java`
+- [x] Convert `Schemas.java`
+- [x] Convert `Scopes.java`
+- [x] Convert `Templates.java`
+- [x] Convert `Users.java`
+- [x] Convert `Constants.java`
+- [x] Convert `Pagination.java`
 
-### 3.5 Mappers (14 files)
-- [ ] Convert `ApplicationMapper.java`
-- [ ] Convert `ApplicationRequestFilterMapper.java`
-- [ ] Convert `AuthorizationServerMapper.java`
-- [ ] Convert `ClientMapper.java`
-- [ ] Convert `ClientRequestFilterMapper.java`
-- [ ] Convert `GroupMapper.java`
-- [ ] Convert `GroupMemberMapper.java`
-- [ ] Convert `GroupRequestFilterMapper.java`
-- [ ] Convert `MetadataMapper.java`
-- [ ] Convert `ProfileMapper.java`
-- [ ] Convert `SchemaRequestFilterMapper.java`
-- [ ] Convert `ScopeMapper.java`
-- [ ] Convert `ScopeRequestFilterMapper.java`
-- [ ] Convert `TemplateMapper.java`
-- [ ] Convert `TemplateRequestFilterMapper.java`
-- [ ] Convert `UserMapper.java`
-- [ ] Convert `UserRequestFilterMapper.java`
-- [ ] Convert `SchemaMapper.java`
+### 3.5 Mappers (18 files) ✅
+- [x] Convert `ApplicationMapper.java`
+- [x] Convert `ApplicationRequestFilterMapper.java`
+- [x] Convert `AuthorizationServerMapper.java`
+- [x] Convert `ClientMapper.java`
+- [x] Convert `ClientRequestFilterMapper.java`
+- [x] Convert `GroupMapper.java`
+- [x] Convert `GroupMemberMapper.java`
+- [x] Convert `GroupRequestFilterMapper.java`
+- [x] Convert `MetadataMapper.java`
+- [x] Convert `ProfileMapper.java`
+- [x] Convert `SchemaRequestFilterMapper.java`
+- [x] Convert `ScopeMapper.java`
+- [x] Convert `ScopeRequestFilterMapper.java`
+- [x] Convert `TemplateMapper.java`
+- [x] Convert `TemplateRequestFilterMapper.java`
+- [x] Convert `UserMapper.java`
+- [x] Convert `UserRequestFilterMapper.java`
+- [x] Convert `SchemaMapper.java`
 
-### 3.6 Validators - Annotations (23 files)
-- [ ] Convert `ValidApplication.java`
-- [ ] Convert `ValidApplicationClientId.java`
-- [ ] Convert `ValidApplicationClientSecret.java`
-- [ ] Convert `ValidApplicationName.java`
-- [ ] Convert `ValidApplicationProfile.java`
-- [ ] Convert `ValidApplicationRequest.java`
-- [ ] Convert `ValidApplicationSecret.java`
-- [ ] Convert `ValidApplicationSecretName.java`
-- [ ] Convert `ValidApplicationSecretScopes.java`
-- [ ] Convert `ValidAuthorizationServer.java`
-- [ ] Convert `ValidAuthorizationServerAudience.java`
-- [ ] Convert `ValidAuthorizationServerName.java`
-- [ ] Convert `ValidAuthorizationServerUrl.java`
-- [ ] Convert `ValidClientName.java`
-- [ ] Convert `ValidClientRedirectUris.java`
-- [ ] Convert `ValidClientScopes.java`
-- [ ] Convert `ValidEmail.java`
-- [ ] Convert `ValidSchema.java`
-- [ ] Convert `ValidSchemaName.java`
-- [ ] Convert `ValidScopeName.java`
-- [ ] Convert `ValidTemplate.java`
-- [ ] Convert `ValidUsername.java`
-- [ ] Convert `ValidUserProfile.java`
+### 3.6 Validators - Annotations (23 files) ✅
+- [x] Convert `ValidApplication.java`
+- [x] Convert `ValidApplicationClientId.java`
+- [x] Convert `ValidApplicationClientSecret.java`
+- [x] Convert `ValidApplicationName.java`
+- [x] Convert `ValidApplicationProfile.java`
+- [x] Convert `ValidApplicationRequest.java`
+- [x] Convert `ValidApplicationSecret.java`
+- [x] Convert `ValidApplicationSecretName.java`
+- [x] Convert `ValidApplicationSecretScopes.java`
+- [x] Convert `ValidAuthorizationServer.java`
+- [x] Convert `ValidAuthorizationServerAudience.java`
+- [x] Convert `ValidAuthorizationServerName.java`
+- [x] Convert `ValidAuthorizationServerUrl.java`
+- [x] Convert `ValidClientName.java`
+- [x] Convert `ValidClientRedirectUris.java`
+- [x] Convert `ValidClientScopes.java`
+- [x] Convert `ValidEmail.java`
+- [x] Convert `ValidSchema.java`
+- [x] Convert `ValidSchemaName.java`
+- [x] Convert `ValidScopeName.java`
+- [x] Convert `ValidTemplate.java`
+- [x] Convert `ValidUsername.java`
+- [x] Convert `ValidUserProfile.java`
 
-### 3.7 Exceptions (1 file)
-- [ ] Convert `IllegalArgumentExceptionMapper.java`
+### 3.7 Exceptions (1 file) ✅
+- [x] Convert `IllegalArgumentExceptionMapper.java`
 
-### 3.8 Phase 3 Verification
-- [ ] Run tests for auth-api
-- [ ] Verify build succeeds
+### 3.8 Phase 3 Verification ✅
+- [x] Run tests for auth-api
+- [x] Verify build succeeds
 
 ---
 
